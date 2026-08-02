@@ -1,0 +1,74 @@
+{
+  "name": "pastortools",
+  "version": "0.1.0",
+  "private": true,
+  "description": "PastorTools — herramientas open source para pastores e iglesias (API + PWA + app móvil)",
+  "license": "MIT",
+  "type": "module",
+  "packageManager": "pnpm@10.18.3",
+  "engines": {
+    "node": ">=24.0.0",
+    "pnpm": ">=10.0.0"
+  },
+  "scripts": {
+    "dev": "turbo run dev --filter=@pastortools/api --filter=@pastortools/web",
+    "dev:api": "turbo run dev --filter=@pastortools/api",
+    "dev:web": "turbo run dev --filter=@pastortools/web",
+    "dev:mobile": "pnpm --filter @pastortools/mobile start",
+    "build": "turbo run build",
+    "build:api": "turbo run build --filter=@pastortools/api...",
+    "build:web": "turbo run build --filter=@pastortools/web...",
+    "build:packages": "turbo run build --filter=./packages/*",
+    "start:api": "pnpm --filter @pastortools/api start:prod",
+    "preview:web": "pnpm --filter @pastortools/web preview",
+    "typecheck": "turbo run typecheck",
+    "lint": "turbo run lint",
+    "lint:fix": "turbo run lint -- --fix",
+    "lint:fast": "oxlint --config .oxlintrc.json",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "turbo run test",
+    "test:watch": "turbo run test:watch",
+    "test:cov": "turbo run test:cov",
+    "test:e2e": "turbo run test:e2e",
+    "check": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test",
+    "db:up": "docker compose up -d postgres",
+    "db:down": "docker compose stop postgres",
+    "db:reset": "docker compose down -v && docker compose up -d postgres",
+    "db:migrate": "pnpm --filter @pastortools/api auth:migrate && pnpm --filter @pastortools/api migration:run",
+    "db:generate": "pnpm --filter @pastortools/api migration:generate",
+    "db:revert": "pnpm --filter @pastortools/api migration:revert",
+    "db:seed": "pnpm --filter @pastortools/api seed",
+    "docker:dev": "docker compose up --build",
+    "docker:dev:down": "docker compose down",
+    "docker:prod": "docker compose -f docker-compose.prod.yml up -d --build",
+    "docker:prod:down": "docker compose -f docker-compose.prod.yml down",
+    "clean": "turbo run clean && rimraf node_modules .turbo",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "21.2.1",
+    "@commitlint/config-conventional": "21.2.0",
+    "@pastortools/eslint-config": "workspace:*",
+    "@types/node": "26.1.2",
+    "eslint": "10.8.0",
+    "husky": "9.1.7",
+    "lint-staged": "17.3.0",
+    "oxlint": "1.76.0",
+    "prettier": "3.9.6",
+    "prettier-plugin-tailwindcss": "0.8.1",
+    "rimraf": "6.1.3",
+    "turbo": "2.10.8",
+    "typescript": "5.9.3"
+  },
+  "lint-staged": {
+    "*.{js,jsx,mjs,cjs,ts,tsx}": [
+      "oxlint --fix",
+      "eslint --fix --no-warn-ignored",
+      "prettier --write"
+    ],
+    "*.{json,md,yml,yaml,css}": [
+      "prettier --write"
+    ]
+  }
+}

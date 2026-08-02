@@ -1,0 +1,46 @@
+{
+  "name": "@pastortools/api-client",
+  "version": "0.1.0",
+  "private": true,
+  "license": "MIT",
+  "description": "Cliente HTTP tipado y hooks de TanStack Query compartidos por web y móvil",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsc -p tsconfig.json --watch --preserveWatchOutput",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:cov": "vitest run --coverage",
+    "clean": "rimraf dist .turbo *.tsbuildinfo"
+  },
+  "dependencies": {
+    "@pastortools/shared": "workspace:*"
+  },
+  "peerDependencies": {
+    "@tanstack/react-query": ">=5",
+    "react": ">=19"
+  },
+  "devDependencies": {
+    "@pastortools/eslint-config": "workspace:*",
+    "@pastortools/tsconfig": "workspace:*",
+    "@tanstack/react-query": "catalog:",
+    "@types/node": "26.1.2",
+    "@types/react": "19.2.18",
+    "@vitest/coverage-v8": "catalog:",
+    "eslint": "10.8.0",
+    "react": "19.2.8",
+    "rimraf": "6.1.3",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

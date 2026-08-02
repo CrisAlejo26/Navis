@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="theme-color" content="#fcfcfb" />
+    <meta
+      name="description"
+      content="PastorTools — herramientas para pastores: agenda, creyentes, profecías, sueños y comunicaciones."
+    />
+    <title>PastorTools</title>
+    <script>
+      // Aplica el tema antes del primer pintado para evitar el parpadeo blanco
+      // al recargar en modo oscuro. Debe coincidir con packages/theme.
+      (function () {
+        try {
+          var stored = JSON.parse(localStorage.getItem('pastortools.theme') || 'null');
+          var mode = (stored && stored.state && stored.state.mode) || 'system';
+          var dark =
+            mode === 'dark' ||
+            (mode === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+          document.documentElement.classList.toggle('dark', dark);
+          document
+            .querySelector('meta[name="theme-color"]')
+            .setAttribute('content', dark ? '#191a20' : '#fcfcfb');
+        } catch (e) {
+          /* sin persistencia: se queda en claro */
+        }
+      })();
+    </script>
+  </head>
+  <body class="bg-background text-foreground antialiased">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
