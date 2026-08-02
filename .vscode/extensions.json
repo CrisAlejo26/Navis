@@ -1,0 +1,13 @@
+{
+  "recommendations": [
+    "esbenp.prettier-vscode",
+    "dbaeumer.vscode-eslint",
+    "oxc.oxc-vscode",
+    "bradlc.vscode-tailwindcss",
+    "expo.vscode-expo-tools",
+    "vitest.explorer",
+    "ms-azuretools.vscode-docker",
+    "editorconfig.editorconfig"
+  ],
+  "unwantedRecommendations": ["hookyqr.beautify", "dbaeumer.jshint"]
+}

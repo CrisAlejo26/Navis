@@ -1,0 +1,38 @@
+{
+  "$schema": "https://raw.githubusercontent.com/oxc-project/oxc/main/npm/oxlint/configuration_schema.json",
+  "plugins": ["import", "typescript", "unicorn", "react", "jsx-a11y", "promise"],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "warn",
+    "perf": "warn"
+  },
+  "env": {
+    "browser": true,
+    "node": true,
+    "es2023": true
+  },
+  "rules": {
+    "no-console": "off",
+    "unicorn/prefer-node-protocol": "error",
+    "import/no-cycle": "error"
+  },
+  "overrides": [
+    {
+      "files": ["**/*.{test,spec}.{ts,tsx}", "**/e2e/**"],
+      "rules": {
+        "no-empty-function": "off"
+      }
+    }
+  ],
+  "ignorePatterns": [
+    "dist",
+    "build",
+    "coverage",
+    ".turbo",
+    ".expo",
+    "dev-dist",
+    "node_modules",
+    "apps/mobile/android",
+    "apps/mobile/ios"
+  ]
+}

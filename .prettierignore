@@ -1,0 +1,15 @@
+node_modules
+dist
+build
+coverage
+.turbo
+.expo
+dev-dist
+playwright-report
+test-results
+pnpm-lock.yaml
+apps/mobile/android
+apps/mobile/ios
+apps/web/public/pwa-*.png
+apps/web/public/apple-touch-icon.png
+*.min.*
