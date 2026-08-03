@@ -1,4 +1,4 @@
-# Contribuir a PastorTools
+# Contribuir a Fidus
 
 Gracias por querer aportar. Este documento recoge lo que hay que saber antes de
 abrir un pull request.

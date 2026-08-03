@@ -76,7 +76,7 @@ export function ensureSqliteDirectory(): void {
 ensureSqliteDirectory();
 
 /**
- * DataSource usado por `pnpm --filter @pastortools/api typeorm`.
+ * DataSource usado por `pnpm --filter @fidus/api typeorm`.
  *
  * Tiene que ser la ÚNICA exportación de tipo DataSource del fichero: el CLI de
  * TypeORM recorre todas y falla si encuentra dos (por eso no hay

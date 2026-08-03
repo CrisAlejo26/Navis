@@ -1,4 +1,4 @@
-import type { Locale } from '@pastortools/shared';
+import type { Locale } from '@fidus/shared';
 
 import { de } from './locales/de';
 import { en } from './locales/en';

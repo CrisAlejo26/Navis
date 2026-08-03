@@ -1,5 +1,5 @@
 {
-  "name": "@pastortools/theme",
+  "name": "@fidus/theme",
   "version": "0.1.0",
   "private": true,
   "license": "MIT",
@@ -29,14 +29,14 @@
     "clean": "rimraf dist .turbo *.tsbuildinfo"
   },
   "dependencies": {
-    "@pastortools/shared": "workspace:*"
+    "@fidus/shared": "workspace:*"
   },
   "peerDependencies": {
     "zustand": ">=5"
   },
   "devDependencies": {
-    "@pastortools/eslint-config": "workspace:*",
-    "@pastortools/tsconfig": "workspace:*",
+    "@fidus/eslint-config": "workspace:*",
+    "@fidus/tsconfig": "workspace:*",
     "@types/node": "26.1.2",
     "eslint": "10.8.0",
     "rimraf": "6.1.3",

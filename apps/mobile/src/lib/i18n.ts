@@ -1,8 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { createI18n, type Locale } from '@pastortools/i18n';
+import { createI18n, type Locale } from '@fidus/i18n';
 import { getLocales } from 'expo-localization';
 
-const STORAGE_KEY = 'pastortools.locale';
+const STORAGE_KEY = 'fidus.locale';
 
 /**
  * `getLocales()` devuelve los idiomas del dispositivo por orden de

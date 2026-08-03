@@ -1,4 +1,4 @@
-import { mobileEnvSchema, parseEnv } from '@pastortools/shared';
+import { mobileEnvSchema, parseEnv } from '@fidus/shared';
 
 /**
  * Variables de entorno de la app móvil, validadas con zod al arrancar.

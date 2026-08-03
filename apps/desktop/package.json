@@ -1,10 +1,10 @@
 {
-  "name": "@pastortools/desktop",
+  "name": "@fidus/desktop",
   "version": "0.1.0",
   "private": true,
   "license": "MIT",
   "type": "module",
-  "description": "App de escritorio de PastorTools (Tauri 2 + Rust) envolviendo la PWA",
+  "description": "App de escritorio de Fidus (Tauri 2 + Rust) envolviendo la PWA",
   "scripts": {
     "dev": "tauri dev",
     "build": "tauri build",
@@ -19,8 +19,8 @@
     "@tauri-apps/plugin-window-state": "2.4.1"
   },
   "devDependencies": {
-    "@pastortools/eslint-config": "workspace:*",
-    "@pastortools/tsconfig": "workspace:*",
+    "@fidus/eslint-config": "workspace:*",
+    "@fidus/tsconfig": "workspace:*",
     "@tauri-apps/cli": "2.11.4",
     "eslint": "10.8.0",
     "rimraf": "6.1.3",

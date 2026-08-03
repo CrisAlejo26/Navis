@@ -13,7 +13,7 @@ import { ensureSqliteDirectory } from '../database/data-source';
  * `verification`) mediante Kysely; el dominio lo gestiona TypeORM en la MISMA
  * base de datos, así que las claves foráneas funcionan entre ambos mundos.
  *
- * Crear el esquema:  pnpm --filter @pastortools/api auth:migrate
+ * Crear el esquema:  pnpm --filter @fidus/api auth:migrate
  */
 function createAuthDatabase(): Pool | SqliteDatabase {
   if (env.DB_DRIVER === 'postgres') {
@@ -34,7 +34,7 @@ function createAuthDatabase(): Pool | SqliteDatabase {
 export const authDatabase = createAuthDatabase();
 
 export const auth = betterAuth({
-  appName: 'PastorTools',
+  appName: 'Fidus',
   baseURL: env.BETTER_AUTH_URL,
   basePath: '/api/auth',
   secret: env.BETTER_AUTH_SECRET,

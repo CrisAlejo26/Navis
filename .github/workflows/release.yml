@@ -78,7 +78,7 @@ jobs:
           | macOS (Apple Silicon) | `_aarch64.dmg` |
           | macOS (Intel) | `_x64.dmg` |
           | Linux | `.AppImage` o `.deb` |
-          | Android | `pastortools-VERSION.apk` |
+          | Android | `fidus-VERSION.apk` |
 
           Las aplicaciones **no llevan certificado comercial**: Windows y macOS
           avisarán la primera vez. En macOS se abre con clic derecho → Abrir; en
@@ -96,7 +96,7 @@ jobs:
           if ! gh release view "$TAG" >/dev/null 2>&1; then
             gh release create "$TAG" \
               --draft \
-              --title "PastorTools $VERSION" \
+              --title "Fidus $VERSION" \
               --notes-file notas.md \
               --generate-notes
           fi
@@ -223,7 +223,7 @@ jobs:
           set -euo pipefail
           mkdir -p dist
           APK=apps/mobile/android/app/build/outputs/apk/release/app-release.apk
-          SALIDA="dist/pastortools-${VERSION}.apk"
+          SALIDA="dist/fidus-${VERSION}.apk"
 
           if [ -z "${KEYSTORE_BASE64:-}" ]; then
             echo "::warning::Sin ANDROID_KEYSTORE_BASE64: el APK va firmado con la clave de depuración. Ver docs/RELEASES.md."
@@ -303,8 +303,8 @@ jobs:
           VERSION: ${{ needs.preparar.outputs.version }}
         run: |
           set -euo pipefail
-          (cd apps/web/dist && zip -qr "$GITHUB_WORKSPACE/pastortools-web-${VERSION}.zip" .)
-          gh release upload "$TAG" "pastortools-web-${VERSION}.zip" --clobber
+          (cd apps/web/dist && zip -qr "$GITHUB_WORKSPACE/fidus-web-${VERSION}.zip" .)
+          gh release upload "$TAG" "fidus-web-${VERSION}.zip" --clobber
 
   # --- 6. Resumen -------------------------------------------------------------
   resumen:

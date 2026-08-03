@@ -14,7 +14,7 @@ test.describe('PWA y tema', () => {
       icons: unknown[];
     };
 
-    expect(manifest.name).toBe('PastorTools');
+    expect(manifest.name).toBe('Fidus');
     expect(manifest.display).toBe('standalone');
     expect(manifest.icons.length).toBeGreaterThanOrEqual(2);
   });

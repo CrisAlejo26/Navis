@@ -9,5 +9,5 @@ CREATE EXTENSION IF NOT EXISTS "pg_trgm";
 CREATE EXTENSION IF NOT EXISTS "unaccent";
 
 -- Base de datos aparte para los tests e2e, que se vacía sin tocar la de desarrollo.
-SELECT 'CREATE DATABASE pastortools_test'
-WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'pastortools_test') \gexec
+SELECT 'CREATE DATABASE fidus_test'
+WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'fidus_test') \gexec

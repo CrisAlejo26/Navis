@@ -10,7 +10,7 @@ describe('passwordSchema', () => {
   });
 
   it('acepta una contraseña válida', () => {
-    expect(passwordSchema.safeParse('PastorTools2026').success).toBe(true);
+    expect(passwordSchema.safeParse('Rebano2026Seguro').success).toBe(true);
   });
 });
 
@@ -36,7 +36,7 @@ describe('registerSchema', () => {
   it('exige nombre, email y contraseña fuerte', () => {
     const result = registerSchema.safeParse({
       email: 'pastor@iglesia.es',
-      password: 'PastorTools2026',
+      password: 'Rebano2026Seguro',
       name: 'Pastor Ejemplo',
     });
     expect(result.success).toBe(true);

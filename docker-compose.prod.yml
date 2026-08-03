@@ -7,7 +7,7 @@
 #   · No hay perfiles de herramientas (nada de Adminer expuesto).
 #   · Todos los secretos vienen del .env; ninguno tiene valor por defecto.
 
-name: pastortools-prod
+name: fidus-prod
 
 services:
   postgres:

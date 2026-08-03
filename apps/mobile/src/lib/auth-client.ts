@@ -23,7 +23,7 @@ export const authClient = createAuthClient({
     // @ts-expect-error incompatibilidad de tipos de @better-auth/expo 1.6.25
     expoClient({
       scheme: env.EXPO_PUBLIC_APP_SCHEME,
-      storagePrefix: 'pastortools',
+      storagePrefix: 'fidus',
       storage: SecureStore,
     }),
     inferAdditionalFields({

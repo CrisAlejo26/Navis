@@ -1,4 +1,4 @@
-import { LOCALE_LABELS, LOCALES, type Locale } from '@pastortools/shared';
+import { LOCALE_LABELS, LOCALES, type Locale } from '@fidus/shared';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 

@@ -46,8 +46,8 @@
     "clean": {
       "cache": false
     },
-    "@pastortools/desktop#build": {
-      "dependsOn": ["@pastortools/web#build"],
+    "@fidus/desktop#build": {
+      "dependsOn": ["@fidus/web#build"],
       "inputs": ["src-tauri/**", "!src-tauri/target/**"],
       "outputs": ["src-tauri/target/release/bundle/**"]
     }

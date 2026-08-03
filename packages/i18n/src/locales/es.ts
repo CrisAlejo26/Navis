@@ -8,7 +8,7 @@
  */
 export const es = {
   common: {
-    appName: 'PastorTools',
+    appName: 'Fidus',
     save: 'Guardar',
     cancel: 'Cancelar',
     delete: 'Eliminar',

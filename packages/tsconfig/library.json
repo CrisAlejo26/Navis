@@ -1,6 +1,6 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
-  "display": "PastorTools library (CommonJS)",
+  "display": "Fidus library (CommonJS)",
   "extends": "./base.json",
   "compilerOptions": {
     "module": "CommonJS",

@@ -1,4 +1,4 @@
-import { loginSchema } from '@pastortools/shared';
+import { loginSchema } from '@fidus/shared';
 import { Link, router } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';

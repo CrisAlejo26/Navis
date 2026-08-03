@@ -1,3 +1,3 @@
-import { reactConfig } from '@pastortools/eslint-config/react';
+import { reactConfig } from '@fidus/eslint-config/react';
 
 export default reactConfig({ tsconfigRootDir: import.meta.dirname });

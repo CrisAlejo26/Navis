@@ -1,4 +1,4 @@
-import type { ApiErrorBody } from '@pastortools/shared';
+import type { ApiErrorBody } from '@fidus/shared';
 
 import { ApiError } from './api-error';
 

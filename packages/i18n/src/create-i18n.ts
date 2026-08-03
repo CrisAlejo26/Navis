@@ -1,10 +1,4 @@
-import {
-  DEFAULT_LOCALE,
-  isLocale,
-  type Locale,
-  LOCALES,
-  normalizeLocale,
-} from '@pastortools/shared';
+import { DEFAULT_LOCALE, isLocale, type Locale, LOCALES, normalizeLocale } from '@fidus/shared';
 import i18next, { type i18n as I18nInstance } from 'i18next';
 import { initReactI18next } from 'react-i18next';
 

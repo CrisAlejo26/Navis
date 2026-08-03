@@ -1,4 +1,4 @@
-import type { ThemeMode } from '@pastortools/shared';
+import type { ThemeMode } from '@fidus/shared';
 import { create } from 'zustand';
 import { createJSONStorage, persist, type StateStorage } from 'zustand/middleware';
 
@@ -29,7 +29,7 @@ export function resolveTheme(mode: ThemeMode, systemTheme: ResolvedTheme): Resol
   return mode === 'system' ? systemTheme : mode;
 }
 
-export const THEME_STORAGE_KEY = 'pastortools.theme';
+export const THEME_STORAGE_KEY = 'fidus.theme';
 
 /** Crea el store de tema para una plataforma concreta. */
 export function createThemeStore(adapter: ThemeAdapter) {

@@ -1,4 +1,4 @@
-# Documentación de PastorTools
+# Documentación de Fidus
 
 Estructura estándar de la industria para separar **decisiones** de **propuestas**:
 

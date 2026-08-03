@@ -3,7 +3,7 @@
 /**
  * Semilla de desarrollo: crea un usuario administrador con su perfil.
  *
- *   pnpm --filter @pastortools/api seed
+ *   pnpm --filter @fidus/api seed
  *
  * El usuario se crea a través de la API de Better Auth (no con SQL directo)
  * para que la contraseña se hashee exactamente igual que en producción.
@@ -13,9 +13,12 @@ import { auth } from '../../auth/auth';
 import { isPostgres } from '../column-types';
 import { dataSource } from '../data-source';
 
+// La contraseña NO lleva el nombre del proyecto a propósito: `pnpm rename` lo
+// sustituiría y podría dejarla por debajo del mínimo de 10 caracteres que
+// exige Better Auth, rompiendo la semilla sin que nadie lo note hasta usarla.
 const SEED_USER = {
-  email: 'admin@pastortools.local',
-  password: 'PastorTools2026',
+  email: 'admin@fidus.local',
+  password: 'Rebano2026Seguro',
   name: 'Administrador',
 };
 

@@ -1,4 +1,4 @@
-import { nestConfig } from '@pastortools/eslint-config/nest';
+import { nestConfig } from '@fidus/eslint-config/nest';
 
 export default [
   ...nestConfig({ tsconfigRootDir: import.meta.dirname }),

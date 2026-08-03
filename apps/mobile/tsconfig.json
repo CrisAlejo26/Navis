@@ -1,5 +1,5 @@
 {
-  "extends": ["expo/tsconfig.base", "@pastortools/tsconfig/react.json"],
+  "extends": ["expo/tsconfig.base", "@fidus/tsconfig/react.json"],
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {

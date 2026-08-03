@@ -1,5 +1,5 @@
 {
-  "name": "@pastortools/shared",
+  "name": "@fidus/shared",
   "version": "0.1.0",
   "private": true,
   "license": "MIT",
@@ -29,8 +29,8 @@
     "zod": "catalog:"
   },
   "devDependencies": {
-    "@pastortools/eslint-config": "workspace:*",
-    "@pastortools/tsconfig": "workspace:*",
+    "@fidus/eslint-config": "workspace:*",
+    "@fidus/tsconfig": "workspace:*",
     "@types/node": "26.1.2",
     "@vitest/coverage-v8": "catalog:",
     "eslint": "10.8.0",

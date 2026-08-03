@@ -6,7 +6,7 @@ import { BaseEntity } from '../common/entities/base.entity';
 /**
  * Datos de dominio del usuario. La identidad (email, contraseña, sesiones)
  * vive en las tablas de Better Auth; aquí guardamos lo específico de
- * PastorTools, enlazado por `user_id` con `"user"("id")`.
+ * Fidus, enlazado por `user_id` con `"user"("id")`.
  *
  * Es el ejemplo a copiar para cualquier entidad nueva que dependa del usuario.
  */

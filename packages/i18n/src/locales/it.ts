@@ -2,7 +2,7 @@ import type { Translation } from './es';
 
 export const it = {
   common: {
-    appName: 'PastorTools',
+    appName: 'Fidus',
     save: 'Salva',
     cancel: 'Annulla',
     delete: 'Elimina',
