@@ -19,7 +19,11 @@ ENV VITE_API_URL=$VITE_API_URL
 ENV VITE_AUTH_URL=$VITE_AUTH_URL
 
 COPY . .
-RUN --mount=type=cache,id=pnpm-store,target=/pnpm/store pnpm install --frozen-lockfile
+
+# Filtrado a propósito: sin `--filter`, pnpm instalaría también las
+# dependencias de la API (better-sqlite3, que se compila) y de la app móvil.
+# Aquí no hay compilador, así que fallaba; y aunque lo hubiera, sobra.
+RUN --mount=type=cache,id=pnpm-store,target=/pnpm/store   HUSKY=0 pnpm install --frozen-lockfile --filter @pastortools/web...
 RUN pnpm --filter @pastortools/web... build
 
 # --- Runtime -----------------------------------------------------------------

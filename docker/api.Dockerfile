@@ -18,8 +18,11 @@ RUN apt-get update \
   && rm -rf /var/lib/apt/lists/*
 
 COPY . .
+
+# `--filter` deja fuera la web, el móvil y el escritorio: ni Playwright ni Expo
+# pintan nada en la imagen de la API.
 # HUSKY=0: el `prepare` de la raíz instala los hooks de git, y aquí no hay .git.
-RUN --mount=type=cache,id=pnpm-store,target=/pnpm/store HUSKY=0 pnpm install --frozen-lockfile
+RUN --mount=type=cache,id=pnpm-store,target=/pnpm/store   HUSKY=0 pnpm install --frozen-lockfile --filter @pastortools/api...
 RUN pnpm --filter @pastortools/api... build
 
 # `pnpm deploy` deja en /app el proyecto con SOLO sus dependencias de
