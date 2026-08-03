@@ -59,9 +59,11 @@ Cosas que ya han costado un rato y no hace falta volver a descubrir.
   si no).
 - **`queryRunner.query` devuelve `any`** y no acepta genérico: lo que sale de un
   `SELECT` en una migración se comprueba antes de usarlo (Regla 10).
-- **`apps/api/src/metadata.ts` lo genera el build y está en `.gitignore`**: si se
-  queda a medias, `pnpm typecheck` falla con errores de sintaxis en un fichero
-  que nadie ha tocado. Se borra y ya.
+- **`apps/api/src/metadata.ts` lo genera el build y está en `.gitignore`**: con
+  `nest start --watch` corriendo, `tsc` lo pillaba a medio escribir y `pnpm
+check` fallaba con errores de sintaxis en un fichero que nadie había tocado.
+  Está excluido del `tsconfig.json` de la API —no lo importa nadie—, así que si
+  vuelve a aparecer el problema es que alguien lo ha vuelto a incluir.
 - **`/health` es `VERSION_NEUTRAL`**: el versionado por URI lo dejaría en
   `/v1/health` y tanto Docker como el despliegue consultan `/health`.
 - **En postgres:18 el volumen va en `/var/lib/postgresql`**, no en `/data`.

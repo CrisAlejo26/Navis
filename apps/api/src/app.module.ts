@@ -18,6 +18,7 @@ import { ProfilesModule } from './profiles/profiles.module';
 import { RolesModule } from './roles/roles.module';
 import { SetupModule } from './setup/setup.module';
 import { UsersModule } from './users/users.module';
+import { WeatherModule } from './weather/weather.module';
 
 @Module({
   imports: [
@@ -47,6 +48,7 @@ import { UsersModule } from './users/users.module';
     SetupModule,
     HealthModule,
     AiModule,
+    WeatherModule,
   ],
   providers: [
     // El orden importa: primero se resuelve la sesión, después los permisos.

@@ -43,7 +43,7 @@ export class UsersController {
   ): Promise<Paginated<ManagedUser>> {
     // El alcance lo pone el servidor a partir de quién pregunta; el `churchId`
     // de la query solo puede acotarlo más, nunca ampliarlo.
-    const scope = await this.churches.scopeFor(asker(user), query.churchId);
+    const scope = await this.churches.scopeFor(asker(user), query.churchIds);
     return this.users.findPage(query, scope);
   }
 

@@ -14,6 +14,12 @@ export class UpdateProfileDto {
   @Length(2, 160)
   church?: string;
 
+  @ApiPropertyOptional({ description: 'Ciudad para el tiempo del panel', example: 'Madrid' })
+  @IsOptional()
+  @IsString()
+  @Length(0, 120)
+  city?: string;
+
   @ApiPropertyOptional({ example: 'https://cdn.example.com/avatar.png' })
   @IsOptional()
   @IsUrl({ require_protocol: true })

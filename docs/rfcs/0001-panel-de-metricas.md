@@ -20,6 +20,19 @@ que requiere atención.
 No entra: informes históricos, gráficas comparativas entre periodos ni
 exportación. Eso es un módulo de informes aparte.
 
+## Ya implementado: la cabecera
+
+La parte de arriba del panel **ya está en `main`** y no hay que rehacerla al
+implementar las métricas:
+
+- Saludo según la hora (`lib/greeting.ts`, con test) y nombre de pila.
+- La fecha completa, con `Intl` y el idioma activo.
+- El tiempo de la ciudad que cada cual pone en sus ajustes (`profiles.city`),
+  servido por `GET /api/v1/weather` contra Open-Meteo —sin clave— y cacheado un
+  cuarto de hora por ciudad en el servidor.
+
+Las tarjetas de esta propuesta van **debajo** de esa cabecera.
+
 ## Métricas de la primera versión
 
 | Tarjeta          | Qué muestra                                     | De dónde sale |

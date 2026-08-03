@@ -2,7 +2,7 @@ import type { RoleSlug } from '@navis/shared';
 import { UserPlus } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-import { ChurchSelect } from '@/components/access/church-select';
+import { ChurchFilter } from '@/components/access/church-filter';
 import { RoleSelect } from '@/components/access/role-select';
 import { Button } from '@/components/ui/button';
 import { SearchField } from '@/components/ui/search-field';
@@ -12,22 +12,24 @@ interface UsersToolbarProps {
   onSearchChange: (value: string) => void;
   role: RoleSlug | undefined;
   onRoleChange: (role: RoleSlug | undefined) => void;
-  churchId: string | null;
-  onChurchChange: (churchId: string | null) => void;
+  churchIds: readonly string[];
+  onToggleChurch: (churchId: string) => void;
+  onClearChurches: () => void;
   onCreate: () => void;
 }
 
 /**
- * Buscar por nombre o correo, quedarse con una iglesia o con un rol, y dar de
- * alta una cuenta. El filtro de iglesia solo sale si hay más de una.
+ * Buscar por nombre o correo, quedarse con unas iglesias o con un rol, y dar de
+ * alta una cuenta. El filtro de iglesias solo sale si hay más de una.
  */
 export function UsersToolbar({
   search,
   onSearchChange,
   role,
   onRoleChange,
-  churchId,
-  onChurchChange,
+  churchIds,
+  onToggleChurch,
+  onClearChurches,
   onCreate,
 }: UsersToolbarProps) {
   const { t } = useTranslation();
@@ -41,7 +43,12 @@ export function UsersToolbar({
         className="flex-1"
       />
 
-      <ChurchSelect value={churchId} onChange={onChurchChange} className="h-10 sm:w-52" />
+      <ChurchFilter
+        selected={churchIds}
+        onToggle={onToggleChurch}
+        onClear={onClearChurches}
+        className="sm:w-52"
+      />
 
       <RoleSelect
         size="sm"

@@ -106,15 +106,18 @@ export class ChurchesService {
    * El alcance de quien pregunta: los ids de las iglesias cuyas cosas puede
    * ver. `null` es «todas», y solo lo tiene el superadministrador.
    *
-   * `only` acota todavía más, para el filtro de la interfaz: si pide una
-   * iglesia a la que no llega, se queda sin ninguna en vez de recibir un error
-   * —el filtro es una preferencia guardada y puede haber envejecido—.
+   * `only` acota todavía más, para el filtro de la interfaz: se queda con las
+   * que además estén en esa lista. Si pide una iglesia a la que no llega, esa
+   * cae —el filtro es una preferencia guardada y puede haber envejecido—, y no
+   * se devuelve un error por ello.
    */
-  async scopeFor(asker: Asker, only?: string): Promise<string[] | null> {
-    if (asker.role === SUPERADMIN_ROLE) return only ? [only] : null;
+  async scopeFor(asker: Asker, only?: readonly string[]): Promise<string[] | null> {
+    const pedidas = only?.length ? only : undefined;
+
+    if (asker.role === SUPERADMIN_ROLE) return pedidas ? [...pedidas] : null;
 
     const ids = (await this.accessible(asker)).map((church) => church.id);
-    return only ? ids.filter((id) => id === only) : ids;
+    return pedidas ? ids.filter((id) => pedidas.includes(id)) : ids;
   }
 
   /** Si esa cuenta está en alguna de las iglesias de quien pregunta. */

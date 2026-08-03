@@ -103,6 +103,27 @@ describe('ChurchesService', () => {
     expect(setActiveChurch).toHaveBeenCalledWith('u1', CENTRAL.id);
   });
 
+  it('el superadministrador sin filtro no acota, y con filtro se queda con lo pedido', async () => {
+    const { service } = build({ memberships: [] });
+    const superadmin = { id: 'u9', role: SUPERADMIN_ROLE };
+
+    await expect(service.scopeFor(superadmin)).resolves.toBeNull();
+    await expect(service.scopeFor(superadmin, [CENTRAL.id, NORTE.id])).resolves.toEqual([
+      CENTRAL.id,
+      NORTE.id,
+    ]);
+  });
+
+  // El filtro es una preferencia guardada y puede haber envejecido: lo que ya
+  // no es accesible cae, y no se devuelve un error por ello.
+  it('el filtro solo puede acotar el alcance, nunca ampliarlo', async () => {
+    const { service } = build({});
+
+    await expect(
+      service.scopeFor({ id: 'u1', role: 'pastor' }, [CENTRAL.id, NORTE.id]),
+    ).resolves.toEqual([CENTRAL.id]);
+  });
+
   it('no deja activar una iglesia a la que no se pertenece', async () => {
     const { service } = build({});
 

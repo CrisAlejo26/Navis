@@ -29,17 +29,18 @@ export function UsersPanel() {
   const query = useTableQuery({ fields: USER_SORT_FIELDS, sort: 'createdAt', order: 'desc' });
   const catalog = useRoleCatalog();
   const role = params.get('role') ?? undefined;
-  // La iglesia no va en la URL como el resto de filtros: se recuerda entre
-  // visitas, porque quien administra varias trabaja días sobre la misma.
-  const churchId = useUsersFilterStore((state) => state.churchId);
-  const setChurch = useUsersFilterStore((state) => state.setChurch);
+  // Las iglesias no van en la URL como el resto de filtros: se recuerdan entre
+  // visitas, porque quien administra varias trabaja días sobre las mismas.
+  const churchIds = useUsersFilterStore((state) => state.churchIds);
+  const toggleChurch = useUsersFilterStore((state) => state.toggleChurch);
+  const clearChurches = useUsersFilterStore((state) => state.clearChurches);
 
   const { data, isFetching, isError, refetch } = useManagedUsers(api, {
     page: query.page,
     limit: query.limit,
     search: query.search || undefined,
     role,
-    churchId: churchId ?? undefined,
+    churchIds,
     sort: query.sort,
     order: query.order,
   });
@@ -99,9 +100,13 @@ export function UsersPanel() {
             onSearchChange={query.setSearch}
             role={role}
             onRoleChange={setRole}
-            churchId={churchId}
-            onChurchChange={(next) => {
-              setChurch(next);
+            churchIds={churchIds}
+            onToggleChurch={(id) => {
+              toggleChurch(id);
+              query.setPage(1);
+            }}
+            onClearChurches={() => {
+              clearChurches();
               query.setPage(1);
             }}
             onCreate={() => {
