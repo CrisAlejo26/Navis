@@ -27,44 +27,69 @@ despliegue. Renombrar o borrar una columna se hace en dos entregas:
 1. Añadir lo nuevo, escribir en ambos sitios, desplegar.
 2. Cuando la versión anterior ya no está en marcha, borrar lo viejo.
 
-Mientras no exista el secreto `DEPLOY_HOST`, el workflow **se salta entero** en
-vez de fallar: en un fork, o antes de tener servidor, un push a `main` no
-enciende nada en rojo. Lo deja anotado en el resumen de la ejecución.
+## Si falta configuración
+
+Sin los secretos del servidor no hay despliegue posible, y el workflow **falla
+en rojo** diciendo cuáles faltan (nunca cuánto valen: el resumen de una
+ejecución de un repositorio público lo lee cualquiera). Es a propósito: durante
+un tiempo se saltaba en verde, y un push a `main` parecía desplegado sin haberlo
+estado nunca.
+
+La excepción son los **forks**, donde no hay servidor al que desplegar: ahí sí
+se salta entero y lo deja anotado en el resumen de la ejecución.
 
 ## Qué hay que configurar una sola vez
+
+> **Este repositorio es público.** Aquí no se escriben la IP del servidor, el
+> usuario de SSH, la ruta de despliegue ni los puertos internos: van en los
+> secretos del repositorio. Si alguna vez hace falta un ejemplo, se pone un
+> marcador (`<servidor>`, `<carpeta-de-despliegue>`), nunca el valor real.
 
 ### En el servidor
 
 - Docker y el plugin de Compose.
-- Una carpeta de despliegue (por ejemplo `/srv/navis`) con un fichero
-  `.env` que contenga los secretos de producción: credenciales de Postgres,
-  `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL`, `CORS_ORIGINS`,
-  `AUTH_TRUSTED_ORIGINS` y los puertos. Ese `.env` **no** viaja desde el
-  repositorio: vive solo en el servidor.
-- Un usuario con acceso SSH por clave y permiso para ejecutar `docker`.
+- Una carpeta de despliegue con un fichero `.env` que contenga los secretos de
+  producción: credenciales de Postgres, `BETTER_AUTH_SECRET`,
+  `BETTER_AUTH_URL`, `CORS_ORIGINS`, `AUTH_TRUSTED_ORIGINS` y los puertos en
+  los que escuchan la API y la web detrás del proxy. Ese `.env` **no** viaja
+  desde el repositorio: vive solo en el servidor.
+- Un usuario con acceso SSH por clave y permiso para ejecutar `docker`, con la
+  clave pública de despliegue en su `authorized_keys`.
 
-El único fichero que Actions copia al servidor es
-[`docker-compose.deploy.yml`](../docker-compose.deploy.yml), que no construye
-nada: tira de las imágenes ya publicadas.
+Los únicos ficheros que Actions copia al servidor son
+[`docker-compose.deploy.yml`](../docker-compose.deploy.yml) —que no construye
+nada: tira de las imágenes ya publicadas— y el script de limpieza.
 
 ### Secretos del repositorio
 
-| Secreto          | Para qué                                                                                                                               |
-| ---------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| `DEPLOY_HOST`    | Host o IP del servidor                                                                                                                 |
-| `DEPLOY_USER`    | Usuario SSH                                                                                                                            |
-| `DEPLOY_SSH_KEY` | Clave privada SSH (sin passphrase)                                                                                                     |
-| `DEPLOY_PATH`    | Carpeta de despliegue en el servidor                                                                                                   |
-| `DEPLOY_PORT`    | Puerto SSH, si no es el 22 (opcional)                                                                                                  |
-| `REGISTRY_TOKEN` | Token con permiso `read:packages`, si las imágenes son privadas (opcional: por defecto se usa el `GITHUB_TOKEN` del propio despliegue) |
+**Settings → Secrets and variables → Actions → New repository secret.**
+
+| Secreto                 | Qué es                                                                  |
+| ----------------------- | ----------------------------------------------------------------------- |
+| `HOST_CRISTIAN_SSH_KEY` | Clave **privada** SSH de despliegue, sin passphrase                     |
+| `DEPLOY_HOST`           | Host o IP del servidor                                                  |
+| `DEPLOY_USER`           | Usuario SSH                                                             |
+| `DEPLOY_PATH`           | Carpeta de despliegue en el servidor                                    |
+| `DEPLOY_PORT`           | Puerto SSH, si no es el 22 (opcional)                                   |
+| `REGISTRY_TOKEN`        | Token con `read:packages`, solo si las imágenes son privadas (opcional) |
+
+El nombre de la clave es el mismo que en los demás proyectos que despliegan en
+ese servidor, así que se reutiliza su valor. Ojo: los secretos son **por
+repositorio**, y una vez guardados **no se pueden volver a leer**, ni siquiera
+por su dueño. Hay que pegar el fichero de la clave privada, no copiarlo de otro
+repositorio.
 
 ### Variables del repositorio
 
-| Variable         | Para qué                                                                             |
-| ---------------- | ------------------------------------------------------------------------------------ |
-| `VITE_API_URL`   | URL pública de la API. Se **incrusta en el bundle** de la web al construir la imagen |
-| `VITE_AUTH_URL`  | URL pública de Better Auth, igual de incrustada                                      |
-| `PRODUCTION_URL` | Solo para el enlace que muestra GitHub en el despliegue                              |
+Ninguna es obligatoria: el workflow trae por defecto las URL públicas del sitio,
+que no son ningún secreto —acaban dentro del bundle de la web—. Se definen solo
+para cambiarlas sin tocar el YAML.
+
+| Variable         | Para qué                                                 |
+| ---------------- | -------------------------------------------------------- |
+| `VITE_API_URL`   | URL pública de la API, incrustada en el bundle de la web |
+| `VITE_AUTH_URL`  | URL pública de Better Auth, igual de incrustada          |
+| `PRODUCTION_URL` | Solo para el enlace que muestra GitHub en el despliegue  |
 
 Cambiar `VITE_*` obliga a reconstruir la imagen de la web: son constantes de
 compilación, no configuración de ejecución. La API, en cambio, sí lee su entorno
@@ -92,7 +117,7 @@ levantó la primera vez:
 
 ```bash
 ssh <servidor>
-cd /opt/navis                      # la carpeta de despliegue
+cd <carpeta-de-despliegue>
 
 git pull
 
@@ -107,7 +132,7 @@ docker compose -f docker-compose.prod.yml run --rm migrate
 # 3. Levantar
 docker compose -f docker-compose.prod.yml --profile ai up -d
 
-# 4. Comprobar que responde
+# 4. Comprobar que responde (API_PORT sale del .env del servidor)
 curl -fsS "http://127.0.0.1:${API_PORT:-3000}/health"
 ```
 
