@@ -1,5 +1,5 @@
 import { BadRequestException, ConflictException, Injectable, Logger } from '@nestjs/common';
-import type { ManagedUser, SetupStatus } from '@navis/shared';
+import { SUPERADMIN_ROLE, type ManagedUser, type SetupStatus } from '@navis/shared';
 
 import { auth } from '../auth/auth';
 import { UserAdminService } from '../users/user-admin.service';
@@ -57,7 +57,7 @@ export class SetupService {
       throw new BadRequestException(reason(cause));
     }
 
-    await this.admin.forceRole(userId, 'admin');
+    await this.admin.forceRole(userId, SUPERADMIN_ROLE);
     this.logger.log(`Primer administrador creado: ${dto.email}`);
 
     const admin = await this.users.findById(userId);

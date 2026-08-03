@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import { MAX_CUSTOM_ROLE_LEVEL } from '../constants';
+import { PERMISSIONS } from '../permissions';
 import { passwordSchema, emailSchema } from './auth';
 import { paginationQuerySchema } from './common';
 
@@ -32,6 +33,12 @@ export const roleSchema = z.object({
   description: z.string().nullable(),
   /** Posición en la jerarquía: a mayor número, más privilegios. */
   level: z.number().int(),
+  /**
+   * Qué puede hacer, vista por vista. `['*']` es el comodín del
+   * superadministrador. Puede traer permisos de una versión anterior: los que
+   * ya no existen en el catálogo no conceden nada (ver `hasPermission`).
+   */
+  permissions: z.array(z.string()),
   /** Los roles de serie no se pueden borrar ni cambiar de nivel. */
   isSystem: z.boolean(),
   /** Cuántas cuentas lo tienen ahora mismo. */
@@ -40,26 +47,49 @@ export const roleSchema = z.object({
 
 export type RoleRow = z.infer<typeof roleSchema>;
 
+/**
+ * Los permisos que se le ponen a un rol. Se validan contra el catálogo: un
+ * permiso inventado se rechaza en la frontera en vez de guardarse sin efecto.
+ * El comodín no se admite aquí: el superadministrador no se fabrica desde la
+ * pantalla de roles.
+ */
+export const rolePermissionsSchema = z.array(z.enum(PERMISSIONS));
+
 /** Alta de un rol propio. El slug lo deriva el servidor a partir del nombre. */
 export const createRoleSchema = z.object({
   name: z.string().trim().min(2, 'El nombre es obligatorio').max(60),
   description: z.string().trim().max(200).optional(),
   level: z.coerce.number().int().min(0).max(MAX_CUSTOM_ROLE_LEVEL),
+  permissions: rolePermissionsSchema.default([]),
 });
 
 export type CreateRoleInput = z.infer<typeof createRoleSchema>;
 
 /**
- * Edición de un rol. En los de serie solo se admite la descripción: cambiarles
- * el nivel descolocaría la jerarquía que usan los guards.
+ * Edición de un rol. En los de serie no se admiten ni el nombre —se traduce— ni
+ * el nivel, que descolocaría la jerarquía; la descripción y los permisos sí.
  */
 export const updateRoleSchema = z.object({
   name: z.string().trim().min(2).max(60).optional(),
   description: z.string().trim().max(200).nullable().optional(),
   level: z.coerce.number().int().min(0).max(MAX_CUSTOM_ROLE_LEVEL).optional(),
+  /** Los permisos sí se cambian en los de serie: es para lo que está la pantalla. */
+  permissions: rolePermissionsSchema.optional(),
 });
 
 export type UpdateRoleInput = z.infer<typeof updateRoleSchema>;
+
+/**
+ * El rol de quien pregunta, con sus permisos. Es lo que consultan web y móvil
+ * para decidir qué entradas del menú enseñan: la interfaz no puede leerse el
+ * catálogo entero solo para saber lo suyo.
+ */
+export const myRoleSchema = z.object({
+  slug: roleSlugSchema,
+  permissions: z.array(z.string()),
+});
+
+export type MyRole = z.infer<typeof myRoleSchema>;
 
 /** Usuario tal y como lo ve la pantalla de administración de accesos. */
 export const managedUserSchema = z.object({
@@ -115,6 +145,8 @@ export const managedUsersQuerySchema = paginationQuerySchema.extend({
   /** Busca a la vez en el nombre y en el correo. */
   search: z.string().trim().max(120).optional(),
   role: roleSlugSchema.optional(),
+  /** Deja solo las cuentas de esa iglesia. Sin él, todas las accesibles. */
+  churchId: z.uuid().optional(),
   sort: z.enum(USER_SORT_FIELDS).default('createdAt'),
   order: sortOrderSchema.default('desc'),
 });

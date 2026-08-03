@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { MAX_CUSTOM_ROLE_LEVEL } from '@navis/shared';
+import { MAX_CUSTOM_ROLE_LEVEL, PERMISSIONS, type Permission } from '@navis/shared';
 import { Transform, Type } from 'class-transformer';
-import { IsInt, IsOptional, IsString, Length, Max, Min } from 'class-validator';
+import { IsArray, IsIn, IsInt, IsOptional, IsString, Length, Max, Min } from 'class-validator';
 
 const trimmed = ({ value }: { value: unknown }): unknown =>
   typeof value === 'string' ? value.trim() : value;
@@ -31,4 +31,10 @@ export class CreateRoleDto {
   @Min(0)
   @Max(MAX_CUSTOM_ROLE_LEVEL)
   level: number;
+
+  @ApiPropertyOptional({ enum: PERMISSIONS, isArray: true, example: ['calendar.view'] })
+  @IsOptional()
+  @IsArray()
+  @IsIn(PERMISSIONS, { each: true })
+  permissions: Permission[] = [];
 }

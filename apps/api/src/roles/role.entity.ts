@@ -38,6 +38,17 @@ export class Role extends BaseEntity {
   @Column({ type: 'int' })
   level: number;
 
+  /**
+   * Los permisos del rol, que es lo que compara PermissionsGuard.
+   *
+   * `simple-json` guarda el array como texto en los dos motores, así que no
+   * hace falta un tipo por driver: en Postgres sería `jsonb` y en SQLite no
+   * existe, y aquí no se consulta nunca por dentro del JSON.
+   */
+  @ApiProperty({ description: 'Qué puede hacer, vista por vista', type: [String] })
+  @Column({ type: 'simple-json', default: '[]' })
+  permissions: string[];
+
   @ApiProperty({ description: 'Los roles de serie no se pueden borrar' })
   @Column({ name: 'is_system', type: 'boolean', default: true })
   isSystem: boolean;

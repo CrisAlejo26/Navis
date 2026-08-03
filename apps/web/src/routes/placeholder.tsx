@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next';
 
 import { Card, CardDescription, CardTitle } from '@/components/ui/card';
 
-type NavKey =
+export type NavKey =
   'nav.calendar' | 'nav.believers' | 'nav.prophecies' | 'nav.dreams' | 'nav.communications';
 
 /**

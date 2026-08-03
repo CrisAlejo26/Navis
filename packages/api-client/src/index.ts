@@ -1,6 +1,7 @@
 export * from './access-hooks';
 export * from './access-mutations';
 export * from './api-error';
+export * from './church-hooks';
 export * from './client';
 export * from './hooks';
 export * from './query-client';

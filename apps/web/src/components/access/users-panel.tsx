@@ -17,6 +17,7 @@ import { api } from '@/lib/api';
 import { useSession } from '@/lib/auth-client';
 import { useRoleCatalog } from '@/lib/roles';
 import { useTableQuery } from '@/lib/use-table-query';
+import { useUsersFilterStore } from '@/lib/users-filter';
 import { NO_DIALOG, type UserDialogsState } from '@/lib/user-dialogs-state';
 
 /** La pestaña de usuarios: tabla, filtros, alta y acciones sobre cada cuenta. */
@@ -28,12 +29,17 @@ export function UsersPanel() {
   const query = useTableQuery({ fields: USER_SORT_FIELDS, sort: 'createdAt', order: 'desc' });
   const catalog = useRoleCatalog();
   const role = params.get('role') ?? undefined;
+  // La iglesia no va en la URL como el resto de filtros: se recuerda entre
+  // visitas, porque quien administra varias trabaja días sobre la misma.
+  const churchId = useUsersFilterStore((state) => state.churchId);
+  const setChurch = useUsersFilterStore((state) => state.setChurch);
 
   const { data, isFetching, isError, refetch } = useManagedUsers(api, {
     page: query.page,
     limit: query.limit,
     search: query.search || undefined,
     role,
+    churchId: churchId ?? undefined,
     sort: query.sort,
     order: query.order,
   });
@@ -93,6 +99,11 @@ export function UsersPanel() {
             onSearchChange={query.setSearch}
             role={role}
             onRoleChange={setRole}
+            churchId={churchId}
+            onChurchChange={(next) => {
+              setChurch(next);
+              query.setPage(1);
+            }}
             onCreate={() => {
               setDialog({ ...NO_DIALOG, creating: true });
             }}

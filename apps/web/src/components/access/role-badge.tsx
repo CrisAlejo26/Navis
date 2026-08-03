@@ -1,10 +1,13 @@
-import { ROLE_HIERARCHY, type RoleRow, type RoleSlug } from '@navis/shared';
+import { ROLE_LEVELS, type RoleRow, type RoleSlug } from '@navis/shared';
 
 import { cn } from '@/lib/cn';
 import { useRoleLabel } from '@/lib/roles';
 
-/** Tantos puntos como escalones tiene la jerarquía de serie. */
-const STEPS = Object.keys(ROLE_HIERARCHY).length;
+/**
+ * Tantos puntos como escalones distintos tiene la jerarquía, no como roles hay:
+ * los cuatro ministerios comparten nivel y dibujarían un punto cada uno.
+ */
+const STEPS = ROLE_LEVELS.length;
 
 interface RoleBadgeProps {
   slug: RoleSlug;

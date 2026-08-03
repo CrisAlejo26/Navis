@@ -1,6 +1,7 @@
 import type {
   ManagedUser,
   ManagedUsersQuery,
+  MyRole,
   Paginated,
   RegisterInput,
   RoleRow,
@@ -97,7 +98,24 @@ export function useRoles(
   });
 }
 
-/** Cuentas con su rol. Solo responde a un administrador. */
+/**
+ * El rol de quien ha entrado, con sus permisos. Es lo que decide qué entradas
+ * del menú se pintan y a qué pantallas se puede entrar.
+ *
+ * Va aparte del catálogo completo a propósito: esto lo pide **todo el mundo**
+ * en cada arranque, y el catálogo solo quien administra accesos. Se cachea unos
+ * minutos porque los permisos de un rol se cambian de tarde en tarde.
+ */
+export function useMyRole(api: ApiClient, enabled = true): UseQueryResult<MyRole> {
+  return useQuery({
+    queryKey: queryKeys.roles.mine,
+    queryFn: () => api.get<MyRole>('/roles/mine'),
+    enabled,
+    staleTime: 5 * 60_000,
+  });
+}
+
+/** Cuentas con su rol. Solo responde a quien puede ver usuarios. */
 export function useManagedUsers(
   api: ApiClient,
   query: ManagedUsersQuery,

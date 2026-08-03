@@ -23,6 +23,13 @@ export class ProfilesService {
     return this.profiles.save(this.profiles.create({ userId }));
   }
 
+  /** Deja apuntada la iglesia sobre la que trabaja esta cuenta. */
+  async setActiveChurch(userId: string, churchId: string): Promise<void> {
+    const profile = await this.findOrCreate(userId);
+    profile.activeChurchId = churchId;
+    await this.profiles.save(profile);
+  }
+
   async update(userId: string, dto: UpdateProfileDto): Promise<Profile> {
     const profile = await this.findOrCreate(userId);
     Object.assign(profile, dto);

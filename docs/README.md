@@ -20,19 +20,23 @@ Estructura estándar de la industria para separar **decisiones** de **propuestas
 
 ## Índice de RFCs
 
-| #                                                   | Feature                          | Estado       |
-| --------------------------------------------------- | -------------------------------- | ------------ |
-| [0001](./rfcs/0001-panel-de-metricas.md)            | Panel de inicio con métricas     | Borrador     |
-| [0002](./rfcs/0002-calendario-de-programaciones.md) | Calendario de programaciones     | Borrador     |
-| [0003](./rfcs/0003-creyentes-y-notas.md)            | Creyentes con detalle y notas    | Borrador     |
-| [0004](./rfcs/0004-profecias-personales.md)         | Profecías personales             | Borrador     |
-| [0005](./rfcs/0005-suenos-personales.md)            | Sueños personales                | Borrador     |
-| [0006](./rfcs/0006-comunicaciones.md)               | Comunicaciones (chat y avisos)   | Borrador     |
-| [0007](./rfcs/0007-modo-local-y-servidor.md)        | Modo local y servidor compartido | Implementado |
+| #                                                        | Feature                                                 | Estado       |
+| -------------------------------------------------------- | ------------------------------------------------------- | ------------ |
+| [0001](./rfcs/0001-panel-de-metricas.md)                 | Panel de inicio con métricas                            | Borrador     |
+| [0002](./rfcs/0002-calendario-de-programaciones.md)      | Calendario de programaciones                            | Borrador     |
+| [0003](./rfcs/0003-creyentes-y-notas.md)                 | Creyentes con detalle y notas                           | Borrador     |
+| [0004](./rfcs/0004-profecias-personales.md)              | Profecías personales                                    | Borrador     |
+| [0005](./rfcs/0005-suenos-personales.md)                 | Sueños personales                                       | Borrador     |
+| [0006](./rfcs/0006-comunicaciones.md)                    | Comunicaciones (chat y avisos)                          | Borrador     |
+| [0007](./rfcs/0007-modo-local-y-servidor.md)             | Modo local y servidor compartido                        | Implementado |
+| [0008](./rfcs/0008-iglesias-como-espacios-de-trabajo.md) | Iglesias como espacios de trabajo, y permisos por vista | Borrador     |
 
-Orden sugerido de implementación: **0003 → 0002 → 0001 → 0006 → 0004 → 0005**.
-Los creyentes son el núcleo del que cuelga todo lo demás; el panel de métricas
-no tiene sentido hasta que hay datos que contar.
+Orden sugerido de implementación: **0008 → 0003 → 0002 → 0001 → 0006 → 0004 →
+0005**. El 0008 va primero porque decide de quién son los datos y quién los ve:
+los creyentes, el calendario y las comunicaciones nacen ya con su `church_id` en
+vez de tener que migrarlo después. Después, los creyentes son el núcleo del que
+cuelga todo lo demás; el panel de métricas no tiene sentido hasta que hay datos
+que contar.
 
 ## Índice de ADRs
 

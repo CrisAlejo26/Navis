@@ -7,8 +7,9 @@ import { LoggerModule } from 'nestjs-pino';
 
 import { AiModule } from './ai/ai.module';
 import { AuthModule } from './auth/auth.module';
+import { ChurchesModule } from './churches/churches.module';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
-import { RolesGuard } from './common/guards/roles.guard';
+import { PermissionsGuard } from './common/guards/permissions.guard';
 import { SessionGuard } from './common/guards/session.guard';
 import { env, isProduction } from './config/env';
 import { dataSourceOptions } from './database/data-source';
@@ -40,6 +41,7 @@ import { UsersModule } from './users/users.module';
 
     AuthModule,
     ProfilesModule,
+    ChurchesModule,
     RolesModule,
     UsersModule,
     SetupModule,
@@ -47,9 +49,9 @@ import { UsersModule } from './users/users.module';
     AiModule,
   ],
   providers: [
-    // El orden importa: primero se resuelve la sesión, después el rol.
+    // El orden importa: primero se resuelve la sesión, después los permisos.
     { provide: APP_GUARD, useClass: SessionGuard },
-    { provide: APP_GUARD, useClass: RolesGuard },
+    { provide: APP_GUARD, useClass: PermissionsGuard },
     { provide: APP_GUARD, useClass: ThrottlerGuard },
     { provide: APP_FILTER, useClass: AllExceptionsFilter },
   ],

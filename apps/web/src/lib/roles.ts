@@ -1,18 +1,9 @@
 import { useRoles } from '@navis/api-client';
-import { ROLES, isSystemRole, type Role, type RoleRow, type RoleSlug } from '@navis/shared';
+import { isSystemRole, type Role, type RoleRow, type RoleSlug } from '@navis/shared';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { api } from './api';
-
-/**
- * El rol que trae la sesión de Better Auth es un campo extra declarado como
- * texto, así que llega tipado como `string`. Se valida aquí contra el catálogo
- * de serie en vez de forzar el tipo con un `as` (Regla 10).
- */
-export function toRole(value: string | undefined | null): Role | undefined {
-  return ROLES.find((role) => role === value);
-}
 
 /**
  * Nombre y descripción de los roles **de serie**, como claves de traducción.
@@ -23,17 +14,23 @@ export function toRole(value: string | undefined | null): Role | undefined {
  * cada instalación no están aquí: guardan su nombre en la base de datos.
  */
 export const ROLE_LABEL_KEY = {
-  member: 'roles.member',
-  leader: 'roles.leader',
+  creyente: 'roles.creyente',
+  recepcion: 'roles.recepcion',
+  biblias: 'roles.biblias',
+  sonido: 'roles.sonido',
+  pulpito: 'roles.pulpito',
   pastor: 'roles.pastor',
-  admin: 'roles.admin',
+  superadmin: 'roles.superadmin',
 } as const satisfies Record<Role, string>;
 
 export const ROLE_HINT_KEY = {
-  member: 'roles.memberHint',
-  leader: 'roles.leaderHint',
+  creyente: 'roles.creyenteHint',
+  recepcion: 'roles.recepcionHint',
+  biblias: 'roles.bibliasHint',
+  sonido: 'roles.sonidoHint',
+  pulpito: 'roles.pulpitoHint',
   pastor: 'roles.pastorHint',
-  admin: 'roles.adminHint',
+  superadmin: 'roles.superadminHint',
 } as const satisfies Record<Role, string>;
 
 /**

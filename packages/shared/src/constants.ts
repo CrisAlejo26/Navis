@@ -1,7 +1,27 @@
-/** Roles de serie, ordenados de menor a mayor privilegio. No se borran. */
-export const ROLES = ['member', 'leader', 'pastor', 'admin'] as const;
+/**
+ * Roles de serie, ordenados de menor a mayor privilegio. No se borran.
+ *
+ * Los cuatro del medio son ministerios, no escalones: recepción, biblias,
+ * sonido y púlpito están al mismo nivel y se distinguen por sus permisos
+ * (ver `role-permissions.ts`), no por su posición.
+ */
+export const ROLES = [
+  'creyente',
+  'recepcion',
+  'biblias',
+  'sonido',
+  'pulpito',
+  'pastor',
+  'superadmin',
+] as const;
 
 export type Role = (typeof ROLES)[number];
+
+/** El rol de quien acaba de registrarse, y el que se supone si falta. */
+export const DEFAULT_ROLE: Role = 'creyente';
+
+/** Quien lo ve todo, en todas las iglesias. */
+export const SUPERADMIN_ROLE: Role = 'superadmin';
 
 /**
  * Identificador de un rol tal y como viaja: puede ser uno de serie o uno
@@ -10,34 +30,51 @@ export type Role = (typeof ROLES)[number];
  */
 export type RoleSlug = string;
 
-/** Jerarquía de los roles de serie: es la semilla de la tabla `roles`. */
+/**
+ * Jerarquía de los roles de serie: es la semilla de la tabla `roles`.
+ *
+ * Ya no decide quién entra a dónde —eso son los permisos—, sino quién puede
+ * administrar a quién y hasta dónde llega un rol propio de la instalación.
+ */
 export const ROLE_HIERARCHY: Record<Role, number> = {
-  member: 0,
-  leader: 1,
+  creyente: 0,
+  recepcion: 1,
+  biblias: 1,
+  sonido: 1,
+  pulpito: 1,
   pastor: 2,
-  admin: 3,
+  superadmin: 3,
 };
 
+/** Escalones distintos de la jerarquía (0…3), que es lo que dibuja la interfaz. */
+export const ROLE_LEVELS = [...new Set(Object.values(ROLE_HIERARCHY))].sort((a, b) => a - b);
+
 /**
- * Tope de los roles propios. Un rol creado a mano nunca llega a administrador:
- * si pudiera, cualquiera con permiso para crear roles podría fabricarse uno
- * que reparte accesos, y eso ya no sería una jerarquía sino un atajo.
+ * Tope de los roles propios. Un rol creado a mano nunca llega a
+ * superadministrador: si pudiera, cualquiera con permiso para crear roles
+ * podría fabricarse uno que reparte accesos, y eso ya no sería una jerarquía
+ * sino un atajo.
  */
-export const MAX_CUSTOM_ROLE_LEVEL = ROLE_HIERARCHY.admin - 1;
+export const MAX_CUSTOM_ROLE_LEVEL = ROLE_HIERARCHY.superadmin - 1;
 
 export function isSystemRole(slug: RoleSlug): slug is Role {
   return (ROLES as readonly string[]).includes(slug);
 }
 
-/** `Equipo de Alabanza` → `equipo-de-alabanza`. */
-export function toRoleSlug(name: string): string {
+/** `Iglesia Central` → `iglesia-central`. Sin acentos, sin símbolos y sin espacios. */
+export function toSlug(name: string, maxLength = 60): string {
   return name
     .normalize('NFD')
     .replace(/[̀-ͯ]/g, '') // los diacríticos que NFD ha separado
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '')
-    .slice(0, 40);
+    .slice(0, maxLength);
+}
+
+/** El de un rol, más corto: cabe en la columna y se lee de un vistazo. */
+export function toRoleSlug(name: string): string {
+  return toSlug(name, 40);
 }
 
 export const DEFAULT_PAGE_SIZE = 20;

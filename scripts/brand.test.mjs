@@ -5,7 +5,7 @@
  */
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { dirname, extname, join } from 'node:path';
 import { test } from 'node:test';
 import { fileURLToPath } from 'node:url';
@@ -41,7 +41,11 @@ test('ningún nombre anterior sobrevive en el repositorio', () => {
     .split('\n')
     .map((linea) => linea.trim())
     .filter(Boolean)
-    .filter((ruta) => !exento.has(ruta) && !binario.has(extname(ruta).toLowerCase()));
+    .filter((ruta) => !exento.has(ruta) && !binario.has(extname(ruta).toLowerCase()))
+    // `git ls-files` sigue listando lo que se ha borrado y aún no se ha
+    // preparado para el commit: sin este filtro, borrar un fichero y pasar
+    // `pnpm check` antes de un `git add` revienta con ENOENT.
+    .filter((ruta) => existsSync(join(root, ruta)));
 
   const culpables = [];
   for (const ruta of ficheros) {

@@ -5,14 +5,16 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import type {
-  CreateManagedUserInput,
-  ManagedUser,
-  RoleSlug,
-  UpdateManagedUserInput,
+import {
+  SUPERADMIN_ROLE,
+  type CreateManagedUserInput,
+  type ManagedUser,
+  type RoleSlug,
+  type UpdateManagedUserInput,
 } from '@navis/shared';
 
 import { auth } from '../auth/auth';
+import { ChurchesService, type Asker } from '../churches/churches.service';
 import { RolesService } from '../roles/roles.service';
 import { UsersService } from './users.service';
 
@@ -23,30 +25,43 @@ import { UsersService } from './users.service';
  * directo: así la contraseña se cifra con el mismo algoritmo que en un alta
  * normal y la baja arrastra sesiones y credenciales. Lo que cuelga del dominio
  * —el perfil— se va solo por la clave foránea `ON DELETE CASCADE`.
+ *
+ * Todo pasa por el **alcance** de quien pide: se administra a quien comparte
+ * iglesia, y el superadministrador a todo el mundo. Un listado acotado con un
+ * `PATCH` abierto no acota nada (RFC 0008 §7.3).
  */
 @Injectable()
 export class UserAdminService {
   constructor(
     private readonly users: UsersService,
     private readonly roles: RolesService,
+    private readonly churches: ChurchesService,
   ) {}
 
-  /** Nadie edita su propia cuenta desde aquí: para eso está su perfil. */
-  private async target(id: string, actorId: string): Promise<ManagedUser> {
-    if (id === actorId) throw new ForbiddenException('Tu propia cuenta se edita desde tu perfil');
+  /**
+   * La cuenta sobre la que se va a actuar, si se puede actuar sobre ella.
+   * Nadie edita la suya desde aquí: para eso está su perfil.
+   */
+  private async target(id: string, asker: Asker): Promise<ManagedUser> {
+    if (id === asker.id) throw new ForbiddenException('Tu propia cuenta se edita desde tu perfil');
 
     const user = await this.users.findById(id);
     if (!user) throw new NotFoundException('Ese usuario no existe');
+
+    if (!(await this.churches.sharesChurchWith(asker, id))) {
+      throw new ForbiddenException('Esa cuenta no es de ninguna de tus iglesias');
+    }
+
     return user;
   }
 
   /**
-   * Alta hecha por un administrador. La cuenta se crea por la vía normal de
+   * Alta hecha desde la administración. La cuenta se crea por la vía normal de
    * Better Auth —misma validación y mismo cifrado de la contraseña que en un
-   * registro— y después se le pone el rol, que es de solo lectura para el
-   * cliente.
+   * registro—, se le pone el rol y **entra en la iglesia activa de quien la
+   * crea**: sin eso, quien la ha dado de alta dejaría de verla al instante.
    */
-  async create(input: CreateManagedUserInput): Promise<ManagedUser> {
+  async create(input: CreateManagedUserInput, asker: Asker): Promise<ManagedUser> {
     await this.roles.ensureExists(input.role);
 
     const ctx = await auth.$context;
@@ -59,14 +74,15 @@ export class UserAdminService {
     });
 
     await this.forceRole(created.user.id, input.role);
+    await this.churches.addToActive(asker, created.user.id);
 
     const user = await this.users.findById(created.user.id);
     if (!user) throw new NotFoundException('La cuenta se creó pero no se pudo leer');
     return user;
   }
 
-  async update(id: string, input: UpdateManagedUserInput, actorId: string): Promise<ManagedUser> {
-    const user = await this.target(id, actorId);
+  async update(id: string, input: UpdateManagedUserInput, asker: Asker): Promise<ManagedUser> {
+    const user = await this.target(id, asker);
     if (input.role) await this.roles.ensureExists(input.role);
 
     if (input.email && input.email !== user.email) {
@@ -84,8 +100,8 @@ export class UserAdminService {
   }
 
   /** Atajo para el cambio de rol, que es la acción más habitual. */
-  setRole(id: string, role: RoleSlug, actorId: string): Promise<ManagedUser> {
-    return this.update(id, { role }, actorId);
+  setRole(id: string, role: RoleSlug, asker: Asker): Promise<ManagedUser> {
+    return this.update(id, { role }, asker);
   }
 
   /** Asigna un rol sin comprobar quién lo pide. Solo para el primer arranque. */
@@ -94,8 +110,8 @@ export class UserAdminService {
     await ctx.internalAdapter.updateUser(id, { role });
   }
 
-  async setPassword(id: string, password: string, actorId: string): Promise<void> {
-    await this.target(id, actorId);
+  async setPassword(id: string, password: string, asker: Asker): Promise<void> {
+    await this.target(id, asker);
 
     const ctx = await auth.$context;
     const hash = await ctx.password.hash(password);
@@ -106,21 +122,21 @@ export class UserAdminService {
 
   /**
    * Baja de la cuenta con todo lo suyo. No se puede borrar el último
-   * administrador: la instalación se quedaría sin quien reparta accesos.
+   * superadministrador: la instalación se quedaría sin quien reparta accesos.
    */
-  async remove(id: string, actorId: string): Promise<void> {
-    const user = await this.target(id, actorId);
+  async remove(id: string, asker: Asker): Promise<void> {
+    const user = await this.target(id, asker);
 
-    if (user.role === 'admin') {
-      const admins = await this.users.findPage({
+    if (user.role === SUPERADMIN_ROLE) {
+      const superadmins = await this.users.findPage({
         page: 1,
         limit: 2,
-        role: 'admin',
+        role: SUPERADMIN_ROLE,
         sort: 'createdAt',
         order: 'asc',
       });
-      if (admins.total <= 1) {
-        throw new BadRequestException('Tiene que quedar al menos un administrador');
+      if (superadmins.total <= 1) {
+        throw new BadRequestException('Tiene que quedar al menos un superadministrador');
       }
     }
 
