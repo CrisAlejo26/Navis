@@ -92,6 +92,19 @@ export function aplicar(texto, cambios) {
   return salida;
 }
 
+/** Rutas del repositorio cuyo nombre contiene alguna de las formas a sustituir. */
+export function renombrables(cambios, rutas) {
+  const lista = rutas ?? todosLosFicheros();
+  return lista.filter((ruta) => cambios.some(([de]) => ruta.includes(de)));
+}
+
+function todosLosFicheros() {
+  return execFileSync('git', ['ls-files'], { cwd: root, encoding: 'utf8' })
+    .split('\n')
+    .map((linea) => linea.trim())
+    .filter(Boolean);
+}
+
 function ficherosDelRepositorio() {
   const salida = execFileSync('git', ['ls-files'], { cwd: root, encoding: 'utf8' });
   return salida
@@ -147,6 +160,15 @@ function main(argv) {
 
     console.log(`  ${dryRun ? '(simulado) ' : ''}${ruta} — ${String(cuantas)}`);
     if (!dryRun) writeFileSync(destino, nuevo);
+  }
+
+  // Ficheros cuyo NOMBRE lleva la marca (p. ej. el vhost de nginx). Se mueven
+  // con `git mv` para no perder el historial. Sin esto quedaban con el nombre
+  // viejo y el contenido nuevo, que es peor que no cambiar nada.
+  for (const ruta of renombrables(cambios)) {
+    const nueva = aplicar(ruta, cambios);
+    console.log(`  ${dryRun ? '(simulado) ' : ''}${ruta} → ${nueva}`);
+    if (!dryRun) git('mv', ruta, nueva);
   }
 
   // brand.json es la fuente de la verdad: se reescribe entero, conservando el
