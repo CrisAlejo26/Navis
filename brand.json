@@ -2,7 +2,7 @@
   "$comentario": [
     "Identidad del proyecto en un único sitio. NO edites esto a mano:",
     "usa `pnpm rename <NuevoNombre>`, que lo cambia aquí y en todo el código.",
-    "El icono vive aparte, en packages/theme/src/brand-icon.svg (`pnpm icons`)."
+    "El logo vive aparte, en packages/theme/src/logo/ (`pnpm icons`)."
   ],
   "nombre": "Navis",
   "slug": "navis",
