@@ -9,10 +9,21 @@ import type { ExpoConfig } from 'expo/config';
  */
 const scheme = process.env.EXPO_PUBLIC_APP_SCHEME ?? 'pastortools';
 
+/** Lo sincroniza `pnpm release`; no lo edites a mano. */
+const version = '0.1.0';
+
+/**
+ * Android exige un entero que siempre crezca: si baja, el sistema rechaza la
+ * actualización. Se deriva de la versión para no llevar la cuenta aparte
+ * (1.4.2 → 10402), igual que hace `scripts/release.mjs`.
+ */
+const [major, minor, patch] = version.split('.').map(Number);
+const versionCode = major * 10000 + minor * 100 + patch;
+
 const config: ExpoConfig = {
   name: 'PastorTools',
   slug: 'pastortools',
-  version: '0.1.0',
+  version,
   orientation: 'portrait',
   scheme,
   userInterfaceStyle: 'automatic',
@@ -24,6 +35,7 @@ const config: ExpoConfig = {
   },
   android: {
     package: 'org.pastortools.app',
+    versionCode,
     adaptiveIcon: {
       foregroundImage: './assets/adaptive-icon.png',
       backgroundColor: '#3b5bdb',

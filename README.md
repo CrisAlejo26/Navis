@@ -57,9 +57,17 @@ TanStack Query).
 | `pnpm db:migrate` / `db:seed` / `db:reset` | Base de datos                                                    |
 | `pnpm docker:dev`                          | Todo el stack en contenedores                                    |
 
+## Descargas
+
+Las versiones publicadas están en la
+[página de releases](../../releases): APK de Android e instaladores de Windows,
+macOS y Linux. La web no necesita instalación — se abre en el navegador y se
+puede añadir a la pantalla de inicio.
+
 ## Documentación
 
 - [`docs/`](./docs) — índice de decisiones (ADR) y propuestas de features (RFC)
+- [`docs/RELEASES.md`](./docs/RELEASES.md) — cómo se publica una versión
 - [`docs/DESPLIEGUE.md`](./docs/DESPLIEGUE.md) — cómo se despliega a producción
 - [`docs/ESTADO.md`](./docs/ESTADO.md) — en qué punto está el proyecto
 

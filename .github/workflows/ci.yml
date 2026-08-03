@@ -43,6 +43,7 @@ jobs:
       - run: pnpm lint
       - run: pnpm typecheck
       - run: pnpm test
+      - run: pnpm test:scripts
 
       # Que compile es parte de la verificación: un fallo de build no puede
       # descubrirse al desplegar.
