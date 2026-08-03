@@ -96,6 +96,9 @@ export type ApiEnv = z.infer<typeof apiEnvSchema>;
 export const webEnvSchema = z.object({
   VITE_API_URL: z.url().default('http://localhost:3000/api/v1'),
   VITE_AUTH_URL: z.url().default('http://localhost:3000'),
+  // La usa `index.html` (etiquetas Open Graph), no el bundle de React: Vite
+  // sustituye `%VITE_SITE_URL%` en el HTML en tiempo de build.
+  VITE_SITE_URL: z.url().default('http://localhost:5173'),
 });
 
 export type WebEnv = z.infer<typeof webEnvSchema>;

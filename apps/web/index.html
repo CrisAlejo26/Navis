@@ -11,6 +11,31 @@
       content="Navis — herramientas para pastores: agenda, creyentes, profecías, sueños y comunicaciones."
     />
     <title>Navis</title>
+
+    <!-- Vista previa al compartir el enlace (WhatsApp, redes sociales…). La
+         imagen sale de packages/theme/src/logo/ vía `pnpm icons` (Regla 7):
+         no se sube una captura suelta. %VITE_SITE_URL% lo sustituye Vite en
+         build con la variable del mismo nombre (Regla "contrato del entorno"). -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Navis" />
+    <meta property="og:title" content="Navis" />
+    <meta
+      property="og:description"
+      content="Navis — herramientas para pastores: agenda, creyentes, profecías, sueños y comunicaciones."
+    />
+    <meta property="og:url" content="%VITE_SITE_URL%" />
+    <meta property="og:image" content="%VITE_SITE_URL%/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Navis" />
+    <meta property="og:locale" content="es_ES" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Navis" />
+    <meta
+      name="twitter:description"
+      content="Navis — herramientas para pastores: agenda, creyentes, profecías, sueños y comunicaciones."
+    />
+    <meta name="twitter:image" content="%VITE_SITE_URL%/og-image.png" />
     <script>
       // Aplica el tema antes del primer pintado para evitar el parpadeo blanco
       // al recargar en modo oscuro. Debe coincidir con packages/theme.

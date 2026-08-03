@@ -15,8 +15,10 @@ WORKDIR /repo
 
 ARG VITE_API_URL=http://localhost:3000/api/v1
 ARG VITE_AUTH_URL=http://localhost:3000
+ARG VITE_SITE_URL=http://localhost:5173
 ENV VITE_API_URL=$VITE_API_URL
 ENV VITE_AUTH_URL=$VITE_AUTH_URL
+ENV VITE_SITE_URL=$VITE_SITE_URL
 
 # El monorepo usa `node-linker=hoisted` (obligatorio para Metro/Expo), así que
 # pnpm deja en la raíz la UNIÓN de dependencias del workspace por mucho que se

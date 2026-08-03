@@ -77,6 +77,14 @@ export const DESTINOS = [
     { variante: 'blanco', ocupacion: 0.62, fondo: AZUL, radio: 0.22, size: 512 },
   ],
   ['apps/mobile/assets/favicon.png', { variante: 'blanco', ocupacion: 0.8, fondo: AZUL, size: 48 }],
+
+  // Vista previa al compartir un enlace (Open Graph / Twitter Card): 1200×630,
+  // el tamaño que recomiendan ambos. Más aire que un icono de aplicación,
+  // porque aquí el barco no es lo único en el lienzo.
+  [
+    'apps/web/public/og-image.png',
+    { variante: 'blanco', ocupacion: 0.5, fondo: AZUL, size: 1200, alto: 630 },
+  ],
 ];
 
 /** Contenido que le corresponde a un destino, sin escribir nada. */
@@ -85,6 +93,7 @@ export function contenidoDe([, opciones]) {
     ocupacion: opciones.ocupacion,
     fondo: opciones.fondo ?? null,
     radio: opciones.radio ?? 0,
+    proporcion: opciones.alto ? opciones.size / opciones.alto : 1,
   });
 
   return opciones.svg ? Buffer.from(svg, 'utf8') : aPng(svg, opciones.size);
@@ -98,7 +107,9 @@ export function generar({ silencioso = false } = {}) {
     writeFileSync(salida, contenidoDe(destino));
 
     if (!silencioso) {
-      const detalle = opciones.svg ? 'SVG' : `${String(opciones.size)}px`;
+      const detalle = opciones.svg
+        ? 'SVG'
+        : `${String(opciones.size)}x${String(opciones.alto ?? opciones.size)}px`;
       console.log(
         `  ${ruta} — ${opciones.variante}, ${detalle}, ocupa ${String(Math.round(opciones.ocupacion * 100))}%`,
       );

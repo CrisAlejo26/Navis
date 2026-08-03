@@ -82,21 +82,24 @@ const lienzoDe = (svg) => Number(/viewBox="0 0 ([\d.]+)/.exec(svg)?.[1] ?? 1080)
  *
  * @param {string} svg        variante SIN fondo
  * @param {object} opciones
- * @param {number} opciones.ocupacion  fracción del lado que ocupa el dibujo
+ * @param {number} opciones.ocupacion  fracción del alto que ocupa el dibujo
  * @param {string|null} opciones.fondo color de fondo, o null para transparente
- * @param {number} opciones.radio      radio de las esquinas, en fracción del lado
+ * @param {number} opciones.radio      radio de las esquinas, en fracción del alto
+ * @param {number} opciones.proporcion ancho ÷ alto del lienzo; 1 da un cuadrado
  */
-export function encuadrar(svg, { ocupacion = 1, fondo = null, radio = 0 } = {}) {
+export function encuadrar(svg, { ocupacion = 1, fondo = null, radio = 0, proporcion = 1 } = {}) {
   const lienzo = lienzoDe(svg);
   const caja = cajaDelDibujo(svg);
 
-  // Lado del cuadrado final, en unidades del SVG original.
+  // Alto del lienzo final, en unidades del SVG original; el ancho sale de la
+  // proporción. Con proporcion=1 (el caso de siempre) ancho y alto coinciden.
   const mayor = Math.max(caja.ancho, caja.alto) * lienzo;
-  const lado = mayor / ocupacion;
+  const alto = mayor / ocupacion;
+  const ancho = alto * proporcion;
 
-  // Desplazamiento que centra el dibujo en ese cuadrado.
-  const dx = (lado - caja.ancho * lienzo) / 2 - caja.x * lienzo;
-  const dy = (lado - caja.alto * lienzo) / 2 - caja.y * lienzo;
+  // Desplazamiento que centra el dibujo en ese lienzo.
+  const dx = (ancho - caja.ancho * lienzo) / 2 - caja.x * lienzo;
+  const dy = (alto - caja.alto * lienzo) / 2 - caja.y * lienzo;
 
   const interior = svg
     .replace(/<\?xml[^?]*\?>\s*/, '')
@@ -107,9 +110,9 @@ export function encuadrar(svg, { ocupacion = 1, fondo = null, radio = 0 } = {}) 
   const rect =
     fondo === null
       ? ''
-      : `  <rect width="${String(n(lado))}" height="${String(n(lado))}" rx="${String(n(radio * lado))}" fill="${fondo}" />\n`;
+      : `  <rect width="${String(n(ancho))}" height="${String(n(alto))}" rx="${String(n(radio * alto))}" fill="${fondo}" />\n`;
 
-  return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 ${String(n(lado))} ${String(n(lado))}">
+  return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 ${String(n(ancho))} ${String(n(alto))}">
 ${rect}  <g transform="translate(${String(n(dx))} ${String(n(dy))})">
 ${interior}
   </g>
