@@ -41,6 +41,16 @@ export function aPng(svg, size) {
  */
 export const DESTINOS = [
   ['apps/web/public/favicon.svg', { variante: 'azul', ocupacion: 0.96, svg: true }],
+
+  // Versiones encuadradas y transparentes que consume la interfaz. Van en un
+  // subdirectorio `encuadrado/` para que quede claro que son salida, no las
+  // originales del diseñador.
+  ['packages/theme/src/logo/encuadrado/azul.svg', { variante: 'azul', ocupacion: 1, svg: true }],
+  [
+    'packages/theme/src/logo/encuadrado/blanco.svg',
+    { variante: 'blanco', ocupacion: 1, svg: true },
+  ],
+
   [
     'apps/web/public/pwa-192x192.png',
     { variante: 'blanco', ocupacion: 0.72, fondo: AZUL, size: 192 },
