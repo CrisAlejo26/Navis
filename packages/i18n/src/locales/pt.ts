@@ -30,6 +30,8 @@ export const pt = {
     users: 'Utilizadores',
     more: 'Mais',
     menu: 'Menu',
+    collapse: 'Recolher o menu',
+    expand: 'Expandir o menu',
   },
   auth: {
     signIn: 'Iniciar sessão',

@@ -30,6 +30,8 @@ export const en = {
     users: 'Users',
     more: 'More',
     menu: 'Menu',
+    collapse: 'Collapse menu',
+    expand: 'Expand menu',
   },
   auth: {
     signIn: 'Sign in',

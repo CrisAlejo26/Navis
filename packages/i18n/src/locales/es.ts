@@ -36,6 +36,8 @@ export const es = {
     users: 'Usuarios',
     more: 'Más',
     menu: 'Menú',
+    collapse: 'Plegar el menú',
+    expand: 'Desplegar el menú',
   },
   auth: {
     signIn: 'Iniciar sesión',

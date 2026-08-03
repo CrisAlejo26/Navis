@@ -30,6 +30,8 @@ export const fr = {
     users: 'Utilisateurs',
     more: 'Plus',
     menu: 'Menu',
+    collapse: 'Replier le menu',
+    expand: 'Déplier le menu',
   },
   auth: {
     signIn: 'Se connecter',
