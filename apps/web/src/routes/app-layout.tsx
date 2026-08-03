@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Outlet } from 'react-router';
 
 import { AppNav } from '@/components/app-nav';
+import { AppSidebar } from '@/components/app-sidebar';
 import { Logo } from '@/components/logo';
 import { PageTransition } from '@/components/page-transition';
 import { SessionFooter } from '@/components/session-footer';
@@ -15,7 +16,7 @@ import { toRole } from '@/lib/roles';
 /**
  * Estructura común de la app autenticada.
  *
- * En escritorio, barra lateral fija. En móvil, una barra superior con el botón
+ * En escritorio, barra lateral plegable. En móvil, una barra superior con el botón
  * que abre la navegación entera en un panel lateral: las entradas son más de
  * cinco, y en una barra inferior no caben sin quedar ilegibles (Regla 5).
  */
@@ -33,15 +34,7 @@ export function AppLayout() {
 
   return (
     <div className="md:flex-row flex min-h-dvh flex-col">
-      <aside className="w-60 p-4 md:flex hidden shrink-0 flex-col border-r bg-card">
-        <div className="mb-6 gap-2 px-2 flex items-center">
-          <Logo className="h-7 w-7" />
-          <p className="text-lg font-semibold">{t('common.appName')}</p>
-        </div>
-
-        <AppNav items={navItems} />
-        <SessionFooter />
-      </aside>
+      <AppSidebar items={navItems} />
 
       <header className="h-14 px-3 gap-3 md:hidden top-0 sticky z-20 flex shrink-0 items-center border-b bg-card">
         <button
