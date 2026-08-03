@@ -53,6 +53,7 @@ services:
       AI_ENABLED: ${AI_ENABLED:-false}
       AI_PROVIDER: ${AI_PROVIDER:-anthropic}
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      AI_SERVICE_URL: ${AI_SERVICE_URL:-http://ai:8000}
     ports:
       # Solo escucha en localhost: quien publica al mundo es el proxy inverso
       # (nginx). Sin el 127.0.0.1, la API quedaría expuesta saltándoselo.
@@ -84,6 +85,19 @@ services:
       - api
     ports:
       - "127.0.0.1:${WEB_PORT:-8080}:80"
+
+  # Microservicio de IA. Bajo perfil: solo se levanta si se pide, porque
+  # todavía es un esqueleto (ver apps/ai/README.md).
+  #   docker compose -f docker-compose.prod.yml --profile ai up -d
+  ai:
+    build:
+      context: .
+      dockerfile: docker/ai.Dockerfile
+    profiles: ["ai"]
+    restart: unless-stopped
+    # No publica puerto: solo lo llama la API por la red interna de compose.
+    expose:
+      - "8000"
 
 volumes:
   postgres-data:
