@@ -10,10 +10,11 @@ ENV PYTHONUNBUFFERED=1 \
 
 WORKDIR /srv
 
-COPY apps/ai/pyproject.toml ./
-RUN pip install --upgrade pip && pip install .
-
+# El proyecto entero antes de instalar: hatchling necesita el paquete `app` y
+# el README que declara el pyproject para generar los metadatos. Copiar solo el
+# pyproject cachea mejor las capas, pero aquí no llega a construir.
 COPY apps/ai/ ./
+RUN pip install --upgrade pip && pip install .
 
 RUN useradd --create-home --uid 10002 pastortools
 USER pastortools
