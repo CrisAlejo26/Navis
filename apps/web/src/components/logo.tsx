@@ -1,5 +1,7 @@
-import azulSinFondo from '@navis/theme/logo/azul-sin-fondo.svg?url';
-import blancoSinFondo from '@navis/theme/logo/blanco-sin-fondo.svg?url';
+// Las versiones encuadradas, no las originales: estas últimas traen tanto
+// margen que dentro de una caja pequeña el barco se queda en nada.
+import azul from '@navis/theme/logo/encuadrado/azul.svg?url';
+import blanco from '@navis/theme/logo/encuadrado/blanco.svg?url';
 
 import { cn } from '@/lib/cn';
 
@@ -20,21 +22,15 @@ export function Logo({
   const clases = cn('h-10 w-10 select-none', className);
 
   if (variante !== 'auto') {
-    return (
-      <img
-        src={variante === 'azul' ? azulSinFondo : blancoSinFondo}
-        alt="Navis"
-        className={clases}
-      />
-    );
+    return <img src={variante === 'azul' ? azul : blanco} alt="Navis" className={clases} />;
   }
 
   // Dos imágenes y una escondida según el tema: un solo <img> con `src`
   // dinámico parpadearía al cambiar de tema mientras carga la otra.
   return (
     <>
-      <img src={azulSinFondo} alt="Navis" className={cn(clases, 'dark:hidden')} />
-      <img src={blancoSinFondo} alt="" aria-hidden className={cn(clases, 'hidden dark:block')} />
+      <img src={azul} alt="Navis" className={cn(clases, 'dark:hidden')} />
+      <img src={blanco} alt="" aria-hidden className={cn(clases, 'hidden dark:block')} />
     </>
   );
 }
