@@ -172,8 +172,11 @@ Queda por hacer a mano (el script no puede, o no debe, hacerlo solo):
        cd .. && mv ${antes.nombre} ${despues.nombre}
   2. El repositorio en GitHub (Settings → Repository name) y después:
        git remote set-url origin <la nueva URL>
-  3. Regenerar el lockfile, porque cambian los nombres de los paquetes:
-       pnpm install
+  3. Reinstalar, SIEMPRE:
+       CI=true pnpm install
+     Cambian los nombres de los paquetes y, si además has movido la carpeta,
+     los enlaces del workspace en node_modules apuntan a la ruta vieja: hasta
+     reinstalar, cualquier «pnpm lint» fallará con «Cannot find package».
   4. En el servidor: la carpeta de despliegue, el dominio y el certificado.
      La base de datos NO se renombra sola; si quieres cambiar el usuario y el
      nombre de la base, hay que migrar los datos aparte.
