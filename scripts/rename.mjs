@@ -2,15 +2,15 @@
 /**
  * Renombra el proyecto entero.
  *
- *   pnpm rename Fidus              cambia el nombre en todo el código
- *   pnpm rename Fidus --dry-run    enseña qué tocaría, sin escribir nada
+ *   pnpm rename Navis              cambia el nombre en todo el código
+ *   pnpm rename Navis --dry-run    enseña qué tocaría, sin escribir nada
  *
  * Cambia, a la vez y de forma consistente:
- *   · el nombre visible          Fidus → Fidus
- *   · el slug                    fidus → fidus
- *   · el scope de los paquetes   @fidus/* → @fidus/*
- *   · el identificador nativo    org.fidus.app → org.fidus.app
- *   · el esquema de enlaces      fidus:// → fidus://
+ *   · el nombre visible          Navis → Navis
+ *   · el slug                    navis → navis
+ *   · el scope de los paquetes   @navis/* → @navis/*
+ *   · el identificador nativo    org.navis.app → org.navis.app
+ *   · el esquema de enlaces      navis:// → navis://
  *   · el crate de Rust, las claves de almacenamiento, el proyecto de compose,
  *     el usuario y la base de datos de Postgres…
  *
@@ -48,7 +48,7 @@ const escapar = (texto) => texto.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$
 
 /**
  * Deriva de un nombre visible el resto de formas que hacen falta.
- * «Fidus» → slug `fidus`, scope `@fidus`, dominio inverso `org.fidus`.
+ * «Navis» → slug `navis`, scope `@navis`, dominio inverso `org.navis`.
  */
 export function derivarMarca(nombre, anterior) {
   const slug = nombre
@@ -106,7 +106,7 @@ function main(argv) {
   const nombre = argv.find((arg) => !arg.startsWith('--'));
 
   if (!nombre) {
-    console.error('\n✖ Falta el nombre nuevo. Ejemplo: pnpm rename Fidus\n');
+    console.error('\n✖ Falta el nombre nuevo. Ejemplo: pnpm rename Navis\n');
     process.exit(1);
   }
 

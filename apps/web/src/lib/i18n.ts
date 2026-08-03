@@ -1,6 +1,6 @@
-import { createI18n, type Locale } from '@fidus/i18n';
+import { createI18n, type Locale } from '@navis/i18n';
 
-const STORAGE_KEY = 'fidus.locale';
+const STORAGE_KEY = 'navis.locale';
 
 /**
  * El idioma inicial es el del navegador (es decir, el del dispositivo).

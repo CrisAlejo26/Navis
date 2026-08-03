@@ -10,7 +10,7 @@ import {
  * Tabla `profiles`: datos de dominio del usuario, enlazados con la tabla
  * `user` que crea Better Auth.
  *
- * IMPORTANTE: ejecuta antes `pnpm --filter @fidus/api auth:migrate`,
+ * IMPORTANTE: ejecuta antes `pnpm --filter @navis/api auth:migrate`,
  * porque esta migración declara una FK contra "user"("id").
  *
  * Escrita con la API de `Table` en vez de SQL literal para que valga tanto en
@@ -26,7 +26,7 @@ export class CreateProfiles1785628800000 implements MigrationInterface {
 
     if (!(await queryRunner.hasTable('user'))) {
       throw new Error(
-        'No existe la tabla "user" de Better Auth. Ejecuta primero: pnpm --filter @fidus/api auth:migrate',
+        'No existe la tabla "user" de Better Auth. Ejecuta primero: pnpm --filter @navis/api auth:migrate',
       );
     }
 

@@ -10,7 +10,7 @@
 #
 # El orden importa: las migraciones se aplican ANTES de levantar la API nueva.
 
-name: fidus
+name: navis
 
 services:
   postgres:

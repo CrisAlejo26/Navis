@@ -56,9 +56,9 @@ async function bootstrap(): Promise<void> {
 
   if (!isProduction) {
     const config = new DocumentBuilder()
-      .setTitle('Fidus API')
+      .setTitle('Navis API')
       .setDescription(
-        'API de Fidus. La autenticación vive en /api/auth (Better Auth); ' +
+        'API de Navis. La autenticación vive en /api/auth (Better Auth); ' +
           'su propia referencia OpenAPI está en /api/auth/reference.',
       )
       .setVersion('0.1.0')

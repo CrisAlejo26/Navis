@@ -44,7 +44,7 @@ Tarda unos 20 minutos, casi todo en compilar Rust para cuatro sistemas.
 
 ## Una sola versión para todo
 
-Las cuatro apps comparten número de versión. «Fidus 1.2.0» es una cosa
+Las cuatro apps comparten número de versión. «Navis 1.2.0» es una cosa
 sola, no cuatro que hay que cruzar en una tabla. El script mantiene en sintonía:
 
 | Dónde                                              | Qué                                     |
@@ -71,8 +71,8 @@ Para firmarlo con una clave estable, hazlo una vez:
 
 ```bash
 keytool -genkeypair -v \
-  -keystore fidus.keystore \
-  -alias fidus \
+  -keystore navis.keystore \
+  -alias navis \
   -keyalg RSA -keysize 2048 -validity 10000
 ```
 
@@ -83,9 +83,9 @@ Después, en `Settings → Secrets and variables → Actions`:
 
 | Secreto                     | Valor                       |
 | --------------------------- | --------------------------- |
-| `ANDROID_KEYSTORE_BASE64`   | `base64 -w0 fidus.keystore` |
+| `ANDROID_KEYSTORE_BASE64`   | `base64 -w0 navis.keystore` |
 | `ANDROID_KEYSTORE_PASSWORD` | La contraseña del almacén   |
-| `ANDROID_KEY_ALIAS`         | `fidus`                     |
+| `ANDROID_KEY_ALIAS`         | `navis`                     |
 | `ANDROID_KEY_PASSWORD`      | La contraseña de la clave   |
 
 A partir del siguiente release, el APK se firma con esa clave y las
@@ -120,7 +120,7 @@ El repositorio tiene que estar en GitHub, porque la etiqueta es lo que dispara
 la compilación:
 
 ```bash
-git remote add origin git@github.com:<usuario>/Fidus.git
+git remote add origin git@github.com:<usuario>/Navis.git
 git push -u origin main
 ```
 

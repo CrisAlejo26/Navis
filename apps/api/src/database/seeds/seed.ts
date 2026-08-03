@@ -3,7 +3,7 @@
 /**
  * Semilla de desarrollo: crea un usuario administrador con su perfil.
  *
- *   pnpm --filter @fidus/api seed
+ *   pnpm --filter @navis/api seed
  *
  * El usuario se crea a través de la API de Better Auth (no con SQL directo)
  * para que la contraseña se hashee exactamente igual que en producción.
@@ -17,7 +17,7 @@ import { dataSource } from '../data-source';
 // sustituiría y podría dejarla por debajo del mínimo de 10 caracteres que
 // exige Better Auth, rompiendo la semilla sin que nadie lo note hasta usarla.
 const SEED_USER = {
-  email: 'admin@fidus.local',
+  email: 'admin@navis.local',
   password: 'Rebano2026Seguro',
   name: 'Administrador',
 };

@@ -1,4 +1,4 @@
-import { createThemeStore, themeColorHex, type ResolvedTheme } from '@fidus/theme';
+import { createThemeStore, themeColorHex, type ResolvedTheme } from '@navis/theme';
 import type { StateStorage } from 'zustand/middleware';
 
 const webStorage: StateStorage = {

@@ -1,5 +1,5 @@
 {
-  "extends": "@fidus/tsconfig/library.json",
+  "extends": "@navis/tsconfig/library.json",
   "compilerOptions": {
     "outDir": "dist",
     "rootDir": "src",

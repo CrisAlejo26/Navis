@@ -1,4 +1,4 @@
-# Fidus — convenciones del repositorio
+# Navis — convenciones del repositorio
 
 Contexto para quien (o lo que) trabaje en este código. Las reglas de
 colaboración están en [`CONTRIBUTING.md`](./CONTRIBUTING.md); aquí va lo que hay
@@ -56,7 +56,7 @@ Cosas que ya han costado un rato y no hace falta volver a descubrir.
   estilos.
 - **`@testing-library/react-native` 14: `render` y `fireEvent` son asíncronos.**
 - **La identidad (nombre e icono) no se toca a mano**: `pnpm rename <Nombre>` y
-  `pnpm icons`, con `brand.json` y `scripts/brand-shape.mjs` como fuentes. Hay
+  `pnpm icons`, con `brand.json` y `packages/theme/src/logo/` como fuentes. Hay
   tests que comprueban que está aplicada en todas partes.
 - **El `.icns` que genera Tauri no es reproducible byte a byte**: sale distinto
   en cada ejecución de `pnpm icons`. Si aparece como único cambio, es ruido.
@@ -75,6 +75,6 @@ pnpm test:e2e     # API y web
 Y, si has tocado la app móvil o la de escritorio:
 
 ```bash
-pnpm --filter @fidus/mobile exec expo-doctor
+pnpm --filter @navis/mobile exec expo-doctor
 cd apps/desktop/src-tauri && cargo check
 ```

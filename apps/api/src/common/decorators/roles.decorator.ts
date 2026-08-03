@@ -1,5 +1,5 @@
 import { SetMetadata } from '@nestjs/common';
-import type { Role } from '@fidus/shared';
+import type { Role } from '@navis/shared';
 
 export const ROLES_KEY = 'roles';
 

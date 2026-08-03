@@ -1,4 +1,4 @@
-import { createQueryClient } from '@fidus/api-client';
+import { createQueryClient } from '@navis/api-client';
 
 /**
  * Instancia única de TanStack Query. Vive fuera del árbol de React para que

@@ -1,5 +1,5 @@
 {
-  "name": "@fidus/api-client",
+  "name": "@navis/api-client",
   "version": "0.1.0",
   "private": true,
   "license": "MIT",
@@ -26,15 +26,15 @@
     "clean": "rimraf dist .turbo *.tsbuildinfo"
   },
   "dependencies": {
-    "@fidus/shared": "workspace:*"
+    "@navis/shared": "workspace:*"
   },
   "peerDependencies": {
     "@tanstack/react-query": ">=5",
     "react": ">=19"
   },
   "devDependencies": {
-    "@fidus/eslint-config": "workspace:*",
-    "@fidus/tsconfig": "workspace:*",
+    "@navis/eslint-config": "workspace:*",
+    "@navis/tsconfig": "workspace:*",
     "@tanstack/react-query": "catalog:",
     "@types/node": "26.1.2",
     "@types/react": "19.2.18",

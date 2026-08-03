@@ -1,6 +1,6 @@
 import '@/global.css';
 
-import { themeColorsHex } from '@fidus/theme';
+import { themeColorsHex } from '@navis/theme';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';

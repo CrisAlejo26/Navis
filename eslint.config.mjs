@@ -1,4 +1,4 @@
-import { baseConfig } from '@fidus/eslint-config';
+import { baseConfig } from '@navis/eslint-config';
 
 /**
  * Config raíz: cubre los ficheros sueltos del repositorio y sirve de red

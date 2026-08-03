@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Publica una versión nueva de Fidus.
+ * Publica una versión nueva de Navis.
  *
  *   pnpm release patch            0.1.0 → 0.1.1
  *   pnpm release minor            0.1.0 → 0.2.0
@@ -85,7 +85,7 @@ export function replacements(from, to) {
     {
       // Solo la entrada de NUESTRO paquete en el lockfile, no las dependencias.
       file: 'apps/desktop/src-tauri/Cargo.lock',
-      pattern: new RegExp(String.raw`(name = "fidus-desktop"\nversion = )"${escaped}"`),
+      pattern: new RegExp(String.raw`(name = "navis-desktop"\nversion = )"${escaped}"`),
       replacement: `$1"${to}"`,
     },
   ];
@@ -118,7 +118,7 @@ function comprobarEstadoDelRepositorio() {
   if (!git('remote')) {
     fail(
       'Este repositorio no tiene remoto. Crea el proyecto en GitHub y añádelo:\n' +
-        '    git remote add origin git@github.com:<usuario>/Fidus.git\n' +
+        '    git remote add origin git@github.com:<usuario>/Navis.git\n' +
         '    git push -u origin main',
     );
   }
@@ -150,7 +150,7 @@ function main(argv) {
 
   if (git('tag', '--list', tag)) fail(`La etiqueta ${tag} ya existe.`);
 
-  console.log(`\n📦 Fidus ${current} → ${version}  (etiqueta ${tag})`);
+  console.log(`\n📦 Navis ${current} → ${version}  (etiqueta ${tag})`);
   console.log(`   versionCode de Android: ${String(androidVersionCode(version))}\n`);
 
   if (skipChecks) {
@@ -178,7 +178,7 @@ function main(argv) {
 
   git('add', '--all');
   git('commit', '--message', `chore(release): ${tag}`);
-  git('tag', '--annotate', tag, '--message', `Fidus ${version}`);
+  git('tag', '--annotate', tag, '--message', `Navis ${version}`);
   git('push', '--follow-tags');
 
   console.log(`\n✓ ${tag} publicada.`);

@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import type { ThemeMode } from '@fidus/shared';
-import { createThemeStore, themeColorHex, type ResolvedTheme } from '@fidus/theme';
+import type { ThemeMode } from '@navis/shared';
+import { createThemeStore, themeColorHex, type ResolvedTheme } from '@navis/theme';
 import * as SystemUI from 'expo-system-ui';
 import { Appearance, type ColorSchemeName } from 'react-native';
 import type { StateStorage } from 'zustand/middleware';

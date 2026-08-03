@@ -1,4 +1,4 @@
-import { nestConfig } from '@fidus/eslint-config/nest';
+import { nestConfig } from '@navis/eslint-config/nest';
 
 export default [
   ...nestConfig({ tsconfigRootDir: import.meta.dirname }),

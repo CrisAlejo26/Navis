@@ -1,6 +1,6 @@
 import { CanActivate, type ExecutionContext, ForbiddenException, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { ROLE_HIERARCHY, type Role } from '@fidus/shared';
+import { ROLE_HIERARCHY, type Role } from '@navis/shared';
 import type { Request } from 'express';
 
 import { ROLES_KEY } from '../decorators/roles.decorator';

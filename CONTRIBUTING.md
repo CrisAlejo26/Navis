@@ -1,4 +1,4 @@
-# Contribuir a Fidus
+# Contribuir a Navis
 
 Gracias por querer aportar. Este documento recoge lo que hay que saber antes de
 abrir un pull request.

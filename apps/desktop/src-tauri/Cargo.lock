@@ -2126,7 +2126,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "fidus-desktop"
+name = "navis-desktop"
 version = "0.1.0"
 dependencies = [
  "serde",

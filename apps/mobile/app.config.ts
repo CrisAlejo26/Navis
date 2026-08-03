@@ -7,7 +7,7 @@ import type { ExpoConfig } from 'expo/config';
  * Los `EXPO_PUBLIC_*` acaban en el bundle: son públicos por definición, así que
  * aquí solo va a qué servidor apunta la app, nunca un secreto.
  */
-const scheme = process.env.EXPO_PUBLIC_APP_SCHEME ?? 'fidus';
+const scheme = process.env.EXPO_PUBLIC_APP_SCHEME ?? 'navis';
 
 /** Lo sincroniza `pnpm release`; no lo edites a mano. */
 const version = '0.1.0';
@@ -21,8 +21,8 @@ const [major, minor, patch] = version.split('.').map(Number);
 const versionCode = major * 10000 + minor * 100 + patch;
 
 const config: ExpoConfig = {
-  name: 'Fidus',
-  slug: 'fidus',
+  name: 'Navis',
+  slug: 'navis',
   version,
   orientation: 'portrait',
   scheme,
@@ -31,14 +31,16 @@ const config: ExpoConfig = {
   // El splash ya no se configura aquí en SDK 57: solo con el plugin de abajo.
   ios: {
     supportsTablet: true,
-    bundleIdentifier: 'org.fidus.app',
+    bundleIdentifier: 'org.navis.app',
   },
   android: {
-    package: 'org.fidus.app',
+    package: 'org.navis.app',
     versionCode,
     adaptiveIcon: {
+      // El primer plano es el barco en blanco con transparencia; el color de
+      // marca lo pone esta capa, que es lo que exige el formato adaptativo.
       foregroundImage: './assets/adaptive-icon.png',
-      backgroundColor: '#3b5bdb',
+      backgroundColor: '#2140cf',
     },
   },
   web: {

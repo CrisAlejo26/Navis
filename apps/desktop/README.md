@@ -1,4 +1,4 @@
-# Fidus — escritorio (Tauri 2)
+# Navis — escritorio (Tauri 2)
 
 Empaqueta la **misma PWA** de `apps/web` como aplicación nativa de Windows, macOS
 y Linux. No hay una tercera interfaz que mantener: lo que se arregla en la web se

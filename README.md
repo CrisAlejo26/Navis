@@ -1,4 +1,4 @@
-# Fidus
+# Navis
 
 Herramientas open source para el trabajo pastoral: agenda, seguimiento de
 creyentes, notas, profecías, sueños y comunicación del equipo. Web, móvil y
@@ -25,7 +25,7 @@ pnpm db:migrate && pnpm db:seed
 pnpm dev                      # API en :3000 y web en :5173
 ```
 
-Entra con `admin@fidus.local` / `Rebano2026Seguro`.
+Entra con `admin@navis.local` / `Rebano2026Seguro`.
 
 Para trabajar en equipo, pon `DB_DRIVER=postgres` en el `.env`, arranca la base
 de datos con `pnpm db:up` (necesita Docker) y repite `pnpm db:migrate`.

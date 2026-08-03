@@ -1,11 +1,11 @@
 /*
- * Fidus — tokens de diseño (Tailwind v4, CSS-first).
+ * Navis — tokens de diseño (Tailwind v4, CSS-first).
  *
  * Este fichero NO importa Tailwind: lo hace cada app, porque web (Vite) y
  * móvil (NativeWind/Metro) necesitan importar además su propio runtime.
  *
- *   web:    @import 'tailwindcss'; @import '@fidus/theme/tokens.css';
- *   móvil:  @import 'tailwindcss'; @import '@fidus/theme/tokens.native.css';
+ *   web:    @import 'tailwindcss'; @import '@navis/theme/tokens.css';
+ *   móvil:  @import 'tailwindcss'; @import '@navis/theme/tokens.native.css';
  *
  * La paleta se define UNA sola vez, en `--light-*` y `--dark-*`. Las variables
  * que consumen los componentes (`--background`, `--primary`…) son alias que

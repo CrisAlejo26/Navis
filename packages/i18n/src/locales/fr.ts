@@ -2,7 +2,7 @@ import type { Translation } from './es';
 
 export const fr = {
   common: {
-    appName: 'Fidus',
+    appName: 'Navis',
     save: 'Enregistrer',
     cancel: 'Annuler',
     delete: 'Supprimer',

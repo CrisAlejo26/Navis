@@ -1,7 +1,7 @@
 [project]
-name = "fidus-ai"
+name = "navis-ai"
 version = "0.1.0"
-description = "Microservicio de IA de Fidus (esqueleto)"
+description = "Microservicio de IA de Navis (esqueleto)"
 readme = "README.md"
 license = { text = "MIT" }
 requires-python = ">=3.13"
