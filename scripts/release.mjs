@@ -113,6 +113,16 @@ function comprobarEstadoDelRepositorio() {
   const branch = git('rev-parse', '--abbrev-ref', 'HEAD');
   if (branch !== 'main') fail(`Los releases salen de main, y estás en «${branch}».`);
 
+  // Sin remoto no hay a dónde empujar la etiqueta, y por tanto no se dispara
+  // el workflow que compila las descargas.
+  if (!git('remote')) {
+    fail(
+      'Este repositorio no tiene remoto. Crea el proyecto en GitHub y añádelo:\n' +
+        '    git remote add origin git@github.com:<usuario>/PastorTools.git\n' +
+        '    git push -u origin main',
+    );
+  }
+
   if (git('status', '--porcelain')) {
     fail('Tienes cambios sin commitear. Un release tiene que salir de un árbol limpio.');
   }

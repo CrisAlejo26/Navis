@@ -114,6 +114,18 @@ SmartScreen y Gatekeeper avisan la primera vez. Firmarlos cuesta dinero (un
 certificado EV en Windows, la cuenta de desarrollador en Apple) y es una
 decisión de más adelante; las notas del release ya explican cómo abrirlos.
 
+## Antes del primer release
+
+El repositorio tiene que estar en GitHub, porque la etiqueta es lo que dispara
+la compilación:
+
+```bash
+git remote add origin git@github.com:<usuario>/PastorTools.git
+git push -u origin main
+```
+
+`pnpm release` avisa si falta el remoto y no hace nada.
+
 ## Si algo sale mal
 
 - **La etiqueta ya existe**: `git tag -d vX.Y.Z && git push origin :vX.Y.Z`, y
