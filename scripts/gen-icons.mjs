@@ -1,15 +1,13 @@
 #!/usr/bin/env node
 /**
- * Genera los PNG del icono para web, móvil y escritorio.
+ * Genera el icono para web, móvil y escritorio, todo desde la misma forma.
  *
  *   pnpm icons
  *
- * La fuente es `packages/theme/src/brand-icon.svg`: un cayado de pastor. Nada
- * de cruces (ver .claude/rules/07-sin-cruces-en-la-identidad.md). Aquí se
- * redibuja la misma geometría a mano porque rasterizar SVG traería una
- * dependencia nativa (sharp/resvg) solo para esto.
- *
- * Si cambias el SVG, cambia también `dibujar()` y comprueba el resultado.
+ * Escribe `packages/theme/src/brand-icon.svg`, el favicon y los PNG de cada
+ * plataforma, y llama al CLI de Tauri para los del escritorio. La geometría
+ * está en `scripts/brand-shape.mjs`: para cambiar el icono se toca ese fichero,
+ * no los PNG ni el SVG, que son salida.
  */
 import { execSync } from 'node:child_process';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
@@ -17,10 +15,21 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { deflateSync } from 'node:zlib';
 
+import {
+  COLOR_FONDO,
+  COLOR_TRAZO,
+  enFondo,
+  enTrazo,
+  LIENZO,
+  RADIO_FONDO,
+  svg,
+} from './brand-shape.mjs';
+
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 
-const MARCA = [0x3b, 0x63, 0xbe]; // --light-primary de packages/theme
-const TINTA = [0xff, 0xff, 0xff];
+const aRgb = (hex) => [1, 3, 5].map((i) => Number.parseInt(hex.slice(i, i + 2), 16));
+const FONDO = aRgb(COLOR_FONDO);
+const TRAZO = aRgb(COLOR_TRAZO);
 
 // --- Codificador PNG mínimo (RGBA, sin dependencias) ------------------------
 
@@ -65,49 +74,15 @@ function png(size, rgba) {
   ]);
 }
 
-// --- Geometría del cayado (mismas coordenadas que el SVG, lienzo 64) --------
-
-const distanciaASegmento = (px, py, ax, ay, bx, by) => {
-  const dx = bx - ax;
-  const dy = by - ay;
-  const t = Math.max(0, Math.min(1, ((px - ax) * dx + (py - ay) * dy) / (dx * dx + dy * dy)));
-  return Math.hypot(px - (ax + t * dx), py - (ay + t * dy));
-};
-
-/** Con la Y hacia abajo, el ángulo 270° es «arriba». */
-function enArco(px, py, cx, cy, radio, desde, hasta, grosor) {
-  if (Math.abs(Math.hypot(px - cx, py - cy) - radio) > grosor / 2) return false;
-  let angulo = (Math.atan2(py - cy, px - cx) * 180) / Math.PI;
-  while (angulo < desde) angulo += 360;
-  return angulo <= hasta;
-}
-
-/** ¿Cae este punto (en coordenadas de 0 a 64) sobre el trazo del cayado? */
-function enCayado(x, y) {
-  const g = 6; // grosor del trazo, igual que el stroke-width del SVG
-  return (
-    distanciaASegmento(x, y, 27, 21, 27, 52) <= g / 2 ||
-    enArco(x, y, 36, 21, 9, 180, 360, g) ||
-    enArco(x, y, 40, 21, 5, 0, 180, g) ||
-    Math.hypot(x - 35, y - 21) <= g / 2 // remate redondo de la punta
-  );
-}
-
-/** ¿Cae dentro del cuadrado de esquinas redondeadas del fondo? */
-function enFondo(x, y, radio) {
-  const dx = Math.min(x, 64 - x);
-  const dy = Math.min(y, 64 - y);
-  if (dx >= radio || dy >= radio) return true;
-  return (radio - dx) ** 2 + (radio - dy) ** 2 <= radio * radio;
-}
+// --- Rasterizado ------------------------------------------------------------
 
 /**
  * @param {number} size lado en píxeles
  * @param {{ fondo?: boolean, margen?: number, radio?: number }} opciones
- *   `margen` encoge el dibujo (los iconos maskable de Android recortan un 10 %
- *   por cada lado, así que necesitan más aire).
+ *   `margen` encoge el dibujo: los iconos maskable de Android recortan por los
+ *   bordes, así que necesitan más aire.
  */
-function dibujar(size, { fondo = true, margen = 0, radio = 14 } = {}) {
+export function dibujar(size, { fondo = true, margen = 0, radio = RADIO_FONDO } = {}) {
   const rgba = Buffer.alloc(size * size * 4);
   const muestras = 4; // supermuestreo: bordes suaves también a 32 px
 
@@ -118,28 +93,26 @@ function dibujar(size, { fondo = true, margen = 0, radio = 14 } = {}) {
 
       for (let sy = 0; sy < muestras; sy++) {
         for (let sx = 0; sx < muestras; sx++) {
-          // Píxel → coordenadas del lienzo de 64, aplicando el margen.
           const u = ((px + (sx + 0.5) / muestras) / size - 0.5) / (1 - margen) + 0.5;
           const v = ((py + (sy + 0.5) / muestras) / size - 0.5) / (1 - margen) + 0.5;
-          const x = u * 64;
-          const y = v * 64;
-
           if (u < 0 || u > 1 || v < 0 || v > 1) continue;
-          if (enCayado(x, y)) tinta++;
+
+          const x = u * LIENZO;
+          const y = v * LIENZO;
+          if (enTrazo(x, y)) tinta++;
           else if (enFondo(x, y, radio)) relleno++;
         }
       }
 
       const total = muestras * muestras;
-      const i = (py * size + px) * 4;
       const cobertura = (tinta + (fondo ? relleno : 0)) / total;
       if (cobertura === 0) continue;
 
-      // El trazo va sobre el fondo: se mezcla según cuánto ocupa cada uno.
+      const i = (py * size + px) * 4;
       const pesoTinta = tinta / Math.max(1, tinta + (fondo ? relleno : 0));
-      const color = fondo ? MARCA : TINTA;
+      const color = fondo ? FONDO : TRAZO;
       for (let canal = 0; canal < 3; canal++) {
-        rgba[i + canal] = Math.round(color[canal] * (1 - pesoTinta) + TINTA[canal] * pesoTinta);
+        rgba[i + canal] = Math.round(color[canal] * (1 - pesoTinta) + TRAZO[canal] * pesoTinta);
       }
       rgba[i + 3] = Math.round(cobertura * 255);
     }
@@ -148,12 +121,15 @@ function dibujar(size, { fondo = true, margen = 0, radio = 14 } = {}) {
   return png(size, rgba);
 }
 
-// --- Qué se genera y dónde --------------------------------------------------
-
-const destinos = [
+/**
+ * Todo lo que produce `pnpm icons`. `size === null` significa SVG.
+ * Los tests recorren esta lista para comprobar que no falta ningún sitio.
+ */
+export const DESTINOS = [
+  ['packages/theme/src/brand-icon.svg', null, {}],
+  ['apps/web/public/favicon.svg', null, {}],
   ['apps/web/public/pwa-192x192.png', 192, {}],
   ['apps/web/public/pwa-512x512.png', 512, {}],
-  // Android recorta los maskable: el dibujo va más pequeño y sin esquinas.
   ['apps/web/public/pwa-maskable-512x512.png', 512, { margen: 0.24, radio: 0 }],
   ['apps/web/public/apple-touch-icon.png', 180, {}],
   ['apps/mobile/assets/icon.png', 1024, {}],
@@ -162,32 +138,46 @@ const destinos = [
   ['apps/mobile/assets/favicon.png', 48, {}],
 ];
 
-for (const [ruta, size, opciones] of destinos) {
-  const destino = join(root, ruta);
-  mkdirSync(dirname(destino), { recursive: true });
-  const buffer = dibujar(size, opciones);
-  writeFileSync(destino, buffer);
-  console.log(`  ${ruta} — ${String(size)}×${String(size)} (${String(buffer.length)} B)`);
+/** Contenido que le corresponde a cada destino, sin escribir nada. */
+export function contenidoDe([, size, opciones], nombre) {
+  return size === null ? Buffer.from(svg(nombre), 'utf8') : dibujar(size, opciones);
 }
 
-// --- Escritorio -------------------------------------------------------------
-// Tauri necesita .ico, .icns y una docena de tamaños para las tiendas: su CLI
-// los saca del PNG grande que se acaba de generar.
+export function generar({ silencioso = false } = {}) {
+  const { nombre, scope } = JSON.parse(readFileSync(join(root, 'brand.json'), 'utf8'));
 
-const { scope } = JSON.parse(readFileSync(join(root, 'brand.json'), 'utf8'));
+  for (const destino of DESTINOS) {
+    const [ruta, size] = destino;
+    const salida = join(root, ruta);
+    mkdirSync(dirname(salida), { recursive: true });
+    writeFileSync(salida, contenidoDe(destino, nombre));
 
-console.log('\n  escritorio (tauri icon)…');
-try {
-  // Comando entero en vez de argumentos sueltos: en Windows `pnpm` es un .cmd
-  // y hace falta shell. No hay riesgo de inyección porque `scope` sale de
-  // brand.json, que el renombrador escribe ya saneado a [a-z0-9].
-  execSync(`pnpm --filter ${scope}/desktop icons`, { cwd: root, stdio: 'pipe' });
-  console.log('  apps/desktop/src-tauri/icons/ — .ico, .icns y los PNG de cada tamaño');
-} catch {
-  console.warn(
-    '  ⚠ No he podido generar los iconos de escritorio.\n' +
-      '    Necesitan las dependencias instaladas: pnpm install && pnpm icons',
-  );
+    if (!silencioso) {
+      console.log(`  ${ruta} — ${size === null ? 'SVG' : `${String(size)}×${String(size)}`}`);
+    }
+  }
+
+  return scope;
 }
 
-console.log('\n✓ Iconos regenerados. Míralos antes de commitear.\n');
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  const scope = generar();
+
+  // Tauri necesita .ico, .icns y una docena de tamaños: su CLI los saca del
+  // PNG grande que se acaba de generar.
+  console.log('\n  escritorio (tauri icon)…');
+  try {
+    // Comando entero y no argumentos sueltos: en Windows `pnpm` es un .cmd y
+    // hace falta shell. `scope` sale de brand.json, que el renombrador escribe
+    // ya saneado a [a-z0-9], así que no hay dónde inyectar nada.
+    execSync(`pnpm --filter ${scope}/desktop icons`, { cwd: root, stdio: 'pipe' });
+    console.log('  apps/desktop/src-tauri/icons/ — .ico, .icns y los PNG de cada tamaño');
+  } catch {
+    console.warn(
+      '  ⚠ No he podido generar los iconos de escritorio.\n' +
+        '    Necesitan las dependencias instaladas: pnpm install && pnpm icons',
+    );
+  }
+
+  console.log('\n✓ Iconos regenerados. Míralos antes de commitear.\n');
+}
