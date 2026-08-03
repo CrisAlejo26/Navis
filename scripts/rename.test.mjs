@@ -10,16 +10,16 @@ const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const marca = JSON.parse(readFileSync(join(root, 'brand.json'), 'utf8'));
 
 test('derivarMarca saca slug, scope y dominio del nombre visible', () => {
-  const nueva = derivarMarca('Fidus', marca);
-  assert.equal(nueva.slug, 'fidus');
-  assert.equal(nueva.scope, '@fidus');
-  assert.equal(nueva.esquema, 'fidus');
-  assert.match(nueva.dominioInverso, /\.fidus$/);
+  const nueva = derivarMarca('MarcaNueva', marca);
+  assert.equal(nueva.slug, 'marcanueva');
+  assert.equal(nueva.scope, '@marcanueva');
+  assert.equal(nueva.esquema, 'marcanueva');
+  assert.match(nueva.dominioInverso, /\.marcanueva$/);
 });
 
 test('derivarMarca limpia acentos, espacios y símbolos', () => {
   assert.equal(derivarMarca('Mi Iglesia Ágil', marca).slug, 'miiglesiaagil');
-  assert.equal(derivarMarca('Fidus-2', marca).slug, 'fidus2');
+  assert.equal(derivarMarca('Marca-2', marca).slug, 'marca2');
 });
 
 test('derivarMarca rechaza un nombre del que no sale slug', () => {
@@ -27,46 +27,50 @@ test('derivarMarca rechaza un nombre del que no sale slug', () => {
 });
 
 test('el dominio inverso conserva su prefijo', () => {
-  const nueva = derivarMarca('Fidus', { ...marca, dominioInverso: 'com.ejemplo' });
-  assert.equal(nueva.dominioInverso, 'com.fidus');
+  const nueva = derivarMarca('MarcaNueva', { ...marca, dominioInverso: 'com.ejemplo' });
+  assert.equal(nueva.dominioInverso, 'com.marcanueva');
 });
 
 /**
  * El orden de las sustituciones es lo único delicado de todo el script: si el
  * slug se aplicase antes que el scope o que el dominio inverso, los partiría
- * por la mitad y dejaría cosas como `@fidus` convertido en `@fidustools`.
+ * por la mitad y dejaría cosas como `@marcanueva` hecho `@marcanuevavieja`.
+ *
+ * El fixture usa nombres inventados A PROPÓSITO: con el nombre real del
+ * proyecto, `pnpm rename` reescribiría también este test y dejaría de probar
+ * nada, porque los dos lados de la comparación cambiarían a la vez.
  */
 test('las formas largas se sustituyen antes que el slug', () => {
   const antes = {
-    nombre: 'PastorTools',
-    slug: 'pastortools',
-    scope: '@pastortools',
-    dominioInverso: 'org.pastortools',
-    esquema: 'pastortools',
+    nombre: 'MarcaVieja',
+    slug: 'marcavieja',
+    scope: '@marcavieja',
+    dominioInverso: 'org.marcavieja',
+    esquema: 'marcavieja',
   };
-  const cambios = sustituciones(antes, derivarMarca('Fidus', antes));
+  const cambios = sustituciones(antes, derivarMarca('MarcaNueva', antes));
 
   const muestra = [
-    '"name": "@pastortools/api"',
-    'identifier: "org.pastortools.desktop"',
-    'const KEY = "pastortools.theme";',
-    'scheme: "pastortools://"',
-    '# PastorTools — herramientas',
+    '"name": "@marcavieja/api"',
+    'identifier: "org.marcavieja.desktop"',
+    'const KEY = "marcavieja.theme";',
+    'scheme: "marcavieja://"',
+    '# MarcaVieja — herramientas',
   ].join('\n');
 
   const salida = aplicar(muestra, cambios);
 
-  assert.match(salida, /"@fidus\/api"/);
-  assert.match(salida, /"org\.fidus\.desktop"/);
-  assert.match(salida, /"fidus\.theme"/);
-  assert.match(salida, /"fidus:\/\/"/);
-  assert.match(salida, /# Fidus —/);
-  assert.doesNotMatch(salida, /pastortools/i);
+  assert.match(salida, /"@marcanueva\/api"/);
+  assert.match(salida, /"org\.marcanueva\.desktop"/);
+  assert.match(salida, /"marcanueva\.theme"/);
+  assert.match(salida, /"marcanueva:\/\//);
+  assert.match(salida, /# MarcaNueva —/);
+  assert.doesNotMatch(salida, /marcavieja/i);
 });
 
 test('no toca palabras que no son la marca', () => {
-  const cambios = sustituciones(marca, derivarMarca('Fidus', marca));
-  const texto = 'El pastor visita a los creyentes; PASTOR en mayúsculas también.';
+  const cambios = sustituciones(marca, derivarMarca('MarcaNueva', marca));
+  const texto = 'Una frase cualquiera de la interfaz, sin la marca por ningún lado.';
   assert.equal(aplicar(texto, cambios), texto);
 });
 
