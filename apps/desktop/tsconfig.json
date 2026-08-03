@@ -1,0 +1,10 @@
+{
+  "extends": "@pastortools/tsconfig/react.json",
+  "compilerOptions": {
+    "types": ["node"],
+    "allowJs": true,
+    "checkJs": false
+  },
+  "include": ["*.mjs"],
+  "exclude": ["node_modules", "src-tauri"]
+}

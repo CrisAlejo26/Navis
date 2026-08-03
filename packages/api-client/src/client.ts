@@ -81,7 +81,8 @@ export function createApiClient(options: ApiClientOptions): ApiClient {
   return {
     baseUrl,
     get: <T>(path: string, init?: RequestInit) => request<T>('GET', path, undefined, init),
-    post: <T>(path: string, body?: Body, init?: RequestInit) => request<T>('POST', path, body, init),
+    post: <T>(path: string, body?: Body, init?: RequestInit) =>
+      request<T>('POST', path, body, init),
     patch: <T>(path: string, body?: Body, init?: RequestInit) =>
       request<T>('PATCH', path, body, init),
     put: <T>(path: string, body?: Body, init?: RequestInit) => request<T>('PUT', path, body, init),

@@ -28,6 +28,7 @@ export const es = {
     dreams: 'Sueños',
     communications: 'Comunicaciones',
     settings: 'Ajustes',
+    more: 'Más',
   },
   auth: {
     signIn: 'Iniciar sesión',
@@ -56,6 +57,7 @@ export const es = {
     title: 'Ajustes',
     appearance: 'Apariencia',
     profile: 'Perfil',
+    connection: 'Conexión',
   },
   profile: {
     title: 'Mi perfil',

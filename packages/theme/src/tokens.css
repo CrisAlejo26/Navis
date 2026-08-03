@@ -5,85 +5,122 @@
  * móvil (NativeWind/Metro) necesitan importar además su propio runtime.
  *
  *   web:    @import 'tailwindcss'; @import '@pastortools/theme/tokens.css';
- *   móvil:  @import 'tailwindcss'; @import '@pastortools/theme/tokens.css';
+ *   móvil:  @import 'tailwindcss'; @import '@pastortools/theme/tokens.native.css';
  *
- * El modo oscuro se activa añadiendo la clase `dark` al elemento raíz
- * (<html> en web, la View raíz en móvil vía NativeWind colorScheme).
+ * La paleta se define UNA sola vez, en `--light-*` y `--dark-*`. Las variables
+ * que consumen los componentes (`--background`, `--primary`…) son alias que
+ * apuntan a una u otra según el tema activo:
+ *
+ *   · Web:   clase `dark` en <html> (así el usuario puede forzar un tema
+ *            contra el de su sistema).
+ *   · Móvil: media query `prefers-color-scheme`, que es lo que React Native
+ *            expone a NativeWind (ver tokens.native.css).
  */
 
 :root {
   --radius: 0.625rem;
 
-  --background: oklch(0.99 0.003 106);
-  --foreground: oklch(0.22 0.01 265);
+  /* ------------------------------- Paleta clara ------------------------- */
+  --light-background: oklch(0.99 0.003 106);
+  --light-foreground: oklch(0.22 0.01 265);
+  --light-card: oklch(1 0 0);
+  --light-card-foreground: oklch(0.22 0.01 265);
+  --light-popover: oklch(1 0 0);
+  --light-popover-foreground: oklch(0.22 0.01 265);
+  --light-primary: oklch(0.52 0.15 264);
+  --light-primary-foreground: oklch(0.98 0.005 264);
+  --light-secondary: oklch(0.96 0.01 264);
+  --light-secondary-foreground: oklch(0.3 0.03 264);
+  --light-muted: oklch(0.96 0.005 264);
+  --light-muted-foreground: oklch(0.52 0.02 264);
+  --light-accent: oklch(0.83 0.13 82);
+  --light-accent-foreground: oklch(0.26 0.05 82);
+  --light-destructive: oklch(0.58 0.21 27);
+  --light-destructive-foreground: oklch(0.98 0.01 27);
+  --light-success: oklch(0.62 0.15 150);
+  --light-success-foreground: oklch(0.98 0.01 150);
+  --light-warning: oklch(0.75 0.15 70);
+  --light-warning-foreground: oklch(0.26 0.05 70);
+  --light-border: oklch(0.91 0.008 264);
+  --light-input: oklch(0.91 0.008 264);
+  --light-ring: oklch(0.52 0.15 264);
 
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.22 0.01 265);
+  /* ------------------------------- Paleta oscura ------------------------ */
+  --dark-background: oklch(0.17 0.012 265);
+  --dark-foreground: oklch(0.96 0.005 264);
+  --dark-card: oklch(0.21 0.014 265);
+  --dark-card-foreground: oklch(0.96 0.005 264);
+  --dark-popover: oklch(0.21 0.014 265);
+  --dark-popover-foreground: oklch(0.96 0.005 264);
+  --dark-primary: oklch(0.68 0.14 264);
+  --dark-primary-foreground: oklch(0.17 0.02 264);
+  --dark-secondary: oklch(0.27 0.02 265);
+  --dark-secondary-foreground: oklch(0.96 0.005 264);
+  --dark-muted: oklch(0.27 0.02 265);
+  --dark-muted-foreground: oklch(0.7 0.02 264);
+  --dark-accent: oklch(0.78 0.13 82);
+  --dark-accent-foreground: oklch(0.2 0.04 82);
+  --dark-destructive: oklch(0.65 0.2 27);
+  --dark-destructive-foreground: oklch(0.16 0.02 27);
+  --dark-success: oklch(0.7 0.15 150);
+  --dark-success-foreground: oklch(0.16 0.02 150);
+  --dark-warning: oklch(0.8 0.14 70);
+  --dark-warning-foreground: oklch(0.2 0.04 70);
+  --dark-border: oklch(0.31 0.02 265);
+  --dark-input: oklch(0.31 0.02 265);
+  --dark-ring: oklch(0.68 0.14 264);
 
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.22 0.01 265);
-
-  --primary: oklch(0.52 0.15 264);
-  --primary-foreground: oklch(0.98 0.005 264);
-
-  --secondary: oklch(0.96 0.01 264);
-  --secondary-foreground: oklch(0.3 0.03 264);
-
-  --muted: oklch(0.96 0.005 264);
-  --muted-foreground: oklch(0.52 0.02 264);
-
-  --accent: oklch(0.83 0.13 82);
-  --accent-foreground: oklch(0.26 0.05 82);
-
-  --destructive: oklch(0.58 0.21 27);
-  --destructive-foreground: oklch(0.98 0.01 27);
-
-  --success: oklch(0.62 0.15 150);
-  --success-foreground: oklch(0.98 0.01 150);
-
-  --warning: oklch(0.75 0.15 70);
-  --warning-foreground: oklch(0.26 0.05 70);
-
-  --border: oklch(0.91 0.008 264);
-  --input: oklch(0.91 0.008 264);
-  --ring: oklch(0.52 0.15 264);
+  /* -------------------- Tema activo: claro por defecto ------------------ */
+  --background: var(--light-background);
+  --foreground: var(--light-foreground);
+  --card: var(--light-card);
+  --card-foreground: var(--light-card-foreground);
+  --popover: var(--light-popover);
+  --popover-foreground: var(--light-popover-foreground);
+  --primary: var(--light-primary);
+  --primary-foreground: var(--light-primary-foreground);
+  --secondary: var(--light-secondary);
+  --secondary-foreground: var(--light-secondary-foreground);
+  --muted: var(--light-muted);
+  --muted-foreground: var(--light-muted-foreground);
+  --accent: var(--light-accent);
+  --accent-foreground: var(--light-accent-foreground);
+  --destructive: var(--light-destructive);
+  --destructive-foreground: var(--light-destructive-foreground);
+  --success: var(--light-success);
+  --success-foreground: var(--light-success-foreground);
+  --warning: var(--light-warning);
+  --warning-foreground: var(--light-warning-foreground);
+  --border: var(--light-border);
+  --input: var(--light-input);
+  --ring: var(--light-ring);
 }
 
 .dark,
 .dark:root {
-  --background: oklch(0.17 0.012 265);
-  --foreground: oklch(0.96 0.005 264);
-
-  --card: oklch(0.21 0.014 265);
-  --card-foreground: oklch(0.96 0.005 264);
-
-  --popover: oklch(0.21 0.014 265);
-  --popover-foreground: oklch(0.96 0.005 264);
-
-  --primary: oklch(0.68 0.14 264);
-  --primary-foreground: oklch(0.17 0.02 264);
-
-  --secondary: oklch(0.27 0.02 265);
-  --secondary-foreground: oklch(0.96 0.005 264);
-
-  --muted: oklch(0.27 0.02 265);
-  --muted-foreground: oklch(0.7 0.02 264);
-
-  --accent: oklch(0.78 0.13 82);
-  --accent-foreground: oklch(0.2 0.04 82);
-
-  --destructive: oklch(0.65 0.2 27);
-  --destructive-foreground: oklch(0.16 0.02 27);
-
-  --success: oklch(0.7 0.15 150);
-  --success-foreground: oklch(0.16 0.02 150);
-
-  --warning: oklch(0.8 0.14 70);
-  --warning-foreground: oklch(0.2 0.04 70);
-
-  --border: oklch(0.31 0.02 265);
-  --input: oklch(0.31 0.02 265);
-  --ring: oklch(0.68 0.14 264);
+  --background: var(--dark-background);
+  --foreground: var(--dark-foreground);
+  --card: var(--dark-card);
+  --card-foreground: var(--dark-card-foreground);
+  --popover: var(--dark-popover);
+  --popover-foreground: var(--dark-popover-foreground);
+  --primary: var(--dark-primary);
+  --primary-foreground: var(--dark-primary-foreground);
+  --secondary: var(--dark-secondary);
+  --secondary-foreground: var(--dark-secondary-foreground);
+  --muted: var(--dark-muted);
+  --muted-foreground: var(--dark-muted-foreground);
+  --accent: var(--dark-accent);
+  --accent-foreground: var(--dark-accent-foreground);
+  --destructive: var(--dark-destructive);
+  --destructive-foreground: var(--dark-destructive-foreground);
+  --success: var(--dark-success);
+  --success-foreground: var(--dark-success-foreground);
+  --warning: var(--dark-warning);
+  --warning-foreground: var(--dark-warning-foreground);
+  --border: var(--dark-border);
+  --input: var(--dark-input);
+  --ring: var(--dark-ring);
 }
 
 @theme inline {

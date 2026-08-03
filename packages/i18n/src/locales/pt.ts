@@ -22,6 +22,7 @@ export const pt = {
     dreams: 'Sonhos',
     communications: 'Comunicações',
     settings: 'Definições',
+    more: 'Mais',
   },
   auth: {
     signIn: 'Iniciar sessão',
@@ -50,6 +51,7 @@ export const pt = {
     title: 'Definições',
     appearance: 'Aparência',
     profile: 'Perfil',
+    connection: 'Ligação',
   },
   profile: {
     title: 'O meu perfil',

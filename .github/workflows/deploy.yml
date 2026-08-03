@@ -1,0 +1,206 @@
+name: Deploy
+
+# Despliegue a producción. El orden es innegociable:
+#   1. verificar (formato, lint, tipos, tests, build y e2e) — CI completo
+#   2. publicar imágenes
+#   3. migrar la base de datos
+#   4. levantar la versión nueva y comprobar que responde
+#   5. si no responde, volver a la anterior
+#
+# Nada de esto se ejecuta si el paso 1 falla.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      skip_verify:
+        description: "Saltar las verificaciones (solo para revertir una emergencia)"
+        type: boolean
+        default: false
+
+# Un despliegue a la vez, y sin cancelar el que ya esté en marcha: cortar a
+# medias dejaría la base de datos migrada y la app sin actualizar.
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_REPO: ${{ github.repository }}
+
+jobs:
+  # --- 1. Verificación --------------------------------------------------------
+  verify:
+    name: Verificación completa
+    if: ${{ !inputs.skip_verify }}
+    uses: ./.github/workflows/ci.yml
+    permissions:
+      contents: read
+
+  # --- 2. Imágenes ------------------------------------------------------------
+  images:
+    name: Construir y publicar imágenes
+    needs: verify
+    # `always()` + comprobación explícita: permite el atajo de emergencia sin
+    # que un fallo de verificación se cuele nunca.
+    if: ${{ always() && (needs.verify.result == 'success' || inputs.skip_verify) }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      tag: ${{ steps.meta.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - id: meta
+        name: Etiqueta de la versión
+        run: echo "tag=${GITHUB_SHA::12}" >> "$GITHUB_OUTPUT"
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: API
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: docker/api.Dockerfile
+          target: runtime
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_REPO }}/api:${{ steps.meta.outputs.tag }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_REPO }}/api:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: API (migraciones)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: docker/api.Dockerfile
+          target: migrate
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_REPO }}/api-migrate:${{ steps.meta.outputs.tag }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_REPO }}/api-migrate:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Web
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: docker/web.Dockerfile
+          push: true
+          build-args: |
+            VITE_API_URL=${{ vars.VITE_API_URL }}
+            VITE_AUTH_URL=${{ vars.VITE_AUTH_URL }}
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_REPO }}/web:${{ steps.meta.outputs.tag }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_REPO }}/web:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # --- 3, 4 y 5. Migrar, desplegar y comprobar --------------------------------
+  deploy:
+    name: Migrar y desplegar
+    needs: images
+    runs-on: ubuntu-latest
+    # El entorno `production` de GitHub es donde viven los secretos y donde se
+    # configura, si se quiere, la aprobación manual antes de tocar el servidor.
+    environment:
+      name: production
+      url: ${{ vars.PRODUCTION_URL }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Copiar el compose al servidor
+        uses: appleboy/scp-action@v1
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          port: ${{ secrets.DEPLOY_PORT || 22 }}
+          source: docker-compose.deploy.yml
+          target: ${{ secrets.DEPLOY_PATH }}
+
+      - name: Migrar, desplegar y verificar
+        uses: appleboy/ssh-action@v1
+        env:
+          IMAGE_TAG: ${{ needs.images.outputs.tag }}
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          port: ${{ secrets.DEPLOY_PORT || 22 }}
+          envs: IMAGE_TAG
+          command_timeout: 20m
+          script: |
+            set -euo pipefail
+            cd "${{ secrets.DEPLOY_PATH }}"
+
+            export REGISTRY="${{ env.REGISTRY }}"
+            export IMAGE_REPO="${{ env.IMAGE_REPO }}"
+            export IMAGE_TAG="$IMAGE_TAG"
+
+            COMPOSE="docker compose -f docker-compose.deploy.yml"
+
+            # La versión en marcha se apunta en un fichero al terminar cada
+            # despliegue: es lo que permite volver atrás si el nuevo no arranca.
+            PREVIOUS_TAG="$(cat .deployed-tag 2>/dev/null || true)"
+            echo "Versión anterior: ${PREVIOUS_TAG:-desconocida} → nueva: $IMAGE_TAG"
+
+            echo "${{ secrets.REGISTRY_TOKEN || secrets.GITHUB_TOKEN }}" \
+              | docker login "$REGISTRY" -u "${{ github.actor }}" --password-stdin
+
+            echo "== 1/4 Descargando imágenes =="
+            $COMPOSE --profile migrate pull
+
+            echo "== 2/4 Base de datos arriba =="
+            $COMPOSE up -d postgres
+
+            echo "== 3/4 Migraciones =="
+            # Si esto falla, la API vieja sigue sirviendo: no se ha tocado nada.
+            $COMPOSE run --rm migrate
+
+            echo "== 4/4 Levantando la versión nueva =="
+            $COMPOSE up -d --remove-orphans
+
+            echo "== Comprobando que responde =="
+            ok=0
+            for i in $(seq 1 30); do
+              if curl -fsS "http://127.0.0.1:${API_PORT:-3000}/health" >/dev/null; then
+                ok=1; break
+              fi
+              sleep 5
+            done
+
+            if [ "$ok" -ne 1 ]; then
+              echo "La API nueva no responde en /health."
+              if [ -n "${PREVIOUS_TAG:-}" ]; then
+                echo "Volviendo a $PREVIOUS_TAG (las migraciones NO se revierten:"
+                echo "por eso deben ser siempre compatibles hacia atrás)."
+                IMAGE_TAG="$PREVIOUS_TAG" $COMPOSE up -d
+              fi
+              exit 1
+            fi
+
+            echo "$IMAGE_TAG" > .deployed-tag
+            echo "Despliegue correcto en $IMAGE_TAG"
+            docker image prune -f
+
+      - name: Resumen
+        if: ${{ always() }}
+        run: |
+          {
+            echo "### Despliegue"
+            echo ""
+            echo "- Versión: \`${{ needs.images.outputs.tag }}\`"
+            echo "- Resultado: ${{ job.status }}"
+          } >> "$GITHUB_STEP_SUMMARY"

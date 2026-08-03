@@ -31,11 +31,7 @@ export function resolveTheme(mode: ThemeMode, systemTheme: ResolvedTheme): Resol
 
 export const THEME_STORAGE_KEY = 'pastortools.theme';
 
-/**
- * Crea el store de tema para una plataforma concreta. Solo se persiste `mode`:
- * `systemTheme` y `resolvedTheme` se recalculan siempre al arrancar, porque el
- * usuario puede haber cambiado el tema del sistema con la app cerrada.
- */
+/** Crea el store de tema para una plataforma concreta. */
 export function createThemeStore(adapter: ThemeAdapter) {
   const initialSystemTheme = adapter.getSystemTheme();
 
@@ -61,16 +57,30 @@ export function createThemeStore(adapter: ThemeAdapter) {
         name: THEME_STORAGE_KEY,
         storage: createJSONStorage(() => adapter.storage),
         partialize: (state) => ({ mode: state.mode }),
-        onRehydrateStorage: () => (state) => {
-          if (!state) return;
+        /**
+         * Solo se guarda `mode`; `systemTheme` y `resolvedTheme` se recalculan
+         * al rehidratar, porque el usuario puede haber cambiado el tema del
+         * sistema con la app cerrada.
+         *
+         * Va aquí y no en `onRehydrateStorage` a propósito: con un
+         * almacenamiento síncrono (localStorage) esa callback se ejecuta
+         * DENTRO de `create()`, cuando `useThemeStore` todavía está en su zona
+         * muerta temporal; el ReferenceError lo silencia zustand y el tema
+         * guardado se perdía en cada recarga.
+         */
+        merge: (persisted, current) => {
+          const mode = (persisted as Partial<ThemeState> | undefined)?.mode ?? current.mode;
           const systemTheme = adapter.getSystemTheme();
-          const resolvedTheme = resolveTheme(state.mode, systemTheme);
-          useThemeStore.setState({ systemTheme, resolvedTheme });
-          adapter.applyTheme?.(resolvedTheme, state.mode);
+          return { ...current, mode, systemTheme, resolvedTheme: resolveTheme(mode, systemTheme) };
         },
       },
     ),
   );
+
+  const applyCurrent = (): void => {
+    const { resolvedTheme, mode } = useThemeStore.getState();
+    adapter.applyTheme?.(resolvedTheme, mode);
+  };
 
   // El tema del sistema puede cambiar mientras la app está abierta.
   adapter.subscribeToSystem((systemTheme) => {
@@ -80,7 +90,10 @@ export function createThemeStore(adapter: ThemeAdapter) {
     if (mode === 'system') adapter.applyTheme?.(resolvedTheme, mode);
   });
 
-  adapter.applyTheme?.(useThemeStore.getState().resolvedTheme, useThemeStore.getState().mode);
+  // Con localStorage la hidratación ya ha terminado aquí; con AsyncStorage
+  // (móvil) no, y por eso hace falta además el aviso de fin de hidratación.
+  applyCurrent();
+  useThemeStore.persist.onFinishHydration(applyCurrent);
 
   return useThemeStore;
 }

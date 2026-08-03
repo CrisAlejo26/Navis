@@ -1,3 +1,5 @@
+/* eslint-disable no-console -- es un script de consola: su salida ES la interfaz */
+
 /**
  * Semilla de desarrollo: crea un usuario administrador con su perfil.
  *
@@ -5,8 +7,10 @@
  *
  * El usuario se crea a través de la API de Better Auth (no con SQL directo)
  * para que la contraseña se hashee exactamente igual que en producción.
+ * Funciona con los dos drivers: SQLite (local) y Postgres (compartido).
  */
-import { auth, authPool } from '../../auth/auth';
+import { auth } from '../../auth/auth';
+import { isPostgres } from '../column-types';
 import { dataSource } from '../data-source';
 
 const SEED_USER = {
@@ -15,36 +19,42 @@ const SEED_USER = {
   name: 'Administrador',
 };
 
+/** Postgres numera los parámetros ($1, $2…); SQLite usa interrogaciones. */
+const p = (index: number): string => (isPostgres ? `$${index}` : '?');
+
 async function seed(): Promise<void> {
   await dataSource.initialize();
 
   try {
-    const existing = await authPool.query<{ id: string }>('SELECT id FROM "user" WHERE email = $1', [
-      SEED_USER.email,
-    ]);
+    const existing = await dataSource.query<{ id: string }[]>(
+      `SELECT id FROM "user" WHERE email = ${p(1)}`,
+      [SEED_USER.email],
+    );
 
-    let userId = existing.rows[0]?.id;
+    let userId = existing[0]?.id;
 
     if (userId) {
       console.log(`· El usuario ${SEED_USER.email} ya existe`);
     } else {
       const created = await auth.api.signUpEmail({ body: SEED_USER });
       userId = created.user.id;
-      await authPool.query('UPDATE "user" SET role = $1 WHERE id = $2', ['admin', userId]);
+      await dataSource.query(`UPDATE "user" SET role = ${p(1)} WHERE id = ${p(2)}`, [
+        'admin',
+        userId,
+      ]);
       console.log(`✅ Usuario creado: ${SEED_USER.email} / ${SEED_USER.password} (rol admin)`);
     }
 
     await dataSource.query(
-      `INSERT INTO "profiles" ("user_id", "church", "timezone")
-       VALUES ($1, $2, $3)
+      `INSERT INTO "profiles" ("id", "user_id", "church", "timezone")
+       VALUES (${p(1)}, ${p(2)}, ${p(3)}, ${p(4)})
        ON CONFLICT ("user_id") DO NOTHING`,
-      [userId, 'Iglesia de ejemplo', 'Europe/Madrid'],
+      [crypto.randomUUID(), userId, 'Iglesia de ejemplo', 'Europe/Madrid'],
     );
 
     console.log('✅ Semilla completada');
   } finally {
     await dataSource.destroy();
-    await authPool.end();
   }
 }
 

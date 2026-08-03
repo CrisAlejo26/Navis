@@ -14,7 +14,9 @@ export class PythonServiceProvider implements AiProvider {
 
   async complete(prompt: string, options?: AiCompletionOptions): Promise<AiCompletionResult> {
     if (!env.AI_SERVICE_URL) {
-      throw new ServiceUnavailableException('Falta AI_SERVICE_URL para el proveedor python-service');
+      throw new ServiceUnavailableException(
+        'Falta AI_SERVICE_URL para el proveedor python-service',
+      );
     }
 
     const response = await fetch(`${env.AI_SERVICE_URL}/v1/complete`, {

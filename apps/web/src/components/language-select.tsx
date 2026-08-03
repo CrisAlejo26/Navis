@@ -10,7 +10,7 @@ export function LanguageSelect() {
   const current = (i18n.resolvedLanguage ?? getLocale()) as Locale;
 
   return (
-    <label className="text-muted-foreground inline-flex items-center gap-2 text-sm">
+    <label className="gap-2 text-sm inline-flex items-center text-muted-foreground">
       <Languages size={16} aria-hidden />
       <span className="sr-only">{t('language.label')}</span>
       <select
@@ -19,7 +19,7 @@ export function LanguageSelect() {
           setLocale(event.target.value as Locale);
         }}
         aria-label={t('language.label')}
-        className="bg-card text-foreground h-9 rounded-lg border px-2 text-sm"
+        className="h-9 px-2 text-sm rounded-lg border bg-card text-foreground"
       >
         {LOCALES.map((locale) => (
           <option key={locale} value={locale}>

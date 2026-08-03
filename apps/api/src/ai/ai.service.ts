@@ -1,7 +1,12 @@
 import { Inject, Injectable, ServiceUnavailableException } from '@nestjs/common';
 
 import { env } from '../config/env';
-import { AI_PROVIDER, type AiCompletionOptions, type AiCompletionResult, type AiProvider } from './ai.types';
+import {
+  AI_PROVIDER,
+  type AiCompletionOptions,
+  type AiCompletionResult,
+  type AiProvider,
+} from './ai.types';
 
 @Injectable()
 export class AiService {

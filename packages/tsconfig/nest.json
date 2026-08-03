@@ -6,6 +6,11 @@
     "module": "CommonJS",
     "moduleResolution": "Node",
     "outDir": "dist",
+    // La API es una aplicación, no una librería: nadie importa sus tipos. Sin
+    // esto, TS exige poder «nombrar» tipos de módulos con `export =`
+    // (better-sqlite3) que solo estorban en el .d.ts.
+    "declaration": false,
+    "declarationMap": false,
     "types": ["node"],
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,

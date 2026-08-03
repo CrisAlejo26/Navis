@@ -1,3 +1,5 @@
+/* eslint-disable react-refresh/only-export-components -- este fichero es la
+   tabla de rutas, no un módulo de componentes: exporta `router`. */
 import { lazy, Suspense } from 'react';
 import { createBrowserRouter } from 'react-router';
 
@@ -49,7 +51,9 @@ export const router = createBrowserRouter([
       { index: true, element: <DashboardPage /> },
       {
         path: 'calendar',
-        element: <PlaceholderPage titleKey="nav.calendar" rfc="0002-calendario-programaciones.md" />,
+        element: (
+          <PlaceholderPage titleKey="nav.calendar" rfc="0002-calendario-de-programaciones.md" />
+        ),
       },
       {
         path: 'believers',
@@ -65,9 +69,7 @@ export const router = createBrowserRouter([
       },
       {
         path: 'communications',
-        element: (
-          <PlaceholderPage titleKey="nav.communications" rfc="0006-comunicaciones-chat.md" />
-        ),
+        element: <PlaceholderPage titleKey="nav.communications" rfc="0006-comunicaciones.md" />,
       },
       {
         path: 'settings',

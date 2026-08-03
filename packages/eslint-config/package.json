@@ -10,7 +10,12 @@
     "./nest": "./nest.js",
     "./expo": "./expo.js"
   },
-  "files": ["index.js", "react.js", "nest.js", "expo.js"],
+  "files": [
+    "index.js",
+    "react.js",
+    "nest.js",
+    "expo.js"
+  ],
   "dependencies": {
     "@eslint/js": "10.0.1",
     "@vitest/eslint-plugin": "1.6.25",

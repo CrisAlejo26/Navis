@@ -20,7 +20,7 @@ export function ThemeToggle() {
     <div
       role="radiogroup"
       aria-label={t('theme.label')}
-      className="bg-muted inline-flex items-center gap-0.5 rounded-lg p-0.5"
+      className="gap-0.5 p-0.5 inline-flex items-center rounded-lg bg-muted"
     >
       {options.map(({ mode: value, Icon, labelKey }) => (
         <button
@@ -33,9 +33,9 @@ export function ThemeToggle() {
             setMode(value);
           }}
           className={cn(
-            'inline-flex h-8 w-8 items-center justify-center rounded-md transition',
+            'h-8 w-8 inline-flex items-center justify-center rounded-md transition',
             mode === value
-              ? 'bg-card text-foreground shadow-sm'
+              ? 'shadow-sm bg-card text-foreground'
               : 'text-muted-foreground hover:text-foreground',
           )}
         >

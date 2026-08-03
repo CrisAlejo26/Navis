@@ -20,10 +20,10 @@ export function reactConfig({ tsconfigRootDir }) {
       languageOptions: {
         globals: { ...globals.browser },
       },
-      extends: [
-        reactHooks.configs['recommended-latest'],
-        jsxA11y.flatConfigs.recommended,
-      ],
+      // `configs.flat.*`, no `configs['recommended-latest']`: en
+      // eslint-plugin-react-hooks 7 esa entrada sigue siendo del formato viejo
+      // (eslintrc) y ESLint 10 la rechaza.
+      extends: [reactHooks.configs.flat['recommended-latest'], jsxA11y.flatConfigs.recommended],
       plugins: { 'react-refresh': reactRefresh },
       rules: {
         'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],

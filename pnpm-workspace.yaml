@@ -1,6 +1,6 @@
 packages:
-  - 'apps/*'
-  - 'packages/*'
+  - "apps/*"
+  - "packages/*"
 
 # Versiones centralizadas: se referencian con "catalog:" desde cualquier package.json
 # del workspace, de modo que una sola línea aquí actualiza todo el monorepo.
@@ -10,17 +10,17 @@ catalog:
   typescript: 5.9.3
   zod: 4.4.3
   zustand: 5.0.14
-  '@tanstack/react-query': 5.101.4
-  '@tanstack/react-query-devtools': 5.101.4
+  "@tanstack/react-query": 5.101.4
+  "@tanstack/react-query-devtools": 5.101.4
   tailwindcss: 4.3.3
-  '@tailwindcss/vite': 4.3.3
+  "@tailwindcss/vite": 4.3.3
   vitest: 4.1.10
-  '@vitest/coverage-v8': 4.1.10
+  "@vitest/coverage-v8": 4.1.10
 
 # Expo/Metro no resuelven bien el store aislado de pnpm dentro de un monorepo.
 onlyBuiltDependencies:
-  - '@swc/core'
-  - argon2
+  - "@swc/core"
+  - better-sqlite3
   - esbuild
   - sharp
   - unrs-resolver

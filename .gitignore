@@ -42,6 +42,16 @@ apps/mobile/ios/
 *.mobileprovision
 *.orig.*
 
+# Rust / Tauri (apps/desktop)
+target/
+apps/desktop/src-tauri/gen/
+
+# Base de datos local en modo SQLite
+data/
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+
 # Python (apps/ai)
 __pycache__/
 *.py[cod]
@@ -60,3 +70,6 @@ pnpm-debug.log*
 !.vscode/settings.json
 !.vscode/extensions.json
 !.vscode/launch.json
+
+# Generado por el plugin de Swagger del CLI de Nest
+apps/api/src/metadata.ts

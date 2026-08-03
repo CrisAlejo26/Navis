@@ -1,0 +1,26 @@
+{
+  "extends": ["expo/tsconfig.base", "@pastortools/tsconfig/react.json"],
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+    "types": ["jest", "nativewind/types"],
+    "lib": ["ES2023"],
+    "jsx": "react-jsx",
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true
+  },
+  "include": [
+    "app",
+    "src",
+    "app.config.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".expo/types/**/*.ts",
+    "expo-env.d.ts",
+    "nativewind-env.d.ts"
+  ],
+  "exclude": ["node_modules", "dist", ".expo", "android", "ios"]
+}

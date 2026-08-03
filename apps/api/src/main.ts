@@ -23,6 +23,10 @@ async function bootstrap(): Promise<void> {
 
   app.useLogger(app.get(Logger));
 
+  // Detrás de nginx o Traefik, la IP real viaja en X-Forwarded-For: sin esto,
+  // el limitador de peticiones ve a todo el mundo como la misma IP.
+  if (env.TRUST_PROXY) app.set('trust proxy', 1);
+
   app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
   app.enableCors({
     origin: env.CORS_ORIGINS,

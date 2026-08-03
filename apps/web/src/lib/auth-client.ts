@@ -1,6 +1,8 @@
 import { inferAdditionalFields } from 'better-auth/client/plugins';
 import { createAuthClient } from 'better-auth/react';
 
+import { env } from './env';
+
 /**
  * Cliente de Better Auth. La sesión viaja en una cookie httpOnly emitida por
  * la API, así que no hay token en localStorage.
@@ -9,7 +11,7 @@ import { createAuthClient } from 'better-auth/react';
  * añadió a la tabla `user` (role, locale) para que vengan tipados.
  */
 export const authClient = createAuthClient({
-  baseURL: import.meta.env.VITE_AUTH_URL,
+  baseURL: env.VITE_AUTH_URL,
   plugins: [
     inferAdditionalFields({
       user: {

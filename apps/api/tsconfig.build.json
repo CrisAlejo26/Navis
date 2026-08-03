@@ -1,8 +1,17 @@
 {
+  // Sin `rootDir` a propósito: el builder de SWC del CLI de Nest solo aplica
+  // `stripLeadingPaths` cuando NO hay rootDir. Con él, la salida quedaría en
+  // `dist/src/main.js` en vez de `dist/main.js`.
   "extends": "./tsconfig.json",
-  "compilerOptions": {
-    "rootDir": "./src"
-  },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "test", "**/*.test.ts", "**/*.spec.ts", "*.config.ts"]
+  "exclude": [
+    "node_modules",
+    "dist",
+    "test",
+    "**/*.test.ts",
+    "**/*.spec.ts",
+    "*.config.ts",
+    "*.config.mts",
+    "scripts"
+  ]
 }

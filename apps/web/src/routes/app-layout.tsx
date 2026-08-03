@@ -37,11 +37,11 @@ export function AppLayout() {
   };
 
   return (
-    <div className="flex min-h-dvh flex-col md:flex-row">
-      <aside className="bg-card hidden w-60 shrink-0 flex-col border-r p-4 md:flex">
+    <div className="md:flex-row flex min-h-dvh flex-col">
+      <aside className="w-60 p-4 md:flex hidden shrink-0 flex-col border-r bg-card">
         <p className="mb-6 px-2 text-lg font-semibold">{t('common.appName')}</p>
 
-        <nav className="flex flex-1 flex-col gap-1">
+        <nav className="gap-1 flex flex-1 flex-col">
           {navItems.map(({ to, labelKey, Icon, end }) => (
             <NavLink
               key={to}
@@ -49,7 +49,7 @@ export function AppLayout() {
               end={end}
               className={({ isActive }) =>
                 cn(
-                  'flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition',
+                  'gap-3 px-3 py-2 text-sm flex items-center rounded-lg transition',
                   isActive
                     ? 'bg-primary text-primary-foreground'
                     : 'text-muted-foreground hover:bg-muted hover:text-foreground',
@@ -62,9 +62,9 @@ export function AppLayout() {
           ))}
         </nav>
 
-        <div className="border-t pt-3">
+        <div className="pt-3 border-t">
           {session?.user.name && (
-            <p className="text-muted-foreground mb-2 px-3 text-xs">{session.user.name}</p>
+            <p className="mb-2 px-3 text-xs text-muted-foreground">{session.user.name}</p>
           )}
           <Button
             variant="ghost"
@@ -78,12 +78,12 @@ export function AppLayout() {
         </div>
       </aside>
 
-      <main className="flex-1 p-4 pb-24 md:p-8 md:pb-8">
+      <main className="p-4 pb-24 md:p-8 md:pb-8 flex-1">
         <Outlet />
       </main>
 
       {/* Navegación inferior en móvil (la PWA se instala sobre todo en el teléfono). */}
-      <nav className="bg-card fixed inset-x-0 bottom-0 flex justify-around border-t py-2 md:hidden">
+      <nav className="inset-x-0 bottom-0 py-2 md:hidden fixed flex justify-around border-t bg-card">
         {navItems.slice(0, 5).map(({ to, labelKey, Icon, end }) => (
           <NavLink
             key={to}
@@ -91,7 +91,7 @@ export function AppLayout() {
             end={end}
             className={({ isActive }) =>
               cn(
-                'flex flex-col items-center gap-1 px-2 text-[10px]',
+                'gap-1 px-2 flex flex-col items-center text-[10px]',
                 isActive ? 'text-primary' : 'text-muted-foreground',
               )
             }
