@@ -18,12 +18,18 @@ ARG VITE_AUTH_URL=http://localhost:3000
 ENV VITE_API_URL=$VITE_API_URL
 ENV VITE_AUTH_URL=$VITE_AUTH_URL
 
+# El monorepo usa `node-linker=hoisted` (obligatorio para Metro/Expo), así que
+# pnpm deja en la raíz la UNIÓN de dependencias del workspace por mucho que se
+# filtre; entre ellas better-sqlite3, que se compila. De ahí el compilador: vive
+# solo en esta etapa y no llega a la imagen final.
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends python3 make g++ \
+  && rm -rf /var/lib/apt/lists/*
+
 COPY . .
 
-# Filtrado a propósito: sin `--filter`, pnpm instalaría también las
-# dependencias de la API (better-sqlite3, que se compila) y de la app móvil.
-# Aquí no hay compilador, así que fallaba; y aunque lo hubiera, sobra.
-RUN --mount=type=cache,id=pnpm-store,target=/pnpm/store   HUSKY=0 pnpm install --frozen-lockfile --filter @pastortools/web...
+RUN --mount=type=cache,id=pnpm-store,target=/pnpm/store \
+  HUSKY=0 pnpm install --frozen-lockfile --filter @pastortools/web...
 RUN pnpm --filter @pastortools/web... build
 
 # --- Runtime -----------------------------------------------------------------
