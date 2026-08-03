@@ -14,6 +14,10 @@ apps/web/public/pwa-*.png
 apps/web/public/apple-touch-icon.png
 *.min.*
 
+# Ajustes locales de cada máquina: los escribe la herramienta, están ignorados
+# por git y no llegan a CI, pero tumbaban `pnpm check` en local.
+.claude/settings.local.json
+
 # Skills traídas de fuera: se actualizan copiando de upstream, y reformatearlas
 # convertiría cada actualización en un diff ilegible.
 .claude/skills/ui-ux-pro-max
