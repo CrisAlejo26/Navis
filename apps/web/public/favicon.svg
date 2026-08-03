@@ -1,14 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Fidus">
   <!--
-    Cayado de pastor: el símbolo de la marca. Nada de cruces (ver
-    .claude/rules/07-sin-cruces-en-la-identidad.md).
-
-    Este fichero es la fuente única del icono. Los PNG de web, móvil y
-    escritorio se generan desde aquí con `pnpm icons`.
+    GENERADO por `pnpm icons` desde scripts/brand-shape.mjs. No lo edites a
+    mano: la geometría vive allí y de ella salen también los PNG.
   -->
   <rect width="64" height="64" rx="14" fill="#3b63be" />
   <path
-    d="M27 52V21a9 9 0 0 1 18 0 5 5 0 0 1-10 0"
+    d="M27 52 L27 21 A9 9 0 0 1 45 21 A5 5 0 0 1 35 21"
     fill="none"
     stroke="#ffffff"
     stroke-width="6"
