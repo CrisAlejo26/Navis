@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { DeleteRoleDialog } from '@/components/access/delete-role-dialog';
+import { RoleCard } from '@/components/access/role-card';
 import { RoleDialog } from '@/components/access/role-dialog';
 import { RoleRow as RoleCells } from '@/components/access/role-row';
 import { RolesToolbar } from '@/components/access/roles-toolbar';
@@ -49,6 +50,17 @@ export function RolesPanel() {
   const page = Math.min(query.page, totalPages);
   const visible = rows.slice((page - 1) * query.limit, page * query.limit);
 
+  /** Lo mismo alimenta la fila de la tabla y la ficha de móvil. */
+  const cells = (role: RoleRow) => ({
+    role,
+    onEdit: () => {
+      setEditing(role);
+    },
+    onDelete: () => {
+      setDeleting(role);
+    },
+  });
+
   const columns = [
     { field: 'slug', label: t('roles.columnRole') },
     { field: 'level', label: t('roles.columnLevel') },
@@ -89,17 +101,8 @@ export function RolesPanel() {
             </TableHeader>
           </>
         }
-        renderRow={(role) => (
-          <RoleCells
-            role={role}
-            onEdit={() => {
-              setEditing(role);
-            }}
-            onDelete={() => {
-              setDeleting(role);
-            }}
-          />
-        )}
+        renderRow={(role) => <RoleCells {...cells(role)} />}
+        renderCard={(role) => <RoleCard {...cells(role)} />}
         footer={
           <Pagination
             page={page}

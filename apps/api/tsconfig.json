@@ -7,6 +7,13 @@
       "@/*": ["src/*"]
     }
   },
-  "include": ["src/**/*", "test/**/*", "*.config.ts", "*.config.mts", "scripts/**/*"],
+  "include": [
+    "src/**/*",
+    "test/**/*",
+    "*.config.ts",
+    "*.config.mts",
+    "vitest.setup.ts",
+    "scripts/**/*"
+  ],
   "exclude": ["node_modules", "dist"]
 }

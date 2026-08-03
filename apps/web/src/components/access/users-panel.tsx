@@ -1,10 +1,11 @@
 import { useManagedUsers } from '@navis/api-client';
-import { USER_SORT_FIELDS, type RoleSlug } from '@navis/shared';
+import { USER_SORT_FIELDS, type ManagedUser, type RoleSlug } from '@navis/shared';
 import { UserSearch } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router';
 
+import { UserCard } from '@/components/access/user-card';
 import { UserDialogs } from '@/components/access/user-dialogs';
 import { UserRow } from '@/components/access/user-row';
 import { UsersToolbar } from '@/components/access/users-toolbar';
@@ -52,6 +53,22 @@ export function UsersPanel() {
     );
   };
 
+  /** Lo mismo alimenta la fila de la tabla y la ficha de móvil. */
+  const cells = (user: ManagedUser) => ({
+    user,
+    isSelf: user.id === session?.user.id,
+    catalog,
+    onEdit: () => {
+      setDialog({ ...NO_DIALOG, editing: user });
+    },
+    onChangePassword: () => {
+      setDialog({ ...NO_DIALOG, changingPassword: user });
+    },
+    onDelete: () => {
+      setDialog({ ...NO_DIALOG, deleting: user });
+    },
+  });
+
   const columns = [
     { field: 'name', label: t('roles.columnName') },
     { field: 'email', label: t('roles.columnEmail') },
@@ -94,22 +111,8 @@ export function UsersPanel() {
             </TableHeader>
           </>
         }
-        renderRow={(user) => (
-          <UserRow
-            user={user}
-            isSelf={user.id === session?.user.id}
-            catalog={catalog}
-            onEdit={() => {
-              setDialog({ ...NO_DIALOG, editing: user });
-            }}
-            onChangePassword={() => {
-              setDialog({ ...NO_DIALOG, changingPassword: user });
-            }}
-            onDelete={() => {
-              setDialog({ ...NO_DIALOG, deleting: user });
-            }}
-          />
-        )}
+        renderRow={(user) => <UserRow {...cells(user)} />}
+        renderCard={(user) => <UserCard {...cells(user)} />}
         footer={
           data && (
             <Pagination

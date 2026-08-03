@@ -9,6 +9,9 @@ export default defineConfig({
     globals: true,
     environment: 'node',
     include: ['src/**/*.{test,spec}.ts'],
+    // Corre antes de importar cada fichero de test, que es lo que hace falta:
+    // `config/env` valida el entorno al cargarse.
+    setupFiles: ['./vitest.setup.ts'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'lcov'],

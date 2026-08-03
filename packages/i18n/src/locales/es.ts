@@ -35,6 +35,7 @@ export const es = {
     settings: 'Ajustes',
     users: 'Usuarios',
     more: 'Más',
+    menu: 'Menú',
   },
   auth: {
     signIn: 'Iniciar sesión',
