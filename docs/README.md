@@ -1,4 +1,4 @@
-# Documentación de Fidus
+# Documentación de Navis
 
 Estructura estándar de la industria para separar **decisiones** de **propuestas**:
 

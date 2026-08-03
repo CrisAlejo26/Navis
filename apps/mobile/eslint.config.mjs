@@ -1,4 +1,4 @@
-import { expoConfig } from '@fidus/eslint-config/expo';
+import { expoConfig } from '@navis/eslint-config/expo';
 
 export default [
   ...expoConfig({ tsconfigRootDir: import.meta.dirname }),

@@ -1,3 +1,3 @@
-import { reactConfig } from '@fidus/eslint-config/react';
+import { reactConfig } from '@navis/eslint-config/react';
 
 export default reactConfig({ tsconfigRootDir: import.meta.dirname });

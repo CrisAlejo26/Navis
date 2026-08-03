@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.7
 #
-# PWA de Fidus servida por nginx. Se construye desde la RAÍZ del monorepo:
+# PWA de Navis servida por nginx. Se construye desde la RAÍZ del monorepo:
 #   docker build -f docker/web.Dockerfile .
 #
 # OJO: Vite incrusta las variables VITE_* en el bundle EN TIEMPO DE BUILD. Para
@@ -29,8 +29,8 @@ RUN apt-get update \
 COPY . .
 
 RUN --mount=type=cache,id=pnpm-store,target=/pnpm/store \
-  HUSKY=0 pnpm install --frozen-lockfile --filter @fidus/web...
-RUN pnpm --filter @fidus/web... build
+  HUSKY=0 pnpm install --frozen-lockfile --filter @navis/web...
+RUN pnpm --filter @navis/web... build
 
 # --- Runtime -----------------------------------------------------------------
 FROM nginx:1.29-alpine AS runtime

@@ -1,4 +1,4 @@
-import { useProfile, useUpdateProfile } from '@fidus/api-client';
+import { useProfile, useUpdateProfile } from '@navis/api-client';
 import { useTranslation } from 'react-i18next';
 
 import { LanguageSelect } from '@/components/language-select';

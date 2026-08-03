@@ -1,8 +1,8 @@
 [package]
-name = "fidus-desktop"
+name = "navis-desktop"
 version = "0.1.0"
-description = "Fidus — herramientas para pastores e iglesias"
-authors = ["Fidus"]
+description = "Navis — herramientas para pastores e iglesias"
+authors = ["Navis"]
 license = "MIT"
 edition = "2021"
 rust-version = "1.90"
@@ -10,7 +10,7 @@ rust-version = "1.90"
 # El binario y la librería comparten nombre: `main.rs` solo llama a `run()` de
 # `lib.rs`, que es lo que también usa el objetivo móvil de Tauri.
 [lib]
-name = "fidus_desktop_lib"
+name = "navis_desktop_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]

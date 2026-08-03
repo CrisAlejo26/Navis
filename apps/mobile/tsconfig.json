@@ -1,5 +1,5 @@
 {
-  "extends": ["expo/tsconfig.base", "@fidus/tsconfig/react.json"],
+  "extends": ["expo/tsconfig.base", "@navis/tsconfig/react.json"],
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {

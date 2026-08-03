@@ -11,7 +11,7 @@ export interface AiCompletionResult {
 }
 
 /**
- * Punto de extensión para toda la IA de Fidus. Hoy hay dos
+ * Punto de extensión para toda la IA de Navis. Hoy hay dos
  * implementaciones (Anthropic directo y el microservicio Python de apps/ai);
  * añadir una tercera no debería tocar nada fuera de este módulo.
  */

@@ -1,9 +1,9 @@
 {
-  "name": "@fidus/mobile",
+  "name": "@navis/mobile",
   "version": "0.1.0",
   "private": true,
   "license": "MIT",
-  "description": "App móvil de Fidus (Expo 57 + expo-router + NativeWind 5)",
+  "description": "App móvil de Navis (Expo 57 + expo-router + NativeWind 5)",
   "main": "expo-router/entry",
   "scripts": {
     "dev": "expo start",
@@ -23,10 +23,10 @@
   "dependencies": {
     "@better-auth/expo": "1.6.25",
     "@expo/vector-icons": "^15.0.2",
-    "@fidus/api-client": "workspace:*",
-    "@fidus/i18n": "workspace:*",
-    "@fidus/shared": "workspace:*",
-    "@fidus/theme": "workspace:*",
+    "@navis/api-client": "workspace:*",
+    "@navis/i18n": "workspace:*",
+    "@navis/shared": "workspace:*",
+    "@navis/theme": "workspace:*",
     "@react-native-async-storage/async-storage": "2.2.0",
     "@tanstack/react-query": "catalog:",
     "better-auth": "1.6.25",
@@ -62,8 +62,8 @@
   },
   "devDependencies": {
     "@babel/core": "7.29.7",
-    "@fidus/eslint-config": "workspace:*",
-    "@fidus/tsconfig": "workspace:*",
+    "@navis/eslint-config": "workspace:*",
+    "@navis/tsconfig": "workspace:*",
     "@tailwindcss/postcss": "4.3.3",
     "@testing-library/react-native": "14.0.1",
     "@types/jest": "29.5.14",

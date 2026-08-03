@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import { themeColorsHex } from '@fidus/theme';
+import { themeColorsHex } from '@navis/theme';
 import { Redirect, Tabs } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, View } from 'react-native';

@@ -1,4 +1,4 @@
-//! Fidus de escritorio.
+//! Navis de escritorio.
 //!
 //! Envuelve la misma PWA que se sirve en el navegador (`apps/web`), así que no
 //! hay una tercera interfaz que mantener: lo que se arregla en la web se
@@ -24,5 +24,5 @@ pub fn run() {
     builder
         .invoke_handler(tauri::generate_handler![app_version])
         .run(tauri::generate_context!())
-        .expect("error al arrancar la aplicación de Fidus");
+        .expect("error al arrancar la aplicación de Navis");
 }

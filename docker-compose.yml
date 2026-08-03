@@ -6,16 +6,16 @@
 # Recuerda: el modo por defecto del proyecto es SQLite y no necesita nada de
 # esto. Postgres es el modo compartido (ver docs/rfcs/0007-modo-local-y-servidor.md).
 
-name: fidus
+name: navis
 
 services:
   postgres:
     image: postgres:18-alpine
     restart: unless-stopped
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-fidus}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-fidus_dev}
-      POSTGRES_DB: ${POSTGRES_DB:-fidus}
+      POSTGRES_USER: ${POSTGRES_USER:-navis}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-navis_dev}
+      POSTGRES_DB: ${POSTGRES_DB:-navis}
     ports:
       - "${POSTGRES_PORT:-5432}:5432"
     volumes:
@@ -24,7 +24,7 @@ services:
       - postgres-data:/var/lib/postgresql
       - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-fidus} -d ${POSTGRES_DB:-fidus}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-navis} -d ${POSTGRES_DB:-navis}"]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -42,12 +42,12 @@ services:
       DB_DRIVER: postgres
       POSTGRES_HOST: postgres
       POSTGRES_PORT: 5432
-      POSTGRES_USER: ${POSTGRES_USER:-fidus}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-fidus_dev}
-      POSTGRES_DB: ${POSTGRES_DB:-fidus}
+      POSTGRES_USER: ${POSTGRES_USER:-navis}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-navis_dev}
+      POSTGRES_DB: ${POSTGRES_DB:-navis}
       BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:?define BETTER_AUTH_SECRET en tu .env}
       BETTER_AUTH_URL: ${BETTER_AUTH_URL:-http://localhost:3000}
-      AUTH_TRUSTED_ORIGINS: ${AUTH_TRUSTED_ORIGINS:-http://localhost:5173,http://localhost:8081,fidus://}
+      AUTH_TRUSTED_ORIGINS: ${AUTH_TRUSTED_ORIGINS:-http://localhost:5173,http://localhost:8081,navis://}
       CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:5173,http://localhost:8081}
       TRUST_PROXY: ${TRUST_PROXY:-false}
       LOG_LEVEL: ${LOG_LEVEL:-debug}

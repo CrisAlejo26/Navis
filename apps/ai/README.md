@@ -1,4 +1,4 @@
-# Fidus — microservicio de IA (esqueleto)
+# Navis — microservicio de IA (esqueleto)
 
 Todavía **no está implementado**: solo existen el contrato HTTP y el contenedor,
 para que añadirlo más adelante no obligue a tocar el resto del monorepo.

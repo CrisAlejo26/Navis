@@ -1,5 +1,5 @@
 {
-  "name": "@fidus/theme",
+  "name": "@navis/theme",
   "version": "0.1.0",
   "private": true,
   "license": "MIT",
@@ -29,14 +29,14 @@
     "clean": "rimraf dist .turbo *.tsbuildinfo"
   },
   "dependencies": {
-    "@fidus/shared": "workspace:*"
+    "@navis/shared": "workspace:*"
   },
   "peerDependencies": {
     "zustand": ">=5"
   },
   "devDependencies": {
-    "@fidus/eslint-config": "workspace:*",
-    "@fidus/tsconfig": "workspace:*",
+    "@navis/eslint-config": "workspace:*",
+    "@navis/tsconfig": "workspace:*",
     "@types/node": "26.1.2",
     "eslint": "10.8.0",
     "rimraf": "6.1.3",

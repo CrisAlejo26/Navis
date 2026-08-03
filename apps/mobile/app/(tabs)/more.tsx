@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import { themeColorsHex } from '@fidus/theme';
+import { themeColorsHex } from '@navis/theme';
 import { Link } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text } from 'react-native';

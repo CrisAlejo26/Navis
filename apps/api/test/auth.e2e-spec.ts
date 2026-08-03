@@ -18,7 +18,7 @@ const body = <T>(response: { body: unknown }): T => response.body as T;
  */
 describe('Auth (e2e)', () => {
   let app: NestExpressApplication;
-  const email = `e2e-${String(Date.now())}@fidus.test`;
+  const email = `e2e-${String(Date.now())}@navis.test`;
   const password = 'Rebano2026Seguro';
   let cookie = '';
 

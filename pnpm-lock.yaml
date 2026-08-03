@@ -44,9 +44,12 @@ importers:
       '@commitlint/config-conventional':
         specifier: 21.2.0
         version: 21.2.0
-      '@fidus/eslint-config':
+      '@navis/eslint-config':
         specifier: workspace:*
         version: link:packages/eslint-config
+      '@resvg/resvg-js':
+        specifier: 2.6.2
+        version: 2.6.2
       '@types/node':
         specifier: 26.1.2
         version: 26.1.2
@@ -86,6 +89,9 @@ importers:
       '@better-auth/expo':
         specifier: 1.6.25
         version: 1.6.25(@better-auth/core@1.6.25(@better-auth/utils@0.4.2)(@better-fetch/fetch@1.3.1)(better-call@1.3.7(zod@4.4.3))(jose@6.2.7)(kysely@0.29.4)(nanostores@1.4.2))(better-auth@1.6.25(@prisma/client@5.22.0)(better-sqlite3@13.0.2)(drizzle-orm@0.41.0(@prisma/client@5.22.0)(@types/better-sqlite3@9.6.0)(@types/pg@8.20.3)(better-sqlite3@12.11.1)(kysely@0.29.4)(pg@8.22.0))(pg@8.22.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(vitest@4.1.10))(expo-constants@57.0.8)(expo-linking@57.0.4)(expo-network@57.0.1(expo@57.0.9)(react@19.2.8))(expo-web-browser@57.0.2(expo@57.0.9)(react-native@0.86.2(@babel/core@7.29.7)(@react-native/jest-preset@0.86.2(@babel/core@7.29.7)(react@19.2.8))(@react-native/metro-config@0.86.2(@babel/core@7.29.7))(@types/react@19.2.18)(react@19.2.8)))
+      '@navis/shared':
+        specifier: workspace:*
+        version: link:../../packages/shared
       '@nestjs/common':
         specifier: 11.1.28
         version: 11.1.28(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)
@@ -110,9 +116,6 @@ importers:
       '@nestjs/typeorm':
         specifier: 11.0.3
         version: 11.0.3(@nestjs/common@11.1.28(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.28)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typeorm@1.1.0(better-sqlite3@13.0.2)(pg@8.22.0))
-      '@fidus/shared':
-        specifier: workspace:*
-        version: link:../../packages/shared
       better-auth:
         specifier: 1.6.25
         version: 1.6.25(@prisma/client@5.22.0)(better-sqlite3@13.0.2)(drizzle-orm@0.41.0(@prisma/client@5.22.0)(@types/better-sqlite3@9.6.0)(@types/pg@8.20.3)(better-sqlite3@12.11.1)(kysely@0.29.4)(pg@8.22.0))(pg@8.22.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(vitest@4.1.10)
@@ -159,18 +162,18 @@ importers:
       '@better-auth/cli':
         specifier: 1.4.21
         version: 1.4.21(@better-fetch/fetch@1.3.1)(@types/better-sqlite3@9.6.0)(better-call@1.3.7(zod@4.4.3))(jose@6.2.7)(kysely@0.29.4)(magicast@0.5.4)(nanostores@1.4.2)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(vitest@4.1.10)
+      '@navis/eslint-config':
+        specifier: workspace:*
+        version: link:../../packages/eslint-config
+      '@navis/tsconfig':
+        specifier: workspace:*
+        version: link:../../packages/tsconfig
       '@nestjs/cli':
         specifier: 11.0.24
         version: 11.0.24(@swc/cli@0.8.1(@swc/core@1.15.47)(chokidar@4.0.3))(@swc/core@1.15.47)(@types/node@26.1.2)(esbuild@0.28.1)(prettier@3.9.6)
       '@nestjs/testing':
         specifier: 11.1.28
         version: 11.1.28(@nestjs/common@11.1.28(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.28)(@nestjs/platform-express@11.1.28)
-      '@fidus/eslint-config':
-        specifier: workspace:*
-        version: link:../../packages/eslint-config
-      '@fidus/tsconfig':
-        specifier: workspace:*
-        version: link:../../packages/tsconfig
       '@swc/cli':
         specifier: 0.8.1
         version: 0.8.1(@swc/core@1.15.47)(chokidar@4.0.3)
@@ -232,10 +235,10 @@ importers:
         specifier: 2.4.1
         version: 2.4.1
     devDependencies:
-      '@fidus/eslint-config':
+      '@navis/eslint-config':
         specifier: workspace:*
         version: link:../../packages/eslint-config
-      '@fidus/tsconfig':
+      '@navis/tsconfig':
         specifier: workspace:*
         version: link:../../packages/tsconfig
       '@tauri-apps/cli':
@@ -259,16 +262,16 @@ importers:
       '@expo/vector-icons':
         specifier: ^15.0.2
         version: 15.1.1(expo-font@57.0.1)(react-native@0.86.2(@babel/core@7.29.7)(@react-native/jest-preset@0.86.2(@babel/core@7.29.7)(react@19.2.8))(@react-native/metro-config@0.86.2(@babel/core@7.29.7))(@types/react@19.2.18)(react@19.2.8))(react@19.2.8)
-      '@fidus/api-client':
+      '@navis/api-client':
         specifier: workspace:*
         version: link:../../packages/api-client
-      '@fidus/i18n':
+      '@navis/i18n':
         specifier: workspace:*
         version: link:../../packages/i18n
-      '@fidus/shared':
+      '@navis/shared':
         specifier: workspace:*
         version: link:../../packages/shared
-      '@fidus/theme':
+      '@navis/theme':
         specifier: workspace:*
         version: link:../../packages/theme
       '@react-native-async-storage/async-storage':
@@ -371,10 +374,10 @@ importers:
       '@babel/core':
         specifier: 7.29.7
         version: 7.29.7
-      '@fidus/eslint-config':
+      '@navis/eslint-config':
         specifier: workspace:*
         version: link:../../packages/eslint-config
-      '@fidus/tsconfig':
+      '@navis/tsconfig':
         specifier: workspace:*
         version: link:../../packages/tsconfig
       '@tailwindcss/postcss':
@@ -419,16 +422,16 @@ importers:
 
   apps/web:
     dependencies:
-      '@fidus/api-client':
+      '@navis/api-client':
         specifier: workspace:*
         version: link:../../packages/api-client
-      '@fidus/i18n':
+      '@navis/i18n':
         specifier: workspace:*
         version: link:../../packages/i18n
-      '@fidus/shared':
+      '@navis/shared':
         specifier: workspace:*
         version: link:../../packages/shared
-      '@fidus/theme':
+      '@navis/theme':
         specifier: workspace:*
         version: link:../../packages/theme
       '@tanstack/react-query':
@@ -474,10 +477,10 @@ importers:
       '@hookform/resolvers':
         specifier: 5.7.1
         version: 5.7.1(@sinclair/typebox@0.34.52)(@standard-schema/spec@1.1.0)(ajv-formats@2.1.1(ajv@8.20.0))(ajv@8.20.0)(class-transformer@0.5.1)(class-validator@0.15.1)(react-hook-form@7.84.0(react@19.2.8))(zod@4.4.3)
-      '@fidus/eslint-config':
+      '@navis/eslint-config':
         specifier: workspace:*
         version: link:../../packages/eslint-config
-      '@fidus/tsconfig':
+      '@navis/tsconfig':
         specifier: workspace:*
         version: link:../../packages/tsconfig
       '@playwright/test':
@@ -555,14 +558,14 @@ importers:
 
   packages/api-client:
     dependencies:
-      '@fidus/shared':
+      '@navis/shared':
         specifier: workspace:*
         version: link:../shared
     devDependencies:
-      '@fidus/eslint-config':
+      '@navis/eslint-config':
         specifier: workspace:*
         version: link:../eslint-config
-      '@fidus/tsconfig':
+      '@navis/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
       '@tanstack/react-query':
@@ -637,14 +640,14 @@ importers:
 
   packages/i18n:
     dependencies:
-      '@fidus/shared':
+      '@navis/shared':
         specifier: workspace:*
         version: link:../shared
     devDependencies:
-      '@fidus/eslint-config':
+      '@navis/eslint-config':
         specifier: workspace:*
         version: link:../eslint-config
-      '@fidus/tsconfig':
+      '@navis/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
       '@types/node':
@@ -681,10 +684,10 @@ importers:
         specifier: 'catalog:'
         version: 4.4.3
     devDependencies:
-      '@fidus/eslint-config':
+      '@navis/eslint-config':
         specifier: workspace:*
         version: link:../eslint-config
-      '@fidus/tsconfig':
+      '@navis/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
       '@types/node':
@@ -708,14 +711,14 @@ importers:
 
   packages/theme:
     dependencies:
-      '@fidus/shared':
+      '@navis/shared':
         specifier: workspace:*
         version: link:../shared
     devDependencies:
-      '@fidus/eslint-config':
+      '@navis/eslint-config':
         specifier: workspace:*
         version: link:../eslint-config
-      '@fidus/tsconfig':
+      '@navis/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
       '@types/node':
@@ -3492,6 +3495,82 @@ packages:
     peerDependenciesMeta:
       '@types/react':
         optional: true
+
+  '@resvg/resvg-js-android-arm-eabi@2.6.2':
+    resolution: {integrity: sha512-FrJibrAk6v29eabIPgcTUMPXiEz8ssrAk7TXxsiZzww9UTQ1Z5KAbFJs+Z0Ez+VZTYgnE5IQJqBcoSiMebtPHA==}
+    engines: {node: '>= 10'}
+    cpu: [arm]
+    os: [android]
+
+  '@resvg/resvg-js-android-arm64@2.6.2':
+    resolution: {integrity: sha512-VcOKezEhm2VqzXpcIJoITuvUS/fcjIw5NA/w3tjzWyzmvoCdd+QXIqy3FBGulWdClvp4g+IfUemigrkLThSjAQ==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [android]
+
+  '@resvg/resvg-js-darwin-arm64@2.6.2':
+    resolution: {integrity: sha512-nmok2LnAd6nLUKI16aEB9ydMC6Lidiiq2m1nEBDR1LaaP7FGs4AJ90qDraxX+CWlVuRlvNjyYJTNv8qFjtL9+A==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [darwin]
+
+  '@resvg/resvg-js-darwin-x64@2.6.2':
+    resolution: {integrity: sha512-GInyZLjgWDfsVT6+SHxQVRwNzV0AuA1uqGsOAW+0th56J7Nh6bHHKXHBWzUrihxMetcFDmQMAX1tZ1fZDYSRsw==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [darwin]
+
+  '@resvg/resvg-js-linux-arm-gnueabihf@2.6.2':
+    resolution: {integrity: sha512-YIV3u/R9zJbpqTTNwTZM5/ocWetDKGsro0SWp70eGEM9eV2MerWyBRZnQIgzU3YBnSBQ1RcxRZvY/UxwESfZIw==}
+    engines: {node: '>= 10'}
+    cpu: [arm]
+    os: [linux]
+
+  '@resvg/resvg-js-linux-arm64-gnu@2.6.2':
+    resolution: {integrity: sha512-zc2BlJSim7YR4FZDQ8OUoJg5holYzdiYMeobb9pJuGDidGL9KZUv7SbiD4E8oZogtYY42UZEap7dqkkYuA91pg==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [linux]
+
+  '@resvg/resvg-js-linux-arm64-musl@2.6.2':
+    resolution: {integrity: sha512-3h3dLPWNgSsD4lQBJPb4f+kvdOSJHa5PjTYVsWHxLUzH4IFTJUAnmuWpw4KqyQ3NA5QCyhw4TWgxk3jRkQxEKg==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [linux]
+
+  '@resvg/resvg-js-linux-x64-gnu@2.6.2':
+    resolution: {integrity: sha512-IVUe+ckIerA7xMZ50duAZzwf1U7khQe2E0QpUxu5MBJNao5RqC0zwV/Zm965vw6D3gGFUl7j4m+oJjubBVoftw==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [linux]
+
+  '@resvg/resvg-js-linux-x64-musl@2.6.2':
+    resolution: {integrity: sha512-UOf83vqTzoYQO9SZ0fPl2ZIFtNIz/Rr/y+7X8XRX1ZnBYsQ/tTb+cj9TE+KHOdmlTFBxhYzVkP2lRByCzqi4jQ==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [linux]
+
+  '@resvg/resvg-js-win32-arm64-msvc@2.6.2':
+    resolution: {integrity: sha512-7C/RSgCa+7vqZ7qAbItfiaAWhyRSoD4l4BQAbVDqRRsRgY+S+hgS3in0Rxr7IorKUpGE69X48q6/nOAuTJQxeQ==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [win32]
+
+  '@resvg/resvg-js-win32-ia32-msvc@2.6.2':
+    resolution: {integrity: sha512-har4aPAlvjnLcil40AC77YDIk6loMawuJwFINEM7n0pZviwMkMvjb2W5ZirsNOZY4aDbo5tLx0wNMREp5Brk+w==}
+    engines: {node: '>= 10'}
+    cpu: [ia32]
+    os: [win32]
+
+  '@resvg/resvg-js-win32-x64-msvc@2.6.2':
+    resolution: {integrity: sha512-ZXtYhtUr5SSaBrUDq7DiyjOFJqBVL/dOBN7N/qmi/pO0IgiWW/f/ue3nbvu9joWE5aAKDoIzy/CxsY0suwGosQ==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [win32]
+
+  '@resvg/resvg-js@2.6.2':
+    resolution: {integrity: sha512-xBaJish5OeGmniDj9cW5PRa/PtmuVU3ziqrbr5xJj901ZDN4TosrVaNZpEiLZAxdfnhAe7uQ7QFWfjPe9d9K2Q==}
+    engines: {node: '>= 10'}
 
   '@rolldown/binding-android-arm64@1.2.1':
     resolution: {integrity: sha512-02hOeOSryYxVrOIphmLAsqnCJWxwlzFk+pEt/N/i6OgT3lShHO7xGCU5cpgchRDHboAEbSjzgGh+O/u1GswQmA==}
@@ -13620,6 +13699,57 @@ snapshots:
       react-native: 0.86.2(@babel/core@7.29.7)(@react-native/jest-preset@0.86.2(@babel/core@7.29.7)(react@19.2.8))(@react-native/metro-config@0.86.2(@babel/core@7.29.7))(@types/react@19.2.18)(react@19.2.8)
     optionalDependencies:
       '@types/react': 19.2.18
+
+  '@resvg/resvg-js-android-arm-eabi@2.6.2':
+    optional: true
+
+  '@resvg/resvg-js-android-arm64@2.6.2':
+    optional: true
+
+  '@resvg/resvg-js-darwin-arm64@2.6.2':
+    optional: true
+
+  '@resvg/resvg-js-darwin-x64@2.6.2':
+    optional: true
+
+  '@resvg/resvg-js-linux-arm-gnueabihf@2.6.2':
+    optional: true
+
+  '@resvg/resvg-js-linux-arm64-gnu@2.6.2':
+    optional: true
+
+  '@resvg/resvg-js-linux-arm64-musl@2.6.2':
+    optional: true
+
+  '@resvg/resvg-js-linux-x64-gnu@2.6.2':
+    optional: true
+
+  '@resvg/resvg-js-linux-x64-musl@2.6.2':
+    optional: true
+
+  '@resvg/resvg-js-win32-arm64-msvc@2.6.2':
+    optional: true
+
+  '@resvg/resvg-js-win32-ia32-msvc@2.6.2':
+    optional: true
+
+  '@resvg/resvg-js-win32-x64-msvc@2.6.2':
+    optional: true
+
+  '@resvg/resvg-js@2.6.2':
+    optionalDependencies:
+      '@resvg/resvg-js-android-arm-eabi': 2.6.2
+      '@resvg/resvg-js-android-arm64': 2.6.2
+      '@resvg/resvg-js-darwin-arm64': 2.6.2
+      '@resvg/resvg-js-darwin-x64': 2.6.2
+      '@resvg/resvg-js-linux-arm-gnueabihf': 2.6.2
+      '@resvg/resvg-js-linux-arm64-gnu': 2.6.2
+      '@resvg/resvg-js-linux-arm64-musl': 2.6.2
+      '@resvg/resvg-js-linux-x64-gnu': 2.6.2
+      '@resvg/resvg-js-linux-x64-musl': 2.6.2
+      '@resvg/resvg-js-win32-arm64-msvc': 2.6.2
+      '@resvg/resvg-js-win32-ia32-msvc': 2.6.2
+      '@resvg/resvg-js-win32-x64-msvc': 2.6.2
 
   '@rolldown/binding-android-arm64@1.2.1':
     optional: true

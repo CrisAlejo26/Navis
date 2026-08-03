@@ -8,7 +8,7 @@
  */
 export const es = {
   common: {
-    appName: 'Fidus',
+    appName: 'Navis',
     save: 'Guardar',
     cancel: 'Cancelar',
     delete: 'Eliminar',

@@ -16,8 +16,8 @@ WORKDIR /srv
 COPY apps/ai/ ./
 RUN pip install --upgrade pip && pip install .
 
-RUN useradd --create-home --uid 10002 fidus
-USER fidus
+RUN useradd --create-home --uid 10002 navis
+USER navis
 
 EXPOSE 8000
 

@@ -1,4 +1,4 @@
-"""Esqueleto del microservicio de IA de Fidus.
+"""Esqueleto del microservicio de IA de Navis.
 
 Todavía no hace inferencia: expone `/health` para que el contenedor se declare
 sano y documenta el contrato que la API de NestJS ya espera
@@ -13,7 +13,7 @@ from fastapi import FastAPI
 from pydantic import BaseModel, Field
 
 app = FastAPI(
-    title="Fidus AI",
+    title="Navis AI",
     version="0.1.0",
     description="Microservicio de IA (esqueleto)",
 )

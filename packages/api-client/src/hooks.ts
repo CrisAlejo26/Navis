@@ -1,4 +1,4 @@
-import type { Profile, UpdateProfileInput } from '@fidus/shared';
+import type { Profile, UpdateProfileInput } from '@navis/shared';
 import { useMutation, useQuery, useQueryClient, type UseQueryResult } from '@tanstack/react-query';
 
 import type { ApiClient } from './client';

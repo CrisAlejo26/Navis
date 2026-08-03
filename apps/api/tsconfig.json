@@ -1,5 +1,5 @@
 {
-  "extends": "@fidus/tsconfig/nest.json",
+  "extends": "@navis/tsconfig/nest.json",
   "compilerOptions": {
     "outDir": "./dist",
     "baseUrl": ".",

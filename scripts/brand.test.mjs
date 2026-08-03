@@ -88,7 +88,7 @@ test('los iconos del repositorio son exactamente los que genera el script', () =
   for (const destino of DESTINOS) {
     const [ruta] = destino;
     const enDisco = readFileSync(join(root, ruta));
-    const esperado = contenidoDe(destino, marca.nombre);
+    const esperado = contenidoDe(destino);
 
     assert.ok(
       enDisco.equals(esperado),
@@ -100,8 +100,9 @@ test('los iconos del repositorio son exactamente los que genera el script', () =
 test('los PNG generados tienen la firma y el tamaño que dicen', () => {
   const FIRMA = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
 
-  for (const [ruta, size] of DESTINOS) {
-    if (size === null) continue;
+  for (const [ruta, opciones] of DESTINOS) {
+    if (opciones.svg) continue;
+    const size = opciones.size;
     const buffer = readFileSync(join(root, ruta));
     assert.ok(buffer.subarray(0, 8).equals(FIRMA), `${ruta} no es un PNG`);
     // Ancho y alto viven en el trozo IHDR, justo después de la firma.

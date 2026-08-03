@@ -56,20 +56,20 @@ jobs:
       postgres:
         image: postgres:18-alpine
         env:
-          POSTGRES_USER: fidus
-          POSTGRES_PASSWORD: fidus_ci
-          POSTGRES_DB: fidus_test
+          POSTGRES_USER: navis
+          POSTGRES_PASSWORD: navis_ci
+          POSTGRES_DB: navis_test
         ports: ["5432:5432"]
         options: >-
-          --health-cmd "pg_isready -U fidus"
+          --health-cmd "pg_isready -U navis"
           --health-interval 5s --health-timeout 5s --health-retries 10
     env:
       DB_DRIVER: postgres
       POSTGRES_HOST: localhost
       POSTGRES_PORT: 5432
-      POSTGRES_USER: fidus
-      POSTGRES_PASSWORD: fidus_ci
-      POSTGRES_DB: fidus_test
+      POSTGRES_USER: navis
+      POSTGRES_PASSWORD: navis_ci
+      POSTGRES_DB: navis_test
     steps:
       - uses: actions/checkout@v6
       - uses: pnpm/action-setup@v4
@@ -84,7 +84,7 @@ jobs:
       - name: Migraciones (Better Auth primero, después TypeORM)
         run: pnpm db:migrate
 
-      - run: pnpm --filter @fidus/api test:e2e
+      - run: pnpm --filter @navis/api test:e2e
 
   e2e-web:
     name: Tests e2e de la web (Playwright)
@@ -99,8 +99,8 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
       - run: pnpm build:packages
-      - run: pnpm --filter @fidus/web exec playwright install --with-deps chromium
-      - run: pnpm --filter @fidus/web test:e2e
+      - run: pnpm --filter @navis/web exec playwright install --with-deps chromium
+      - run: pnpm --filter @navis/web test:e2e
 
       - uses: actions/upload-artifact@v5
         if: ${{ !cancelled() }}
@@ -122,7 +122,7 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
       - run: pnpm build:packages
-      - run: pnpm --filter @fidus/mobile exec expo-doctor
+      - run: pnpm --filter @navis/mobile exec expo-doctor
 
   desktop:
     name: Compilar Rust (Tauri)

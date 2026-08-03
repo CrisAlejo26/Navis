@@ -1,5 +1,5 @@
 @import 'tailwindcss';
-@import '@fidus/theme/tokens.css';
+@import '@navis/theme/tokens.css';
 
 /* El modo oscuro se activa con la clase `dark` en <html>, no con la media
    query: así el usuario puede forzar claro u oscuro contra su sistema. */

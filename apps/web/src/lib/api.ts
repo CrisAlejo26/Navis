@@ -1,4 +1,4 @@
-import { createApiClient } from '@fidus/api-client';
+import { createApiClient } from '@navis/api-client';
 
 import { env } from './env';
 import { getLocale } from './i18n';

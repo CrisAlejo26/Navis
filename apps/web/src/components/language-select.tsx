@@ -1,4 +1,4 @@
-import { LOCALE_LABELS, LOCALES, type Locale } from '@fidus/shared';
+import { LOCALE_LABELS, LOCALES, type Locale } from '@navis/shared';
 import { Languages } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 

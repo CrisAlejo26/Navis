@@ -1,10 +1,10 @@
 {
-  "name": "@fidus/web",
+  "name": "@navis/web",
   "version": "0.1.0",
   "private": true,
   "license": "MIT",
   "type": "module",
-  "description": "PWA de Fidus (Vite 8 + React 19 + React Router 8)",
+  "description": "PWA de Navis (Vite 8 + React 19 + React Router 8)",
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
@@ -20,10 +20,10 @@
     "clean": "rimraf dist dev-dist .turbo *.tsbuildinfo"
   },
   "dependencies": {
-    "@fidus/api-client": "workspace:*",
-    "@fidus/i18n": "workspace:*",
-    "@fidus/shared": "workspace:*",
-    "@fidus/theme": "workspace:*",
+    "@navis/api-client": "workspace:*",
+    "@navis/i18n": "workspace:*",
+    "@navis/shared": "workspace:*",
+    "@navis/theme": "workspace:*",
     "@tanstack/react-query": "catalog:",
     "better-auth": "1.6.25",
     "clsx": "2.1.1",
@@ -40,8 +40,8 @@
   },
   "devDependencies": {
     "@hookform/resolvers": "5.7.1",
-    "@fidus/eslint-config": "workspace:*",
-    "@fidus/tsconfig": "workspace:*",
+    "@navis/eslint-config": "workspace:*",
+    "@navis/tsconfig": "workspace:*",
     "@playwright/test": "1.62.1",
     "@tailwindcss/vite": "catalog:",
     "@tanstack/react-query-devtools": "catalog:",

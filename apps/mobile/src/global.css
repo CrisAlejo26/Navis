@@ -6,7 +6,7 @@
 
 @import 'tailwindcss';
 @import 'nativewind/theme';
-@import '@fidus/theme/tokens.native.css';
+@import '@navis/theme/tokens.native.css';
 
 /* Tailwind v4 detecta las fuentes solo; se las decimos explícitamente porque
    en un monorepo la detección automática se sale del paquete. */

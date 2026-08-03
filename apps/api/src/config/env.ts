@@ -1,4 +1,4 @@
-import { apiEnvSchema, type ApiEnv, parseEnv } from '@fidus/shared';
+import { apiEnvSchema, type ApiEnv, parseEnv } from '@navis/shared';
 import { config as loadDotenv } from 'dotenv';
 import { isAbsolute, resolve } from 'node:path';
 

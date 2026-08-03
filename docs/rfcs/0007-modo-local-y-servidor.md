@@ -7,7 +7,7 @@
 
 ## Problema
 
-Un pastor que se descarga Fidus quiere abrirlo y usarlo, no montar un
+Un pastor que se descarga Navis quiere abrirlo y usarlo, no montar un
 servidor. Pero un equipo de una iglesia con varias personas necesita que todos
 vean los mismos creyentes, el mismo calendario y las mismas notas.
 

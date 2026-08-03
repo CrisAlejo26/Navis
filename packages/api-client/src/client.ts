@@ -1,4 +1,4 @@
-import type { ApiErrorBody } from '@fidus/shared';
+import type { ApiErrorBody } from '@navis/shared';
 
 import { ApiError } from './api-error';
 

@@ -1,4 +1,4 @@
-import { createQueryClient } from '@fidus/api-client';
+import { createQueryClient } from '@navis/api-client';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';

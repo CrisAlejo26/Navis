@@ -46,8 +46,8 @@
     "clean": {
       "cache": false
     },
-    "@fidus/desktop#build": {
-      "dependsOn": ["@fidus/web#build"],
+    "@navis/desktop#build": {
+      "dependsOn": ["@navis/web#build"],
       "inputs": ["src-tauri/**", "!src-tauri/target/**"],
       "outputs": ["src-tauri/target/release/bundle/**"]
     }
