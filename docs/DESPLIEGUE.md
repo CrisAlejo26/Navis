@@ -50,9 +50,11 @@ se salta entero y lo deja anotado en el resumen de la ejecución.
 - Docker y el plugin de Compose.
 - Una carpeta de despliegue con un fichero `.env` que contenga los secretos de
   producción: credenciales de Postgres, `BETTER_AUTH_SECRET`,
-  `BETTER_AUTH_URL`, `CORS_ORIGINS`, `AUTH_TRUSTED_ORIGINS` y los puertos en
-  los que escuchan la API y la web detrás del proxy. Ese `.env` **no** viaja
-  desde el repositorio: vive solo en el servidor.
+  `BETTER_AUTH_URL`, `CORS_ORIGINS`, `AUTH_TRUSTED_ORIGINS`, los puertos en los
+  que escuchan la API y la web detrás del proxy, y `VITE_API_URL`,
+  `VITE_AUTH_URL`, `VITE_SITE_URL` (los tres, si se construye la imagen de la
+  web a mano en el servidor: `docker-compose.prod.yml` los exige). Ese `.env`
+  **no** viaja desde el repositorio: vive solo en el servidor.
 - Un usuario con acceso SSH por clave y permiso para ejecutar `docker`, con la
   clave pública de despliegue en su `authorized_keys`.
 
@@ -85,11 +87,12 @@ Ninguna es obligatoria: el workflow trae por defecto las URL públicas del sitio
 que no son ningún secreto —acaban dentro del bundle de la web—. Se definen solo
 para cambiarlas sin tocar el YAML.
 
-| Variable         | Para qué                                                 |
-| ---------------- | -------------------------------------------------------- |
-| `VITE_API_URL`   | URL pública de la API, incrustada en el bundle de la web |
-| `VITE_AUTH_URL`  | URL pública de Better Auth, igual de incrustada          |
-| `PRODUCTION_URL` | Solo para el enlace que muestra GitHub en el despliegue  |
+| Variable         | Para qué                                                                              |
+| ---------------- | -------------------------------------------------------------------------------------- |
+| `VITE_API_URL`   | URL pública de la API, incrustada en el bundle de la web                              |
+| `VITE_AUTH_URL`  | URL pública de Better Auth, igual de incrustada                                       |
+| `VITE_SITE_URL`  | URL pública del sitio, para las etiquetas Open Graph de `index.html` (por defecto, `SITE_URL`) |
+| `PRODUCTION_URL` | Solo para el enlace que muestra GitHub en el despliegue                               |
 
 Cambiar `VITE_*` obliga a reconstruir la imagen de la web: son constantes de
 compilación, no configuración de ejecución. La API, en cambio, sí lee su entorno

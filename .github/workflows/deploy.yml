@@ -195,6 +195,7 @@ jobs:
           build-args: |
             VITE_API_URL=${{ vars.VITE_API_URL || env.WEB_API_URL }}
             VITE_AUTH_URL=${{ vars.VITE_AUTH_URL || env.WEB_AUTH_URL }}
+            VITE_SITE_URL=${{ vars.VITE_SITE_URL || env.SITE_URL }}
           tags: |
             ${{ env.REGISTRY }}/${{ steps.meta.outputs.repo }}/web:${{ steps.meta.outputs.tag }}
             ${{ env.REGISTRY }}/${{ steps.meta.outputs.repo }}/web:latest

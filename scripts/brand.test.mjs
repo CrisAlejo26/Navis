@@ -144,12 +144,13 @@ test('los PNG generados tienen la firma y el tamaño que dicen', () => {
 
   for (const [ruta, opciones] of DESTINOS) {
     if (opciones.svg) continue;
-    const size = opciones.size;
+    const ancho = opciones.size;
+    const alto = opciones.alto ?? opciones.size;
     const buffer = readFileSync(join(root, ruta));
     assert.ok(buffer.subarray(0, 8).equals(FIRMA), `${ruta} no es un PNG`);
     // Ancho y alto viven en el trozo IHDR, justo después de la firma.
-    assert.equal(buffer.readUInt32BE(16), size, `${ruta} no mide ${String(size)} de ancho`);
-    assert.equal(buffer.readUInt32BE(20), size, `${ruta} no mide ${String(size)} de alto`);
+    assert.equal(buffer.readUInt32BE(16), ancho, `${ruta} no mide ${String(ancho)} de ancho`);
+    assert.equal(buffer.readUInt32BE(20), alto, `${ruta} no mide ${String(alto)} de alto`);
   }
 });
 
