@@ -220,6 +220,33 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
+      # Un despliegue entero se perdió porque el servidor no contestó a UNA
+      # conexión: `dial tcp :22: i/o timeout` en la copia, y con él se fueron
+      # los diez minutos de verificación e imágenes que ya estaban hechos. Aquí
+      # se espera a que el puerto responda antes de intentar nada, y de paso se
+      # distingue el corte pasajero —contesta al segundo intento— del bloqueo de
+      # firewall, que no contesta nunca y hay que ir a mirarlo al servidor.
+      #
+      # El host no se imprime: este repositorio es público (ver la nota de `env`).
+      - name: Esperar a que el servidor acepte SSH
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_PORT: ${{ secrets.DEPLOY_PORT || 22 }}
+        run: |
+          set -uo pipefail
+
+          for intento in $(seq 1 10); do
+            if timeout 10 bash -c ": > /dev/tcp/$DEPLOY_HOST/$DEPLOY_PORT" 2>/dev/null; then
+              echo "El servidor acepta conexiones (intento $intento)."
+              exit 0
+            fi
+            echo "Intento $intento: sin respuesta. Reintento en 15 s."
+            sleep 15
+          done
+
+          echo "::error::El servidor no acepta conexiones SSH desde el runner. No es la clave ni el usuario: los paquetes no llegan. Mira el firewall del proveedor y fail2ban (docs/DESPLIEGUE.md)."
+          exit 1
+
       # Las dos acciones que reciben la clave privada van clavadas al SHA, no a
       # una etiqueta: `@v1` se puede reapuntar, y quien lo hiciera se llevaría
       # la clave del servidor. El SHA no se puede reescribir.

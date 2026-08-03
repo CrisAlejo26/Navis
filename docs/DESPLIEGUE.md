@@ -191,3 +191,31 @@ A mano, desde la carpeta de despliegue:
 bash scripts/limpiar-docker.sh --dry-run   # enseña qué borraría
 bash scripts/limpiar-docker.sh             # lo borra
 ```
+
+## Cuando el runner no llega al servidor
+
+Síntoma: el workflow verifica, publica las imágenes y muere al tocar el
+servidor con `dial tcp ***:22: i/o timeout`, o el paso «Esperar a que el
+servidor acepte SSH» agota los diez intentos.
+
+Eso **no** es la clave ni el usuario —esos fallan con un error de
+autenticación, no con un timeout—: los paquetes del runner no llegan a
+`sshd`. Y que el puerto conteste desde tu máquina no descarta nada, porque lo
+normal es que el filtro sea por IP de origen. Dónde mirar, por orden:
+
+| Sospecha                             | Cómo se comprueba en el servidor    |
+| ------------------------------------ | ----------------------------------- |
+| fail2ban ha baneado el rango         | `fail2ban-client status sshd`       |
+| El cortafuegos del sistema lo filtra | `ufw status verbose`                |
+| `sshd` no está escuchando ahí        | `ss -tlnp \| grep ssh`              |
+| El firewall del proveedor            | En su panel, la regla del puerto 22 |
+
+Si hay que restringir el SSH por IP, las de los runners de GitHub están en
+`https://api.github.com/meta` (campo `actions`), son muchas y cambian solas:
+sale mejor mover `sshd` a otro puerto y ponerlo en el secreto `DEPLOY_PORT`, o
+desplegar desde un runner autoalojado.
+
+Mientras tanto, la versión que ya estaba en marcha sigue sirviendo: el
+despliegue muere antes de tocar nada. Las imágenes quedan publicadas en GHCR
+con la etiqueta del commit, así que basta con relanzar el job fallido —no hace
+falta reconstruir— o desplegar a mano desde el servidor (ver arriba).
