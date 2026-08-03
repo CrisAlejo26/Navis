@@ -7,3 +7,4 @@ export * from './schemas/churches';
 export * from './schemas/common';
 export * from './schemas/profile';
 export * from './schemas/roles';
+export * from './schemas/weather';

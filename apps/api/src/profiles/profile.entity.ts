@@ -26,6 +26,10 @@ export class Profile extends BaseEntity {
   @Column({ type: 'text', nullable: true })
   church: string | null;
 
+  @ApiProperty({ required: false, nullable: true, description: 'Ciudad para el tiempo del panel' })
+  @Column({ type: 'text', nullable: true })
+  city: string | null;
+
   @ApiProperty({ required: false, nullable: true })
   @Column({ name: 'avatar_url', type: 'text', nullable: true })
   avatarUrl: string | null;

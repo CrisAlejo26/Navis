@@ -1,4 +1,4 @@
-import type { Profile, UpdateProfileInput } from '@navis/shared';
+import type { Profile, UpdateProfileInput, Weather } from '@navis/shared';
 import { useMutation, useQuery, useQueryClient, type UseQueryResult } from '@tanstack/react-query';
 
 import type { ApiClient } from './client';
@@ -25,6 +25,22 @@ export function useUpdateProfile(api: ApiClient) {
     onSuccess: (profile) => {
       queryClient.setQueryData(queryKeys.profile.me(), profile);
     },
+  });
+}
+
+/**
+ * El tiempo de la ciudad del perfil, o `null` si todavía no hay ninguna puesta.
+ *
+ * Media hora de vigencia: el servidor ya cachea la lectura un cuarto de hora, y
+ * nadie abre el panel para ver cómo cambia el termómetro.
+ */
+export function useWeather(api: ApiClient, enabled = true): UseQueryResult<Weather | null> {
+  return useQuery({
+    queryKey: queryKeys.weather,
+    queryFn: () => api.get<Weather | null>('/weather'),
+    enabled,
+    retry: false,
+    staleTime: 30 * 60_000,
   });
 }
 

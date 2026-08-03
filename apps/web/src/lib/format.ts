@@ -12,6 +12,11 @@ export function formatDate(value: Date | string, style: 'short' | 'medium' = 'me
   return new Intl.DateTimeFormat(getLocale(), { dateStyle: style }).format(date);
 }
 
+/** «lunes, 3 de agosto de 2026». Para la cabecera del panel. */
+export function formatLongDate(value: Date): string {
+  return new Intl.DateTimeFormat(getLocale(), { dateStyle: 'full' }).format(value);
+}
+
 export function formatNumber(value: number): string {
   return new Intl.NumberFormat(getLocale()).format(value);
 }

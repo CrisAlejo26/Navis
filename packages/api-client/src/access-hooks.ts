@@ -42,6 +42,9 @@ function toSearchParams(query: ManagedUsersQuery | RolesQuery): string {
     ['sort', query.sort],
     ['order', query.order],
     ['role', 'role' in query ? query.role : undefined],
+    // Las iglesias viajan separadas por comas: una sola clave por filtro deja
+    // la URL legible y la caché de TanStack Query con una entrada por combinación.
+    ['churchIds', 'churchIds' in query ? query.churchIds?.join(',') : undefined],
   ];
 
   const params = new URLSearchParams();

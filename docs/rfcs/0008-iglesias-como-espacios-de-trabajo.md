@@ -471,8 +471,10 @@ que estaba apuntada en §12.
       contraseña o borrar (`UserAdminService.target`).
 - [x] Una cuenta creada desde la administración entra en la iglesia activa de
       quien la crea: sin eso, dejaría de verla al instante.
-- [x] Filtro por iglesia en el listado, **guardado entre visitas**
-      (`navis.usersFilter`): quien administra varias trabaja días sobre una.
+- [x] Filtro por iglesias en el listado —**varias a la vez o una sola**, con
+      casillas—, **guardado entre visitas** (`navis.usersFilter`): quien
+      administra varias trabaja días sobre las mismas. Viaja como
+      `churchIds=a,b` y solo puede **acotar** el alcance, nunca ampliarlo.
 - [ ] Añadir y quitar miembros de una iglesia desde su ficha.
 
 **Cambio sobre D6**: el alcance no necesita `user.created_by_id`. Se resuelve con

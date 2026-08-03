@@ -38,6 +38,7 @@ export function ProfileForm({
         update.mutate(
           {
             phone: formText(form.get('phone')),
+            city: formText(form.get('city')),
             bio: formText(form.get('bio')),
             timezone: formText(form.get('timezone')),
           },
@@ -69,6 +70,13 @@ export function ProfileForm({
         label={t('profile.phone')}
         defaultValue={profile?.phone ?? ''}
         autoComplete="tel"
+      />
+      <Input
+        name="city"
+        label={t('profile.city')}
+        defaultValue={profile?.city ?? ''}
+        autoComplete="address-level2"
+        hint={t('profile.cityHint')}
       />
       <Input
         name="bio"

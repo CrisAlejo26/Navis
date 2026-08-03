@@ -145,8 +145,11 @@ export const managedUsersQuerySchema = paginationQuerySchema.extend({
   /** Busca a la vez en el nombre y en el correo. */
   search: z.string().trim().max(120).optional(),
   role: roleSlugSchema.optional(),
-  /** Deja solo las cuentas de esa iglesia. Sin él, todas las accesibles. */
-  churchId: z.uuid().optional(),
+  /**
+   * Deja solo las cuentas de esas iglesias. Vacío o ausente, todas las
+   * accesibles: el alcance de quien pregunta ya acota por sí solo.
+   */
+  churchIds: z.array(z.uuid()).optional(),
   sort: z.enum(USER_SORT_FIELDS).default('createdAt'),
   order: sortOrderSchema.default('desc'),
 });

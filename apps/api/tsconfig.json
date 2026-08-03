@@ -15,5 +15,9 @@
     "vitest.setup.ts",
     "scripts/**/*"
   ],
-  "exclude": ["node_modules", "dist"]
+  // `src/metadata.ts` lo genera el plugin de Swagger en cada build y no lo
+  // importa nadie. Comprobarlo no aporta nada y, con `nest start --watch`
+  // corriendo, `pnpm typecheck` lo pillaba a medio escribir y fallaba con
+  // errores de sintaxis en un fichero que nadie había tocado.
+  "exclude": ["node_modules", "dist", "src/metadata.ts"]
 }
