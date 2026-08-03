@@ -33,14 +33,16 @@ export function aPng(svg, size) {
  * Qué se genera, con qué variante y con cuánto aire.
  *
  * `ocupacion` es la fracción del lado que ocupa el barco:
- * · Favicon: casi todo. Se ve a 16 px y cualquier margen se lo come.
+ * · Favicon: todo. Se ve a 16 px y cualquier margen se lo come.
  * · Iconos de aplicación: 0,72, el margen que esperan iOS y Android para que
  *   el icono no toque los bordes del recuadro.
  * · Maskable y primer plano adaptativo: bastante menos, porque el sistema
  *   recorta con la forma que le da la gana y hay que dejar zona segura.
  */
 export const DESTINOS = [
-  ['apps/web/public/favicon.svg', { variante: 'azul', ocupacion: 0.96, svg: true }],
+  // Al 100 %, como el favicon de GitHub: el dibujo toca los bordes del cuadro.
+  // A 16 px cualquier margen se nota, y aquí no hay fondo que dé presencia.
+  ['apps/web/public/favicon.svg', { variante: 'azul', ocupacion: 1, svg: true }],
 
   // Versiones encuadradas y transparentes que consume la interfaz. Van en un
   // subdirectorio `encuadrado/` para que quede claro que son salida, no las
