@@ -8,6 +8,7 @@ import { Link, useNavigate } from 'react-router';
 import { LanguageSelect } from '@/components/language-select';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { Button } from '@/components/ui/button';
+import { Logo } from '@/components/logo';
 import { Card, CardDescription, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { signIn } from '@/lib/auth-client';
@@ -45,6 +46,7 @@ export function LoginPage() {
   return (
     <main className="gap-6 p-6 flex min-h-dvh flex-col items-center justify-center">
       <Card className="max-w-sm w-full">
+        <Logo className="mb-3 h-12 w-12" />
         <CardTitle>{t('auth.signIn')}</CardTitle>
         <CardDescription className="mb-5">{t('home.subtitle')}</CardDescription>
 
