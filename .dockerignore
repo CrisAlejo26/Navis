@@ -1,0 +1,32 @@
+# El contexto de build es la raíz del monorepo: fuera todo lo que no se compila.
+**/node_modules
+**/dist
+**/build
+**/coverage
+**/.turbo
+**/.expo
+**/.vite
+**/dev-dist
+**/*.tsbuildinfo
+
+# Nativo
+apps/mobile/android
+apps/mobile/ios
+apps/desktop/src-tauri/target
+apps/desktop/src-tauri/gen
+
+# Datos locales y secretos
+data
+.env
+.env.*
+!.env.example
+
+.git
+.github
+.husky
+.vscode
+docs
+**/playwright-report
+**/test-results
+**/__pycache__
+**/.venv

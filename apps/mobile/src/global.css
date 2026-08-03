@@ -1,0 +1,14 @@
+/*
+ * Hoja de estilos raíz de la app móvil. La importa `app/_layout.tsx`; Metro la
+ * pasa por PostCSS (Tailwind v4) y react-native-css la convierte en estilos
+ * nativos.
+ */
+
+@import 'tailwindcss';
+@import 'nativewind/theme';
+@import '@pastortools/theme/tokens.native.css';
+
+/* Tailwind v4 detecta las fuentes solo; se las decimos explícitamente porque
+   en un monorepo la detección automática se sale del paquete. */
+@source '../app';
+@source '../src';

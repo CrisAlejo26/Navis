@@ -15,7 +15,7 @@ describe('createApiClient', () => {
     const fetchImpl = vi.fn().mockResolvedValue(jsonResponse({ ok: true }));
     const api = createApiClient({
       baseUrl: 'http://localhost:3000/api/v1/',
-      fetchImpl: fetchImpl as unknown as typeof fetch,
+      fetchImpl,
       getAuthHeaders: () => ({ cookie: 'session=abc' }),
       getLocale: () => 'fr',
     });
@@ -36,7 +36,7 @@ describe('createApiClient', () => {
     const onUnauthorized = vi.fn();
     const api = createApiClient({
       baseUrl: 'http://localhost:3000/api/v1',
-      fetchImpl: fetchImpl as unknown as typeof fetch,
+      fetchImpl,
       onUnauthorized,
     });
 
@@ -51,7 +51,7 @@ describe('createApiClient', () => {
     const fetchImpl = vi.fn().mockRejectedValue(new TypeError('Failed to fetch'));
     const api = createApiClient({
       baseUrl: 'http://localhost:3000/api/v1',
-      fetchImpl: fetchImpl as unknown as typeof fetch,
+      fetchImpl,
     });
 
     const error = await api.get('/health').catch((e: unknown) => e);

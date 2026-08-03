@@ -22,6 +22,7 @@ export const fr = {
     dreams: 'Rêves',
     communications: 'Communications',
     settings: 'Paramètres',
+    more: 'Plus',
   },
   auth: {
     signIn: 'Se connecter',
@@ -50,6 +51,7 @@ export const fr = {
     title: 'Paramètres',
     appearance: 'Apparence',
     profile: 'Profil',
+    connection: 'Connexion',
   },
   profile: {
     title: 'Mon profil',

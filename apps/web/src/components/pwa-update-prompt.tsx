@@ -20,7 +20,7 @@ export function PwaUpdatePrompt() {
   return (
     <div
       role="status"
-      className="bg-card fixed inset-x-4 bottom-4 z-50 mx-auto flex max-w-md items-center justify-between gap-3 rounded-xl border p-4 shadow-lg"
+      className="inset-x-4 bottom-4 max-w-md gap-3 p-4 shadow-lg fixed z-50 mx-auto flex items-center justify-between rounded-xl border bg-card"
     >
       <p className="text-sm">{needRefresh ? t('pwa.updateAvailable') : t('pwa.offlineReady')}</p>
       {needRefresh ? (

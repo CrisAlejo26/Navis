@@ -1,5 +1,6 @@
 import { createApiClient } from '@pastortools/api-client';
 
+import { env } from './env';
 import { getLocale } from './i18n';
 
 /**
@@ -7,7 +8,7 @@ import { getLocale } from './i18n';
  * NO pasan por aquí: los gestiona `auth-client.ts`.
  */
 export const api = createApiClient({
-  baseUrl: import.meta.env.VITE_API_URL,
+  baseUrl: env.VITE_API_URL,
   getLocale,
   onUnauthorized: () => {
     // Evita bucles: solo redirige si no estamos ya en el login.

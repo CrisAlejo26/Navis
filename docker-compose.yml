@@ -1,0 +1,102 @@
+# Entorno de DESARROLLO.
+#
+#   pnpm db:up        solo Postgres (lo demás se ejecuta en tu máquina)
+#   pnpm docker:dev   todo el stack en contenedores
+#
+# Recuerda: el modo por defecto del proyecto es SQLite y no necesita nada de
+# esto. Postgres es el modo compartido (ver docs/rfcs/0007-modo-local-y-servidor.md).
+
+name: pastortools
+
+services:
+  postgres:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-pastortools}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-pastortools_dev}
+      POSTGRES_DB: ${POSTGRES_DB:-pastortools}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      # En postgres:18 el volumen va en /var/lib/postgresql, no en su
+      # subcarpeta /data: montarlo dentro impide arrancar la imagen.
+      - postgres-data:/var/lib/postgresql
+      - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test:
+        ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-pastortools} -d ${POSTGRES_DB:-pastortools}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: .
+      dockerfile: docker/api.Dockerfile
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      NODE_ENV: development
+      DB_DRIVER: postgres
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: ${POSTGRES_USER:-pastortools}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-pastortools_dev}
+      POSTGRES_DB: ${POSTGRES_DB:-pastortools}
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:?define BETTER_AUTH_SECRET en tu .env}
+      BETTER_AUTH_URL: ${BETTER_AUTH_URL:-http://localhost:3000}
+      AUTH_TRUSTED_ORIGINS: ${AUTH_TRUSTED_ORIGINS:-http://localhost:5173,http://localhost:8081,pastortools://}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:5173,http://localhost:8081}
+      TRUST_PROXY: ${TRUST_PROXY:-false}
+      LOG_LEVEL: ${LOG_LEVEL:-debug}
+      AI_ENABLED: ${AI_ENABLED:-false}
+      AI_PROVIDER: ${AI_PROVIDER:-anthropic}
+      AI_SERVICE_URL: ${AI_SERVICE_URL:-http://ai:8000}
+    ports:
+      - "${API_PORT:-3000}:3000"
+    volumes:
+      - api-data:/app/data
+
+  web:
+    build:
+      context: .
+      dockerfile: docker/web.Dockerfile
+      args:
+        # Vite las incrusta en el bundle: cambiarlas obliga a reconstruir.
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:3000/api/v1}
+        VITE_AUTH_URL: ${VITE_AUTH_URL:-http://localhost:3000}
+    restart: unless-stopped
+    depends_on:
+      - api
+    ports:
+      - "${WEB_PORT:-8080}:80"
+
+  # --- Perfiles opcionales ---------------------------------------------------
+
+  adminer:
+    image: adminer:5
+    profiles: ["tools"]
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      ADMINER_DEFAULT_SERVER: postgres
+    ports:
+      - "8081:8080"
+
+  ai:
+    build:
+      context: .
+      dockerfile: docker/ai.Dockerfile
+    profiles: ["ai"]
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+
+volumes:
+  postgres-data:
+  api-data:

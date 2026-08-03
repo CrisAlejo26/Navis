@@ -1,0 +1,78 @@
+# Compose que corre EN EL SERVIDOR de producción.
+#
+# A diferencia de docker-compose.prod.yml, aquí no se construye nada: se tiran
+# las imágenes que ya publicó GitHub Actions. El servidor solo necesita este
+# fichero, un `.env` con sus secretos y acceso al registro.
+#
+#   docker compose -f docker-compose.deploy.yml pull
+#   docker compose -f docker-compose.deploy.yml run --rm migrate
+#   docker compose -f docker-compose.deploy.yml up -d
+#
+# El orden importa: las migraciones se aplican ANTES de levantar la API nueva.
+
+name: pastortools
+
+services:
+  postgres:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:?falta POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?falta POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:?falta POSTGRES_DB}
+    volumes:
+      # En postgres:18 el volumen va en /var/lib/postgresql, no en su
+      # subcarpeta /data: montarlo dentro impide arrancar la imagen.
+      - postgres-data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # Contenedor de un solo uso: aplica migraciones y sale. No se levanta con
+  # `up` (está bajo un perfil), solo con `run --rm migrate`.
+  migrate:
+    image: ${REGISTRY:-ghcr.io}/${IMAGE_REPO:?falta IMAGE_REPO}/api-migrate:${IMAGE_TAG:-latest}
+    profiles: ["migrate"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment: &api-env
+      NODE_ENV: production
+      DB_DRIVER: postgres
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:?falta BETTER_AUTH_SECRET}
+      BETTER_AUTH_URL: ${BETTER_AUTH_URL:?falta BETTER_AUTH_URL}
+      AUTH_TRUSTED_ORIGINS: ${AUTH_TRUSTED_ORIGINS:?falta AUTH_TRUSTED_ORIGINS}
+      CORS_ORIGINS: ${CORS_ORIGINS:?falta CORS_ORIGINS}
+      TRUST_PROXY: ${TRUST_PROXY:-false}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      AI_ENABLED: ${AI_ENABLED:-false}
+      AI_PROVIDER: ${AI_PROVIDER:-anthropic}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+
+  api:
+    image: ${REGISTRY:-ghcr.io}/${IMAGE_REPO}/api:${IMAGE_TAG:-latest}
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment: *api-env
+    ports:
+      - "${API_PORT:-3000}:3000"
+
+  web:
+    image: ${REGISTRY:-ghcr.io}/${IMAGE_REPO}/web:${IMAGE_TAG:-latest}
+    restart: unless-stopped
+    depends_on:
+      - api
+    ports:
+      - "${WEB_PORT:-8080}:80"
+
+volumes:
+  postgres-data:

@@ -4,10 +4,16 @@ test.describe('PWA y tema', () => {
   test('sirve un manifest válido con iconos', async ({ page, request }) => {
     await page.goto('/login');
 
-    const manifestHref = await page.getAttribute('link[rel="manifest"]', 'href');
-    expect(manifestHref).toBeTruthy();
+    const manifestLink = page.locator('link[rel="manifest"]');
+    await expect(manifestLink).toHaveAttribute('href', /.+/);
 
-    const manifest = await (await request.get(manifestHref!)).json();
+    const manifestHref = await manifestLink.getAttribute('href');
+    const manifest = (await (await request.get(manifestHref ?? '')).json()) as {
+      name: string;
+      display: string;
+      icons: unknown[];
+    };
+
     expect(manifest.name).toBe('PastorTools');
     expect(manifest.display).toBe('standalone');
     expect(manifest.icons.length).toBeGreaterThanOrEqual(2);

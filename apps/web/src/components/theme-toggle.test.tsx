@@ -10,7 +10,9 @@ describe('ThemeToggle', () => {
     const user = userEvent.setup();
     render(<ThemeToggle />);
 
-    await user.click(screen.getByRole('radio', { name: /oscuro|dark|sombre|escuro|dunkel|scuro/i }));
+    await user.click(
+      screen.getByRole('radio', { name: /oscuro|dark|sombre|escuro|dunkel|scuro/i }),
+    );
 
     expect(useThemeStore.getState().mode).toBe('dark');
     expect(document.documentElement.classList.contains('dark')).toBe(true);

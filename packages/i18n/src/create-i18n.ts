@@ -48,6 +48,10 @@ export function createI18n(options: CreateI18nOptions = {}): I18nInstance {
       defaultNS,
       ns: [defaultNS],
       debug: options.debug ?? false,
+      // Las traducciones van en el bundle, no se descargan: inicializar de
+      // forma síncrona hace que el primer render ya salga traducido, sin el
+      // aviso de react-i18next ni un parpadeo con las claves en crudo.
+      initAsync: false,
       interpolation: { escapeValue: false },
       returnNull: false,
     });

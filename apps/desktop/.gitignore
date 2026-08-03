@@ -1,0 +1,3 @@
+# Compilación de Rust y ficheros generados por Tauri
+src-tauri/target/
+src-tauri/gen/

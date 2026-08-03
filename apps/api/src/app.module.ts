@@ -23,7 +23,9 @@ import { ProfilesModule } from './profiles/profiles.module';
     LoggerModule.forRoot({
       pinoHttp: {
         level: env.LOG_LEVEL,
-        transport: isProduction ? undefined : { target: 'pino-pretty', options: { singleLine: true } },
+        transport: isProduction
+          ? undefined
+          : { target: 'pino-pretty', options: { singleLine: true } },
         redact: ['req.headers.authorization', 'req.headers.cookie'],
         autoLogging: { ignore: (req) => req.url === '/health' },
       },

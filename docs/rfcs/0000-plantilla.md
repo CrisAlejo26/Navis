@@ -28,9 +28,9 @@ Entidad
 
 ## API
 
-| Método | Ruta | Rol mínimo | Descripción |
-| --- | --- | --- | --- |
-| GET | `/api/v1/…` | member | |
+| Método | Ruta        | Rol mínimo | Descripción |
+| ------ | ----------- | ---------- | ----------- |
+| GET    | `/api/v1/…` | member     |             |
 
 ## Interfaz
 

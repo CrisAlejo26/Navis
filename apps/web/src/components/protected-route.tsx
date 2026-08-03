@@ -12,7 +12,7 @@ export function ProtectedRoute({ children }: { children: ReactNode }) {
 
   if (isPending) {
     return (
-      <div className="text-muted-foreground flex min-h-dvh items-center justify-center">
+      <div className="flex min-h-dvh items-center justify-center text-muted-foreground">
         {t('common.loading')}
       </div>
     );

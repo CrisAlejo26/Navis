@@ -43,12 +43,12 @@ export function LoginPage() {
   });
 
   return (
-    <main className="flex min-h-dvh flex-col items-center justify-center gap-6 p-6">
-      <Card className="w-full max-w-sm">
+    <main className="gap-6 p-6 flex min-h-dvh flex-col items-center justify-center">
+      <Card className="max-w-sm w-full">
         <CardTitle>{t('auth.signIn')}</CardTitle>
         <CardDescription className="mb-5">{t('home.subtitle')}</CardDescription>
 
-        <form onSubmit={(event) => void onSubmit(event)} className="flex flex-col gap-4" noValidate>
+        <form onSubmit={(event) => void onSubmit(event)} className="gap-4 flex flex-col" noValidate>
           <Input
             label={t('auth.email')}
             type="email"
@@ -64,13 +64,13 @@ export function LoginPage() {
             {...register('password')}
           />
 
-          <label className="text-muted-foreground flex items-center gap-2 text-sm">
+          <label className="gap-2 text-sm flex items-center text-muted-foreground">
             <input type="checkbox" {...register('rememberMe')} />
             {t('auth.rememberMe')}
           </label>
 
           {serverError && (
-            <p role="alert" className="text-destructive text-sm">
+            <p role="alert" className="text-sm text-destructive">
               {serverError}
             </p>
           )}
@@ -80,7 +80,7 @@ export function LoginPage() {
           </Button>
         </form>
 
-        <p className="text-muted-foreground mt-4 text-sm">
+        <p className="mt-4 text-sm text-muted-foreground">
           {t('auth.noAccount')}{' '}
           <Link to="/register" className="text-primary underline">
             {t('auth.signUp')}
@@ -88,7 +88,7 @@ export function LoginPage() {
         </p>
       </Card>
 
-      <div className="flex items-center gap-4">
+      <div className="gap-4 flex items-center">
         <ThemeToggle />
         <LanguageSelect />
       </div>

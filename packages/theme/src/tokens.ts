@@ -39,12 +39,52 @@ export const themeColors = {
 } as const satisfies Record<ResolvedTheme, Record<string, string>>;
 
 /**
- * Equivalentes hex de `background`, necesarios donde no se admite oklch:
- * `theme_color` del manifest PWA y configuración nativa de Expo.
+ * La misma paleta convertida a hexadecimal sRGB.
+ *
+ * React Native no entiende `oklch()` y varios sitios tampoco: el `theme_color`
+ * del manifest PWA, el splash de Expo, la barra de navegación de Android o el
+ * prop `color` de los iconos de `@expo/vector-icons` (que no admiten
+ * `className`). Se usa aquí y nunca a ojo.
  */
+export const themeColorsHex = {
+  light: {
+    background: '#fcfcfa',
+    foreground: '#181b1f',
+    card: '#ffffff',
+    cardForeground: '#181b1f',
+    primary: '#3b63be',
+    primaryForeground: '#f7f8fc',
+    secondary: '#eef2f9',
+    muted: '#f0f2f5',
+    mutedForeground: '#636975',
+    accent: '#f1bf5b',
+    destructive: '#db2c2b',
+    success: '#2e9e52',
+    warning: '#e99b2a',
+    border: '#dee1e7',
+  },
+  dark: {
+    background: '#0d0f15',
+    foreground: '#f0f2f5',
+    card: '#15181f',
+    cardForeground: '#f0f2f5',
+    primary: '#6b95ee',
+    primaryForeground: '#0b0f18',
+    secondary: '#222630',
+    muted: '#222630',
+    mutedForeground: '#989fab',
+    accent: '#e1af4a',
+    destructive: '#f14e46',
+    success: '#4cb86a',
+    warning: '#f7ac4d',
+    border: '#2b303b',
+  },
+} as const satisfies Record<ResolvedTheme, Record<string, string>>;
+
+/** Atajo al color de fondo, que es el que más se usa fuera de las clases. */
 export const themeColorHex = {
-  light: '#fcfcfb',
-  dark: '#191a20',
+  light: themeColorsHex.light.background,
+  dark: themeColorsHex.dark.background,
 } as const satisfies Record<ResolvedTheme, string>;
 
 export const radius = {

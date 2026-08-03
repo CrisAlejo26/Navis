@@ -11,9 +11,9 @@ export function Input({ label, error, className, id, ...props }: InputProps) {
   const inputId = id ?? props.name;
 
   return (
-    <div className="flex flex-col gap-1.5">
+    <div className="gap-1.5 flex flex-col">
       {label && (
-        <label htmlFor={inputId} className="text-foreground text-sm font-medium">
+        <label htmlFor={inputId} className="text-sm font-medium text-foreground">
           {label}
         </label>
       )}
@@ -22,15 +22,15 @@ export function Input({ label, error, className, id, ...props }: InputProps) {
         aria-invalid={Boolean(error)}
         aria-describedby={error ? `${String(inputId)}-error` : undefined}
         className={cn(
-          'bg-card text-foreground placeholder:text-muted-foreground h-10 rounded-lg border px-3 text-sm',
-          'focus-visible:ring-ring outline-none focus-visible:ring-2',
+          'h-10 px-3 text-sm rounded-lg border bg-card text-foreground placeholder:text-muted-foreground',
+          'outline-none focus-visible:ring-2 focus-visible:ring-ring',
           error && 'border-destructive',
           className,
         )}
         {...props}
       />
       {error && (
-        <p id={`${String(inputId)}-error`} className="text-destructive text-xs">
+        <p id={`${String(inputId)}-error`} className="text-xs text-destructive">
           {error}
         </p>
       )}

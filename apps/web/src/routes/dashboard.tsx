@@ -5,7 +5,7 @@ import { useSession } from '@/lib/auth-client';
 
 /**
  * Panel de inicio. De momento es el esqueleto: las métricas reales llegan con
- * la RFC 0001 (docs/rfcs/0001-dashboard-metricas.md).
+ * la RFC 0001 (docs/rfcs/0001-panel-de-metricas.md).
  */
 export function DashboardPage() {
   const { t } = useTranslation();
@@ -20,7 +20,7 @@ export function DashboardPage() {
   ] as const;
 
   return (
-    <section className="flex flex-col gap-6">
+    <section className="gap-6 flex flex-col">
       <header>
         <h1 className="text-2xl font-semibold">{t('home.title')}</h1>
         <p className="text-muted-foreground">
@@ -28,7 +28,7 @@ export function DashboardPage() {
         </p>
       </header>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="gap-4 sm:grid-cols-2 lg:grid-cols-3 grid">
         {sections.map((key) => (
           <Card key={key}>
             <CardTitle className="text-base">{t(key)}</CardTitle>

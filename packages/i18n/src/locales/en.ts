@@ -22,6 +22,7 @@ export const en = {
     dreams: 'Dreams',
     communications: 'Communications',
     settings: 'Settings',
+    more: 'More',
   },
   auth: {
     signIn: 'Sign in',
@@ -50,6 +51,7 @@ export const en = {
     title: 'Settings',
     appearance: 'Appearance',
     profile: 'Profile',
+    connection: 'Connection',
   },
   profile: {
     title: 'My profile',

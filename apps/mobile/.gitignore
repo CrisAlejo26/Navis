@@ -1,0 +1,14 @@
+.expo/
+dist/
+web-build/
+
+# Proyectos nativos generados por `expo prebuild`
+android/
+ios/
+
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*

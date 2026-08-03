@@ -38,12 +38,12 @@ export function RegisterPage() {
   });
 
   return (
-    <main className="flex min-h-dvh flex-col items-center justify-center p-6">
-      <Card className="w-full max-w-sm">
+    <main className="p-6 flex min-h-dvh flex-col items-center justify-center">
+      <Card className="max-w-sm w-full">
         <CardTitle>{t('auth.signUp')}</CardTitle>
         <CardDescription className="mb-5">{t('home.subtitle')}</CardDescription>
 
-        <form onSubmit={(event) => void onSubmit(event)} className="flex flex-col gap-4" noValidate>
+        <form onSubmit={(event) => void onSubmit(event)} className="gap-4 flex flex-col" noValidate>
           <Input
             label={t('auth.name')}
             autoComplete="name"
@@ -66,7 +66,7 @@ export function RegisterPage() {
           />
 
           {serverError && (
-            <p role="alert" className="text-destructive text-sm">
+            <p role="alert" className="text-sm text-destructive">
               {serverError}
             </p>
           )}
@@ -76,7 +76,7 @@ export function RegisterPage() {
           </Button>
         </form>
 
-        <p className="text-muted-foreground mt-4 text-sm">
+        <p className="mt-4 text-sm text-muted-foreground">
           {t('auth.haveAccount')}{' '}
           <Link to="/login" className="text-primary underline">
             {t('auth.signIn')}

@@ -9,6 +9,9 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { AppModule } from '../src/app.module';
 import { auth } from '../src/auth/auth';
 
+/** `response.body` de supertest es `any`: esto le pone tipo en un solo sitio. */
+const body = <T>(response: { body: unknown }): T => response.body as T;
+
 /**
  * Recorre el flujo real: registro → sesión → endpoint protegido.
  * Necesita Postgres arrancado y migrado (`pnpm db:up && pnpm db:migrate`).
@@ -38,7 +41,7 @@ describe('Auth (e2e)', () => {
 
   it('/health responde sin sesión', async () => {
     const response = await request(app.getHttpServer()).get('/health').expect(200);
-    expect(response.body.status).toBe('ok');
+    expect(body<{ status: string }>(response).status).toBe('ok');
   });
 
   it('rechaza el perfil sin sesión', async () => {
@@ -63,7 +66,7 @@ describe('Auth (e2e)', () => {
       .expect(200);
 
     expect(response.body).toMatchObject({ timezone: 'Europe/Madrid' });
-    expect(response.body.userId).toBeTruthy();
+    expect(body<{ userId: string }>(response).userId).toBeTruthy();
   });
 
   it('actualiza el perfil', async () => {
@@ -73,6 +76,6 @@ describe('Auth (e2e)', () => {
       .send({ church: 'Iglesia E2E' })
       .expect(200);
 
-    expect(response.body.church).toBe('Iglesia E2E');
+    expect(body<{ church: string }>(response).church).toBe('Iglesia E2E');
   });
 });
