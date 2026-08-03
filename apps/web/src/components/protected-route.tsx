@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Navigate, useLocation } from 'react-router';
 
+import { ShipLoader } from '@/components/ui/ship-loader';
 import { useSession } from '@/lib/auth-client';
 
 /** Bloquea el acceso a las rutas privadas mientras no haya sesión válida. */
@@ -12,8 +13,8 @@ export function ProtectedRoute({ children }: { children: ReactNode }) {
 
   if (isPending) {
     return (
-      <div className="flex min-h-dvh items-center justify-center text-muted-foreground">
-        {t('common.loading')}
+      <div className="flex min-h-dvh items-center justify-center">
+        <ShipLoader size="lg" label={t('common.loading')} />
       </div>
     );
   }

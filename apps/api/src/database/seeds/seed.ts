@@ -10,8 +10,8 @@
  * Funciona con los dos drivers: SQLite (local) y Postgres (compartido).
  */
 import { auth } from '../../auth/auth';
-import { isPostgres } from '../column-types';
 import { dataSource } from '../data-source';
+import { p } from '../sql-params';
 
 // La contraseña NO lleva el nombre del proyecto a propósito: `pnpm rename` lo
 // sustituiría y podría dejarla por debajo del mínimo de 10 caracteres que
@@ -21,9 +21,6 @@ const SEED_USER = {
   password: 'Rebano2026Seguro',
   name: 'Administrador',
 };
-
-/** Postgres numera los parámetros ($1, $2…); SQLite usa interrogaciones. */
-const p = (index: number): string => (isPostgres ? `$${index}` : '?');
 
 async function seed(): Promise<void> {
   await dataSource.initialize();

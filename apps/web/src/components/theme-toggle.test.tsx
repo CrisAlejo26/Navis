@@ -1,9 +1,12 @@
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 
 import { ThemeToggle } from '@/components/theme-toggle';
 import { useThemeStore } from '@/lib/theme';
+// Con el proveedor de i18next, como en main.tsx: sin él los componentes pintan
+// la clave en crudo y estas expresiones regulares casarían con `theme.dark`.
+import { renderWithI18n as render } from '@/test/render';
 
 describe('ThemeToggle', () => {
   it('cambia el modo y añade la clase dark al documento', async () => {
