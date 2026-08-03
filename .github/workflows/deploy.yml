@@ -158,7 +158,7 @@ jobs:
           username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_SSH_KEY }}
           port: ${{ secrets.DEPLOY_PORT || 22 }}
-          source: docker-compose.deploy.yml
+          source: "docker-compose.deploy.yml,scripts/limpiar-docker.sh,docker/marcas-anteriores.txt,brand.json"
           target: ${{ secrets.DEPLOY_PATH }}
 
       - name: Migrar, desplegar y verificar
@@ -224,7 +224,15 @@ jobs:
 
             echo "$IMAGE_TAG" > .deployed-tag
             echo "Despliegue correcto en $IMAGE_TAG"
-            docker image prune -f
+
+            # Limpieza. Va al final y a propósito: si algo hubiera fallado, las
+            # imágenes de la versión anterior siguen ahí para volver atrás.
+            # El script solo toca lo de este proyecto; el servidor aloja más
+            # cosas y `docker system prune -a` se las llevaría por delante.
+            echo "== Limpiando imágenes y caché =="
+            chmod +x scripts/limpiar-docker.sh
+            REPO_IMAGENES="$IMAGE_REPO" TAG_ACTUAL="$IMAGE_TAG" RETENCION_CACHE=168h \
+              bash scripts/limpiar-docker.sh || echo "La limpieza falló, pero el despliegue está bien."
 
       - name: Resumen
         if: ${{ always() }}

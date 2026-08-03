@@ -1,8 +1,11 @@
 # Navis — convenciones del repositorio
 
-Contexto para quien (o lo que) trabaje en este código. Las reglas de
-colaboración están en [`CONTRIBUTING.md`](./CONTRIBUTING.md); aquí va lo que hay
-que saber del terreno para no tropezar.
+Contexto para quien (o lo que) trabaje en este código.
+
+- Las **reglas del proyecto** están en [`.claude/rules/`](./.claude/rules) y se
+  aplican a todo lo que se escriba aquí.
+- Cómo colaborar, en [`CONTRIBUTING.md`](./CONTRIBUTING.md).
+- Aquí abajo, lo que hay que saber del terreno para no tropezar.
 
 ## Qué es
 
@@ -58,6 +61,11 @@ Cosas que ya han costado un rato y no hace falta volver a descubrir.
 - **La identidad (nombre e icono) no se toca a mano**: `pnpm rename <Nombre>` y
   `pnpm icons`, con `brand.json` y `packages/theme/src/logo/` como fuentes. Hay
   tests que comprueban que está aplicada en todas partes.
+- **`pnpm rename` recorre `git ls-files`**, así que lo ignorado por git no lo
+  vería: por eso trata aparte `.env*` y `data/` (ahí vivía la base de datos
+  local con el nombre viejo), y apunta el slug abandonado en
+  `docker/marcas-anteriores.txt` para que `scripts/limpiar-docker.sh` pueda
+  borrar del servidor las imágenes que deja atrás.
 - **El `.icns` que genera Tauri no es reproducible byte a byte**: sale distinto
   en cada ejecución de `pnpm icons`. Si aparece como único cambio, es ruido.
 - **La versión vive en siete sitios** (package.json de la raíz y de cada app,

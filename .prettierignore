@@ -13,3 +13,8 @@ apps/mobile/ios
 apps/web/public/pwa-*.png
 apps/web/public/apple-touch-icon.png
 *.min.*
+
+# Skills traídas de fuera: se actualizan copiando de upstream, y reformatearlas
+# convertiría cada actualización en un diff ilegible.
+.claude/skills/ui-ux-pro-max
+.claude/skills/frontend-design

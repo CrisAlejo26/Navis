@@ -93,3 +93,34 @@ IMAGE_TAG=<sha-de-12-caracteres> docker compose -f docker-compose.deploy.yml up 
 
 Las imágenes se etiquetan con los 12 primeros caracteres del SHA del commit, así
 que cualquier commit de `main` que llegara a desplegarse se puede recuperar.
+
+## Limpieza del servidor
+
+Cada despliegue deja atrás la imagen de la versión anterior y capas de
+compilación. Sin limpiar, eso se acumula en gigas: tras los dos renombrados del
+proyecto había casi 6 GB de imágenes con los nombres antiguos que ya no usaba
+nadie.
+
+El último paso del workflow ejecuta `scripts/limpiar-docker.sh` en el servidor:
+
+| Qué borra                                                          | Qué no toca                     |
+| ------------------------------------------------------------------ | ------------------------------- |
+| Imágenes de los nombres anteriores del proyecto                    | Las imágenes de otros proyectos |
+| Etiquetas viejas de este proyecto (menos la desplegada y `latest`) | La versión en marcha            |
+| Capas huérfanas (`docker image prune`, **sin** `-a`)               | Volúmenes y contenedores        |
+| Caché de compilación sin usar de más de 7 días                     | La caché reciente               |
+
+Va **al final**, después de comprobar que la versión nueva responde: si algo
+falla antes, las imágenes anteriores siguen ahí para volver atrás. Y si la
+limpieza falla, el despliegue no se da por malo.
+
+La lista de nombres anteriores está en `docker/marcas-anteriores.txt` y la
+escribe `pnpm rename` sola. Nunca se usa `docker system prune -a`: este servidor
+aloja más cosas.
+
+A mano, desde la carpeta de despliegue:
+
+```bash
+bash scripts/limpiar-docker.sh --dry-run   # enseña qué borraría
+bash scripts/limpiar-docker.sh             # lo borra
+```

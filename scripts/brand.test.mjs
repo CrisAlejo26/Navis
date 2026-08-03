@@ -4,8 +4,9 @@
  * deja un sitio, aquí salta.
  */
 import assert from 'node:assert/strict';
+import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { dirname, extname, join } from 'node:path';
 import { test } from 'node:test';
 import { fileURLToPath } from 'node:url';
 
@@ -16,6 +17,43 @@ const leer = (ruta) => readFileSync(join(root, ruta), 'utf8');
 const json = (ruta) => JSON.parse(leer(ruta));
 
 const marca = json('brand.json');
+
+// --- Ni rastro de los nombres anteriores -------------------------------------
+
+/**
+ * El proyecto se ha llamado antes de otras maneras. Un nombre viejo que
+ * sobrevive en un fichero no es cosmética: es lo que hizo que la base de datos
+ * local y las imágenes del servidor siguieran con el nombre antiguo.
+ */
+test('ningún nombre anterior sobrevive en el repositorio', () => {
+  const anteriores = leer('docker/marcas-anteriores.txt')
+    .split('\n')
+    .map((linea) => linea.trim())
+    .filter((linea) => linea && !linea.startsWith('#'));
+
+  assert.ok(anteriores.length > 0, 'la lista de marcas anteriores no debería estar vacía');
+
+  // El propio fichero que las documenta queda fuera, obviamente.
+  const exento = new Set(['docker/marcas-anteriores.txt']);
+  const binario = new Set(['.png', '.jpg', '.jpeg', '.ico', '.icns', '.gif', '.webp', '.pdf']);
+
+  const ficheros = execFileSync('git', ['ls-files'], { cwd: root, encoding: 'utf8' })
+    .split('\n')
+    .map((linea) => linea.trim())
+    .filter(Boolean)
+    .filter((ruta) => !exento.has(ruta) && !binario.has(extname(ruta).toLowerCase()));
+
+  const culpables = [];
+  for (const ruta of ficheros) {
+    const texto = leer(ruta).toLowerCase();
+    const encontrados = anteriores.filter(
+      (vieja) => texto.includes(vieja) || ruta.toLowerCase().includes(vieja),
+    );
+    if (encontrados.length > 0) culpables.push(`${ruta} → ${encontrados.join(', ')}`);
+  }
+
+  assert.deepEqual(culpables, [], `quedan nombres antiguos:\n${culpables.join('\n')}`);
+});
 
 // --- El nombre ---------------------------------------------------------------
 

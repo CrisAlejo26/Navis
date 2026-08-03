@@ -46,8 +46,9 @@ apps/mobile/ios/
 target/
 apps/desktop/src-tauri/gen/
 
-# Base de datos local en modo SQLite
-data/
+# Base de datos local en modo SQLite. Anclado a la raíz a propósito: sin la
+# barra inicial también se tragaba `.claude/skills/ui-ux-pro-max/data/`.
+/data/
 *.sqlite
 *.sqlite-shm
 *.sqlite-wal

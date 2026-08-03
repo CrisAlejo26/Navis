@@ -33,6 +33,8 @@ entre paquetes del workspace; `npm install` o `yarn` rompen ambas cosas.
 
 ## Reglas de la casa
 
+Están escritas en [`.claude/rules/`](./.claude/rules), y en resumen son estas:
+
 1. **Nada de texto sin traducir.** Cualquier cadena visible se añade a los
    **seis** idiomas de `packages/i18n` (es, en, fr, pt, de, it), con su
    traducción real. El español es la referencia: si añades una clave allí y no
