@@ -55,6 +55,11 @@ Cosas que ya han costado un rato y no hace falta volver a descubrir.
   chocan con los mocks de React Native. Los tests comprueban comportamiento, no
   estilos.
 - **`@testing-library/react-native` 14: `render` y `fireEvent` son asíncronos.**
+- **La identidad (nombre e icono) no se toca a mano**: `pnpm rename <Nombre>` y
+  `pnpm icons`, con `brand.json` y `scripts/brand-shape.mjs` como fuentes. Hay
+  tests que comprueban que está aplicada en todas partes.
+- **El `.icns` que genera Tauri no es reproducible byte a byte**: sale distinto
+  en cada ejecución de `pnpm icons`. Si aparece como único cambio, es ruido.
 - **La versión vive en siete sitios** (package.json de la raíz y de cada app,
   app.config.ts, tauri.conf.json, Cargo.toml y Cargo.lock). No la toques a
   mano: `pnpm release` los sincroniza y hay un test que falla si alguno se
