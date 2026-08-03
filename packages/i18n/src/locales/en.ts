@@ -29,6 +29,7 @@ export const en = {
     settings: 'Settings',
     users: 'Users',
     more: 'More',
+    menu: 'Menu',
   },
   auth: {
     signIn: 'Sign in',

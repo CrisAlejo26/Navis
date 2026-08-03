@@ -48,6 +48,20 @@ export function useRoleLabel(): (role: { slug: RoleSlug; name?: string | null })
 }
 
 /**
+ * Qué explica un rol: la traducción de su descripción si es de serie, y lo que
+ * escribió quien lo creó si es propio.
+ */
+export function useRoleHint(): (role: {
+  slug: RoleSlug;
+  description?: string | null;
+}) => string | null {
+  const { t } = useTranslation();
+
+  return (role) =>
+    isSystemRole(role.slug) ? t(ROLE_HINT_KEY[role.slug]) : (role.description ?? null);
+}
+
+/**
  * El catálogo completo indexado por slug, para poner nombre y nivel al rol de
  * cada cuenta. Son pocas filas y se cachean durante minutos, así que sale más
  * barato que devolver el rol entero en cada usuario del listado.

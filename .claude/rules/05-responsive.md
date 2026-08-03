@@ -9,21 +9,32 @@ menudo como sentado delante de un ordenador. Toda interfaz debe funcionar en
 Escribe la versión estrecha **sin prefijo** y ensánchala con los breakpoints de
 Tailwind: `sm:` 640 px · `md:` 768 px · `lg:` 1024 px · `xl:` 1280 px.
 
-En la web el corte que manda es **`md`**: por debajo, navegación inferior; por
-encima, barra lateral. Si tu pantalla necesita otro, que sea por una razón que
-puedas explicar.
+En la web el corte que manda es **`md`**: por debajo, barra superior con el
+menú; por encima, barra lateral. Si tu pantalla necesita otro, que sea por una
+razón que puedas explicar.
 
-## 2. Los dos patrones que ya están montados
+## 2. Los patrones que ya están montados
 
-- **Web** (`routes/app-layout.tsx`): `aside` con las siete entradas, oculto con
-  `hidden md:flex`; `nav` inferior fija con las cinco primeras, oculta con
-  `md:hidden`. El contenido lleva `pb-24` en móvil para que la barra inferior
-  no tape lo último.
-- **Móvil** (`app/(tabs)/_layout.tsx`): cinco pestañas, y profecías, sueños y
-  comunicaciones agrupados en «Más». Más de cinco en una barra inferior quedan
-  ilegibles.
+- **Web** (`routes/app-layout.tsx`): `aside` con todas las entradas, oculto con
+  `hidden md:flex`; y por debajo de `md`, una cabecera pegajosa con el botón
+  que abre `Drawer` con **esa misma lista**. La navegación se escribe una vez,
+  en `components/app-nav.tsx`, y se pone en los dos sitios.
 
-Una sección nueva se engancha a estos dos sitios; no se inventa una navegación
+  No hay barra inferior: las entradas pasan de cinco y ahí dentro no caben sin
+  quedar ilegibles. Un panel lateral las enseña enteras, con su icono y su
+  nombre, y no roba alto a la pantalla.
+
+- **Tablas** (`components/ui/data-table.tsx`): de `md` para arriba, tabla; por
+  debajo, una **lista de fichas**. Una tabla de cinco columnas en un teléfono
+  obliga a desplazarse a lo ancho para leer una sola fila. Cada pantalla pasa
+  su `renderRow` y su `renderCard`, y las acciones se comparten entre las dos
+  (`user-actions`, `role-actions`).
+
+- **Móvil nativo** (`app/(tabs)/_layout.tsx`): cinco pestañas, y profecías,
+  sueños y comunicaciones agrupados en «Más». Ahí sí manda la convención del
+  sistema operativo.
+
+Una sección nueva se engancha a estos sitios; no se inventa una navegación
 propia.
 
 ## 3. Layouts que aguantan

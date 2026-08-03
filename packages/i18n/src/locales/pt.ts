@@ -29,6 +29,7 @@ export const pt = {
     settings: 'Definições',
     users: 'Utilizadores',
     more: 'Mais',
+    menu: 'Menu',
   },
   auth: {
     signIn: 'Iniciar sessão',

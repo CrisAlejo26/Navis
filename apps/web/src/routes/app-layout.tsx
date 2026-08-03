@@ -1,28 +1,34 @@
-import { LogOut } from 'lucide-react';
+import { Menu } from 'lucide-react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { NavLink, Outlet, useNavigate } from 'react-router';
+import { Outlet } from 'react-router';
 
+import { AppNav } from '@/components/app-nav';
 import { Logo } from '@/components/logo';
 import { PageTransition } from '@/components/page-transition';
-import { Button } from '@/components/ui/button';
-import { signOut, useSession } from '@/lib/auth-client';
-import { cn } from '@/lib/cn';
+import { SessionFooter } from '@/components/session-footer';
+import { Drawer } from '@/components/ui/drawer';
+import { useSession } from '@/lib/auth-client';
 import { navItemsFor } from '@/lib/nav';
 import { toRole } from '@/lib/roles';
 
-/** Estructura común de la app autenticada: barra lateral en escritorio, inferior en móvil. */
+/**
+ * Estructura común de la app autenticada.
+ *
+ * En escritorio, barra lateral fija. En móvil, una barra superior con el botón
+ * que abre la navegación entera en un panel lateral: las entradas son más de
+ * cinco, y en una barra inferior no caben sin quedar ilegibles (Regla 5).
+ */
 export function AppLayout() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const { data: session } = useSession();
+  const [menuOpen, setMenuOpen] = useState(false);
 
   // Las entradas dependen del rol: la administración de accesos solo la ve
   // quien puede abrirla (ver `navItemsFor`).
   const navItems = navItemsFor(toRole(session?.user.role));
-
-  const handleSignOut = async () => {
-    await signOut();
-    await navigate('/login', { replace: true });
+  const closeMenu = () => {
+    setMenuOpen(false);
   };
 
   return (
@@ -33,71 +39,38 @@ export function AppLayout() {
           <p className="text-lg font-semibold">{t('common.appName')}</p>
         </div>
 
-        <nav className="gap-1 flex flex-1 flex-col">
-          {navItems.map(({ to, labelKey, Icon, end }) => (
-            <NavLink
-              key={to}
-              to={to}
-              end={end}
-              className={({ isActive }) =>
-                cn(
-                  'gap-3 px-3 py-2 text-sm flex items-center rounded-lg transition',
-                  isActive
-                    ? 'bg-primary text-primary-foreground'
-                    : 'text-muted-foreground hover:bg-muted hover:text-foreground',
-                )
-              }
-            >
-              <Icon size={18} aria-hidden />
-              {t(labelKey)}
-            </NavLink>
-          ))}
-        </nav>
-
-        <div className="pt-3 border-t">
-          {session?.user.name && (
-            <p className="mb-2 px-3 text-xs text-muted-foreground">{session.user.name}</p>
-          )}
-          <Button
-            variant="ghost"
-            size="sm"
-            className="w-full justify-start"
-            onClick={() => void handleSignOut()}
-          >
-            <LogOut size={16} aria-hidden />
-            {t('auth.signOut')}
-          </Button>
-        </div>
+        <AppNav items={navItems} />
+        <SessionFooter />
       </aside>
 
-      {/* La navegación inferior queda fuera de PageTransition: su `transform`
-          crea contexto de apilamiento y el `fixed` dejaría de anclarse. */}
-      <main className="p-4 pb-24 md:p-8 md:pb-8 min-w-0 w-full flex-1">
+      <header className="h-14 px-3 gap-3 md:hidden top-0 sticky z-20 flex shrink-0 items-center border-b bg-card">
+        <button
+          type="button"
+          onClick={() => {
+            setMenuOpen(true);
+          }}
+          aria-label={t('nav.menu')}
+          aria-expanded={menuOpen}
+          className="h-10 w-10 inline-flex cursor-pointer items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground"
+        >
+          <Menu size={20} aria-hidden />
+        </button>
+        <Logo className="h-6 w-6" />
+        <p className="font-semibold">{t('common.appName')}</p>
+      </header>
+
+      <Drawer open={menuOpen} onClose={closeMenu} title={t('nav.menu')}>
+        <div className="p-3 flex min-h-full flex-col">
+          <AppNav items={navItems} onNavigate={closeMenu} />
+          <SessionFooter />
+        </div>
+      </Drawer>
+
+      <main className="p-4 md:p-8 min-w-0 w-full flex-1">
         <PageTransition>
           <Outlet />
         </PageTransition>
       </main>
-
-      {/* Navegación inferior en móvil (la PWA se instala sobre todo en el teléfono).
-          Cinco como mucho: más de cinco en una barra inferior quedan ilegibles. */}
-      <nav className="inset-x-0 bottom-0 py-2 md:hidden fixed flex justify-around border-t bg-card">
-        {navItems.slice(0, 5).map(({ to, labelKey, Icon, end }) => (
-          <NavLink
-            key={to}
-            to={to}
-            end={end}
-            className={({ isActive }) =>
-              cn(
-                'gap-1 px-2 flex flex-col items-center text-[10px]',
-                isActive ? 'text-primary' : 'text-muted-foreground',
-              )
-            }
-          >
-            <Icon size={20} aria-hidden />
-            {t(labelKey)}
-          </NavLink>
-        ))}
-      </nav>
     </div>
   );
 }
