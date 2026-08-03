@@ -83,9 +83,15 @@ cambias la paleta, **se actualizan también**:
 | `apps/mobile/app.config.ts`              | splash en claro y en oscuro                         |
 | `docker/nginx/mantenimiento.html`        | la página de mantenimiento                          |
 
-Y una distinción que se confunde: el **azul de marca `#2140cf`** es el del logo
-(Regla 7); el azul de la interfaz es el token `primary`, que no es el mismo
-valor y además cambia entre temas. No los intercambies.
+Y una distinción que conviene tener clara: el **azul de marca `#2140cf`** es el
+del logo (Regla 7) y vive en el token `--brand`, que **no cambia con el tema**.
+El azul de la interfaz es `primary`, y sí cambia: en claro vale exactamente
+`#2140cf` —es el mismo azul— y en oscuro sube un punto de luminosidad
+(`#355cec`, mismo tono y misma saturación) porque el azul exacto sobre el fondo
+oscuro se queda en 2,46:1 y no llega al 3:1 que pide un control.
+
+Regla práctica: **superficie de marca → `bg-brand`; control de la interfaz →
+`bg-primary`.** Ninguno de los dos se escribe a ojo.
 
 ## 7. Estado, y lo que se ve en los dos temas
 

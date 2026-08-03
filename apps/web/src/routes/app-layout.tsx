@@ -1,36 +1,24 @@
-import {
-  CalendarDays,
-  LayoutDashboard,
-  LogOut,
-  MessageSquare,
-  Moon,
-  Settings,
-  Sparkles,
-  Users,
-} from 'lucide-react';
+import { LogOut } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { NavLink, Outlet, useNavigate } from 'react-router';
 
 import { Logo } from '@/components/logo';
+import { PageTransition } from '@/components/page-transition';
 import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/cn';
 import { signOut, useSession } from '@/lib/auth-client';
-
-const navItems = [
-  { to: '/', labelKey: 'nav.dashboard', Icon: LayoutDashboard, end: true },
-  { to: '/calendar', labelKey: 'nav.calendar', Icon: CalendarDays, end: false },
-  { to: '/believers', labelKey: 'nav.believers', Icon: Users, end: false },
-  { to: '/prophecies', labelKey: 'nav.prophecies', Icon: Sparkles, end: false },
-  { to: '/dreams', labelKey: 'nav.dreams', Icon: Moon, end: false },
-  { to: '/communications', labelKey: 'nav.communications', Icon: MessageSquare, end: false },
-  { to: '/settings', labelKey: 'nav.settings', Icon: Settings, end: false },
-] as const;
+import { cn } from '@/lib/cn';
+import { navItemsFor } from '@/lib/nav';
+import { toRole } from '@/lib/roles';
 
 /** Estructura común de la app autenticada: barra lateral en escritorio, inferior en móvil. */
 export function AppLayout() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { data: session } = useSession();
+
+  // Las entradas dependen del rol: la administración de accesos solo la ve
+  // quien puede abrirla (ver `navItemsFor`).
+  const navItems = navItemsFor(toRole(session?.user.role));
 
   const handleSignOut = async () => {
     await signOut();
@@ -82,11 +70,16 @@ export function AppLayout() {
         </div>
       </aside>
 
-      <main className="p-4 pb-24 md:p-8 md:pb-8 flex-1">
-        <Outlet />
+      {/* La navegación inferior queda fuera de PageTransition: su `transform`
+          crea contexto de apilamiento y el `fixed` dejaría de anclarse. */}
+      <main className="p-4 pb-24 md:p-8 md:pb-8 min-w-0 w-full flex-1">
+        <PageTransition>
+          <Outlet />
+        </PageTransition>
       </main>
 
-      {/* Navegación inferior en móvil (la PWA se instala sobre todo en el teléfono). */}
+      {/* Navegación inferior en móvil (la PWA se instala sobre todo en el teléfono).
+          Cinco como mucho: más de cinco en una barra inferior quedan ilegibles. */}
       <nav className="inset-x-0 bottom-0 py-2 md:hidden fixed flex justify-around border-t bg-card">
         {navItems.slice(0, 5).map(({ to, labelKey, Icon, end }) => (
           <NavLink

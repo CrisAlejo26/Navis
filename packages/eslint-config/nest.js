@@ -16,8 +16,9 @@ export function nestConfig({ tsconfigRootDir }) {
     // haría que ESLint reventase al llegar a ellos.
     ignores: ['**/*.config.ts'],
     rules: {
-      // Los decoradores de Nest/TypeORM devuelven `any` en muchas firmas.
-      '@typescript-eslint/no-unsafe-argument': 'warn',
+      // `no-unsafe-argument` se queda en error como en el resto del repositorio
+      // (Regla 10): los `any` que devuelven algunos decoradores de Nest y
+      // TypeORM se acotan en el sitio donde entran, no se silencian aquí.
       '@typescript-eslint/no-extraneous-class': 'off',
       // Los módulos de Nest son clases vacías por diseño.
       '@typescript-eslint/no-empty-function': ['error', { allow: ['constructors'] }],

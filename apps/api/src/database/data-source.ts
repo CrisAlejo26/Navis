@@ -4,6 +4,7 @@ import { DataSource, type DataSourceOptions } from 'typeorm';
 
 import { env, isProduction, sqlitePath } from '../config/env';
 import { Profile } from '../profiles/profile.entity';
+import { Role } from '../roles/role.entity';
 
 const logging: DataSourceOptions['logging'] = isProduction
   ? ['error', 'warn']
@@ -17,7 +18,7 @@ const logging: DataSourceOptions['logging'] = isProduction
  * ficheros `.ts`, cosa que no sabe hacer: falla con «Invalid or unexpected
  * token». Al añadir una entidad nueva, se añade aquí.
  */
-const entities = [Profile];
+const entities = [Profile, Role];
 
 /**
  * Las migraciones sí van por patrón, pero con UNA extensión: si aceptase

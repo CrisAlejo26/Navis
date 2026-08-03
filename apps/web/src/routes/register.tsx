@@ -1,90 +1,39 @@
-import { zodResolver } from '@hookform/resolvers/zod';
-import { registerSchema, type RegisterInput } from '@navis/shared';
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import type { RegisterInput } from '@navis/shared';
 import { useTranslation } from 'react-i18next';
-import { Link, useNavigate } from 'react-router';
 
-import { Button } from '@/components/ui/button';
-import { Logo } from '@/components/logo';
-import { Card, CardDescription, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
+import { AccountForm } from '@/components/auth/account-form';
+import { AuthLayout } from '@/components/auth/auth-layout';
+import { AuthSwitch } from '@/components/auth/auth-switch';
 import { signUp } from '@/lib/auth-client';
+import { useEnterApp } from '@/lib/enter-app';
 
 export function RegisterPage() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
-  const [serverError, setServerError] = useState<string | null>(null);
+  const enterApp = useEnterApp();
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useForm<RegisterInput>({
-    resolver: zodResolver(registerSchema),
-    defaultValues: { email: '', password: '', name: '' },
-  });
-
-  const onSubmit = handleSubmit(async (values) => {
-    setServerError(null);
+  const handleSubmit = async (values: RegisterInput): Promise<string | null> => {
     const { error } = await signUp.email(values);
 
     if (error) {
-      setServerError(error.message ?? t('errors.generic'));
-      return;
+      // Better Auth devuelve el mensaje en inglés; el caso que de verdad se da
+      // tiene su propia clave y el resto cae en el genérico (Regla 2).
+      return error.code === 'USER_ALREADY_EXISTS' ? t('auth.emailTaken') : t('errors.generic');
     }
 
-    // `autoSignIn: true` en la API deja la sesión lista tras registrarse.
-    await navigate('/', { replace: true });
-  });
+    return enterApp(values.email, values.password);
+  };
 
   return (
-    <main className="p-6 flex min-h-dvh flex-col items-center justify-center">
-      <Card className="max-w-sm w-full">
-        <Logo className="mb-3 h-12 w-12" />
-        <CardTitle>{t('auth.signUp')}</CardTitle>
-        <CardDescription className="mb-5">{t('home.subtitle')}</CardDescription>
-
-        <form onSubmit={(event) => void onSubmit(event)} className="gap-4 flex flex-col" noValidate>
-          <Input
-            label={t('auth.name')}
-            autoComplete="name"
-            error={errors.name?.message}
-            {...register('name')}
-          />
-          <Input
-            label={t('auth.email')}
-            type="email"
-            autoComplete="email"
-            error={errors.email?.message}
-            {...register('email')}
-          />
-          <Input
-            label={t('auth.password')}
-            type="password"
-            autoComplete="new-password"
-            error={errors.password?.message}
-            {...register('password')}
-          />
-
-          {serverError && (
-            <p role="alert" className="text-sm text-destructive">
-              {serverError}
-            </p>
-          )}
-
-          <Button type="submit" disabled={isSubmitting}>
-            {t('auth.signUp')}
-          </Button>
-        </form>
-
-        <p className="mt-4 text-sm text-muted-foreground">
-          {t('auth.haveAccount')}{' '}
-          <Link to="/login" className="text-primary underline">
-            {t('auth.signIn')}
-          </Link>
-        </p>
-      </Card>
-    </main>
+    <AuthLayout
+      title={t('auth.signUpTitle')}
+      subtitle={t('auth.signUpSubtitle')}
+      footer={<AuthSwitch question={t('auth.haveAccount')} to="/login" action={t('auth.signIn')} />}
+    >
+      <AccountForm
+        submitLabel={t('auth.signUp')}
+        submittingLabel={t('auth.creatingAccount')}
+        onSubmit={handleSubmit}
+      />
+    </AuthLayout>
   );
 }

@@ -7,13 +7,22 @@ import type { ResolvedTheme } from './theme-store';
  *
  * Si cambias un color aquí, cámbialo también en `tokens.css`.
  */
+/**
+ * El azul del logo. Es el único color que NO depende del tema: es la marca,
+ * igual que el fondo de los iconos de la aplicación (Regla 7). Para el azul de
+ * la interfaz —que sí cambia entre claro y oscuro— está `primary`.
+ *
+ * Su equivalente en CSS es el token `--brand` de `tokens.css`.
+ */
+export const brandColorHex = '#2140cf';
+
 export const themeColors = {
   light: {
     background: 'oklch(0.99 0.003 106)',
     foreground: 'oklch(0.22 0.01 265)',
     card: 'oklch(1 0 0)',
-    primary: 'oklch(0.52 0.15 264)',
-    primaryForeground: 'oklch(0.98 0.005 264)',
+    primary: 'oklch(0.457 0.221 266.66)',
+    primaryForeground: 'oklch(1 0 0)',
     muted: 'oklch(0.96 0.005 264)',
     mutedForeground: 'oklch(0.52 0.02 264)',
     accent: 'oklch(0.83 0.13 82)',
@@ -26,8 +35,8 @@ export const themeColors = {
     background: 'oklch(0.17 0.012 265)',
     foreground: 'oklch(0.96 0.005 264)',
     card: 'oklch(0.21 0.014 265)',
-    primary: 'oklch(0.68 0.14 264)',
-    primaryForeground: 'oklch(0.17 0.02 264)',
+    primary: 'oklch(0.54 0.221 266.66)',
+    primaryForeground: 'oklch(1 0 0)',
     muted: 'oklch(0.27 0.02 265)',
     mutedForeground: 'oklch(0.7 0.02 264)',
     accent: 'oklch(0.78 0.13 82)',
@@ -52,8 +61,8 @@ export const themeColorsHex = {
     foreground: '#181b1f',
     card: '#ffffff',
     cardForeground: '#181b1f',
-    primary: '#3b63be',
-    primaryForeground: '#f7f8fc',
+    primary: '#2140cf',
+    primaryForeground: '#ffffff',
     secondary: '#eef2f9',
     muted: '#f0f2f5',
     mutedForeground: '#636975',
@@ -68,8 +77,8 @@ export const themeColorsHex = {
     foreground: '#f0f2f5',
     card: '#15181f',
     cardForeground: '#f0f2f5',
-    primary: '#6b95ee',
-    primaryForeground: '#0b0f18',
+    primary: '#355cec',
+    primaryForeground: '#ffffff',
     secondary: '#222630',
     muted: '#222630',
     mutedForeground: '#989fab',

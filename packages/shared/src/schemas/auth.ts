@@ -15,6 +15,28 @@ export const passwordSchema = z
   .refine((value) => /[A-Z]/.test(value), 'Debe incluir una mayúscula')
   .refine((value) => /\d/.test(value), 'Debe incluir un número');
 
+/**
+ * Fuerza de una contraseña, de 0 a 4, para el medidor de los formularios.
+ *
+ * Los tres primeros puntos son exactamente los requisitos de `passwordSchema`,
+ * de forma que una contraseña que la cumple nunca baja de 3: el medidor y la
+ * validación cuentan lo mismo. El cuarto premia longitud o símbolos.
+ *
+ * Es una pista visual, no una medida de entropía: quien decide si vale o no es
+ * el esquema.
+ */
+export function passwordStrength(value: string): 0 | 1 | 2 | 3 | 4 {
+  if (!value) return 0;
+
+  let score = 0;
+  if (value.length >= 10) score += 1;
+  if (/[a-z]/.test(value) && /[A-Z]/.test(value)) score += 1;
+  if (/\d/.test(value)) score += 1;
+  if (value.length >= 14 || /[^\p{L}\p{N}]/u.test(value)) score += 1;
+
+  return score as 0 | 1 | 2 | 3 | 4;
+}
+
 // El orden importa: primero se normaliza (trim + minúsculas) y DESPUÉS se
 // valida, para que "  Pastor@Iglesia.ES " sea un email válido.
 export const emailSchema = z

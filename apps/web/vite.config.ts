@@ -1,12 +1,42 @@
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
+import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
 import tsconfigPaths from 'vite-tsconfig-paths';
 
+const workspaceSource = (name: string): string =>
+  fileURLToPath(new URL(`../../packages/${name}/src/index.ts`, import.meta.url));
+
 export default defineConfig({
   // Un único .env en la raíz del monorepo para api, web, docker y migraciones.
   envDir: '../..',
+
+  /**
+   * Los paquetes del workspace se resuelven a su código fuente, no a su `dist`.
+   *
+   * Su `dist` es CommonJS (`@navis/tsconfig` los deja en NodeNext, que es lo
+   * que necesitan la API y Metro) y Vite no pre-empaqueta las dependencias
+   * enlazadas: en `pnpm dev` las servía en crudo y el navegador reventaba con
+   * «does not provide an export named …». Y forzar el pre-empaquetado tampoco
+   * vale: cada paquete se llevaba dentro su propia copia de React Query, con lo
+   * que los hooks quedaban fuera del QueryClientProvider de la aplicación.
+   *
+   * Desde el fuente no pasa ninguna de las dos cosas, hay recarga en caliente al
+   * tocar un paquete y no hace falta compilarlos antes de arrancar.
+   *
+   * Las expresiones son de coincidencia EXACTA a propósito: las subrutas
+   * (`@navis/theme/tokens.css`, `@navis/theme/logo/*`) tienen que seguir
+   * saliendo del `exports` del paquete.
+   */
+  resolve: {
+    alias: [
+      { find: /^@navis\/api-client$/, replacement: workspaceSource('api-client') },
+      { find: /^@navis\/i18n$/, replacement: workspaceSource('i18n') },
+      { find: /^@navis\/shared$/, replacement: workspaceSource('shared') },
+      { find: /^@navis\/theme$/, replacement: workspaceSource('theme') },
+    ],
+  },
   plugins: [
     react(),
     tailwindcss(),

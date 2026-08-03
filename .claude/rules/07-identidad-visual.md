@@ -54,9 +54,12 @@ No importes los SVG sueltos ni copies el archivo a `public/` de otra app.
 ## 5. El color
 
 El azul de la marca es **`#2140cf`**, tomado del propio logo, y es el que se
-usa como fondo de los iconos. **No es el azul de la interfaz**: eso es el token
-`primary`, que además cambia entre claro y oscuro (Regla 3). No los
-intercambies ni escribas ninguno de los dos a ojo.
+usa como fondo de los iconos. En la interfaz vive en el token **`--brand`**
+(`bg-brand`), que no cambia con el tema porque la marca no cambia.
+
+El azul de los **controles** es el token `primary`, y es el mismo azul: en tema
+claro vale exactamente `#2140cf`; en oscuro sube un punto para cumplir
+contraste (Regla 3). Ninguno de los dos se escribe a ojo: salen del token.
 
 ## 6. Al añadir iconos o ilustraciones
 

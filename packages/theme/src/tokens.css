@@ -20,6 +20,15 @@
 :root {
   --radius: 0.625rem;
 
+  /* ------------------------------ Color de marca ------------------------
+   * El azul del logo (#2140cf), el mismo que el fondo de los iconos de la
+   * aplicación. NO cambia entre claro y oscuro: es la marca, no interfaz —
+   * para la interfaz está `--primary`, que sí cambia (Regla 7). Se usa en
+   * superficies de marca, como el panel de las pantallas de acceso.
+   */
+  --brand: oklch(0.457 0.221 266.66); /* exactamente #2140cf en sRGB */
+  --brand-foreground: oklch(1 0 0);
+
   /* ------------------------------- Paleta clara ------------------------- */
   --light-background: oklch(0.99 0.003 106);
   --light-foreground: oklch(0.22 0.01 265);
@@ -27,8 +36,10 @@
   --light-card-foreground: oklch(0.22 0.01 265);
   --light-popover: oklch(1 0 0);
   --light-popover-foreground: oklch(0.22 0.01 265);
-  --light-primary: oklch(0.52 0.15 264);
-  --light-primary-foreground: oklch(0.98 0.005 264);
+  /* El azul de la interfaz es el de la marca: en claro, exactamente #2140cf.
+     Blanco encima da 7,77:1 y sobre el fondo claro 7,55:1. */
+  --light-primary: oklch(0.457 0.221 266.66);
+  --light-primary-foreground: oklch(1 0 0);
   --light-secondary: oklch(0.96 0.01 264);
   --light-secondary-foreground: oklch(0.3 0.03 264);
   --light-muted: oklch(0.96 0.005 264);
@@ -43,7 +54,7 @@
   --light-warning-foreground: oklch(0.26 0.05 70);
   --light-border: oklch(0.91 0.008 264);
   --light-input: oklch(0.91 0.008 264);
-  --light-ring: oklch(0.52 0.15 264);
+  --light-ring: oklch(0.457 0.221 266.66);
 
   /* ------------------------------- Paleta oscura ------------------------ */
   --dark-background: oklch(0.17 0.012 265);
@@ -52,8 +63,12 @@
   --dark-card-foreground: oklch(0.96 0.005 264);
   --dark-popover: oklch(0.21 0.014 265);
   --dark-popover-foreground: oklch(0.96 0.005 264);
-  --dark-primary: oklch(0.68 0.14 264);
-  --dark-primary-foreground: oklch(0.17 0.02 264);
+  /* El mismo tono y la misma saturación que la marca, un punto más claro
+     (#355cec): sobre el fondo oscuro el azul exacto se quedaba en 2,46:1 y no
+     llegaba al 3:1 que pide un control. Así son 3,56:1, y 5,37:1 con el
+     texto blanco encima. */
+  --dark-primary: oklch(0.54 0.221 266.66);
+  --dark-primary-foreground: oklch(1 0 0);
   --dark-secondary: oklch(0.27 0.02 265);
   --dark-secondary-foreground: oklch(0.96 0.005 264);
   --dark-muted: oklch(0.27 0.02 265);
@@ -68,7 +83,7 @@
   --dark-warning-foreground: oklch(0.2 0.04 70);
   --dark-border: oklch(0.31 0.02 265);
   --dark-input: oklch(0.31 0.02 265);
-  --dark-ring: oklch(0.68 0.14 264);
+  --dark-ring: oklch(0.54 0.221 266.66);
 
   /* -------------------- Tema activo: claro por defecto ------------------ */
   --background: var(--light-background);
@@ -124,6 +139,9 @@
 }
 
 @theme inline {
+  --color-brand: var(--brand);
+  --color-brand-foreground: var(--brand-foreground);
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);

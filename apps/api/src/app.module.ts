@@ -14,6 +14,9 @@ import { env, isProduction } from './config/env';
 import { dataSourceOptions } from './database/data-source';
 import { HealthModule } from './health/health.module';
 import { ProfilesModule } from './profiles/profiles.module';
+import { RolesModule } from './roles/roles.module';
+import { SetupModule } from './setup/setup.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -37,6 +40,9 @@ import { ProfilesModule } from './profiles/profiles.module';
 
     AuthModule,
     ProfilesModule,
+    RolesModule,
+    UsersModule,
+    SetupModule,
     HealthModule,
     AiModule,
   ],

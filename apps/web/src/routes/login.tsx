@@ -3,14 +3,15 @@ import { loginSchema, type LoginInput } from '@navis/shared';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { Link, useNavigate } from 'react-router';
+import { useNavigate } from 'react-router';
 
-import { LanguageSelect } from '@/components/language-select';
-import { ThemeToggle } from '@/components/theme-toggle';
+import { AuthLayout } from '@/components/auth/auth-layout';
+import { AuthSwitch } from '@/components/auth/auth-switch';
+import { FormError } from '@/components/auth/form-error';
 import { Button } from '@/components/ui/button';
-import { Logo } from '@/components/logo';
-import { Card, CardDescription, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
+import { PasswordInput } from '@/components/ui/password-input';
 import { signIn } from '@/lib/auth-client';
 
 export function LoginPage() {
@@ -44,56 +45,36 @@ export function LoginPage() {
   });
 
   return (
-    <main className="gap-6 p-6 flex min-h-dvh flex-col items-center justify-center">
-      <Card className="max-w-sm w-full">
-        <Logo className="mb-3 h-12 w-12" />
-        <CardTitle>{t('auth.signIn')}</CardTitle>
-        <CardDescription className="mb-5">{t('home.subtitle')}</CardDescription>
+    <AuthLayout
+      title={t('auth.signInTitle')}
+      subtitle={t('auth.signInSubtitle')}
+      footer={
+        <AuthSwitch question={t('auth.noAccount')} to="/register" action={t('auth.signUp')} />
+      }
+    >
+      <form onSubmit={(event) => void onSubmit(event)} className="gap-5 flex flex-col" noValidate>
+        <Input
+          label={t('auth.email')}
+          type="email"
+          autoComplete="email"
+          error={errors.email?.message}
+          {...register('email')}
+        />
+        <PasswordInput
+          label={t('auth.password')}
+          autoComplete="current-password"
+          error={errors.password?.message}
+          {...register('password')}
+        />
 
-        <form onSubmit={(event) => void onSubmit(event)} className="gap-4 flex flex-col" noValidate>
-          <Input
-            label={t('auth.email')}
-            type="email"
-            autoComplete="email"
-            error={errors.email?.message}
-            {...register('email')}
-          />
-          <Input
-            label={t('auth.password')}
-            type="password"
-            autoComplete="current-password"
-            error={errors.password?.message}
-            {...register('password')}
-          />
+        <Checkbox label={t('auth.rememberMe')} {...register('rememberMe')} />
 
-          <label className="gap-2 text-sm flex items-center text-muted-foreground">
-            <input type="checkbox" {...register('rememberMe')} />
-            {t('auth.rememberMe')}
-          </label>
+        <FormError message={serverError} />
 
-          {serverError && (
-            <p role="alert" className="text-sm text-destructive">
-              {serverError}
-            </p>
-          )}
-
-          <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? t('auth.signingIn') : t('auth.signIn')}
-          </Button>
-        </form>
-
-        <p className="mt-4 text-sm text-muted-foreground">
-          {t('auth.noAccount')}{' '}
-          <Link to="/register" className="text-primary underline">
-            {t('auth.signUp')}
-          </Link>
-        </p>
-      </Card>
-
-      <div className="gap-4 flex items-center">
-        <ThemeToggle />
-        <LanguageSelect />
-      </div>
-    </main>
+        <Button type="submit" size="lg" className="mt-1 w-full" isLoading={isSubmitting}>
+          {isSubmitting ? t('auth.signingIn') : t('auth.signIn')}
+        </Button>
+      </form>
+    </AuthLayout>
   );
 }

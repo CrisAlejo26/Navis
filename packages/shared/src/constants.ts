@@ -1,9 +1,16 @@
-/** Roles del sistema, ordenados de menor a mayor privilegio. */
+/** Roles de serie, ordenados de menor a mayor privilegio. No se borran. */
 export const ROLES = ['member', 'leader', 'pastor', 'admin'] as const;
 
 export type Role = (typeof ROLES)[number];
 
-/** Jerarquía usada por el guard de roles de la API. */
+/**
+ * Identificador de un rol tal y como viaja: puede ser uno de serie o uno
+ * propio de la instalación, creado desde la administración de accesos. El
+ * nivel de cada uno lo decide la tabla `roles`, no este fichero.
+ */
+export type RoleSlug = string;
+
+/** Jerarquía de los roles de serie: es la semilla de la tabla `roles`. */
 export const ROLE_HIERARCHY: Record<Role, number> = {
   member: 0,
   leader: 1,
@@ -11,8 +18,39 @@ export const ROLE_HIERARCHY: Record<Role, number> = {
   admin: 3,
 };
 
+/**
+ * Tope de los roles propios. Un rol creado a mano nunca llega a administrador:
+ * si pudiera, cualquiera con permiso para crear roles podría fabricarse uno
+ * que reparte accesos, y eso ya no sería una jerarquía sino un atajo.
+ */
+export const MAX_CUSTOM_ROLE_LEVEL = ROLE_HIERARCHY.admin - 1;
+
+export function isSystemRole(slug: RoleSlug): slug is Role {
+  return (ROLES as readonly string[]).includes(slug);
+}
+
+/** `Equipo de Alabanza` → `equipo-de-alabanza`. */
+export function toRoleSlug(name: string): string {
+  return name
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '') // los diacríticos que NFD ha separado
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 40);
+}
+
 export const DEFAULT_PAGE_SIZE = 20;
 export const MAX_PAGE_SIZE = 100;
+
+/** Tamaños de página que ofrece la interfaz. El último no pasa de MAX_PAGE_SIZE. */
+export const PAGE_SIZES = [10, 20, 25, 50, 100] as const;
+
+export type PageSize = (typeof PAGE_SIZES)[number];
+
+export function isPageSize(value: number): value is PageSize {
+  return (PAGE_SIZES as readonly number[]).includes(value);
+}
 
 /** Modos de tema soportados por web y móvil. */
 export const THEME_MODES = ['light', 'dark', 'system'] as const;

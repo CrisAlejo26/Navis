@@ -13,7 +13,7 @@ para que valga igual en cualquier equipo.
 
 ## Las reglas
 
-Ocho, y ninguna es decorativa:
+Diez, y ninguna es decorativa:
 
 1. **Reutilizar antes de escribir** — dónde vive cada cosa, dónde va lo nuevo y
    con qué patrones se resuelve
@@ -31,9 +31,14 @@ Ocho, y ninguna es decorativa:
    genera con un comando
 8. **Explorar con el grafo** — codebase-memory antes que abrir ficheros, con
    las consultas que funcionan en este repositorio
+9. **Nada genérico** — la prueba de la plantilla, qué se lee como relleno y
+   dónde gastar la decisión de diseño
+10. **Nada de `any`** — qué se usa en su lugar, dónde se valida lo que entra y
+    cómo se acota una librería que tipa mal
 
-Las reglas 2, 3, 6 y 7 no son solo buenas intenciones: hay tipado y tests que
-las hacen cumplir. Una traducción que falte no compila.
+Las reglas 2, 3, 6, 7 y 10 no son solo buenas intenciones: hay tipado, lint y
+tests que las hacen cumplir. Una traducción que falte no compila, y un `any` no
+pasa el lint.
 
 ## Las skills
 

@@ -63,6 +63,10 @@ export function baseConfig({ tsconfigRootDir }) {
           'error',
           { checksVoidReturn: { attributes: false } },
         ],
+        // Regla 10: `any` no entra. `recommendedTypeChecked` ya lo marca como
+        // error; se deja escrito para que se vea que es una decisión y no una
+        // herencia que alguien pueda relajar sin darse cuenta.
+        '@typescript-eslint/no-explicit-any': 'error',
         'no-console': ['warn', { allow: ['warn', 'error'] }],
         eqeqeq: ['error', 'smart'],
       },

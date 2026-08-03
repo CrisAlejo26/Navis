@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import { cn } from '@/lib/cn';
 import { useThemeStore } from '@/lib/theme';
+import { toast } from '@/lib/toast';
 
 const options = [
   { mode: 'light', Icon: Sun, labelKey: 'theme.light' },
@@ -31,6 +32,7 @@ export function ThemeToggle() {
           title={t(labelKey)}
           onClick={() => {
             setMode(value);
+            toast.success(t('theme.changed', { mode: t(labelKey).toLocaleLowerCase() }));
           }}
           className={cn(
             'h-8 w-8 inline-flex items-center justify-center rounded-md transition',
