@@ -19,6 +19,16 @@ export const queryKeys = {
   roles: {
     all: ['roles'] as const,
     list: (query: object) => [...queryKeys.roles.all, 'list', query] as const,
+    /** El rol de quien ha entrado, con sus permisos. */
+    mine: ['roles', 'mine'] as const,
+  },
+  /**
+   * Las iglesias a las que llega la cuenta y cuál es la activa. Al cambiar de
+   * iglesia se invalida `all`, y con ella todo lo que cuelgue de una.
+   */
+  churches: {
+    all: ['churches'] as const,
+    mine: ['churches', 'mine'] as const,
   },
   users: {
     all: ['users'] as const,

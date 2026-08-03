@@ -1,7 +1,8 @@
-import { MAX_CUSTOM_ROLE_LEVEL, type RoleRow } from '@navis/shared';
+import { MAX_CUSTOM_ROLE_LEVEL, SUPERADMIN_ROLE, type RoleRow } from '@navis/shared';
 import { Lock } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
+import { PermissionPicker } from '@/components/access/permission-picker';
 import { Input } from '@/components/ui/input';
 import { Note } from '@/components/ui/note';
 import { Select } from '@/components/ui/select';
@@ -10,13 +11,16 @@ import { useRoleLabel } from '@/lib/roles';
 const LEVELS = Array.from({ length: MAX_CUSTOM_ROLE_LEVEL + 1 }, (_, level) => level);
 
 /**
- * Los campos de un rol. De uno de serie solo se ofrece la descripción: su
- * nombre se traduce y su nivel es el que comparan los guards de la API, así
- * que ni siquiera se enseñan los campos.
+ * Los campos de un rol. De uno de serie no se ofrecen ni el nombre —que se
+ * traduce— ni el nivel; los permisos sí, que es para lo que está la pantalla.
+ *
+ * Los del superadministrador no se tocan: quitarle el comodín dejaría la
+ * instalación sin nadie que pudiera devolvérselo (la API también lo impide).
  */
 export function RoleFields({ role }: { role: RoleRow | null }) {
   const { t } = useTranslation();
   const label = useRoleLabel();
+  const locked = role?.slug === SUPERADMIN_ROLE;
 
   return (
     <>
@@ -57,6 +61,14 @@ export function RoleFields({ role }: { role: RoleRow | null }) {
         defaultValue={role?.description ?? ''}
         autoComplete="off"
       />
+
+      {locked ? (
+        <Note icon={Lock} title={t('permissions.title')}>
+          {t('permissions.superadminLocked')}
+        </Note>
+      ) : (
+        <PermissionPicker granted={role?.permissions ?? []} />
+      )}
     </>
   );
 }

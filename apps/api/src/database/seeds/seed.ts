@@ -9,6 +9,8 @@
  * para que la contraseña se hashee exactamente igual que en producción.
  * Funciona con los dos drivers: SQLite (local) y Postgres (compartido).
  */
+import { SUPERADMIN_ROLE } from '@navis/shared';
+
 import { auth } from '../../auth/auth';
 import { isProduction } from '../../config/env';
 import { dataSource } from '../data-source';
@@ -47,10 +49,12 @@ async function seed(): Promise<void> {
       const created = await auth.api.signUpEmail({ body: SEED_USER });
       userId = created.user.id;
       await dataSource.query(`UPDATE "user" SET role = ${p(1)} WHERE id = ${p(2)}`, [
-        'admin',
+        SUPERADMIN_ROLE,
         userId,
       ]);
-      console.log(`✅ Usuario creado: ${SEED_USER.email} / ${SEED_USER.password} (rol admin)`);
+      console.log(
+        `✅ Usuario creado: ${SEED_USER.email} / ${SEED_USER.password} (rol ${SUPERADMIN_ROLE})`,
+      );
     }
 
     await dataSource.query(

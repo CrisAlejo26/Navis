@@ -2,7 +2,7 @@ import { Body, Controller, Get, Post } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { IsOptional, IsString, Length, Max, Min } from 'class-validator';
 
-import { Roles } from '../common/decorators/roles.decorator';
+import { RequirePermissions } from '../common/decorators/permissions.decorator';
 import { AiService } from './ai.service';
 import type { AiCompletionResult } from './ai.types';
 
@@ -34,7 +34,7 @@ export class AiController {
   }
 
   @Post('complete')
-  @Roles('pastor')
+  @RequirePermissions('ai.use')
   @ApiOperation({ summary: 'Completa un prompt con el proveedor configurado' })
   complete(@Body() dto: CompleteDto): Promise<AiCompletionResult> {
     return this.ai.complete(dto.prompt, { system: dto.system, maxTokens: dto.maxTokens });

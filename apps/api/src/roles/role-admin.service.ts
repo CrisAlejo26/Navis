@@ -7,6 +7,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   MAX_CUSTOM_ROLE_LEVEL,
+  SUPERADMIN_ROLE,
   toRoleSlug,
   type CreateRoleInput,
   type RoleRow,
@@ -44,6 +45,7 @@ export class RoleAdminService {
         name: input.name,
         description: input.description ?? null,
         level: input.level,
+        permissions: input.permissions,
         isSystem: false,
       }),
     );
@@ -52,23 +54,29 @@ export class RoleAdminService {
   }
 
   /**
-   * De los roles de serie solo se cambia la descripción: tocarles el nivel o
-   * el nombre descolocaría la jerarquía que comparan los guards y la
-   * traducción que enseña la interfaz.
+   * De los roles de serie no se cambian ni el nombre —que se traduce— ni el
+   * nivel, que descolocaría la jerarquía. Los permisos sí: reajustar qué ve
+   * cada ministerio es justo para lo que está la pantalla de roles.
    */
   async update(id: string, input: UpdateRoleInput): Promise<RoleRow> {
     const role = await this.find(id);
 
     if (role.isSystem && (input.name !== undefined || input.level !== undefined)) {
-      throw new BadRequestException('De un rol de serie solo se cambia la descripción');
+      throw new BadRequestException('De un rol de serie no se cambian el nombre ni el nivel');
+    }
+    // Quitarle el comodín al superadministrador deja la instalación sin nadie
+    // que pueda devolvérselo: es la única puerta que no se puede cerrar.
+    if (role.slug === SUPERADMIN_ROLE && input.permissions !== undefined) {
+      throw new BadRequestException('Los permisos del superadministrador no se cambian');
     }
     if (input.level !== undefined && input.level > MAX_CUSTOM_ROLE_LEVEL) {
-      throw new BadRequestException('Un rol propio no puede llegar a administrador');
+      throw new BadRequestException('Un rol propio no puede llegar a superadministrador');
     }
 
     if (input.name !== undefined) role.name = input.name;
     if (input.description !== undefined) role.description = input.description;
     if (input.level !== undefined) role.level = input.level;
+    if (input.permissions !== undefined) role.permissions = input.permissions;
 
     await this.roles.save(role);
     return { ...role, usersCount: await this.catalog.countUsers(role.slug) };

@@ -4,9 +4,12 @@ import { lazy, Suspense } from 'react';
 import { createBrowserRouter } from 'react-router';
 
 import { SetupGate } from '@/components/auth/setup-gate';
+import { ChurchGate } from '@/components/church-gate';
 import { ProtectedRoute } from '@/components/protected-route';
+import { RequirePermission } from '@/components/require-permission';
 import { AppLayout } from '@/routes/app-layout';
 import { DashboardPage } from '@/routes/dashboard';
+import { PUENTES } from '@/lib/placeholders';
 import { PlaceholderPage } from '@/routes/placeholder';
 
 // Las pantallas de autenticación no hacen falta hasta que el usuario sale.
@@ -28,6 +31,12 @@ const UsersPage = lazy(() =>
   import('@/routes/users').then((module) => ({ default: module.UsersPage })),
 );
 const LabPage = lazy(() => import('@/routes/lab').then((module) => ({ default: module.LabPage })));
+const NoAccessPage = lazy(() =>
+  import('@/routes/no-access').then((module) => ({ default: module.NoAccessPage })),
+);
+const WelcomePage = lazy(() =>
+  import('@/routes/welcome').then((module) => ({ default: module.WelcomePage })),
+);
 
 function Lazy({ children }: { children: React.ReactNode }) {
   return <Suspense fallback={null}>{children}</Suspense>;
@@ -67,37 +76,56 @@ export const router = createBrowserRouter([
       </SetupGate>
     ),
   },
+  // La primera iglesia se pide a pantalla completa, fuera del layout: todavía
+  // no hay espacio de trabajo sobre el que enseñar una navegación.
+  {
+    path: '/welcome',
+    element: (
+      <ProtectedRoute>
+        <Lazy>
+          <WelcomePage />
+        </Lazy>
+      </ProtectedRoute>
+    ),
+  },
+  // Con sesión pero sin ninguna pantalla que abrir: fuera del layout de la
+  // aplicación, porque su menú estaría vacío.
+  {
+    path: '/no-access',
+    element: (
+      <ProtectedRoute>
+        <Lazy>
+          <NoAccessPage />
+        </Lazy>
+      </ProtectedRoute>
+    ),
+  },
   {
     path: '/',
     element: (
       <ProtectedRoute>
-        <AppLayout />
+        <ChurchGate>
+          <AppLayout />
+        </ChurchGate>
       </ProtectedRoute>
     ),
     children: [
-      { index: true, element: <DashboardPage /> },
       {
-        path: 'calendar',
+        index: true,
         element: (
-          <PlaceholderPage titleKey="nav.calendar" rfc="0002-calendario-de-programaciones.md" />
+          <RequirePermission permission="dashboard.view">
+            <DashboardPage />
+          </RequirePermission>
         ),
       },
-      {
-        path: 'believers',
-        element: <PlaceholderPage titleKey="nav.believers" rfc="0003-creyentes-y-notas.md" />,
-      },
-      {
-        path: 'prophecies',
-        element: <PlaceholderPage titleKey="nav.prophecies" rfc="0004-profecias-personales.md" />,
-      },
-      {
-        path: 'dreams',
-        element: <PlaceholderPage titleKey="nav.dreams" rfc="0005-suenos-personales.md" />,
-      },
-      {
-        path: 'communications',
-        element: <PlaceholderPage titleKey="nav.communications" rfc="0006-comunicaciones.md" />,
-      },
+      ...PUENTES.map(({ path, titleKey, rfc, permission }) => ({
+        path,
+        element: (
+          <RequirePermission permission={permission}>
+            <PlaceholderPage titleKey={titleKey} rfc={rfc} />
+          </RequirePermission>
+        ),
+      })),
       // Muestrario de piezas de interfaz. No está en la navegación: se abre a
       // mano cuando hay que mirar con calma algo que solo se ve un instante.
       {
@@ -111,9 +139,11 @@ export const router = createBrowserRouter([
       {
         path: 'users',
         element: (
-          <Lazy>
-            <UsersPage />
-          </Lazy>
+          <RequirePermission permission="users.view">
+            <Lazy>
+              <UsersPage />
+            </Lazy>
+          </RequirePermission>
         ),
       },
       {

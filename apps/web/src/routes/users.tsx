@@ -1,33 +1,29 @@
 import { ShieldCheck, Users } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { Navigate, useSearchParams } from 'react-router';
+import { useSearchParams } from 'react-router';
 
 import { RolesPanel } from '@/components/access/roles-panel';
 import { UsersPanel } from '@/components/access/users-panel';
 import { Tabs, type TabItem } from '@/components/ui/tabs';
-import { useSession } from '@/lib/auth-client';
 
 type Tab = 'users' | 'roles';
 
 /**
  * Administración de accesos: quién tiene cuenta y qué roles existen.
  *
- * Solo para administradores, que es también lo único que responde la API: si
- * llega alguien más, se le devuelve al panel en vez de enseñarle una pantalla
- * que le daría 403 en cada consulta.
+ * Quién entra lo decide el permiso `users.view` en la tabla de rutas
+ * (`RequirePermission`), que es el mismo que exige la API. Aquí ya no se mira
+ * el rol: comparar slugs a mano fue justo lo que dejó fuera al
+ * superadministrador cuando los roles se renombraron.
  *
  * La pestaña activa vive en la URL, así que se puede compartir un enlace
  * directo a los roles y el botón de atrás hace lo que se espera.
  */
 export function UsersPage() {
   const { t } = useTranslation();
-  const { data: session, isPending } = useSession();
   const [params, setParams] = useSearchParams();
 
   const tab: Tab = params.get('tab') === 'roles' ? 'roles' : 'users';
-
-  if (isPending) return null;
-  if (session?.user.role !== 'admin') return <Navigate to="/" replace />;
 
   const tabs: readonly TabItem<Tab>[] = [
     { value: 'users', label: t('roles.usersTab'), icon: Users },

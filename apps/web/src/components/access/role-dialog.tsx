@@ -1,5 +1,5 @@
 import { ApiError, useCreateRole, useUpdateRole } from '@navis/api-client';
-import { createRoleSchema, type RoleRow } from '@navis/shared';
+import { createRoleSchema, isPermission, SUPERADMIN_ROLE, type RoleRow } from '@navis/shared';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -53,15 +53,25 @@ export function RoleDialog({ role, open, onClose }: RoleDialogProps) {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
     const description = optionalText(form.get('description')) ?? null;
+    // `getAll` devuelve `(File | string)[]`; de las casillas solo salen textos,
+    // y `isPermission` deja fuera cualquier valor que no esté en el catálogo.
+    const marked = form
+      .getAll('permissions')
+      .filter((value) => typeof value === 'string')
+      .filter(isPermission);
+    // Los del superadministrador no se envían: su formulario no los pinta y la
+    // API los rechazaría (ver RoleAdminService).
+    const permissions = role?.slug === SUPERADMIN_ROLE ? undefined : marked;
 
     if (role) {
       const changes = role.isSystem
-        ? { id: role.id, description }
+        ? { id: role.id, description, permissions }
         : {
             id: role.id,
             name: formText(form.get('name')),
             description,
             level: Number(formText(form.get('level'))),
+            permissions,
           };
 
       updateRole.mutate(changes, { onSuccess: done(t('roles.updated')), onError });
@@ -72,6 +82,7 @@ export function RoleDialog({ role, open, onClose }: RoleDialogProps) {
       name: formText(form.get('name')),
       description: description ?? undefined,
       level: formText(form.get('level')),
+      permissions: marked,
     });
 
     if (!parsed.success) {

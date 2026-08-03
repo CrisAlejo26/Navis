@@ -9,9 +9,8 @@ import { Logo } from '@/components/logo';
 import { PageTransition } from '@/components/page-transition';
 import { SessionFooter } from '@/components/session-footer';
 import { Drawer } from '@/components/ui/drawer';
-import { useSession } from '@/lib/auth-client';
 import { navItemsFor } from '@/lib/nav';
-import { toRole } from '@/lib/roles';
+import { usePermissions } from '@/lib/permissions';
 
 /**
  * Estructura común de la app autenticada.
@@ -22,12 +21,12 @@ import { toRole } from '@/lib/roles';
  */
 export function AppLayout() {
   const { t } = useTranslation();
-  const { data: session } = useSession();
+  const { can } = usePermissions();
   const [menuOpen, setMenuOpen] = useState(false);
 
-  // Las entradas dependen del rol: la administración de accesos solo la ve
-  // quien puede abrirla (ver `navItemsFor`).
-  const navItems = navItemsFor(toRole(session?.user.role));
+  // Las entradas dependen de los permisos del rol: cada una se pinta solo si su
+  // pantalla se puede abrir (ver `navItemsFor`).
+  const navItems = navItemsFor(can);
   const closeMenu = () => {
     setMenuOpen(false);
   };

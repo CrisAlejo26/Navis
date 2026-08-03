@@ -1,4 +1,4 @@
-import type { Role } from '@navis/shared';
+import type { Permission } from '@navis/shared';
 import {
   CalendarDays,
   LayoutDashboard,
@@ -11,32 +11,103 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 
+/**
+ * Los dos bloques de la navegación, y por qué son dos:
+ *
+ * · `general` es lo que **no** depende de la iglesia activa —el panel y lo
+ *   personal de cada cual—, así que no cambia al cambiar de espacio.
+ * · `church` es lo que sí: la agenda, las personas y los avisos de esa
+ *   congregación, y las cuentas que la atienden.
+ *
+ * Separarlos no es decoración: es lo que hace evidente qué se queda igual y qué
+ * cambia cuando se cambia de iglesia en el selector de arriba.
+ */
+export const NAV_GROUPS = [
+  { id: 'general', labelKey: 'nav.groupGeneral' },
+  { id: 'church', labelKey: 'nav.groupChurch' },
+] as const;
+
+export type NavGroup = (typeof NAV_GROUPS)[number]['id'];
+
 export interface NavItem {
   to: string;
   labelKey: string;
   Icon: LucideIcon;
   end: boolean;
-  /** Rol mínimo para verlo. Sin él, lo ve todo el mundo. */
-  minRole?: Role;
+  /** En qué bloque va. Sin él, al final y sin encabezado (los ajustes). */
+  group?: NavGroup;
+  /** Permiso para verlo. Sin él, lo ve todo el mundo con sesión. */
+  permission?: Permission;
 }
 
 /**
  * Las entradas de la navegación, en un solo sitio: de aquí salen la barra
- * lateral de escritorio y la inferior de móvil (Regla 5), y también la
+ * lateral de escritorio y el panel de móvil (Regla 5), y también la
  * navegación de la app de escritorio, que es la misma web.
  */
 export const NAV_ITEMS: readonly NavItem[] = [
-  { to: '/', labelKey: 'nav.dashboard', Icon: LayoutDashboard, end: true },
-  { to: '/calendar', labelKey: 'nav.calendar', Icon: CalendarDays, end: false },
-  { to: '/believers', labelKey: 'nav.believers', Icon: Users, end: false },
-  { to: '/prophecies', labelKey: 'nav.prophecies', Icon: Sparkles, end: false },
-  { to: '/dreams', labelKey: 'nav.dreams', Icon: Moon, end: false },
-  { to: '/communications', labelKey: 'nav.communications', Icon: MessageSquare, end: false },
-  { to: '/users', labelKey: 'nav.users', Icon: ShieldCheck, end: false, minRole: 'admin' },
+  {
+    to: '/',
+    labelKey: 'nav.dashboard',
+    Icon: LayoutDashboard,
+    end: true,
+    group: 'general',
+    permission: 'dashboard.view',
+  },
+  {
+    to: '/prophecies',
+    labelKey: 'nav.prophecies',
+    Icon: Sparkles,
+    end: false,
+    group: 'general',
+    permission: 'prophecies.view',
+  },
+  {
+    to: '/dreams',
+    labelKey: 'nav.dreams',
+    Icon: Moon,
+    end: false,
+    group: 'general',
+    permission: 'dreams.view',
+  },
+  {
+    to: '/calendar',
+    labelKey: 'nav.calendar',
+    Icon: CalendarDays,
+    end: false,
+    group: 'church',
+    permission: 'calendar.view',
+  },
+  {
+    to: '/believers',
+    labelKey: 'nav.believers',
+    Icon: Users,
+    end: false,
+    group: 'church',
+    permission: 'believers.view',
+  },
+  {
+    to: '/communications',
+    labelKey: 'nav.communications',
+    Icon: MessageSquare,
+    end: false,
+    group: 'church',
+    permission: 'communications.view',
+  },
+  {
+    to: '/users',
+    labelKey: 'nav.users',
+    Icon: ShieldCheck,
+    end: false,
+    group: 'church',
+    permission: 'users.view',
+  },
+  // Los ajustes de la propia cuenta no llevan permiso ni bloque: quien tiene
+  // sesión puede tocar lo suyo, y va al final de la lista.
   { to: '/settings', labelKey: 'nav.settings', Icon: Settings, end: false },
 ];
 
 /** Deja fuera lo que ese rol no puede abrir. */
-export function navItemsFor(role: Role | undefined): NavItem[] {
-  return NAV_ITEMS.filter((item) => !item.minRole || item.minRole === role);
+export function navItemsFor(can: (permission: Permission) => boolean): NavItem[] {
+  return NAV_ITEMS.filter((item) => !item.permission || can(item.permission));
 }

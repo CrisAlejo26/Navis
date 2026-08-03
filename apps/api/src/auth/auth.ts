@@ -1,4 +1,5 @@
 import { expo } from '@better-auth/expo';
+import { DEFAULT_ROLE } from '@navis/shared';
 import { betterAuth } from 'better-auth';
 import { openAPI } from 'better-auth/plugins';
 import BetterSqlite3, { type Database as SqliteDatabase } from 'better-sqlite3';
@@ -63,7 +64,7 @@ export const auth = betterAuth({
       role: {
         type: 'string',
         required: false,
-        defaultValue: 'member',
+        defaultValue: DEFAULT_ROLE,
         input: false,
       },
       locale: {

@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
-import type { Paginated, RoleRow, RoleSlug, RolesQuery } from '@navis/shared';
+import type { MyRole, Paginated, RoleRow, RoleSlug, RolesQuery } from '@navis/shared';
 import { DataSource, Repository } from 'typeorm';
 
 import { p } from '../database/sql-params';
@@ -12,8 +12,24 @@ interface RawRole {
   name: string | null;
   description: string | null;
   level: number;
+  permissions: string | null;
   is_system: boolean | number;
   users_count: number | string;
+}
+
+/**
+ * La columna es texto en los dos motores (`simple-json`), y aquí se lee con SQL
+ * a mano, así que el JSON llega sin parsear. Si lo que hay no es una lista de
+ * textos, el rol se queda sin permisos: mejor que reventar el listado entero.
+ */
+function parsePermissions(raw: string | null): string[] {
+  if (!raw) return [];
+  try {
+    const parsed: unknown = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed.filter((item) => typeof item === 'string') : [];
+  } catch {
+    return [];
+  }
 }
 
 const toRow = (row: RawRole): RoleRow => ({
@@ -22,6 +38,7 @@ const toRow = (row: RawRole): RoleRow => ({
   name: row.name,
   description: row.description,
   level: Number(row.level),
+  permissions: parsePermissions(row.permissions),
   isSystem: Boolean(row.is_system),
   usersCount: Number(row.users_count),
 });
@@ -74,7 +91,7 @@ export class RolesService {
     const order = query.order === 'desc' ? 'DESC' : 'ASC';
     const offset = (query.page - 1) * query.limit;
     const rows = await this.dataSource.query<RawRole[]>(
-      `SELECT "id", "slug", "name", "description", "level", "is_system",
+      `SELECT "id", "slug", "name", "description", "level", "permissions", "is_system",
               (SELECT COUNT(*) FROM "user" WHERE "user"."role" = "roles"."slug") AS "users_count"
        FROM "roles" ${where}
        ORDER BY ${SORT_COLUMN[query.sort]} ${order}
@@ -91,10 +108,18 @@ export class RolesService {
     };
   }
 
-  /** Nivel de un rol cualquiera. Lo usa el guard para comparar jerarquías. */
-  async levelOf(slug: RoleSlug): Promise<number | null> {
+  /**
+   * Los permisos de un rol, o `null` si ese rol no está en el catálogo. Es lo
+   * que compara PermissionsGuard en cada petición.
+   */
+  async permissionsOf(slug: RoleSlug): Promise<string[] | null> {
     const role = await this.roles.findOne({ where: { slug } });
-    return role ? role.level : null;
+    return role ? role.permissions : null;
+  }
+
+  /** El rol de quien pregunta, con sus permisos: es lo que pinta el menú. */
+  async mine(slug: RoleSlug): Promise<MyRole> {
+    return { slug, permissions: (await this.permissionsOf(slug)) ?? [] };
   }
 
   /**

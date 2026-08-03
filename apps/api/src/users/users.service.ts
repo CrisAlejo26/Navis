@@ -1,6 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
-import type { ManagedUser, ManagedUsersQuery, Paginated } from '@navis/shared';
+import {
+  DEFAULT_ROLE,
+  type ManagedUser,
+  type ManagedUsersQuery,
+  type Paginated,
+} from '@navis/shared';
 import { DataSource } from 'typeorm';
 
 import { p } from '../database/sql-params';
@@ -21,12 +26,21 @@ const toManagedUser = (row: UserRow): ManagedUser => ({
   email: row.email,
   // Sin rol no significa sin permisos: Better Auth deja el campo vacío en las
   // cuentas antiguas y el mínimo de la casa es `member`.
-  role: row.role ?? 'member',
+  role: row.role ?? DEFAULT_ROLE,
   emailVerified: Boolean(row.emailVerified),
   createdAt: new Date(row.createdAt),
 });
 
 const COLUMNS = `"id", "name", "email", "role", "emailVerified", "createdAt"`;
+
+/** Una página sin nada, para cuando el alcance ya deja claro que no hay filas. */
+const empty = (query: ManagedUsersQuery): Paginated<ManagedUser> => ({
+  items: [],
+  total: 0,
+  page: query.page,
+  limit: query.limit,
+  totalPages: 1,
+});
 
 /** Solo se ordena por columnas de esta lista: el resto no llega hasta aquí. */
 const SORT_COLUMN = {
@@ -62,10 +76,33 @@ export class UsersService {
     return row ? toManagedUser(row) : null;
   }
 
-  /** Listado con búsqueda, filtro por rol, orden y paginación en el servidor. */
-  async findPage(query: ManagedUsersQuery): Promise<Paginated<ManagedUser>> {
+  /**
+   * Listado con búsqueda, filtro por rol, orden y paginación en el servidor.
+   *
+   * `churchIds` es el **alcance**: las iglesias cuyas cuentas se pueden ver. Una
+   * lista vacía no devuelve nada y `null` no acota —eso es el
+   * superadministrador—. Es una cosa distinta del permiso: el permiso dice si se
+   * entra al módulo, el alcance dice qué filas salen (RFC 0008 §6.2).
+   */
+  async findPage(
+    query: ManagedUsersQuery,
+    churchIds: string[] | null = null,
+  ): Promise<Paginated<ManagedUser>> {
     const params: unknown[] = [];
     const conditions: string[] = [];
+
+    if (churchIds) {
+      if (churchIds.length === 0) return empty(query);
+
+      const marks = churchIds.map((id) => {
+        params.push(id);
+        return p(params.length);
+      });
+      conditions.push(
+        `"id" IN (SELECT "user_id" FROM "church_members"
+                  WHERE "church_id" IN (${marks.join(', ')}) AND "deleted_at" IS NULL)`,
+      );
+    }
 
     if (query.search) {
       // El patrón se pasa DOS veces, una por comparación. En Postgres se

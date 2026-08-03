@@ -1,6 +1,6 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { USER_SORT_FIELDS, type RoleSlug, type UserSortField } from '@navis/shared';
-import { IsIn, IsOptional } from 'class-validator';
+import { IsIn, IsOptional, IsUUID } from 'class-validator';
 
 import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
 import { IsRoleSlug } from '../../common/dto/role-slug.decorator';
@@ -11,6 +11,11 @@ export class ManagedUsersQueryDto extends PaginationQueryDto {
   @IsOptional()
   @IsRoleSlug()
   role?: RoleSlug;
+
+  @ApiPropertyOptional({ description: 'Deja solo las cuentas de esa iglesia', format: 'uuid' })
+  @IsOptional()
+  @IsUUID()
+  churchId?: string;
 
   @ApiPropertyOptional({ enum: USER_SORT_FIELDS, default: 'createdAt' })
   @IsOptional()

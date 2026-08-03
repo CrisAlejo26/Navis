@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Column, Entity, Index } from 'typeorm';
 
 import { BaseEntity } from '../common/entities/base.entity';
+import { UUID } from '../database/column-types';
 
 /**
  * Datos de dominio del usuario. La identidad (email, contraseña, sesiones)
@@ -36,4 +37,15 @@ export class Profile extends BaseEntity {
   @ApiProperty({ description: 'Zona horaria IANA', example: 'Europe/Madrid' })
   @Column({ type: 'text', default: 'Europe/Madrid' })
   timezone: string;
+
+  /**
+   * En qué iglesia está trabajando ahora mismo (RFC 0008).
+   *
+   * Vive aquí y no en la tabla `user` de Better Auth a propósito: esa la
+   * gestiona Better Auth y cachea la sesión en una cookie durante cinco
+   * minutos, así que un cambio de iglesia tardaría ese rato en notarse.
+   */
+  @ApiProperty({ required: false, nullable: true, description: 'Iglesia activa' })
+  @Column({ name: 'active_church_id', type: UUID, nullable: true })
+  activeChurchId: string | null;
 }

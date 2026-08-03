@@ -51,6 +51,17 @@ Cosas que ya han costado un rato y no hace falta volver a descubrir.
   hace `require()` de ficheros `.ts` al correr los tests sobre el fuente.
 - **El `DataSource` es la única exportación de su tipo** en `data-source.ts`: el
   CLI de TypeORM falla si encuentra dos (por eso no hay `export default`).
+- **Una migración que importa de `@navis/shared` no está congelada**:
+  `CreateRoles` siembra a partir de `ROLES`, así que al cambiar esa constante
+  cambió lo que crea en una base de datos **nueva**, no en las que ya existían.
+  Las migraciones siguientes que tocan lo mismo tienen que valer para los dos
+  casos (ver `SeedMinistryRoles`, que renombra si encuentra lo viejo y siembra
+  si no).
+- **`queryRunner.query` devuelve `any`** y no acepta genérico: lo que sale de un
+  `SELECT` en una migración se comprueba antes de usarlo (Regla 10).
+- **`apps/api/src/metadata.ts` lo genera el build y está en `.gitignore`**: si se
+  queda a medias, `pnpm typecheck` falla con errores de sintaxis en un fichero
+  que nadie ha tocado. Se borra y ya.
 - **`/health` es `VERSION_NEUTRAL`**: el versionado por URI lo dejaría en
   `/v1/health` y tanto Docker como el despliegue consultan `/health`.
 - **En postgres:18 el volumen va en `/var/lib/postgresql`**, no en `/data`.

@@ -12,5 +12,11 @@ export const isPostgres = env.DB_DRIVER === 'postgres';
  */
 export const TIMESTAMP = isPostgres ? 'timestamptz' : 'datetime';
 
+/**
+ * Identificador: `uuid` de verdad en Postgres y texto en SQLite, que no tiene
+ * ese tipo. Es lo mismo que hacen las migraciones al crear una clave primaria.
+ */
+export const UUID = isPostgres ? 'uuid' : 'varchar';
+
 /** Marca temporal por defecto en cada driver, para las migraciones. */
 export const NOW = isPostgres ? 'now()' : 'CURRENT_TIMESTAMP';
