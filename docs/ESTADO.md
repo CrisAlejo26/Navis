@@ -67,10 +67,14 @@ que empaqueta correctamente).
 
 ## Producción
 
-Desplegado en **<https://navis.officetools.es>** (VPS propio, `/opt/navis`).
-Postgres, API, web y el microservicio de IA en Docker, detrás de nginx con
-certificado de Let's Encrypt y renovación automática. La API escucha solo en
-`127.0.0.1:3010` y la web en `3011`: al mundo sale nginx.
+Desplegado en **<https://navis.officetools.es>**, en un VPS propio. Postgres,
+API, web y el microservicio de IA en Docker, detrás de nginx con certificado de
+Let's Encrypt y renovación automática. Ni la API ni la web publican puerto al
+exterior: solo escuchan en `127.0.0.1` y al mundo sale nginx.
+
+Los datos concretos del servidor —host, usuario, ruta y puertos— no están en el
+repositorio, que es público: viven en los secretos de GitHub y en el `.env` del
+propio servidor (ver [`DESPLIEGUE.md`](./DESPLIEGUE.md)).
 
 Verificado en el dominio público: la PWA carga con su manifest y su service
 worker, `/health` responde con la base de datos arriba, el login funciona,
