@@ -10,12 +10,19 @@
  * Funciona con los dos drivers: SQLite (local) y Postgres (compartido).
  */
 import { auth } from '../../auth/auth';
+import { isProduction } from '../../config/env';
 import { dataSource } from '../data-source';
 import { p } from '../sql-params';
+import { assertSeedAllowed } from './seed-guard';
 
 // La contraseña NO lleva el nombre del proyecto a propósito: `pnpm rename` lo
 // sustituiría y podría dejarla por debajo del mínimo de 10 caracteres que
 // exige Better Auth, rompiendo la semilla sin que nadie lo note hasta usarla.
+//
+// Está escrita aquí y este repositorio es público: eso es normal en una semilla
+// de desarrollo, pero SOLO mientras no pueda llegar a un servidor. De ahí el
+// cerrojo de abajo. Ya pasó una vez: esta cuenta acabó siendo la única de
+// producción, con su contraseña legible en GitHub.
 const SEED_USER = {
   email: 'admin@navis.local',
   password: 'Rebano2026Seguro',
@@ -23,6 +30,7 @@ const SEED_USER = {
 };
 
 async function seed(): Promise<void> {
+  assertSeedAllowed(isProduction);
   await dataSource.initialize();
 
   try {

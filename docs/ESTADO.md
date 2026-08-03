@@ -32,9 +32,8 @@ escrita en [`rfcs/`](./rfcs) y una pantalla puente que enlaza a ella.
 | Contenedor de migraciones                     | ✅ aplica Better Auth + TypeORM y sale                                |
 | `docker compose config`                       | ✅ los tres ficheros (dev, prod y deploy)                             |
 
-**No verificado**: el despliegue real por SSH contra un servidor (hace falta un
-servidor) y la app móvil ejecutándose en un dispositivo (solo está comprobado
-que empaqueta correctamente).
+**No verificado**: la app móvil ejecutándose en un dispositivo (solo está
+comprobado que empaqueta correctamente).
 
 ## Completado
 
