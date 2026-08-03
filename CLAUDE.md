@@ -72,6 +72,10 @@ Cosas que ya han costado un rato y no hace falta volver a descubrir.
   app.config.ts, tauri.conf.json, Cargo.toml y Cargo.lock). No la toques a
   mano: `pnpm release` los sincroniza y hay un test que falla si alguno se
   queda descolgado.
+- **GHCR solo acepta nombres de imagen en minúsculas**, y `github.repository`
+  conserva las mayúsculas (`CrisAlejo26/Navis`). El workflow de despliegue lo
+  baja a minúsculas en el paso `meta` y pasa ese nombre al servidor; sin eso,
+  `docker buildx` corta con «repository name must be lowercase».
 
 ## Antes de dar algo por terminado
 
