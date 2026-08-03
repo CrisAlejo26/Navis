@@ -17,13 +17,20 @@ Ocho, y ninguna es decorativa:
 
 1. **Reutilizar antes de escribir** — dónde vive cada cosa, dónde va lo nuevo y
    con qué patrones se resuelve
-2. **Los seis idiomas, siempre** — es, en, fr, pt, de, it
-3. **Claro y oscuro** — tokens semánticos, y cómo lo activa cada plataforma
-4. **Probar lo que se hace** — qué comando pasar según lo que hayas tocado
-5. **Responsive** — móvil, tablet y escritorio
-6. **Ficheros cortos** — objetivo de 100 líneas, con sus excepciones
-7. **Identidad visual** — nada de cruces; el logo sale de un solo sitio
-8. **Explorar con el grafo** — codebase-memory antes que abrir ficheros
+2. **Los seis idiomas, siempre** — es, en, fr, pt, de, it: dónde viven, cómo se
+   nombran las claves y qué no se traduce
+3. **Claro y oscuro** — tokens semánticos, cómo lo activa cada plataforma y
+   dónde hay hexadecimales que sincronizar
+4. **Probar lo que se hace** — qué comando pasar según lo que hayas tocado,
+   dónde vive cada test y cómo se escriben aquí
+5. **Responsive** — móvil, tablet y escritorio, con los patrones de navegación
+   que ya están montados
+6. **Ficheros cortos** — objetivo de 100 líneas, cómo partir cada cosa y las
+   excepciones
+7. **Identidad visual** — nada de cruces; el logo sale de un solo sitio y se
+   genera con un comando
+8. **Explorar con el grafo** — codebase-memory antes que abrir ficheros, con
+   las consultas que funcionan en este repositorio
 
 Las reglas 2, 3, 6 y 7 no son solo buenas intenciones: hay tipado y tests que
 las hacen cumplir. Una traducción que falte no compila.
