@@ -1,4 +1,4 @@
-import { parseEnv, webEnvSchema } from '@pastortools/shared';
+import { parseEnv, webEnvSchema } from '@fidus/shared';
 
 /**
  * Variables de entorno del cliente, validadas con zod al cargar la app.

@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
-import type { ThemeMode } from '@pastortools/shared';
-import { themeColorsHex } from '@pastortools/theme';
+import type { ThemeMode } from '@fidus/shared';
+import { themeColorsHex } from '@fidus/theme';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 

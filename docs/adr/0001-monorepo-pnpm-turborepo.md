@@ -5,7 +5,7 @@
 
 ## Contexto
 
-PastorTools son cuatro clientes (API, web, móvil y escritorio) que comparten
+Fidus son cuatro clientes (API, web, móvil y escritorio) que comparten
 tipos, esquemas de validación, tema visual, traducciones y cliente HTTP. Con
 repositorios separados, cada cambio de contrato obliga a publicar un paquete y
 actualizar tres repos.

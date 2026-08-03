@@ -1,4 +1,4 @@
-import { createThemeStore, themeColorHex, type ResolvedTheme } from '@pastortools/theme';
+import { createThemeStore, themeColorHex, type ResolvedTheme } from '@fidus/theme';
 import type { StateStorage } from 'zustand/middleware';
 
 const webStorage: StateStorage = {

@@ -1,5 +1,5 @@
 {
-  "extends": "@pastortools/tsconfig/react.json",
+  "extends": "@fidus/tsconfig/react.json",
   "compilerOptions": {
     "types": ["node"],
     "allowJs": true,

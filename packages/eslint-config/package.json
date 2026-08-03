@@ -1,5 +1,5 @@
 {
-  "name": "@pastortools/eslint-config",
+  "name": "@fidus/eslint-config",
   "version": "0.1.0",
   "private": true,
   "license": "MIT",

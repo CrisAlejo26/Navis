@@ -1,5 +1,5 @@
 {
-  "name": "@pastortools/i18n",
+  "name": "@fidus/i18n",
   "version": "0.1.0",
   "private": true,
   "license": "MIT",
@@ -25,7 +25,7 @@
     "clean": "rimraf dist .turbo *.tsbuildinfo"
   },
   "dependencies": {
-    "@pastortools/shared": "workspace:*"
+    "@fidus/shared": "workspace:*"
   },
   "peerDependencies": {
     "i18next": ">=26",
@@ -33,8 +33,8 @@
     "react-i18next": ">=17"
   },
   "devDependencies": {
-    "@pastortools/eslint-config": "workspace:*",
-    "@pastortools/tsconfig": "workspace:*",
+    "@fidus/eslint-config": "workspace:*",
+    "@fidus/tsconfig": "workspace:*",
     "@types/node": "26.1.2",
     "@types/react": "19.2.18",
     "eslint": "10.8.0",

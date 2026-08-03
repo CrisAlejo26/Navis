@@ -1,5 +1,5 @@
 {
-  "extends": "@pastortools/tsconfig/nest.json",
+  "extends": "@fidus/tsconfig/nest.json",
   "compilerOptions": {
     "outDir": "./dist",
     "baseUrl": ".",

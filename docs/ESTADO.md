@@ -20,8 +20,8 @@ escrita en [`rfcs/`](./rfcs) y una pantalla puente que enlaza a ella.
 | `pnpm install`                                | ✅ 10 proyectos del workspace                                         |
 | `pnpm check` (formato + lint + tipos + tests) | ✅ 11/11 tareas                                                       |
 | Tests unitarios                               | ✅ 24: shared 5, theme 6, i18n 5, api-client 2, api 4, web 2, móvil 2 |
-| `pnpm --filter @pastortools/api test:e2e`     | ✅ 5/5, en **SQLite y en Postgres**                                   |
-| `pnpm --filter @pastortools/web test:e2e`     | ✅ 8/8 (Playwright, chromium + móvil)                                 |
+| `pnpm --filter @fidus/api test:e2e`           | ✅ 5/5, en **SQLite y en Postgres**                                   |
+| `pnpm --filter @fidus/web test:e2e`           | ✅ 8/8 (Playwright, chromium + móvil)                                 |
 | Migraciones y semilla                         | ✅ en los dos motores                                                 |
 | Arranque real de la API                       | ✅ `/health`, registro, login, `GET`/`PATCH` de perfil, `/api/docs`   |
 | App móvil: `expo export --platform android`   | ✅ 2502 módulos; las clases de NativeWind están en el bundle          |
@@ -98,7 +98,7 @@ rehidratación del store de tema, que perdía la preferencia en cada recarga.
 ## Cómo retomar
 
 ```bash
-cd D:/Proyectos_personales/PastorTools
+cd D:/Proyectos_personales/Fidus
 cp .env.example .env          # y genera los secretos que indica el fichero
 pnpm install
 pnpm build:packages

@@ -4,7 +4,7 @@ argument-hint: '[patch|minor|major|X.Y.Z] [--dry-run] [--skip-checks]'
 allowed-tools: Bash(pnpm release:*), Bash(pnpm release:dry:*), Bash(git status:*), Bash(git log:*), Bash(gh run list:*), Bash(gh run watch:*), Bash(gh release view:*)
 ---
 
-Publica una versión nueva de PastorTools.
+Publica una versión nueva de Fidus.
 
 Argumentos recibidos: `$ARGUMENTS` (si vienen vacíos, usa `patch`).
 

@@ -2,5 +2,5 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 fn main() {
-    pastortools_desktop_lib::run()
+    fidus_desktop_lib::run()
 }

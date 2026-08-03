@@ -18,8 +18,8 @@ const body = <T>(response: { body: unknown }): T => response.body as T;
  */
 describe('Auth (e2e)', () => {
   let app: NestExpressApplication;
-  const email = `e2e-${String(Date.now())}@pastortools.test`;
-  const password = 'PastorTools2026';
+  const email = `e2e-${String(Date.now())}@fidus.test`;
+  const password = 'Rebano2026Seguro';
   let cookie = '';
 
   beforeAll(async () => {

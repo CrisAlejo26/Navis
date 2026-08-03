@@ -36,7 +36,7 @@ enciende nada en rojo. Lo deja anotado en el resumen de la ejecución.
 ### En el servidor
 
 - Docker y el plugin de Compose.
-- Una carpeta de despliegue (por ejemplo `/srv/pastortools`) con un fichero
+- Una carpeta de despliegue (por ejemplo `/srv/fidus`) con un fichero
   `.env` que contenga los secretos de producción: credenciales de Postgres,
   `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL`, `CORS_ORIGINS`,
   `AUTH_TRUSTED_ORIGINS` y los puertos. Ese `.env` **no** viaja desde el

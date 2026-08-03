@@ -1,4 +1,4 @@
-import type { ApiErrorBody } from '@pastortools/shared';
+import type { ApiErrorBody } from '@fidus/shared';
 
 /**
  * Error normalizado. Todo fallo de red o de la API llega a la UI como una

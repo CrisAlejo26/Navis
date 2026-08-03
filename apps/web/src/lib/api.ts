@@ -1,4 +1,4 @@
-import { createApiClient } from '@pastortools/api-client';
+import { createApiClient } from '@fidus/api-client';
 
 import { env } from './env';
 import { getLocale } from './i18n';

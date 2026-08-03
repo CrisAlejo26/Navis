@@ -1,4 +1,4 @@
-# PastorTools — convenciones del repositorio
+# Fidus — convenciones del repositorio
 
 Contexto para quien (o lo que) trabaje en este código. Las reglas de
 colaboración están en [`CONTRIBUTING.md`](./CONTRIBUTING.md); aquí va lo que hay
@@ -70,6 +70,6 @@ pnpm test:e2e     # API y web
 Y, si has tocado la app móvil o la de escritorio:
 
 ```bash
-pnpm --filter @pastortools/mobile exec expo-doctor
+pnpm --filter @fidus/mobile exec expo-doctor
 cd apps/desktop/src-tauri && cargo check
 ```

@@ -6,11 +6,11 @@
  *   pnpm rename Fidus --dry-run    enseña qué tocaría, sin escribir nada
  *
  * Cambia, a la vez y de forma consistente:
- *   · el nombre visible          PastorTools → Fidus
- *   · el slug                    pastortools → fidus
- *   · el scope de los paquetes   @pastortools/* → @fidus/*
- *   · el identificador nativo    org.pastortools.app → org.fidus.app
- *   · el esquema de enlaces      pastortools:// → fidus://
+ *   · el nombre visible          Fidus → Fidus
+ *   · el slug                    fidus → fidus
+ *   · el scope de los paquetes   @fidus/* → @fidus/*
+ *   · el identificador nativo    org.fidus.app → org.fidus.app
+ *   · el esquema de enlaces      fidus:// → fidus://
  *   · el crate de Rust, las claves de almacenamiento, el proyecto de compose,
  *     el usuario y la base de datos de Postgres…
  *

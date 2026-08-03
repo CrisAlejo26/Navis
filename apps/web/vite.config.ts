@@ -16,8 +16,8 @@ export default defineConfig({
       injectRegister: null,
       includeAssets: ['favicon.svg', 'apple-touch-icon.png', 'robots.txt'],
       manifest: {
-        name: 'PastorTools',
-        short_name: 'PastorTools',
+        name: 'Fidus',
+        short_name: 'Fidus',
         description: 'Herramientas para pastores: agenda, creyentes, profecías, sueños y más',
         lang: 'es',
         dir: 'ltr',
@@ -49,7 +49,7 @@ export default defineConfig({
             urlPattern: ({ url }) => url.pathname.startsWith('/api/'),
             handler: 'NetworkFirst',
             options: {
-              cacheName: 'pastortools-api',
+              cacheName: 'fidus-api',
               networkTimeoutSeconds: 5,
               expiration: { maxEntries: 100, maxAgeSeconds: 60 * 60 * 24 },
               cacheableResponse: { statuses: [0, 200] },
@@ -59,7 +59,7 @@ export default defineConfig({
             urlPattern: ({ request }) => request.destination === 'image',
             handler: 'CacheFirst',
             options: {
-              cacheName: 'pastortools-images',
+              cacheName: 'fidus-images',
               expiration: { maxEntries: 60, maxAgeSeconds: 60 * 60 * 24 * 30 },
             },
           },

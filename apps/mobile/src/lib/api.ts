@@ -1,4 +1,4 @@
-import { createApiClient } from '@pastortools/api-client';
+import { createApiClient } from '@fidus/api-client';
 import { router } from 'expo-router';
 
 import { getSessionCookie } from './auth-client';

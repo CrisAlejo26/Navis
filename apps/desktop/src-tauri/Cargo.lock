@@ -2126,7 +2126,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "pastortools-desktop"
+name = "fidus-desktop"
 version = "0.1.0"
 dependencies = [
  "serde",

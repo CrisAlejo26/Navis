@@ -1,5 +1,5 @@
 import { SetMetadata } from '@nestjs/common';
-import type { Role } from '@pastortools/shared';
+import type { Role } from '@fidus/shared';
 
 export const ROLES_KEY = 'roles';
 

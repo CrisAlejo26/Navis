@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.7
 #
-# API de PastorTools. Se construye desde la RAÍZ del monorepo:
+# API de Fidus. Se construye desde la RAÍZ del monorepo:
 #   docker build -f docker/api.Dockerfile .
 
 FROM node:24-slim AS base
@@ -22,12 +22,12 @@ COPY . .
 # `--filter` deja fuera la web, el móvil y el escritorio: ni Playwright ni Expo
 # pintan nada en la imagen de la API.
 # HUSKY=0: el `prepare` de la raíz instala los hooks de git, y aquí no hay .git.
-RUN --mount=type=cache,id=pnpm-store,target=/pnpm/store   HUSKY=0 pnpm install --frozen-lockfile --filter @pastortools/api...
-RUN pnpm --filter @pastortools/api... build
+RUN --mount=type=cache,id=pnpm-store,target=/pnpm/store   HUSKY=0 pnpm install --frozen-lockfile --filter @fidus/api...
+RUN pnpm --filter @fidus/api... build
 
 # `pnpm deploy` deja en /app el proyecto con SOLO sus dependencias de
 # producción y los paquetes del workspace ya resueltos, sin symlinks.
-RUN pnpm deploy --legacy --filter @pastortools/api --prod /app
+RUN pnpm deploy --legacy --filter @fidus/api --prod /app
 
 # --- Migraciones -------------------------------------------------------------
 # Imagen de un solo uso que se lanza ANTES de arrancar la nueva versión de la
@@ -46,13 +46,13 @@ WORKDIR /app
 # El usuario se crea ANTES de copiar, y la copia ya asigna el propietario. Un
 # `chown -R` posterior reescribiría cada fichero en una capa nueva y duplicaría
 # el tamaño de la imagen.
-RUN useradd --create-home --uid 10001 pastortools \
+RUN useradd --create-home --uid 10001 fidus \
   && mkdir -p /app/data \
-  && chown pastortools:pastortools /app/data
+  && chown fidus:fidus /app/data
 
-COPY --from=build --chown=pastortools:pastortools /app ./
+COPY --from=build --chown=fidus:fidus /app ./
 
-USER pastortools
+USER fidus
 
 EXPOSE 3000
 

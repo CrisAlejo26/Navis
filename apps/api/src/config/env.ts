@@ -1,4 +1,4 @@
-import { apiEnvSchema, type ApiEnv, parseEnv } from '@pastortools/shared';
+import { apiEnvSchema, type ApiEnv, parseEnv } from '@fidus/shared';
 import { config as loadDotenv } from 'dotenv';
 import { isAbsolute, resolve } from 'node:path';
 

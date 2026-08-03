@@ -1,4 +1,4 @@
-import { expoConfig } from '@pastortools/eslint-config/expo';
+import { expoConfig } from '@fidus/eslint-config/expo';
 
 export default [
   ...expoConfig({ tsconfigRootDir: import.meta.dirname }),

@@ -6,7 +6,7 @@ import {
   HttpStatus,
   Logger,
 } from '@nestjs/common';
-import type { ApiErrorBody } from '@pastortools/shared';
+import type { ApiErrorBody } from '@fidus/shared';
 import type { Request, Response } from 'express';
 import { QueryFailedError } from 'typeorm';
 

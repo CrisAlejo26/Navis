@@ -7,7 +7,7 @@ import type { ExpoConfig } from 'expo/config';
  * Los `EXPO_PUBLIC_*` acaban en el bundle: son públicos por definición, así que
  * aquí solo va a qué servidor apunta la app, nunca un secreto.
  */
-const scheme = process.env.EXPO_PUBLIC_APP_SCHEME ?? 'pastortools';
+const scheme = process.env.EXPO_PUBLIC_APP_SCHEME ?? 'fidus';
 
 /** Lo sincroniza `pnpm release`; no lo edites a mano. */
 const version = '0.1.0';
@@ -21,8 +21,8 @@ const [major, minor, patch] = version.split('.').map(Number);
 const versionCode = major * 10000 + minor * 100 + patch;
 
 const config: ExpoConfig = {
-  name: 'PastorTools',
-  slug: 'pastortools',
+  name: 'Fidus',
+  slug: 'fidus',
   version,
   orientation: 'portrait',
   scheme,
@@ -31,10 +31,10 @@ const config: ExpoConfig = {
   // El splash ya no se configura aquí en SDK 57: solo con el plugin de abajo.
   ios: {
     supportsTablet: true,
-    bundleIdentifier: 'org.pastortools.app',
+    bundleIdentifier: 'org.fidus.app',
   },
   android: {
-    package: 'org.pastortools.app',
+    package: 'org.fidus.app',
     versionCode,
     adaptiveIcon: {
       foregroundImage: './assets/adaptive-icon.png',

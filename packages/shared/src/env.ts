@@ -41,7 +41,7 @@ export const apiEnvSchema = z
     // --- Base de datos ------------------------------------------------------
     DB_DRIVER: z.enum(DB_DRIVERS).default('sqlite'),
     /** Solo para `DB_DRIVER=sqlite`. Ruta relativa a la raíz del monorepo. */
-    DB_SQLITE_PATH: z.string().default('./data/pastortools.sqlite'),
+    DB_SQLITE_PATH: z.string().default('./data/fidus.sqlite'),
 
     POSTGRES_HOST: z.string().default('localhost'),
     POSTGRES_PORT: z.coerce.number().int().default(5432),
@@ -53,7 +53,7 @@ export const apiEnvSchema = z
     BETTER_AUTH_SECRET: z.string().min(32, 'BETTER_AUTH_SECRET debe tener al menos 32 caracteres'),
     BETTER_AUTH_URL: z.url().default('http://localhost:3000'),
     /** Orígenes de confianza extra (deep links de la app móvil, etc.). */
-    AUTH_TRUSTED_ORIGINS: csv('http://localhost:5173,pastortools://'),
+    AUTH_TRUSTED_ORIGINS: csv('http://localhost:5173,fidus://'),
     SESSION_EXPIRES_IN_DAYS: z.coerce.number().int().min(1).default(30),
 
     /**
@@ -107,7 +107,7 @@ export type WebEnv = z.infer<typeof webEnvSchema>;
 export const mobileEnvSchema = z.object({
   EXPO_PUBLIC_API_URL: z.url().default('http://localhost:3000/api/v1'),
   EXPO_PUBLIC_AUTH_URL: z.url().default('http://localhost:3000'),
-  EXPO_PUBLIC_APP_SCHEME: z.string().default('pastortools'),
+  EXPO_PUBLIC_APP_SCHEME: z.string().default('fidus'),
 });
 
 export type MobileEnv = z.infer<typeof mobileEnvSchema>;

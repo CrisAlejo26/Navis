@@ -8,15 +8,15 @@
     <meta name="theme-color" content="#fcfcfa" />
     <meta
       name="description"
-      content="PastorTools — herramientas para pastores: agenda, creyentes, profecías, sueños y comunicaciones."
+      content="Fidus — herramientas para pastores: agenda, creyentes, profecías, sueños y comunicaciones."
     />
-    <title>PastorTools</title>
+    <title>Fidus</title>
     <script>
       // Aplica el tema antes del primer pintado para evitar el parpadeo blanco
       // al recargar en modo oscuro. Debe coincidir con packages/theme.
       (function () {
         try {
-          var stored = JSON.parse(localStorage.getItem('pastortools.theme') || 'null');
+          var stored = JSON.parse(localStorage.getItem('fidus.theme') || 'null');
           var mode = (stored && stored.state && stored.state.mode) || 'system';
           var dark =
             mode === 'dark' ||

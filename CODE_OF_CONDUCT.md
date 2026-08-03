@@ -2,7 +2,7 @@
 
 ## Compromiso
 
-Quienes participamos en PastorTools nos comprometemos a que colaborar aquí sea
+Quienes participamos en Fidus nos comprometemos a que colaborar aquí sea
 una experiencia libre de acoso para cualquiera, con independencia de su edad,
 tamaño corporal, discapacidad, etnia, identidad o expresión de género, nivel de
 experiencia, nacionalidad, aspecto, religión, orientación sexual o situación

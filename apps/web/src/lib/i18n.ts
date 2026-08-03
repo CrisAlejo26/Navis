@@ -1,6 +1,6 @@
-import { createI18n, type Locale } from '@pastortools/i18n';
+import { createI18n, type Locale } from '@fidus/i18n';
 
-const STORAGE_KEY = 'pastortools.locale';
+const STORAGE_KEY = 'fidus.locale';
 
 /**
  * El idioma inicial es el del navegador (es decir, el del dispositivo).

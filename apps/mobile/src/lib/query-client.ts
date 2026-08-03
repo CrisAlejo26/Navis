@@ -1,4 +1,4 @@
-import { createQueryClient } from '@pastortools/api-client';
+import { createQueryClient } from '@fidus/api-client';
 
 /**
  * Instancia única de TanStack Query. Vive fuera del árbol de React para que

@@ -1,5 +1,5 @@
 {
-  "extends": "@pastortools/tsconfig/library.json",
+  "extends": "@fidus/tsconfig/library.json",
   "compilerOptions": {
     "outDir": "dist",
     "rootDir": "src",
