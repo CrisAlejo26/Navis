@@ -30,33 +30,73 @@ env:
   IMAGE_REPO: ${{ github.repository }}
 
 jobs:
-  # --- 0. ¿Hay servidor al que desplegar? -------------------------------------
-  # Sin `DEPLOY_HOST` no hay nada que hacer: en un fork, o antes de montar el
-  # servidor, el workflow se salta entero en vez de fallar en rojo.
+  # --- 0. ¿Está configurado el despliegue? ------------------------------------
+  # Se comprueba TODO lo que hace falta, no solo el host: si falta cualquiera de
+  # estas piezas, el despliegue no puede salir bien y es mejor saberlo aquí que
+  # a mitad de la conexión SSH.
+  #
+  # En un fork esto no es un error —no hay servidor al que desplegar— y el
+  # workflow se salta entero. En el repositorio de verdad **falla en rojo**: un
+  # despliegue verde que no ha desplegado nada es peor que uno rojo, porque
+  # nadie va a mirar el servidor.
+  #
   # La comprobación va en un `run` porque el contexto `secrets` no está
   # disponible en el `if` de un job.
   configurado:
-    name: ¿Hay servidor configurado?
+    name: ¿Está configurado el despliegue?
     runs-on: ubuntu-latest
     outputs:
       listo: ${{ steps.comprobar.outputs.listo }}
     steps:
       - id: comprobar
         env:
-          HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+          # Se incrustan en el bundle de la web al construir la imagen: sin
+          # ellas, la aplicación desplegada apuntaría a localhost.
+          VITE_API_URL: ${{ vars.VITE_API_URL }}
+          VITE_AUTH_URL: ${{ vars.VITE_AUTH_URL }}
+          ES_FORK: ${{ github.event.repository.fork }}
         run: |
-          if [ -n "${HOST:-}" ]; then
+          set -euo pipefail
+
+          faltan=()
+          for nombre in DEPLOY_HOST DEPLOY_USER DEPLOY_SSH_KEY DEPLOY_PATH \
+                        VITE_API_URL VITE_AUTH_URL; do
+            [ -n "${!nombre:-}" ] || faltan+=("$nombre")
+          done
+
+          if [ ${#faltan[@]} -eq 0 ]; then
             echo "listo=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "listo=false" >> "$GITHUB_OUTPUT"
-            echo "::notice::Sin DEPLOY_HOST no se despliega nada. Ver docs/DESPLIEGUE.md."
+            exit 0
+          fi
+
+          echo "listo=false" >> "$GITHUB_OUTPUT"
+          lista="$(printf '`%s` ' "${faltan[@]}")"
+
+          if [ "${ES_FORK:-false}" = "true" ]; then
+            echo "::notice::Este fork no tiene servidor configurado. No se despliega nada."
             {
               echo "### Despliegue omitido"
               echo ""
-              echo "No hay un servidor configurado (\`DEPLOY_HOST\`)."
-              echo "Los secretos que hacen falta están en \`docs/DESPLIEGUE.md\`."
+              echo "Es un fork y no hay servidor configurado. Falta: $lista"
             } >> "$GITHUB_STEP_SUMMARY"
+            exit 0
           fi
+
+          echo "::error::No se ha desplegado nada. Falta configurar: $lista"
+          {
+            echo "### El despliegue NO se ha hecho"
+            echo ""
+            echo "Falta configurar: $lista"
+            echo ""
+            echo "Los secretos van en **Settings → Secrets and variables → Actions**,"
+            echo "y las variables en la pestaña **Variables** de esa misma página."
+            echo "Cuáles son y qué valor llevan, en \`docs/DESPLIEGUE.md\`."
+          } >> "$GITHUB_STEP_SUMMARY"
+          exit 1
 
   # --- 1. Verificación --------------------------------------------------------
   verify:
@@ -201,7 +241,10 @@ jobs:
             $COMPOSE run --rm migrate
 
             echo "== 4/4 Levantando la versión nueva =="
-            $COMPOSE up -d --remove-orphans
+            # Sin `--remove-orphans` a propósito: el contenedor de IA se levanta
+            # aparte (está bajo un perfil de docker-compose.prod.yml y no en este
+            # fichero), así que compose lo vería como huérfano y lo borraría.
+            $COMPOSE up -d
 
             echo "== Comprobando que responde =="
             ok=0

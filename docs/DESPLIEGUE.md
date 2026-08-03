@@ -78,9 +78,48 @@ despliegue se queda esperando aprobación después de pasar las verificaciones.
 
 ## Desplegar a mano
 
+### Desde GitHub
+
 `Actions → Deploy → Run workflow`. Tiene una casilla `skip_verify` para saltarse
 las comprobaciones: existe solo para revertir una emergencia, y no debería
 usarse para nada más.
+
+### Desde el servidor, sin esperar al workflow
+
+Mientras el despliegue automático no esté configurado —o si hace falta subir
+algo ya—, el servidor se actualiza construyendo allí mismo, que es como se
+levantó la primera vez:
+
+```bash
+ssh <servidor>
+cd /opt/navis                      # la carpeta de despliegue
+
+git pull
+
+# 1. Construir. La web incrusta VITE_API_URL y VITE_AUTH_URL en el bundle,
+#    así que tienen que estar en el .env del servidor ANTES de construir.
+docker compose -f docker-compose.prod.yml --profile migrate --profile ai build
+
+# 2. Migrar ANTES de levantar la API nueva. Este contenedor aplica primero las
+#    de Better Auth y después las de TypeORM, y sale.
+docker compose -f docker-compose.prod.yml run --rm migrate
+
+# 3. Levantar
+docker compose -f docker-compose.prod.yml --profile ai up -d
+
+# 4. Comprobar que responde
+curl -fsS "http://127.0.0.1:${API_PORT:-3000}/health"
+```
+
+Si `/health` no responde, el log dice por qué:
+
+```bash
+docker compose -f docker-compose.prod.yml logs --tail 50 api
+```
+
+> Los dos compose comparten nombre de proyecto (`navis-prod`) a propósito: así
+> el despliegue automático adopta esta misma pila y su volumen de Postgres en
+> vez de crear otro vacío. No cambies uno sin el otro.
 
 ## Volver a una versión anterior
 

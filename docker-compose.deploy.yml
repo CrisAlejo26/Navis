@@ -10,7 +10,18 @@
 #
 # El orden importa: las migraciones se aplican ANTES de levantar la API nueva.
 
-name: navis
+# El nombre del proyecto tiene que ser EL MISMO que el del compose con el que se
+# levantó el servidor a mano (`docker-compose.prod.yml`). No es cosmético:
+#
+#   · Docker nombra los volúmenes `<proyecto>_<volumen>`. Con otro nombre, este
+#     compose crearía un `postgres-data` nuevo y vacío, y producción arrancaría
+#     sin usuarios ni datos mientras el volumen bueno se queda ahí, huérfano.
+#   · Los dos publican los mismos puertos en 127.0.0.1: con proyectos distintos
+#     conviven, chocan y el despliegue falla al levantar.
+#
+# Al compartir nombre, este fichero *adopta* la pila que ya está corriendo y solo
+# recrea lo que cambia.
+name: navis-prod
 
 services:
   postgres:
