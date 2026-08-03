@@ -65,6 +65,22 @@ que empaqueta correctamente).
   no responde. Ver [`DESPLIEGUE.md`](./DESPLIEGUE.md).
 - **Documentación**: siete RFC y seis ADR en [`docs/`](./).
 
+## Producción
+
+Desplegado en **<https://navis.officetools.es>** (VPS propio, `/opt/navis`).
+Postgres, API, web y el microservicio de IA en Docker, detrás de nginx con
+certificado de Let's Encrypt y renovación automática. La API escucha solo en
+`127.0.0.1:3010` y la web en `3011`: al mundo sale nginx.
+
+Verificado en el dominio público: la PWA carga con su manifest y su service
+worker, `/health` responde con la base de datos arriba, el login funciona,
+`GET`/`PATCH` del perfil también, y la API alcanza al contenedor de IA. Ese
+contenedor responde a `/health` pero devuelve **501** en `/v1/complete`: el
+esqueleto está conectado, la generación de texto no está implementada.
+
+Mientras los contenedores no están arriba, nginx sirve una página de espera con
+código 503 en vez de un 502 en blanco.
+
 ## Siguiente paso — por dónde continuar
 
 Implementar las features, en este orden:
