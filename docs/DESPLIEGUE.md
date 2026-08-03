@@ -27,6 +27,10 @@ despliegue. Renombrar o borrar una columna se hace en dos entregas:
 1. Añadir lo nuevo, escribir en ambos sitios, desplegar.
 2. Cuando la versión anterior ya no está en marcha, borrar lo viejo.
 
+Mientras no exista el secreto `DEPLOY_HOST`, el workflow **se salta entero** en
+vez de fallar: en un fork, o antes de tener servidor, un push a `main` no
+enciende nada en rojo. Lo deja anotado en el resumen de la ejecución.
+
 ## Qué hay que configurar una sola vez
 
 ### En el servidor
