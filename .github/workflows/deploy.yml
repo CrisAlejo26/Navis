@@ -30,10 +30,39 @@ env:
   IMAGE_REPO: ${{ github.repository }}
 
 jobs:
+  # --- 0. ¿Hay servidor al que desplegar? -------------------------------------
+  # Sin `DEPLOY_HOST` no hay nada que hacer: en un fork, o antes de montar el
+  # servidor, el workflow se salta entero en vez de fallar en rojo.
+  # La comprobación va en un `run` porque el contexto `secrets` no está
+  # disponible en el `if` de un job.
+  configurado:
+    name: ¿Hay servidor configurado?
+    runs-on: ubuntu-latest
+    outputs:
+      listo: ${{ steps.comprobar.outputs.listo }}
+    steps:
+      - id: comprobar
+        env:
+          HOST: ${{ secrets.DEPLOY_HOST }}
+        run: |
+          if [ -n "${HOST:-}" ]; then
+            echo "listo=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "listo=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Sin DEPLOY_HOST no se despliega nada. Ver docs/DESPLIEGUE.md."
+            {
+              echo "### Despliegue omitido"
+              echo ""
+              echo "No hay un servidor configurado (\`DEPLOY_HOST\`)."
+              echo "Los secretos que hacen falta están en \`docs/DESPLIEGUE.md\`."
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
+
   # --- 1. Verificación --------------------------------------------------------
   verify:
     name: Verificación completa
-    if: ${{ !inputs.skip_verify }}
+    needs: configurado
+    if: ${{ needs.configurado.outputs.listo == 'true' && !inputs.skip_verify }}
     uses: ./.github/workflows/ci.yml
     permissions:
       contents: read
@@ -41,10 +70,12 @@ jobs:
   # --- 2. Imágenes ------------------------------------------------------------
   images:
     name: Construir y publicar imágenes
-    needs: verify
+    needs: [configurado, verify]
     # `always()` + comprobación explícita: permite el atajo de emergencia sin
     # que un fallo de verificación se cuele nunca.
-    if: ${{ always() && (needs.verify.result == 'success' || inputs.skip_verify) }}
+    if: >-
+      ${{ always() && needs.configurado.outputs.listo == 'true'
+          && (needs.verify.result == 'success' || inputs.skip_verify) }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
