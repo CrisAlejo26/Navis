@@ -6,9 +6,12 @@
  *
  * La fuente son los SVG de `packages/theme/src/logo/`. Para cambiar el logo se
  * sustituyen esos ficheros y se vuelve a ejecutar este comando: todo lo demás
- * (favicon, iconos de la PWA, del móvil y del escritorio) es salida y no se
- * toca a mano. Un test compara byte a byte lo que hay en el repositorio con lo
- * que sale de aquí, así que un icono editado a mano hace fallar la verificación.
+ * es salida y no se toca a mano. Un test compara byte a byte lo que hay en el
+ * repositorio con lo que sale de aquí.
+ *
+ * El encuadre lo decide `scripts/brand-logo.mjs`, que mide el dibujo y lo
+ * centra: los SVG del diseñador traen mucho margen y a tamaño de favicon el
+ * barco se quedaba en nada.
  */
 import { execSync } from 'node:child_process';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
@@ -17,105 +20,62 @@ import { fileURLToPath } from 'node:url';
 
 import { Resvg } from '@resvg/resvg-js';
 
+import { AZUL, encuadrar, leerVariante } from './brand-logo.mjs';
+
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const carpetaLogo = join(root, 'packages/theme/src/logo');
-
-/** Azul de la marca, tomado del propio logo. */
-export const AZUL = '#2140cf';
-
-/** Las tres variantes oficiales. */
-export const VARIANTES = {
-  azul: 'azul-sin-fondo.svg',
-  blancoConFondo: 'blanco-con-fondo.svg',
-  blancoSinFondo: 'blanco-sin-fondo.svg',
-};
-
-const leerVariante = (variante) => readFileSync(join(carpetaLogo, VARIANTES[variante]), 'utf8');
-
-/**
- * Rodea el logo de un lienzo cuadrado: sirve para dejar aire alrededor (los
- * iconos «maskable» de Android recortan por los bordes) y para poner un fondo
- * sólido donde la transparencia quedaría mal.
- *
- * @param {string} svg          contenido del SVG original
- * @param {{ margen?: number, fondo?: string|null, radio?: number }} opciones
- *   `margen` es la fracción del lado que queda libre a cada lado.
- */
-export function componer(svg, { margen = 0, fondo = null, radio = 0 } = {}) {
-  const [, ancho = '1080', alto = '1080'] =
-    /viewBox="0 0 ([\d.]+) ([\d.]+)"/.exec(svg)?.slice(0, 3) ?? [];
-  const lado = Number(ancho);
-  const escala = 1 - 2 * margen;
-  const desplazamiento = lado * margen;
-
-  // El SVG original se incrusta tal cual dentro de un <g> escalado: así no hay
-  // que entender su contenido ni tocar sus rutas ni sus degradados.
-  const interior = svg
-    .replace(/<\?xml[^?]*\?>\s*/, '')
-    .replace(/^<svg[^>]*>/, '')
-    .replace(/<\/svg>\s*$/, '');
-
-  const rect =
-    fondo === null
-      ? ''
-      : `<rect width="${String(lado)}" height="${String(alto)}" rx="${String(radio)}" fill="${fondo}"/>`;
-
-  return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 ${String(lado)} ${alto}">
-${rect}
-<g transform="translate(${String(desplazamiento)} ${String(desplazamiento)}) scale(${escala.toFixed(4)})">
-${interior}
-</g>
-</svg>`;
-}
 
 /** Rasteriza un SVG a PNG cuadrado. */
 export function aPng(svg, size) {
-  const resvg = new Resvg(svg, { fitTo: { mode: 'width', value: size } });
-  return Buffer.from(resvg.render().asPng());
+  return Buffer.from(new Resvg(svg, { fitTo: { mode: 'width', value: size } }).render().asPng());
 }
 
 /**
- * Qué variante va en cada sitio y por qué.
+ * Qué se genera, con qué variante y con cuánto aire.
  *
- * · Pestaña del navegador → azul sin fondo, que es lo que pidió la marca.
- * · Pantalla de inicio, dock y tiendas → blanco sobre azul: un icono con
- *   transparencia ahí se ve roto.
- * · Maskable de Android → lo mismo pero con más aire, porque el sistema
- *   recorta por los bordes con la forma que le dé la gana.
- * · Foreground adaptativo de Android → blanco sin fondo; el color lo pone
- *   `adaptiveIcon.backgroundColor` en app.config.ts.
+ * `ocupacion` es la fracción del lado que ocupa el barco:
+ * · Favicon: casi todo. Se ve a 16 px y cualquier margen se lo come.
+ * · Iconos de aplicación: 0,72, el margen que esperan iOS y Android para que
+ *   el icono no toque los bordes del recuadro.
+ * · Maskable y primer plano adaptativo: bastante menos, porque el sistema
+ *   recorta con la forma que le da la gana y hay que dejar zona segura.
  */
 export const DESTINOS = [
-  ['apps/web/public/favicon.svg', { variante: 'azul', svg: true }],
-  ['apps/web/public/pwa-192x192.png', { variante: 'blancoConFondo', size: 192 }],
-  ['apps/web/public/pwa-512x512.png', { variante: 'blancoConFondo', size: 512 }],
+  ['apps/web/public/favicon.svg', { variante: 'azul', ocupacion: 0.96, svg: true }],
+  [
+    'apps/web/public/pwa-192x192.png',
+    { variante: 'blanco', ocupacion: 0.72, fondo: AZUL, size: 192 },
+  ],
+  [
+    'apps/web/public/pwa-512x512.png',
+    { variante: 'blanco', ocupacion: 0.72, fondo: AZUL, size: 512 },
+  ],
   [
     'apps/web/public/pwa-maskable-512x512.png',
-    { variante: 'blancoConFondo', size: 512, margen: 0.1, fondo: AZUL },
+    { variante: 'blanco', ocupacion: 0.56, fondo: AZUL, size: 512 },
   ],
-  ['apps/web/public/apple-touch-icon.png', { variante: 'blancoConFondo', size: 180 }],
-  ['apps/mobile/assets/icon.png', { variante: 'blancoConFondo', size: 1024 }],
   [
-    'apps/mobile/assets/adaptive-icon.png',
-    { variante: 'blancoSinFondo', size: 1024, margen: 0.18 },
+    'apps/web/public/apple-touch-icon.png',
+    // Sin esquinas redondeadas: iOS las pone él, y si vienen puestas se ven dobles.
+    { variante: 'blanco', ocupacion: 0.72, fondo: AZUL, size: 180 },
   ],
-  ['apps/mobile/assets/splash-icon.png', { variante: 'blancoConFondo', size: 512, radio: 140 }],
-  ['apps/mobile/assets/favicon.png', { variante: 'blancoConFondo', size: 48 }],
+  ['apps/mobile/assets/icon.png', { variante: 'blanco', ocupacion: 0.72, fondo: AZUL, size: 1024 }],
+  ['apps/mobile/assets/adaptive-icon.png', { variante: 'blanco', ocupacion: 0.56, size: 1024 }],
+  [
+    'apps/mobile/assets/splash-icon.png',
+    { variante: 'blanco', ocupacion: 0.62, fondo: AZUL, radio: 0.22, size: 512 },
+  ],
+  ['apps/mobile/assets/favicon.png', { variante: 'blanco', ocupacion: 0.8, fondo: AZUL, size: 48 }],
 ];
 
 /** Contenido que le corresponde a un destino, sin escribir nada. */
 export function contenidoDe([, opciones]) {
-  const base = leerVariante(opciones.variante);
-  const compuesto =
-    opciones.margen || opciones.fondo || opciones.radio
-      ? componer(base, {
-          margen: opciones.margen ?? 0,
-          fondo: opciones.fondo ?? null,
-          radio: opciones.radio ?? 0,
-        })
-      : base;
+  const svg = encuadrar(leerVariante(opciones.variante), {
+    ocupacion: opciones.ocupacion,
+    fondo: opciones.fondo ?? null,
+    radio: opciones.radio ?? 0,
+  });
 
-  return opciones.svg ? Buffer.from(compuesto, 'utf8') : aPng(compuesto, opciones.size);
+  return opciones.svg ? Buffer.from(svg, 'utf8') : aPng(svg, opciones.size);
 }
 
 export function generar({ silencioso = false } = {}) {
@@ -127,7 +87,9 @@ export function generar({ silencioso = false } = {}) {
 
     if (!silencioso) {
       const detalle = opciones.svg ? 'SVG' : `${String(opciones.size)}px`;
-      console.log(`  ${ruta} — ${opciones.variante}, ${detalle}`);
+      console.log(
+        `  ${ruta} — ${opciones.variante}, ${detalle}, ocupa ${String(Math.round(opciones.ocupacion * 100))}%`,
+      );
     }
   }
 }
