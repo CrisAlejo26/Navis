@@ -1,0 +1,329 @@
+name: Release
+
+# Compila las apps descargables y las publica en la página de releases.
+#
+# Se dispara al empujar una etiqueta `vX.Y.Z`, que es lo que hace `pnpm release`.
+# También se puede lanzar a mano desde la pestaña Actions.
+#
+# Qué se publica:
+#   · Escritorio: instaladores de Windows, macOS (Intel y Apple Silicon) y Linux
+#   · Móvil: APK de Android, instalable directamente desde el teléfono
+#   · Web: no genera instalador; se adjunta el sitio ya construido para quien
+#     quiera autoalojarlo sin Docker
+#
+# iOS no está: distribuir un .ipa por GitHub no sirve de nada (hace falta
+# TestFlight y una cuenta de desarrollador de Apple).
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Etiqueta a publicar (p. ej. v0.2.0)"
+        required: true
+        type: string
+
+concurrency:
+  group: release-${{ inputs.tag || github.ref_name }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  # --- 1. Verificar antes de compilar nada ------------------------------------
+  verify:
+    name: Verificación completa
+    uses: ./.github/workflows/ci.yml
+    permissions:
+      contents: read
+
+  # --- 2. Crear el release en borrador ----------------------------------------
+  preparar:
+    name: Preparar el release
+    needs: verify
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.datos.outputs.tag }}
+      version: ${{ steps.datos.outputs.version }}
+      release_id: ${{ steps.crear.outputs.release_id }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - id: datos
+        run: |
+          TAG="${{ inputs.tag || github.ref_name }}"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "version=${TAG#v}" >> "$GITHUB_OUTPUT"
+
+      # Nace como BORRADOR: los binarios se van adjuntando después y así nadie
+      # se descarga un release a medio construir. Se publica a mano al final.
+      - id: crear
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ steps.datos.outputs.tag }}
+          VERSION: ${{ steps.datos.outputs.version }}
+        run: |
+          set -euo pipefail
+
+          cat > notas.md <<'NOTAS'
+          ## Descargas
+
+          | Sistema | Fichero |
+          | --- | --- |
+          | Windows | `.msi` o `.exe` |
+          | macOS (Apple Silicon) | `_aarch64.dmg` |
+          | macOS (Intel) | `_x64.dmg` |
+          | Linux | `.AppImage` o `.deb` |
+          | Android | `pastortools-VERSION.apk` |
+
+          Las aplicaciones **no llevan certificado comercial**: Windows y macOS
+          avisarán la primera vez. En macOS se abre con clic derecho → Abrir; en
+          Android hay que permitir la instalación desde orígenes desconocidos.
+
+          La web no necesita instalación: se usa desde el navegador y se puede
+          «Añadir a la pantalla de inicio». El `.zip` adjunto es el sitio ya
+          construido, por si quieres autoalojarlo sin Docker.
+
+          ---
+          NOTAS
+          sed -i "s/VERSION/$VERSION/g" notas.md
+
+          # Idempotente: si el release ya existe (relanzar el workflow), se reusa.
+          if ! gh release view "$TAG" >/dev/null 2>&1; then
+            gh release create "$TAG" \
+              --draft \
+              --title "PastorTools $VERSION" \
+              --notes-file notas.md \
+              --generate-notes
+          fi
+
+          # tauri-action necesita el id numérico: la API no devuelve borradores
+          # al buscarlos por etiqueta.
+          ID=$(gh api "repos/${GITHUB_REPOSITORY}/releases" \
+                 --jq "[.[] | select(.tag_name == \"$TAG\")][0].id")
+          echo "release_id=$ID" >> "$GITHUB_OUTPUT"
+
+  # --- 3. Escritorio: un instalador por sistema -------------------------------
+  escritorio:
+    name: Escritorio (${{ matrix.nombre }})
+    needs: preparar
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - nombre: macOS Apple Silicon
+            runner: macos-latest
+            args: "--target aarch64-apple-darwin"
+          - nombre: macOS Intel
+            runner: macos-latest
+            args: "--target x86_64-apple-darwin"
+          - nombre: Linux
+            runner: ubuntu-22.04
+            args: ""
+          - nombre: Windows
+            runner: windows-latest
+            args: ""
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ needs.preparar.outputs.tag }}
+
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Dependencias de sistema de Tauri
+        if: startsWith(matrix.runner, 'ubuntu')
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ startsWith(matrix.runner, 'macos') && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: apps/desktop/src-tauri
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build:packages
+
+      # tauri-action construye la web (beforeBuildCommand del tauri.conf.json),
+      # empaqueta y sube los instaladores al borrador que ya existe.
+      - uses: tauri-apps/tauri-action@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VITE_API_URL: ${{ vars.VITE_API_URL || 'http://localhost:3000/api/v1' }}
+          VITE_AUTH_URL: ${{ vars.VITE_AUTH_URL || 'http://localhost:3000' }}
+        with:
+          projectPath: apps/desktop
+          releaseId: ${{ needs.preparar.outputs.release_id }}
+          args: ${{ matrix.args }}
+
+  # --- 4. Móvil: APK de Android -----------------------------------------------
+  android:
+    name: Android (APK)
+    needs: preparar
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ needs.preparar.outputs.tag }}
+
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - uses: android-actions/setup-android@v3
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build:packages
+
+      # El proyecto nativo no se versiona: se regenera desde app.config.ts en
+      # cada release para que no pueda desincronizarse.
+      - name: Generar el proyecto de Android
+        working-directory: apps/mobile
+        env:
+          EXPO_PUBLIC_API_URL: ${{ vars.EXPO_PUBLIC_API_URL || 'http://localhost:3000/api/v1' }}
+          EXPO_PUBLIC_AUTH_URL: ${{ vars.EXPO_PUBLIC_AUTH_URL || 'http://localhost:3000' }}
+        run: pnpm exec expo prebuild --platform android --clean --no-install
+
+      - name: Compilar el APK
+        working-directory: apps/mobile/android
+        run: ./gradlew assembleRelease --no-daemon
+
+      # Expo firma el APK de release con la clave de depuración. Si hay un
+      # keystore propio en los secretos, se vuelve a firmar con él; si no, se
+      # publica igualmente (instalable, pero sin identidad estable entre
+      # versiones). Ver docs/RELEASES.md.
+      - name: Firmar con el keystore del proyecto
+        id: firma
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          VERSION: ${{ needs.preparar.outputs.version }}
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          APK=apps/mobile/android/app/build/outputs/apk/release/app-release.apk
+          SALIDA="dist/pastortools-${VERSION}.apk"
+
+          if [ -z "${KEYSTORE_BASE64:-}" ]; then
+            echo "::warning::Sin ANDROID_KEYSTORE_BASE64: el APK va firmado con la clave de depuración. Ver docs/RELEASES.md."
+            echo "firmado=depuracion" >> "$GITHUB_OUTPUT"
+            cp "$APK" "$SALIDA"
+            exit 0
+          fi
+
+          BUILD_TOOLS=$(find "$ANDROID_HOME/build-tools" -maxdepth 1 -type d | sort -V | tail -1)
+          echo "$KEYSTORE_BASE64" | base64 --decode > release.keystore
+
+          "$BUILD_TOOLS/zipalign" -p -f 4 "$APK" alineado.apk
+          # apksigner sustituye la firma anterior, así que no hace falta tocar
+          # el build.gradle que genera Expo.
+          "$BUILD_TOOLS/apksigner" sign \
+            --ks release.keystore \
+            --ks-pass "pass:$KEYSTORE_PASSWORD" \
+            --ks-key-alias "$KEY_ALIAS" \
+            --key-pass "pass:$KEY_PASSWORD" \
+            --out "$SALIDA" \
+            alineado.apk
+          "$BUILD_TOOLS/apksigner" verify --print-certs "$SALIDA"
+          rm -f release.keystore alineado.apk
+          echo "firmado=propio" >> "$GITHUB_OUTPUT"
+
+      - name: Adjuntar el APK
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ needs.preparar.outputs.tag }}
+        run: gh release upload "$TAG" dist/*.apk --clobber
+
+      - name: Aviso de firma
+        if: steps.firma.outputs.firmado == 'depuracion'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ needs.preparar.outputs.tag }}
+        run: |
+          gh release view "$TAG" --json body --jq .body > cuerpo.md
+          {
+            echo ""
+            echo "> ⚠️ El APK de esta versión está firmado con la clave de"
+            echo "> depuración de Android. Se instala sin problema, pero para"
+            echo "> poder actualizar sobre una versión anterior hace falta"
+            echo "> configurar un keystore propio (ver \`docs/RELEASES.md\`)."
+          } >> cuerpo.md
+          gh release edit "$TAG" --notes-file cuerpo.md
+
+  # --- 5. Web: el sitio estático, para quien quiera autoalojarlo --------------
+  web:
+    name: Web (sitio estático)
+    needs: preparar
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ needs.preparar.outputs.tag }}
+
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build:packages
+
+      - name: Construir la PWA
+        env:
+          VITE_API_URL: ${{ vars.VITE_API_URL || 'http://localhost:3000/api/v1' }}
+          VITE_AUTH_URL: ${{ vars.VITE_AUTH_URL || 'http://localhost:3000' }}
+        run: pnpm build:web
+
+      - name: Empaquetar y adjuntar
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ needs.preparar.outputs.tag }}
+          VERSION: ${{ needs.preparar.outputs.version }}
+        run: |
+          set -euo pipefail
+          (cd apps/web/dist && zip -qr "$GITHUB_WORKSPACE/pastortools-web-${VERSION}.zip" .)
+          gh release upload "$TAG" "pastortools-web-${VERSION}.zip" --clobber
+
+  # --- 6. Resumen -------------------------------------------------------------
+  resumen:
+    name: Resumen
+    needs: [preparar, escritorio, android, web]
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    steps:
+      - env:
+          TAG: ${{ needs.preparar.outputs.tag }}
+        run: |
+          {
+            echo "### Release $TAG"
+            echo ""
+            echo "| Artefacto | Resultado |"
+            echo "| --- | --- |"
+            echo "| Escritorio | ${{ needs.escritorio.result }} |"
+            echo "| Android | ${{ needs.android.result }} |"
+            echo "| Web | ${{ needs.web.result }} |"
+            echo ""
+            echo "El release está en **borrador**: revísalo y dale a «Publish release»."
+          } >> "$GITHUB_STEP_SUMMARY"

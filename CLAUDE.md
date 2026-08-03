@@ -55,11 +55,15 @@ Cosas que ya han costado un rato y no hace falta volver a descubrir.
   chocan con los mocks de React Native. Los tests comprueban comportamiento, no
   estilos.
 - **`@testing-library/react-native` 14: `render` y `fireEvent` son asíncronos.**
+- **La versión vive en siete sitios** (package.json de la raíz y de cada app,
+  app.config.ts, tauri.conf.json, Cargo.toml y Cargo.lock). No la toques a
+  mano: `pnpm release` los sincroniza y hay un test que falla si alguno se
+  queda descolgado.
 
 ## Antes de dar algo por terminado
 
 ```bash
-pnpm check        # formato + lint + tipos + tests
+pnpm check        # formato + lint + tipos + tests (incluye los del script de release)
 pnpm test:e2e     # API y web
 ```
 
