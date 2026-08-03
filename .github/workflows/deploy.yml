@@ -206,8 +206,11 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
+      # Las dos acciones que reciben la clave privada van clavadas al SHA, no a
+      # una etiqueta: `@v1` se puede reapuntar, y quien lo hiciera se llevaría
+      # la clave del servidor. El SHA no se puede reescribir.
       - name: Copiar el compose al servidor
-        uses: appleboy/scp-action@v1
+        uses: appleboy/scp-action@ff85246acaad7bdce478db94a363cd2bf7c90345 # v1
         with:
           host: ${{ secrets.DEPLOY_HOST }}
           username: ${{ secrets.DEPLOY_USER }}
@@ -217,19 +220,27 @@ jobs:
           target: ${{ secrets.DEPLOY_PATH }}
 
       - name: Migrar, desplegar y verificar
-        uses: appleboy/ssh-action@v1
+        uses: appleboy/ssh-action@0ff4204d59e8e51228ff73bce53f80d53301dee2 # v1
         env:
           IMAGE_TAG: ${{ needs.images.outputs.tag }}
+          # Los valores viajan como variables de entorno y NO interpolados
+          # dentro del script: así no acaban escritos en el guion que se manda
+          # al servidor y un valor con caracteres raros no se ejecuta como
+          # orden. Es lo que recomienda GitHub para todo lo que salga de
+          # `secrets`.
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+          REGISTRY_TOKEN: ${{ secrets.REGISTRY_TOKEN || secrets.GITHUB_TOKEN }}
+          REGISTRY_USER: ${{ github.actor }}
         with:
           host: ${{ secrets.DEPLOY_HOST }}
           username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.HOST_CRISTIAN_SSH_KEY }}
           port: ${{ secrets.DEPLOY_PORT || 22 }}
-          envs: IMAGE_TAG
+          envs: IMAGE_TAG,DEPLOY_PATH,REGISTRY_TOKEN,REGISTRY_USER
           command_timeout: 20m
           script: |
             set -euo pipefail
-            cd "${{ secrets.DEPLOY_PATH }}"
+            cd "$DEPLOY_PATH"
 
             export REGISTRY="${{ env.REGISTRY }}"
             export IMAGE_REPO="${{ env.IMAGE_REPO }}"
@@ -242,8 +253,10 @@ jobs:
             PREVIOUS_TAG="$(cat .deployed-tag 2>/dev/null || true)"
             echo "Versión anterior: ${PREVIOUS_TAG:-desconocida} → nueva: $IMAGE_TAG"
 
-            echo "${{ secrets.REGISTRY_TOKEN || secrets.GITHUB_TOKEN }}" \
-              | docker login "$REGISTRY" -u "${{ github.actor }}" --password-stdin
+            # Por stdin y desde una variable: así el token no aparece en la
+            # lista de procesos del servidor ni escrito en el guion.
+            printf '%s' "$REGISTRY_TOKEN" \
+              | docker login "$REGISTRY" -u "$REGISTRY_USER" --password-stdin
 
             echo "== 1/4 Descargando imágenes =="
             $COMPOSE --profile migrate pull
