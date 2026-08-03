@@ -1,0 +1,5 @@
+# Slugs que ha tenido este proyecto antes del actual, uno por línea.
+# Lo escribe `pnpm rename` y lo lee `scripts/limpiar-docker.sh` para borrar del
+# servidor las imágenes que quedaron colgadas de un renombrado.
+pastortools
+fidus

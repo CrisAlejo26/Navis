@@ -18,12 +18,13 @@
  * del proyecto, el repositorio en GitHub, el dominio y la carpeta del servidor.
  */
 import { execFileSync } from 'node:child_process';
-import { readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
 import { dirname, extname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const rutaMarca = join(root, 'brand.json');
+const rutaMarcasAnteriores = join(root, 'docker', 'marcas-anteriores.txt');
 
 /** Ficheros que no son texto: se saltan enteros. */
 const BINARIOS = new Set([
@@ -42,7 +43,26 @@ const BINARIOS = new Set([
   '.jks',
   '.pdf',
   '.zip',
+  // Bases de datos locales: se renombran por nombre, jamás por contenido.
+  '.sqlite',
+  '.sqlite-shm',
+  '.sqlite-wal',
+  '.db',
 ]);
+
+/**
+ * Ficheros que git no ve (están en .gitignore) pero que también llevan la
+ * marca. Sin esto, tras un renombrado el `.env` seguía apuntando a
+ * `data/<marcavieja>.sqlite` y la base de datos local quedaba con el nombre
+ * antiguo para siempre.
+ */
+const FUERA_DE_GIT = ['.env', '.env.local', '.env.production', '.env.test'];
+
+/**
+ * Ficheros que NO se sustituyen: su contenido son precisamente los nombres
+ * viejos, y reescribirlos borraría el historial que documentan.
+ */
+const INTOCABLES = new Set(['docker/marcas-anteriores.txt']);
 
 const escapar = (texto) => texto.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
 
@@ -98,6 +118,33 @@ export function renombrables(cambios, rutas) {
   return lista.filter((ruta) => cambios.some(([de]) => ruta.includes(de)));
 }
 
+/**
+ * Añade el slug que se abandona a la lista de marcas anteriores, sin
+ * duplicados y sin la marca actual. `scripts/limpiar-docker.sh` la usa para
+ * saber qué imágenes del servidor son basura de un renombrado.
+ */
+export function registrarMarcaAnterior(contenido, slugAnterior, slugActual) {
+  const previas = contenido
+    .split('\n')
+    .map((linea) => linea.trim())
+    .filter((linea) => linea && !linea.startsWith('#'));
+
+  const lista = [...new Set([...previas, slugAnterior])].filter((slug) => slug !== slugActual);
+  return `${lista.join('\n')}\n`;
+}
+
+/** Ficheros ignorados por git que aun así llevan la marca. */
+function ficherosFueraDeGit() {
+  const sueltos = FUERA_DE_GIT.filter((ruta) => existsSync(join(root, ruta)));
+
+  // Todo lo que haya en data/: son las bases de datos locales de desarrollo.
+  const datos = existsSync(join(root, 'data'))
+    ? readdirSync(join(root, 'data')).map((nombre) => `data/${nombre}`)
+    : [];
+
+  return [...sueltos, ...datos];
+}
+
 function todosLosFicheros() {
   return execFileSync('git', ['ls-files'], { cwd: root, encoding: 'utf8' })
     .split('\n')
@@ -111,7 +158,8 @@ function ficherosDelRepositorio() {
     .split('\n')
     .map((linea) => linea.trim())
     .filter(Boolean)
-    .filter((ruta) => !BINARIOS.has(extname(ruta).toLowerCase()));
+    .filter((ruta) => !BINARIOS.has(extname(ruta).toLowerCase()))
+    .filter((ruta) => !INTOCABLES.has(ruta));
 }
 
 function main(argv) {
@@ -139,7 +187,12 @@ function main(argv) {
   let tocados = 0;
   let ocurrencias = 0;
 
-  for (const ruta of ficherosDelRepositorio()) {
+  const textos = [
+    ...ficherosDelRepositorio(),
+    ...ficherosFueraDeGit().filter((ruta) => !BINARIOS.has(extname(ruta).toLowerCase())),
+  ];
+
+  for (const ruta of textos) {
     const destino = join(root, ruta);
     let original;
     try {
@@ -171,11 +224,25 @@ function main(argv) {
     if (!dryRun) git('mv', ruta, nueva);
   }
 
+  // Lo mismo para lo que git no ve: la base de datos local se llamaba
+  // `data/<marcavieja>.sqlite` y hay que moverla, no reescribirla.
+  for (const ruta of renombrables(cambios, ficherosFueraDeGit())) {
+    const nueva = aplicar(ruta, cambios);
+    console.log(`  ${dryRun ? '(simulado) ' : ''}${ruta} → ${nueva}  (fuera de git)`);
+    if (!dryRun) renameSync(join(root, ruta), join(root, nueva));
+  }
+
   // brand.json es la fuente de la verdad: se reescribe entero, conservando el
   // comentario de cabecera.
   if (!dryRun) {
     const marca = JSON.parse(readFileSync(rutaMarca, 'utf8'));
     writeFileSync(rutaMarca, `${JSON.stringify({ ...marca, ...despues }, null, 2)}\n`);
+
+    // Y se apunta el slug abandonado, para poder limpiar sus imágenes.
+    const previas = existsSync(rutaMarcasAnteriores)
+      ? readFileSync(rutaMarcasAnteriores, 'utf8')
+      : '';
+    writeFileSync(rutaMarcasAnteriores, registrarMarcaAnterior(previas, antes.slug, despues.slug));
   }
 
   console.log(
