@@ -27,7 +27,6 @@ concurrency:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_REPO: ${{ github.repository }}
 
   # ESTE REPOSITORIO ES PÚBLICO.
   #
@@ -139,12 +138,19 @@ jobs:
       packages: write
     outputs:
       tag: ${{ steps.meta.outputs.tag }}
+      repo: ${{ steps.meta.outputs.repo }}
     steps:
       - uses: actions/checkout@v6
 
       - id: meta
-        name: Etiqueta de la versión
-        run: echo "tag=${GITHUB_SHA::12}" >> "$GITHUB_OUTPUT"
+        name: Etiqueta y nombre de las imágenes
+        run: |
+          echo "tag=${GITHUB_SHA::12}" >> "$GITHUB_OUTPUT"
+          # GHCR sólo acepta nombres de repositorio en minúsculas, y
+          # `github.repository` conserva las mayúsculas del nombre en GitHub
+          # (CrisAlejo26/Navis). Sin bajarlo, `docker buildx` rechaza la
+          # etiqueta con "repository name must be lowercase".
+          echo "repo=${GITHUB_REPOSITORY,,}" >> "$GITHUB_OUTPUT"
 
       - uses: docker/setup-buildx-action@v3
 
@@ -162,8 +168,8 @@ jobs:
           target: runtime
           push: true
           tags: |
-            ${{ env.REGISTRY }}/${{ env.IMAGE_REPO }}/api:${{ steps.meta.outputs.tag }}
-            ${{ env.REGISTRY }}/${{ env.IMAGE_REPO }}/api:latest
+            ${{ env.REGISTRY }}/${{ steps.meta.outputs.repo }}/api:${{ steps.meta.outputs.tag }}
+            ${{ env.REGISTRY }}/${{ steps.meta.outputs.repo }}/api:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -175,8 +181,8 @@ jobs:
           target: migrate
           push: true
           tags: |
-            ${{ env.REGISTRY }}/${{ env.IMAGE_REPO }}/api-migrate:${{ steps.meta.outputs.tag }}
-            ${{ env.REGISTRY }}/${{ env.IMAGE_REPO }}/api-migrate:latest
+            ${{ env.REGISTRY }}/${{ steps.meta.outputs.repo }}/api-migrate:${{ steps.meta.outputs.tag }}
+            ${{ env.REGISTRY }}/${{ steps.meta.outputs.repo }}/api-migrate:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -190,8 +196,8 @@ jobs:
             VITE_API_URL=${{ vars.VITE_API_URL || env.WEB_API_URL }}
             VITE_AUTH_URL=${{ vars.VITE_AUTH_URL || env.WEB_AUTH_URL }}
           tags: |
-            ${{ env.REGISTRY }}/${{ env.IMAGE_REPO }}/web:${{ steps.meta.outputs.tag }}
-            ${{ env.REGISTRY }}/${{ env.IMAGE_REPO }}/web:latest
+            ${{ env.REGISTRY }}/${{ steps.meta.outputs.repo }}/web:${{ steps.meta.outputs.tag }}
+            ${{ env.REGISTRY }}/${{ steps.meta.outputs.repo }}/web:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -230,6 +236,9 @@ jobs:
         uses: appleboy/ssh-action@0ff4204d59e8e51228ff73bce53f80d53301dee2 # v1
         env:
           IMAGE_TAG: ${{ needs.images.outputs.tag }}
+          # El mismo nombre en minúsculas con el que se publicaron: el servidor
+          # tiene que pedir exactamente la imagen que existe en el registro.
+          IMAGE_REPO: ${{ needs.images.outputs.repo }}
           # Los valores viajan como variables de entorno y NO interpolados
           # dentro del script: así no acaban escritos en el guion que se manda
           # al servidor y un valor con caracteres raros no se ejecuta como
@@ -243,15 +252,15 @@ jobs:
           username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.HOST_CRISTIAN_SSH_KEY }}
           port: ${{ secrets.DEPLOY_PORT || 22 }}
-          envs: IMAGE_TAG,DEPLOY_PATH,REGISTRY_TOKEN,REGISTRY_USER
+          envs: IMAGE_TAG,IMAGE_REPO,DEPLOY_PATH,REGISTRY_TOKEN,REGISTRY_USER
           command_timeout: 20m
           script: |
             set -euo pipefail
             cd "$DEPLOY_PATH"
 
             export REGISTRY="${{ env.REGISTRY }}"
-            export IMAGE_REPO="${{ env.IMAGE_REPO }}"
             export IMAGE_TAG="$IMAGE_TAG"
+            export IMAGE_REPO="$IMAGE_REPO"
 
             COMPOSE="docker compose -f docker-compose.deploy.yml"
 
