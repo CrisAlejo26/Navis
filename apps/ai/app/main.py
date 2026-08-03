@@ -9,7 +9,7 @@ embeddings, RAG sobre las notas pastorales) y la API de Nest seguirá siendo el
 único punto de entrada de los clientes.
 """
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 
 app = FastAPI(
@@ -44,7 +44,15 @@ def health() -> HealthResponse:
     return HealthResponse()
 
 
-@app.post("/v1/complete", response_model=CompletionResponse, status_code=501)
+@app.post("/v1/complete", response_model=CompletionResponse)
 def completions(_request: CompletionRequest) -> CompletionResponse:
-    """Contrato acordado con la API. Sin implementar todavía."""
-    raise NotImplementedError("El microservicio de IA aún no está implementado")
+    """Contrato acordado con la API. Sin implementar todavía.
+
+    Se lanza HTTPException y no NotImplementedError: lo segundo lo convierte
+    FastAPI en un 500 genérico, y quien llame no distingue «no está hecho» de
+    «se ha roto».
+    """
+    raise HTTPException(
+        status_code=501,
+        detail="El microservicio de IA todavía no genera texto: ver apps/ai/README.md",
+    )
