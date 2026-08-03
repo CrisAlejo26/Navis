@@ -12,12 +12,14 @@
       "default": "./dist/index.js"
     },
     "./tokens.css": "./src/tokens.css",
-    "./tokens.native.css": "./src/tokens.native.css"
+    "./tokens.native.css": "./src/tokens.native.css",
+    "./logo/*": "./src/logo/*"
   },
   "files": [
     "dist",
     "src/tokens.css",
-    "src/tokens.native.css"
+    "src/tokens.native.css",
+    "src/logo"
   ],
   "scripts": {
     "build": "tsc -p tsconfig.build.json",

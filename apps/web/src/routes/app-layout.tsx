@@ -11,6 +11,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { NavLink, Outlet, useNavigate } from 'react-router';
 
+import { Logo } from '@/components/logo';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/cn';
 import { signOut, useSession } from '@/lib/auth-client';
@@ -39,7 +40,10 @@ export function AppLayout() {
   return (
     <div className="md:flex-row flex min-h-dvh flex-col">
       <aside className="w-60 p-4 md:flex hidden shrink-0 flex-col border-r bg-card">
-        <p className="mb-6 px-2 text-lg font-semibold">{t('common.appName')}</p>
+        <div className="mb-6 gap-2 px-2 flex items-center">
+          <Logo className="h-7 w-7" />
+          <p className="text-lg font-semibold">{t('common.appName')}</p>
+        </div>
 
         <nav className="gap-1 flex flex-1 flex-col">
           {navItems.map(({ to, labelKey, Icon, end }) => (

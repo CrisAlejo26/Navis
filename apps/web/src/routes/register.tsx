@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router';
 
 import { Button } from '@/components/ui/button';
+import { Logo } from '@/components/logo';
 import { Card, CardDescription, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { signUp } from '@/lib/auth-client';
@@ -40,6 +41,7 @@ export function RegisterPage() {
   return (
     <main className="p-6 flex min-h-dvh flex-col items-center justify-center">
       <Card className="max-w-sm w-full">
+        <Logo className="mb-3 h-12 w-12" />
         <CardTitle>{t('auth.signUp')}</CardTitle>
         <CardDescription className="mb-5">{t('home.subtitle')}</CardDescription>
 
