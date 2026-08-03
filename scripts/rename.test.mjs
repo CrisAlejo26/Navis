@@ -4,7 +4,7 @@ import { dirname, join } from 'node:path';
 import { test } from 'node:test';
 import { fileURLToPath } from 'node:url';
 
-import { aplicar, derivarMarca, sustituciones } from './rename.mjs';
+import { aplicar, derivarMarca, renombrables, sustituciones } from './rename.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const marca = JSON.parse(readFileSync(join(root, 'brand.json'), 'utf8'));
@@ -76,4 +76,30 @@ test('no toca palabras que no son la marca', () => {
 
 test('renombrar al mismo nombre no genera cambios', () => {
   assert.equal(sustituciones(marca, derivarMarca(marca.nombre, marca)).length, 0);
+});
+
+test('renombrables detecta los ficheros cuyo nombre lleva la marca', () => {
+  const antes = {
+    nombre: 'MarcaVieja',
+    slug: 'marcavieja',
+    scope: '@marcavieja',
+    dominioInverso: 'org.marcavieja',
+    esquema: 'marcavieja',
+  };
+  const cambios = sustituciones(antes, derivarMarca('MarcaNueva', antes));
+
+  const rutas = [
+    'docker/nginx/marcavieja.ejemplo.es.conf',
+    'apps/web/src/lib/api.ts',
+    'docs/MarcaVieja.md',
+  ];
+
+  assert.deepEqual(renombrables(cambios, rutas), [
+    'docker/nginx/marcavieja.ejemplo.es.conf',
+    'docs/MarcaVieja.md',
+  ]);
+  assert.equal(
+    aplicar('docker/nginx/marcavieja.ejemplo.es.conf', cambios),
+    'docker/nginx/marcanueva.ejemplo.es.conf',
+  );
 });
