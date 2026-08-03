@@ -11,7 +11,8 @@
  *
  * Si cambias el SVG, cambia también `dibujar()` y comprueba el resultado.
  */
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { execSync } from 'node:child_process';
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { deflateSync } from 'node:zlib';
@@ -169,5 +170,24 @@ for (const [ruta, size, opciones] of destinos) {
   console.log(`  ${ruta} — ${String(size)}×${String(size)} (${String(buffer.length)} B)`);
 }
 
-console.log('\nLos iconos de escritorio se generan aparte, desde el de móvil:');
-console.log('  pnpm --filter @pastortools/desktop icons\n');
+// --- Escritorio -------------------------------------------------------------
+// Tauri necesita .ico, .icns y una docena de tamaños para las tiendas: su CLI
+// los saca del PNG grande que se acaba de generar.
+
+const { scope } = JSON.parse(readFileSync(join(root, 'brand.json'), 'utf8'));
+
+console.log('\n  escritorio (tauri icon)…');
+try {
+  // Comando entero en vez de argumentos sueltos: en Windows `pnpm` es un .cmd
+  // y hace falta shell. No hay riesgo de inyección porque `scope` sale de
+  // brand.json, que el renombrador escribe ya saneado a [a-z0-9].
+  execSync(`pnpm --filter ${scope}/desktop icons`, { cwd: root, stdio: 'pipe' });
+  console.log('  apps/desktop/src-tauri/icons/ — .ico, .icns y los PNG de cada tamaño');
+} catch {
+  console.warn(
+    '  ⚠ No he podido generar los iconos de escritorio.\n' +
+      '    Necesitan las dependencias instaladas: pnpm install && pnpm icons',
+  );
+}
+
+console.log('\n✓ Iconos regenerados. Míralos antes de commitear.\n');

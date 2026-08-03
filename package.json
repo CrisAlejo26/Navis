@@ -30,6 +30,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "icons": "node ./scripts/gen-icons.mjs",
+    "rename": "node ./scripts/rename.mjs",
     "test": "turbo run test",
     "test:scripts": "node --test \"scripts/*.test.mjs\"",
     "test:watch": "turbo run test:watch",
