@@ -3,8 +3,12 @@ import { dirname } from 'node:path';
 import { DataSource, type DataSourceOptions } from 'typeorm';
 
 import { env, isProduction, sqlitePath } from '../config/env';
+import { BelieverGift } from '../believers/believer-gift.entity';
 import { BelieverMinistry } from '../believers/believer-ministry.entity';
+import { BelieverNote } from '../believers/believer-note.entity';
 import { Believer } from '../believers/believer.entity';
+import { Gift } from '../believers/gift.entity';
+import { NoteAudio } from '../believers/note-audio.entity';
 import { Calendar } from '../calendar/calendar.entity';
 import { Congregation } from '../calendar/congregation.entity';
 import { MeetingPattern } from '../calendar/meeting-pattern.entity';
@@ -37,6 +41,10 @@ const entities = [
   Congregation,
   Believer,
   BelieverMinistry,
+  Gift,
+  BelieverGift,
+  BelieverNote,
+  NoteAudio,
   MeetingPattern,
   PatternPhase,
   Meeting,

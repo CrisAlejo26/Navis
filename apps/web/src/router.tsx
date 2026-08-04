@@ -38,6 +38,15 @@ const CalendarSettingsPage = lazy(() =>
     default: module.CalendarSettingsPage,
   })),
 );
+const BelieversPage = lazy(() =>
+  import('@/routes/believers').then((module) => ({ default: module.BelieversPage })),
+);
+const BelieverPage = lazy(() =>
+  import('@/routes/believer').then((module) => ({ default: module.BelieverPage })),
+);
+const GiftsPage = lazy(() =>
+  import('@/routes/gifts').then((module) => ({ default: module.GiftsPage })),
+);
 const LabPage = lazy(() => import('@/routes/lab').then((module) => ({ default: module.LabPage })));
 const NoAccessPage = lazy(() =>
   import('@/routes/no-access').then((module) => ({ default: module.NoAccessPage })),
@@ -152,6 +161,38 @@ export const router = createBrowserRouter([
           <RequirePermission permission="calendar.manage">
             <Lazy>
               <CalendarSettingsPage />
+            </Lazy>
+          </RequirePermission>
+        ),
+      },
+      // `/believers/gifts` va declarada **antes** que `/believers/:id`: con el
+      // orden al revés, «gifts» se resolvería como el identificador de alguien.
+      {
+        path: 'believers',
+        element: (
+          <RequirePermission permission="believers.view">
+            <Lazy>
+              <BelieversPage />
+            </Lazy>
+          </RequirePermission>
+        ),
+      },
+      {
+        path: 'believers/gifts',
+        element: (
+          <RequirePermission permission="believers.manage">
+            <Lazy>
+              <GiftsPage />
+            </Lazy>
+          </RequirePermission>
+        ),
+      },
+      {
+        path: 'believers/:id',
+        element: (
+          <RequirePermission permission="believers.view">
+            <Lazy>
+              <BelieverPage />
             </Lazy>
           </RequirePermission>
         ),

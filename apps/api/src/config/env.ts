@@ -27,3 +27,8 @@ export const isTest = env.NODE_ENV === 'test';
 export const sqlitePath = isAbsolute(env.DB_SQLITE_PATH)
   ? env.DB_SQLITE_PATH
   : resolve(monorepoRoot, env.DB_SQLITE_PATH);
+
+/** Igual con la carpeta de ficheros subidos: absoluta y resuelta una sola vez. */
+export const uploadsPath = isAbsolute(env.UPLOADS_PATH)
+  ? env.UPLOADS_PATH
+  : resolve(monorepoRoot, env.UPLOADS_PATH);

@@ -3,7 +3,7 @@ import { Plus } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import { Chip } from '@/components/ui/chip';
-import { ACCENT_RAIL, accentVars } from '@/lib/calendar/accents';
+import { ACCENT_RAIL, accentVars } from '@/lib/accents';
 import { cn } from '@/lib/cn';
 
 /**

@@ -2,7 +2,7 @@ import { BadRequestException } from '@nestjs/common';
 import type { Repository } from 'typeorm';
 import { describe, expect, it, vi } from 'vitest';
 
-import type { BelieversService } from '../believers/believers.service';
+import type { BelieversRosterService } from '../believers/believers-roster.service';
 import { ScheduleService } from './schedule.service';
 import type { Congregation } from './congregation.entity';
 import type { CongregationsService } from './congregations.service';
@@ -41,7 +41,7 @@ function build({ patterns = [patron()], meetings = [] as Meeting[] } = {}) {
 
   const believers = {
     namesOf: vi.fn(() => Promise.resolve(new Map([['b1', 'Luis Fernando']]))),
-  } as unknown as BelieversService;
+  } as unknown as BelieversRosterService;
 
   const repo = {
     find: vi.fn(() => Promise.resolve(meetings)),

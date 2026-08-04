@@ -18,10 +18,15 @@ interface DataTableProps<TItem> {
   /** Cuántas columnas hay, para el esqueleto y para la fila vacía. */
   columnCount: number;
   getKey: (item: TItem) => string;
-  /** Las celdas de una fila, de `md` para arriba. */
-  renderRow: (item: TItem) => ReactNode;
+  /**
+   * Las celdas de una fila, de `md` para arriba. El índice es la posición en la
+   * página: lo usa quien escalona una animación de entrada (Regla 9 §5).
+   */
+  renderRow: (item: TItem, index: number) => ReactNode;
   /** El mismo dato como ficha, por debajo de `md`. */
-  renderCard: (item: TItem) => ReactNode;
+  renderCard: (item: TItem, index: number) => ReactNode;
+  /** Clases extra para la fila: un filete que marca la que pide atención. */
+  rowClassName?: (item: TItem) => string | undefined;
   emptyIcon: LucideIcon;
   emptyTitle: string;
   /** Búsqueda y filtros, sobre la tabla. */
@@ -51,6 +56,7 @@ export function DataTable<TItem>({
   getKey,
   renderRow,
   renderCard,
+  rowClassName,
   emptyIcon,
   emptyTitle,
   toolbar,
@@ -94,7 +100,11 @@ export function DataTable<TItem>({
 
             {!isLoading &&
               !isError &&
-              items?.map((item) => <TableRow key={getKey(item)}>{renderRow(item)}</TableRow>)}
+              items?.map((item, index) => (
+                <TableRow key={getKey(item)} className={rowClassName?.(item)}>
+                  {renderRow(item, index)}
+                </TableRow>
+              ))}
 
             {notice && (
               <tr>
@@ -116,9 +126,9 @@ export function DataTable<TItem>({
 
         {!isLoading &&
           !isError &&
-          items?.map((item) => (
+          items?.map((item, index) => (
             <li key={getKey(item)} className="p-4">
-              {renderCard(item)}
+              {renderCard(item, index)}
             </li>
           ))}
 

@@ -24,7 +24,7 @@ Estructura estándar de la industria para separar **decisiones** de **propuestas
 | -------------------------------------------------------- | ------------------------------------------------------- | ------------ |
 | [0001](./rfcs/0001-panel-de-metricas.md)                 | Panel de inicio con métricas                            | Borrador     |
 | [0002](./rfcs/0002-calendario-de-programaciones.md)      | Calendario de programaciones                            | Borrador     |
-| [0003](./rfcs/0003-creyentes-y-notas.md)                 | Creyentes con detalle y notas                           | Borrador     |
+| [0003](./rfcs/0003-creyentes-y-notas.md)                 | Creyentes con detalle y notas                           | Implementado |
 | [0004](./rfcs/0004-profecias-personales.md)              | Profecías personales                                    | Borrador     |
 | [0005](./rfcs/0005-suenos-personales.md)                 | Sueños personales                                       | Borrador     |
 | [0006](./rfcs/0006-comunicaciones.md)                    | Comunicaciones (chat y avisos)                          | Borrador     |

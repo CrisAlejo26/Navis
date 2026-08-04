@@ -57,6 +57,9 @@ services:
     ports:
       - "${API_PORT:-3000}:3000"
     volumes:
+      # Aquí vive la base de datos local y, dentro, `uploads/` con los audios
+      # de las notas. Es un volumen y no una carpeta del host para que sobreviva
+      # a `docker compose down` (RFC 0003 §5.6).
       - api-data:/app/data
 
   web:
