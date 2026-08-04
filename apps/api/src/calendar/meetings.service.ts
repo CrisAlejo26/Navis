@@ -29,12 +29,17 @@ export class MeetingsService {
   ) {}
 
   /** Una reunión puntual: la que no nace de ningún patrón. */
-  async create(churchId: string, input: CreateMeetingInput): Promise<MeetingView> {
+  async create(
+    churchId: string,
+    calendarId: string,
+    input: CreateMeetingInput,
+  ): Promise<MeetingView> {
     const congregation = await this.congregations.require(churchId, input.congregationId);
 
     const meeting = await this.meetings.save(
       this.meetings.create({
         churchId,
+        calendarId,
         congregationId: congregation.id,
         patternId: null,
         date: input.date,
@@ -113,7 +118,7 @@ export class MeetingsService {
   async view(churchId: string, id: string): Promise<MeetingView> {
     const meeting = await this.require(churchId, id);
     const names = await this.believers.namesOf(
-      (meeting.slots ?? []).map((slot) => slot.believerId ?? ''),
+      (meeting.slots ?? []).map((slot) => slot.believerId),
     );
 
     return meetingView(meeting, names);

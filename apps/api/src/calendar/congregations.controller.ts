@@ -9,11 +9,12 @@ import { CongregationsService } from './congregations.service';
 import { CreateCongregationDto, UpdateCongregationDto } from './dto/congregation.dto';
 
 /**
- * Las sedes de la iglesia activa. Se leen con `calendar.view` —hacen falta
- * para pintar el calendario— y se tocan con `calendar.manage`.
+ * Las sedes de la iglesia activa. **No son de un calendario** (D17): Elda es
+ * Elda para el púlpito y para el sonido. Se leen con `calendar.view` —hacen
+ * falta para pintar cualquier calendario— y se tocan con `calendar.manage`.
  */
 @ApiTags('calendario')
-@Controller('calendar/congregations')
+@Controller('congregations')
 @UseGuards(ActiveChurchGuard)
 export class CongregationsController {
   constructor(private readonly congregations: CongregationsService) {}

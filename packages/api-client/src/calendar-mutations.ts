@@ -18,12 +18,12 @@ const refresh = (client: QueryClient) =>
  * Poner a alguien en una fase. Es la acción que más se repite, así que se
  * pinta al instante y se corrige si la API dice que no (§8.6).
  */
-export function useAssignSlot(api: ApiClient) {
+export function useAssignSlot(api: ApiClient, calendarId: string) {
   const client = useQueryClient();
 
   return useMutation({
     mutationFn: ({ believerName: _name, ...input }: AssignVariables) =>
-      api.put<Meeting>('/calendar/slots', { ...input }),
+      api.put<Meeting>(`/calendars/${calendarId}/slots`, { ...input }),
 
     onMutate: async (input: AssignVariables) => {
       await client.cancelQueries({ queryKey: queryKeys.calendar.all });
@@ -44,41 +44,41 @@ export function useAssignSlot(api: ApiClient) {
   });
 }
 
-export function useCreateMeeting(api: ApiClient) {
+export function useCreateMeeting(api: ApiClient, calendarId: string) {
   const client = useQueryClient();
 
   return useMutation({
     mutationFn: (input: CreateMeetingInput) =>
-      api.post<Meeting>('/calendar/meetings', { ...input }),
+      api.post<Meeting>(`/calendars/${calendarId}/meetings`, { ...input }),
     onSuccess: () => refresh(client),
   });
 }
 
-export function useUpdateMeeting(api: ApiClient) {
+export function useUpdateMeeting(api: ApiClient, calendarId: string) {
   const client = useQueryClient();
 
   return useMutation({
     mutationFn: ({ id, ...input }: UpdateMeetingInput & { id: string }) =>
-      api.patch<Meeting>(`/calendar/meetings/${id}`, { ...input }),
+      api.patch<Meeting>(`/calendars/${calendarId}/meetings/${id}`, { ...input }),
     onSuccess: () => refresh(client),
   });
 }
 
-export function useSetMeetingSlots(api: ApiClient) {
+export function useSetMeetingSlots(api: ApiClient, calendarId: string) {
   const client = useQueryClient();
 
   return useMutation({
     mutationFn: ({ id, ...input }: SetMeetingSlotsInput & { id: string }) =>
-      api.put<Meeting>(`/calendar/meetings/${id}/slots`, { ...input }),
+      api.put<Meeting>(`/calendars/${calendarId}/meetings/${id}/slots`, { ...input }),
     onSuccess: () => refresh(client),
   });
 }
 
-export function useDeleteMeeting(api: ApiClient) {
+export function useDeleteMeeting(api: ApiClient, calendarId: string) {
   const client = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: string) => api.delete<void>(`/calendar/meetings/${id}`),
+    mutationFn: (id: string) => api.delete<void>(`/calendars/${calendarId}/meetings/${id}`),
     onSuccess: () => refresh(client),
   });
 }

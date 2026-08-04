@@ -5,14 +5,24 @@ import { z } from 'zod';
  *
  * No es un rol de la tabla `roles` —eso son permisos de una cuenta, y quien
  * predica puede no tener cuenta— ni todavía una etiqueta de la RFC 0003:
- * responde a una pregunta operativa, «¿a quién puedo poner en el púlpito?»
- * (RFC 0002 §6.2).
+ * responde a una pregunta operativa, «¿a quién puedo poner aquí?» (RFC 0002
+ * §6.2). Cada calendario dice cuál es el suyo (D16).
  */
-export const MINISTRIES = ['pulpito'] as const;
+export const MINISTRIES = ['pulpito', 'recepcion', 'sonido', 'biblias'] as const;
 
 export type Ministry = (typeof MINISTRIES)[number];
 
 export const PULPIT_MINISTRY: Ministry = 'pulpito';
+
+/**
+ * Si ese texto es uno de los ministerios que existen.
+ *
+ * El ministerio de un calendario viaja como texto —la tabla la puede tocar una
+ * migración futura—, así que se comprueba antes de usarlo como tal (Regla 10).
+ */
+export function isMinistry(value: string): value is Ministry {
+  return (MINISTRIES as readonly string[]).includes(value);
+}
 
 /**
  * El **núcleo mínimo** de un creyente: lo justo para poder programarle un

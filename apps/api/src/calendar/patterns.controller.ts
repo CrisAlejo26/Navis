@@ -4,36 +4,46 @@ import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CurrentChurch } from '../common/decorators/current-church.decorator';
 import { RequirePermissions } from '../common/decorators/permissions.decorator';
 import { ActiveChurchGuard } from '../common/guards/active-church.guard';
+import { CalendarsService } from './calendars.service';
 import { CreatePatternDto, UpdatePatternDto } from './dto/pattern.dto';
 import type { MeetingPattern } from './meeting-pattern.entity';
 import { PatternsService } from './patterns.service';
 
 /**
- * Los patrones semanales. Editar uno **no** reescribe las reuniones que ya se
+ * Las reuniones fijas de **un calendario**. Editar uno **no** reescribe las reuniones que ya se
  * habían tocado (D7): eso son decisiones tomadas.
  */
 @ApiTags('calendario')
-@Controller('calendar/patterns')
+@Controller('calendars/:calendarId/patterns')
 @UseGuards(ActiveChurchGuard)
 export class PatternsController {
-  constructor(private readonly patterns: PatternsService) {}
+  constructor(
+    private readonly patterns: PatternsService,
+    private readonly calendars: CalendarsService,
+  ) {}
 
   @Get()
   @RequirePermissions('calendar.view')
   @ApiOperation({ summary: 'Los patrones de la iglesia, por sede' })
   @ApiOkResponse({ description: 'Listado de patrones con sus fases' })
-  list(@CurrentChurch() churchId: string): Promise<MeetingPattern[]> {
-    return this.patterns.list(churchId);
+  async list(
+    @CurrentChurch() churchId: string,
+    @Param('calendarId') calendarId: string,
+  ): Promise<MeetingPattern[]> {
+    const calendar = await this.calendars.require(churchId, calendarId);
+    return this.patterns.list(churchId, calendar.id);
   }
 
   @Post()
   @RequirePermissions('calendar.manage')
   @ApiOperation({ summary: 'Crea un patrón con sus fases' })
-  create(
+  async create(
     @CurrentChurch() churchId: string,
+    @Param('calendarId') calendarId: string,
     @Body() dto: CreatePatternDto,
   ): Promise<MeetingPattern> {
-    return this.patterns.create(churchId, dto);
+    const calendar = await this.calendars.require(churchId, calendarId);
+    return this.patterns.create(churchId, calendar.id, dto);
   }
 
   @Patch(':id')

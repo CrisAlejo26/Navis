@@ -36,12 +36,17 @@ export function ShareSheet({
   churchName,
   congregations,
   congregationIds,
+  calendarId,
+  calendarName,
 }: {
   open: boolean;
   onClose: () => void;
   anchor: string;
   selectedDate: string | null;
   churchName: string;
+  calendarId: string;
+  /** El calendario del que es la lámina: sale en la cabecera. */
+  calendarName: string;
   congregations: readonly Congregation[];
   congregationIds: readonly string[];
 }) {
@@ -54,7 +59,7 @@ export function ShareSheet({
   const chosen = aspect ?? suggestedAspect(preset);
 
   const range = shareRangeFor(preset, anchor, selectedDate);
-  const { data } = useCalendar(api, { ...range, congregationIds }, open);
+  const { data } = useCalendar(api, { ...range, calendarId, congregationIds }, open);
 
   const names = useMemo(
     () => new Map(congregations.map((one) => [one.id, one.name])),
@@ -63,7 +68,10 @@ export function ShareSheet({
   const nameOf = (id: string) => names.get(id) ?? '';
   const showCongregation = congregationIds.length !== 1 && congregations.length > 1;
   const title = range.from === range.to ? longDay(range.from) : rangeTitle(range.from, range.to);
-  const soleName = congregationIds.length === 1 ? nameOf(congregationIds[0] ?? '') : undefined;
+  const sede = congregationIds.length === 1 ? nameOf(congregationIds[0] ?? '') : undefined;
+  // La lámina dice de qué calendario es —y de qué sede, si es de una sola—:
+  // quien la recibe no tiene por qué adivinarlo.
+  const soleName = [calendarName, sede].filter(Boolean).join(' · ');
 
   const image = usePosterImage(
     poster,
@@ -71,7 +79,7 @@ export function ShareSheet({
   );
 
   const exporter = usePosterExport(poster, image.blob, {
-    fileName: posterFileName(range.from, range.to, soleName),
+    fileName: posterFileName(range.from, range.to, sede),
     title,
     landscape: chosen === 'landscape',
     text: () =>

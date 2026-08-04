@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 
 import { NavEntry } from '@/components/nav-entry';
+import { NavGroup, type NavChild } from '@/components/nav-group';
 import { cn } from '@/lib/cn';
 import { NAV_GROUPS, type NavItem } from '@/lib/nav';
 
@@ -17,15 +18,34 @@ export function AppNav({
   items,
   collapsed = false,
   onNavigate,
+  calendars = [],
+  onAddCalendar,
 }: {
   items: readonly NavItem[];
   /** Solo iconos, para la barra lateral plegada. */
   collapsed?: boolean;
   /** Se llama al pulsar una entrada; en móvil sirve para cerrar el panel. */
   onNavigate?: () => void;
+  /** Las subentradas del calendario, que vienen de la API (RFC 0002 D15). */
+  calendars?: readonly NavChild[];
+  onAddCalendar?: () => void;
 }) {
   const { t } = useTranslation();
   const sueltas = items.filter((item) => !item.group);
+
+  const pintar = (item: NavItem) =>
+    item.to === '/calendar' ? (
+      <NavGroup
+        key={item.to}
+        item={item}
+        entries={calendars}
+        collapsed={collapsed}
+        onNavigate={onNavigate}
+        onAdd={onAddCalendar}
+      />
+    ) : (
+      <NavEntry key={item.to} item={item} collapsed={collapsed} onNavigate={onNavigate} />
+    );
 
   return (
     <nav className="gap-1 flex flex-1 flex-col">
@@ -45,17 +65,13 @@ export function AppNav({
               </p>
             )}
 
-            {delGrupo.map((item) => (
-              <NavEntry key={item.to} item={item} collapsed={collapsed} onNavigate={onNavigate} />
-            ))}
+            {delGrupo.map(pintar)}
           </div>
         );
       })}
 
       <div className={cn('gap-1 flex flex-col', sueltas.length > 0 && 'mt-1')}>
-        {sueltas.map((item) => (
-          <NavEntry key={item.to} item={item} collapsed={collapsed} onNavigate={onNavigate} />
-        ))}
+        {sueltas.map(pintar)}
       </div>
     </nav>
   );

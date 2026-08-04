@@ -3,7 +3,7 @@ import type { Repository } from 'typeorm';
 import { describe, expect, it, vi } from 'vitest';
 
 import type { BelieversService } from '../believers/believers.service';
-import { CalendarService } from './calendar.service';
+import { ScheduleService } from './schedule.service';
 import type { Congregation } from './congregation.entity';
 import type { CongregationsService } from './congregations.service';
 import type { MeetingPattern } from './meeting-pattern.entity';
@@ -47,12 +47,16 @@ function build({ patterns = [patron()], meetings = [] as Meeting[] } = {}) {
     find: vi.fn(() => Promise.resolve(meetings)),
   } as unknown as Repository<Meeting>;
 
-  return new CalendarService(repo, congregations, patternsService, believers);
+  return new ScheduleService(repo, congregations, patternsService, believers);
 }
 
 describe('el calendario de un tramo', () => {
   it('propone la reunión del patrón en cada día de la semana que le toca, sin crear filas', async () => {
-    const rango = await build().range('c1', { from: '2026-08-01', to: '2026-08-31' });
+    const rango = await build().range('c1', {
+      calendarId: 'cal',
+      from: '2026-08-01',
+      to: '2026-08-31',
+    });
 
     const conReunion = rango.days.filter((day) => day.meetings.length > 0);
     expect(conReunion.map((day) => day.date)).toEqual([
@@ -71,7 +75,11 @@ describe('el calendario de un tramo', () => {
     const servicio = build({
       patterns: [patron({ validFrom: '2026-08-14', validTo: '2026-08-21' })],
     });
-    const rango = await servicio.range('c1', { from: '2026-08-01', to: '2026-08-31' });
+    const rango = await servicio.range('c1', {
+      calendarId: 'cal',
+      from: '2026-08-01',
+      to: '2026-08-31',
+    });
 
     expect(rango.days.filter((day) => day.meetings.length > 0).map((day) => day.date)).toEqual([
       '2026-08-14',
@@ -94,6 +102,7 @@ describe('el calendario de un tramo', () => {
     } as unknown as Meeting;
 
     const rango = await build({ meetings: [materializada] }).range('c1', {
+      calendarId: 'cal',
       from: '2026-08-01',
       to: '2026-08-08',
     });
@@ -107,11 +116,11 @@ describe('el calendario de un tramo', () => {
   it('rechaza un rango del revés o más largo de lo permitido', async () => {
     const servicio = build();
 
-    await expect(servicio.range('c1', { from: '2026-08-31', to: '2026-08-01' })).rejects.toThrow(
-      BadRequestException,
-    );
-    await expect(servicio.range('c1', { from: '2026-01-01', to: '2026-12-31' })).rejects.toThrow(
-      BadRequestException,
-    );
+    await expect(
+      servicio.range('c1', { calendarId: 'cal', from: '2026-08-31', to: '2026-08-01' }),
+    ).rejects.toThrow(BadRequestException);
+    await expect(
+      servicio.range('c1', { calendarId: 'cal', from: '2026-01-01', to: '2026-12-31' }),
+    ).rejects.toThrow(BadRequestException);
   });
 });

@@ -167,6 +167,22 @@ En inglés, dentro del código: `congregation`, `meeting`, `slot`, `pattern`,
   HTML a imagen no lo digiere de forma fiable. Es la misma paleta, en
   hexadecimal, que ya usan la barra de estado y el splash (Regla 3 §5).
 
+- **D15 — Varios calendarios, uno por ministerio.** Púlpito, recepción, sonido y
+  biblias no comparten cuadrícula: quien programa el sonido no quiere ver las
+  fases de la predicación, y una sola rejilla con todo mezclado deja de leerse.
+  Cada **calendario** es un espacio propio con sus reuniones fijas y sus
+  programaciones, y en la barra lateral son **subentradas** de «Calendario»,
+  como los apartados de contabilidad en Cuentify. Se crean, se renombran y se
+  borran; los cuatro de serie los siembra una migración. Responde a P3.
+- **D16 — El calendario dice a quién proponer.** Cada uno lleva su ministerio
+  (`pulpito`, `recepcion`, `sonido`, `biblias`), y es lo que filtra el selector
+  de personas: en el de sonido salen primero los de sonido. Sigue estando el
+  interruptor «todos», porque una lista cerrada acaba en «mejor lo apunto
+  aparte» (§6.2).
+- **D17 — Las sedes son de la iglesia, no del calendario.** Elda es Elda para el
+  púlpito y para el sonido. Por eso viven en `/congregations`, fuera del
+  calendario, y sus colores valen en todos.
+
 ### Preguntas abiertas
 
 - **P1** — ¿Una fase puede llevar **dos personas** (predica uno, traduce otro)?
@@ -174,9 +190,8 @@ En inglés, dentro del código: `congregation`, `meeting`, `slot`, `pattern`,
   tabla de asignaciones. Se decide cuando aparezca el caso.
 - **P2** — ¿Las fases llevan **duración**? El Excel de hoy no la tiene. La
   columna se deja fuera hasta que alguien la pida; añadirla no rompe nada.
-- **P3** — ¿Los turnos de **sonido y biblias** entran en el mismo calendario o
-  en su propia vista? El modelo ya los admite (§5.5); la interfaz de la primera
-  versión enseña solo el púlpito.
+- **P3** — ~~¿Los turnos de sonido y biblias entran en el mismo calendario?~~
+  Resuelto en D15: cada ministerio tiene el suyo.
 - **P4** — ¿Una sede llega a tener **su propia zona horaria**? Hoy hereda la de
   la iglesia. Mientras las sedes estén en la misma provincia no hace falta; la
   columna se añadiría sin romper nada.
@@ -187,6 +202,26 @@ Cinco entidades nuevas para el calendario, todas de TypeORM, todas heredando de
 `BaseEntity` (`id`, `created_at`, `updated_at`, `deleted_at`) y todas
 **añadidas a mano** a la lista del `DataSource`: aquí no hay globs
 (`CLAUDE.md`).
+
+### 5.0 Calendarios
+
+```
+Calendar                            — «Púlpito», «Recepción», «Sonido», «Biblias»
+├── churchId → churches(id)         — cascade
+├── name: text
+├── slug: text                      — derivado del nombre; va en la URL
+├── ministry: text | null           — a quién propone el selector (D16)
+├── position: int                   — el orden en la barra lateral
+└── único (churchId, slug)
+```
+
+Un calendario es **un espacio de programación completo**: sus reuniones fijas,
+sus reuniones y sus fases. Lo que comparten todos es la iglesia, sus sedes y sus
+personas.
+
+Los cuatro de serie se siembran por migración con el ministerio que les
+corresponde. Se pueden renombrar, reordenar y borrar; **nunca el último**, por lo
+mismo que la última sede: dejaría la sección sin nada que enseñar.
 
 ### 5.1 Sedes
 
@@ -227,6 +262,7 @@ migración de una tabla, no un rediseño.
 ```
 MeetingPattern                      — «los viernes en Elda a las 20:00, Culto»
 ├── churchId → churches(id)         — cascade
+├── calendarId → calendars(id)      — de qué calendario es (D15)
 ├── congregationId → congregations(id)   — cascade
 ├── name: text                      — «Culto», «Oración», «Jóvenes»
 ├── weekday: int                    — 0 domingo … 6 sábado
@@ -248,6 +284,7 @@ PatternPhase                        — las fases por defecto de ese patrón
 ```
 Meeting                             — una reunión concreta, ya materializada
 ├── churchId → churches(id)         — cascade
+├── calendarId → calendars(id)      — de qué calendario es (D15)
 ├── congregationId → congregations(id)        — obligatorio (D12)
 ├── patternId → meeting_patterns(id) | null   — null si es puntual
 ├── date: date                      — día local
@@ -905,6 +942,26 @@ la lámina, se enseña esa imagen —que además escala sola a cualquier ancho�
 misma es la que sale por compartir, portapapeles o descarga. Así lo que se ve es
 literalmente lo que se manda, y un navegador que no sepa rasterizar se descubre
 al abrir la hoja y no al pulsar «Enviar».
+
+### Fase 6 — Varios calendarios · **implementada**
+
+- [x] Entidad `Calendar` y migración `CreateCalendars`, que siembra los cuatro
+      de serie en cada iglesia y lleva al de púlpito lo que ya estuviera
+      programado.
+- [x] Todo lo del calendario acotado por `calendar_id`; las rutas pasan a
+      `/calendars/:calendarId/…` y las sedes salen del calendario a
+      `/congregations` (D17).
+- [x] El selector de personas propone el ministerio del calendario (D16), y
+      quien se da de alta desde ahí nace ya con él.
+- [x] Barra lateral con subentradas —el patrón de Cuentify—: abierta cuando se
+      está dentro, y plegada la barra, un enlace al primero.
+- [x] Crear, renombrar y borrar calendarios; nunca el último.
+- [x] Sedes editables (nombre, ciudad y color) y borrables desde la
+      configuración del calendario.
+
+**Cambio sobre §5.0**: renombrar un calendario **no cambia su `slug`**. El slug
+es lo que hay en la URL y en los enlaces que alguien haya guardado; el nombre es
+lo que se lee.
 
 ## Pruebas
 

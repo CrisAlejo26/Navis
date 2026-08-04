@@ -20,12 +20,17 @@ import { MeetingSlot } from './meeting-slot.entity';
  * reuniones puntuales del mismo día no choquen entre sí.
  */
 @Entity('meetings')
+@Index('IDX_meetings_calendar_date', ['calendarId', 'date'])
 @Index('IDX_meetings_church_date', ['churchId', 'date'])
 @Index('IDX_meetings_congregation_date', ['congregationId', 'date'])
 export class Meeting extends BaseEntity {
   @ApiProperty()
   @Column({ name: 'church_id', type: UUID })
   churchId: string;
+
+  @ApiProperty({ description: 'De qué calendario es (D15)' })
+  @Column({ name: 'calendar_id', type: UUID })
+  calendarId: string;
 
   @ApiProperty()
   @Column({ name: 'congregation_id', type: UUID })

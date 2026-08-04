@@ -22,25 +22,30 @@ export class PatternsService {
     private readonly congregations: CongregationsService,
   ) {}
 
-  list(churchId: string): Promise<MeetingPattern[]> {
+  list(churchId: string, calendarId: string): Promise<MeetingPattern[]> {
     return this.patterns.find({
-      where: { churchId },
+      where: { churchId, calendarId },
       relations: { phases: true },
       order: { weekday: 'ASC', startTime: 'ASC' },
     });
   }
 
   /** Los que se pueden proponer en el tramo: activos y dentro de su vigencia. */
-  async activeFor(churchId: string): Promise<MeetingPattern[]> {
-    return (await this.list(churchId)).filter((pattern) => pattern.isActive);
+  async activeFor(churchId: string, calendarId: string): Promise<MeetingPattern[]> {
+    return (await this.list(churchId, calendarId)).filter((pattern) => pattern.isActive);
   }
 
-  async create(churchId: string, input: CreatePatternInput): Promise<MeetingPattern> {
+  async create(
+    churchId: string,
+    calendarId: string,
+    input: CreatePatternInput,
+  ): Promise<MeetingPattern> {
     const congregation = await this.congregations.require(churchId, input.congregationId);
 
     const pattern = await this.patterns.save(
       this.patterns.create({
         churchId,
+        calendarId,
         congregationId: congregation.id,
         name: input.name,
         weekday: input.weekday,

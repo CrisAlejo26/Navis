@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { believerName, PULPIT_MINISTRY, type Preacher } from '@navis/shared';
+import { believerName, type Preacher } from '@navis/shared';
 import { Repository } from 'typeorm';
 
 import { BelieversService } from '../believers/believers.service';
@@ -8,6 +8,10 @@ import { toIsoDay } from './calendar-format';
 import { MeetingSlot } from './meeting-slot.entity';
 
 export interface PreacherQuery {
+  /** El calendario que se está programando: acota el historial. */
+  calendarId: string;
+  /** El ministerio del calendario; sin él, se propone a cualquiera (D16). */
+  ministry: string | null;
   q?: string;
   /** Cualquier creyente activo, no solo quien tiene el ministerio de púlpito. */
   all?: boolean;
@@ -39,10 +43,10 @@ export class PreachersService {
   async list(churchId: string, query: PreacherQuery): Promise<Preacher[]> {
     const people = await this.believers.list(churchId, {
       q: query.q,
-      ministry: query.all ? undefined : PULPIT_MINISTRY,
+      ministry: query.all ? undefined : (query.ministry ?? undefined),
     });
 
-    const history = await this.history(churchId, query.from, query.to);
+    const history = await this.history(churchId, query.calendarId, query.from, query.to);
 
     return people
       .map((person) => {
@@ -62,6 +66,7 @@ export class PreachersService {
   /** Última vez y veces en el tramo, de una sola consulta agrupada. */
   private async history(
     churchId: string,
+    calendarId: string,
     from: string,
     to: string,
   ): Promise<Map<string, { lastDate: string | null; times: number }>> {
@@ -79,6 +84,9 @@ export class PreachersService {
         'timesInRange',
       )
       .where('meeting.church_id = :churchId', { churchId })
+      // El historial es **de este calendario**: quien lleva el sonido no compite
+      // con quien predica.
+      .andWhere('meeting.calendar_id = :calendarId', { calendarId })
       .andWhere('slot.believer_id IS NOT NULL')
       .andWhere("meeting.status <> 'cancelada'")
       .setParameters({ from, to })

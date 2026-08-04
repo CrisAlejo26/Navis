@@ -45,19 +45,22 @@ export function MeetingRibbon({
         className={cn('left-0 inset-y-0.5 absolute w-[3px] rounded-full', accent.rail)}
       />
 
+      {/* La sede se lee antes que nada: cuando el mismo viernes hay tres, es lo
+          primero que hay que distinguir. Por eso va en su color y con más
+          cuerpo que la hora. */}
       <header className="gap-1.5 px-1 flex items-baseline">
         {congregationName && (
           <span
             className={cn(
-              'font-semibold truncate tracking-[0.14em] uppercase',
-              size === 'sm' ? 'text-[9px]' : 'text-[10px]',
+              'font-semibold truncate tracking-[0.08em]',
+              size === 'sm' ? 'text-[11px]' : 'text-[12px]',
               accent.text,
             )}
           >
             {congregationName}
           </span>
         )}
-        <span className="text-[10px] text-muted-foreground tabular-nums">{meeting.startTime}</span>
+        <span className="text-[11px] text-muted-foreground tabular-nums">{meeting.startTime}</span>
         {cancelled && (
           <span className="font-medium text-[10px] text-destructive uppercase">
             {t('calendar.cancelled')}

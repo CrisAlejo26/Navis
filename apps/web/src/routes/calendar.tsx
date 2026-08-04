@@ -1,6 +1,7 @@
 import { useMyChurches } from '@navis/api-client';
 import { Scale } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { Navigate, useParams } from 'react-router';
 
 import { CalendarFilters } from '@/components/calendar/calendar-filters';
 import { CalendarOverlays } from '@/components/calendar/calendar-overlays';
@@ -10,6 +11,7 @@ import { useCalendarScreen } from '@/components/calendar/use-calendar-screen';
 import { Button } from '@/components/ui/button';
 import { PageSkeleton } from '@/components/ui/page-skeleton';
 import { api } from '@/lib/api';
+import { useActiveCalendar } from '@/lib/calendar/use-active-calendar';
 import { usePermissions } from '@/lib/permissions';
 import { useIsNarrow } from '@/lib/use-media-query';
 
@@ -25,7 +27,9 @@ export function CalendarPage() {
   const { t } = useTranslation();
   const { can } = usePermissions();
   const narrow = useIsNarrow();
-  const screen = useCalendarScreen();
+  const { slug } = useParams();
+  const { calendar: active, isLoading } = useActiveCalendar();
+  const screen = useCalendarScreen(active?.id ?? '');
   const { data: churches } = useMyChurches(api);
 
   const canManage = can('calendar.manage');
@@ -42,11 +46,19 @@ export function CalendarPage() {
    * encerrarla en un alto fijo dejaría un panel diminuto entre la barra y el
    * borde de la pantalla (Regla 5).
    */
+  // Sin `slug` en la URL —o con uno que ya no existe— se va al primero: la
+  // entrada «Calendario» de la barra tiene que llevar a algún sitio.
+  if (!isLoading && active && active.slug !== slug) {
+    return <Navigate to={`/calendar/${active.slug}`} replace />;
+  }
+
   return (
     <section className="gap-4 md:h-[calc(100dvh-4rem)] flex flex-col">
       <CalendarToolbar
         params={params}
         canManage={canManage}
+        calendarName={active?.name ?? t('calendar.title')}
+        calendarSlug={active?.slug ?? ''}
         onShare={() => {
           screen.setShareOpen(true);
         }}
@@ -102,6 +114,9 @@ export function CalendarPage() {
         churchName={churchName}
         canManage={canManage}
         congregationName={nameOf}
+        calendarId={active?.id ?? ''}
+        calendarName={active?.name ?? ''}
+        ministry={active?.ministry ?? null}
       />
     </section>
   );

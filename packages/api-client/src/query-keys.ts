@@ -42,10 +42,12 @@ export const queryKeys = {
    */
   calendar: {
     all: ['calendar'] as const,
+    /** Los calendarios de la iglesia: púlpito, recepción, sonido… (D15). */
+    calendars: ['calendar', 'calendars'] as const,
     range: (query: object) => [...queryKeys.calendar.all, 'range', query] as const,
     summary: (query: object) => [...queryKeys.calendar.all, 'summary', query] as const,
     congregations: ['calendar', 'congregations'] as const,
-    patterns: ['calendar', 'patterns'] as const,
+    patterns: (calendarId: string) => [...queryKeys.calendar.all, 'patterns', calendarId] as const,
     preachers: (query: object) => [...queryKeys.calendar.all, 'preachers', query] as const,
   },
   believers: {

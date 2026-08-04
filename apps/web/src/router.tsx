@@ -134,10 +134,10 @@ export const router = createBrowserRouter([
           </RequirePermission>
         ),
       })),
-      // Muestrario de piezas de interfaz. No está en la navegación: se abre a
-      // mano cuando hay que mirar con calma algo que solo se ve un instante.
+      // `/calendar` sin más redirige al primero (ver `CalendarPage`), y cada
+      // calendario vive en su `slug`: `/calendar/pulpito` (RFC 0002 D15).
       {
-        path: 'calendar',
+        path: 'calendar/:slug?',
         element: (
           <RequirePermission permission="calendar.view">
             <Lazy>
@@ -147,7 +147,7 @@ export const router = createBrowserRouter([
         ),
       },
       {
-        path: 'calendar/settings',
+        path: 'calendar/:slug/settings',
         element: (
           <RequirePermission permission="calendar.manage">
             <Lazy>
@@ -156,6 +156,8 @@ export const router = createBrowserRouter([
           </RequirePermission>
         ),
       },
+      // Muestrario de piezas de interfaz. No está en la navegación: se abre a
+      // mano cuando hay que mirar con calma algo que solo se ve un instante.
       {
         path: 'lab',
         element: (

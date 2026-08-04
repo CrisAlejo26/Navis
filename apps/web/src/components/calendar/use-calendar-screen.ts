@@ -19,7 +19,7 @@ const SHORTCUTS: Record<string, CalendarView> = { m: 'month', s: 'week', a: 'age
  * Vive aparte de la vista para que la ruta se quede en composición (Regla 6) y
  * para que los cuatro modos de mirar compartan exactamente el mismo estado.
  */
-export function useCalendarScreen() {
+export function useCalendarScreen(calendarId: string) {
   const { t } = useTranslation();
   const params = useCalendarParams();
 
@@ -33,9 +33,10 @@ export function useCalendarScreen() {
   const { data: congregations = [] } = useCongregations(api);
   const calendar = useCalendar(api, {
     ...params.range,
+    calendarId,
     congregationIds: params.filters.congregationIds,
   });
-  const assign = useAssignSlot(api);
+  const assign = useAssignSlot(api, calendarId);
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {

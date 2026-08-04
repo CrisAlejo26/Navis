@@ -24,15 +24,17 @@ export function BalancePanel({
   open,
   onClose,
   range,
+  calendarId,
   congregationIds,
 }: {
   open: boolean;
   onClose: () => void;
   range: DateRange;
+  calendarId: string;
   congregationIds: readonly string[];
 }) {
   const { t } = useTranslation();
-  const { data } = useCalendarSummary(api, { ...range, congregationIds }, open);
+  const { data } = useCalendarSummary(api, { ...range, calendarId, congregationIds }, open);
 
   return (
     <Drawer

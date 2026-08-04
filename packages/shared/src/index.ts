@@ -6,6 +6,7 @@ export * from './role-permissions';
 export * from './schemas/auth';
 export * from './schemas/believers';
 export * from './schemas/calendar';
+export * from './schemas/calendars';
 export * from './schemas/churches';
 export * from './schemas/common';
 export * from './schemas/congregations';

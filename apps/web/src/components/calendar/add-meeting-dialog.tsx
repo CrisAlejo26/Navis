@@ -21,15 +21,17 @@ export function AddMeetingDialog({
   date,
   congregations,
   congregationId,
+  calendarId,
   onClose,
 }: {
   date: string | null;
+  calendarId: string;
   congregations: readonly Congregation[];
   congregationId: string;
   onClose: () => void;
 }) {
   const { t } = useTranslation();
-  const createMeeting = useCreateMeeting(api);
+  const createMeeting = useCreateMeeting(api, calendarId);
   const [phases, setPhases] = useState(['', '']);
   const [error, setError] = useState<string | null>(null);
 

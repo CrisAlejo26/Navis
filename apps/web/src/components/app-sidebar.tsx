@@ -6,6 +6,7 @@ import { ChurchSwitcher } from '@/components/church-switcher';
 import { Logo } from '@/components/logo';
 import { SessionFooter } from '@/components/session-footer';
 import { cn } from '@/lib/cn';
+import type { NavChild } from '@/components/nav-group';
 import type { NavItem } from '@/lib/nav';
 import { useSidebarStore } from '@/lib/sidebar';
 
@@ -23,7 +24,15 @@ import { useSidebarStore } from '@/lib/sidebar';
  * barra se movería por encima dejando el hueco. Es un cambio puntual, no un
  * bucle (Regla 9), y `prefers-reduced-motion` lo apaga desde `global.css`.
  */
-export function AppSidebar({ items }: { items: readonly NavItem[] }) {
+export function AppSidebar({
+  items,
+  calendars,
+  onAddCalendar,
+}: {
+  items: readonly NavItem[];
+  calendars?: readonly NavChild[];
+  onAddCalendar?: () => void;
+}) {
   const { t } = useTranslation();
   const collapsed = useSidebarStore((state) => state.collapsed);
   const toggle = useSidebarStore((state) => state.toggle);
@@ -63,7 +72,12 @@ export function AppSidebar({ items }: { items: readonly NavItem[] }) {
       </div>
 
       <div className="min-h-0 p-2 flex flex-1 flex-col overflow-x-hidden overflow-y-auto">
-        <AppNav items={items} collapsed={collapsed} />
+        <AppNav
+          items={items}
+          collapsed={collapsed}
+          calendars={calendars}
+          onAddCalendar={onAddCalendar}
+        />
       </div>
 
       <div className="p-2 shrink-0">

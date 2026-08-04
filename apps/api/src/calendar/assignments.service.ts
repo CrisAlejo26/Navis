@@ -76,6 +76,7 @@ export class AssignmentsService {
         const meeting = await manager.save(
           manager.create(Meeting, {
             churchId,
+            calendarId: pattern.calendarId,
             congregationId: pattern.congregationId,
             patternId: pattern.id,
             date: input.date,
