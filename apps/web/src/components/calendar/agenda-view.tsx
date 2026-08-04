@@ -54,10 +54,18 @@ export function AgendaView({
             className={cn(
               'px-4 pt-3 pb-1 text-sm font-medium w-full cursor-pointer text-left',
               'focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none',
-              day.date === today && 'text-brand',
             )}
           >
-            {longDay(day.date)}
+            {/* Hoy, en ámbar y en todas las vistas: la misma señal en el mes,
+                en la semana y en la agenda (Regla 9). */}
+            <span
+              className={cn(
+                day.date === today &&
+                  'px-2 py-0.5 font-semibold rounded-md bg-accent/30 dark:bg-accent/20',
+              )}
+            >
+              {longDay(day.date)}
+            </span>
           </button>
 
           <div className="px-3 pb-3 gap-3 flex flex-col">

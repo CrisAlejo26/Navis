@@ -47,10 +47,14 @@ export function DayCell({
         /*
          * Hoy se tiñe **la celda entera**, no una raya en el borde: entre
          * carriles de colores de las sedes, una línea de tres píxeles no se
-         * encuentra. El azul de marca en tinte suave se distingue de un
-         * vistazo y no compite con el color de ninguna sede.
+         * encuentra.
+         *
+         * Y se tiñe de **ámbar**, no del azul de marca: en azul suave la celda
+         * se confundía con el gris de los días de otro mes, que están al lado y
+         * tienen una claridad parecida. El ámbar es cálido y no hay nada más
+         * cálido en la rejilla, así que se encuentra sin buscarlo.
          */
-        isToday && 'bg-brand/10 dark:bg-brand/20',
+        isToday && 'bg-accent/30 dark:bg-accent/20',
         selected && 'ring-2 ring-ring ring-inset',
       )}
     >
@@ -71,7 +75,9 @@ export function DayCell({
           className={cn(
             'font-light tabular-nums',
             compact ? 'text-lg' : 'text-2xl',
-            isToday && 'font-medium text-brand',
+            // El número, en negrita y del color del texto: sobre el ámbar, el
+            // propio ámbar no tendría contraste, y la celda ya dice cuál es.
+            isToday && 'font-semibold',
           )}
         >
           {dayNumber(day.date)}

@@ -50,7 +50,10 @@ export function WeekView({
               <span
                 className={cn(
                   'text-xl font-light tabular-nums',
-                  day.date === today && 'font-medium text-brand',
+                  // Hoy, en ámbar y en todas las vistas: la misma señal en el
+                  // mes, en la semana y en la agenda (Regla 9).
+                  day.date === today &&
+                    'px-1.5 font-semibold rounded-md bg-accent/30 dark:bg-accent/20',
                 )}
               >
                 {dayNumber(day.date)}

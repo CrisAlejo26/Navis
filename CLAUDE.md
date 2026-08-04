@@ -119,6 +119,24 @@ Padre)` parece perezoso, pero `emitDecoratorMetadata` escribe la clase en los
   conserva las mayúsculas (`CrisAlejo26/Navis`). El workflow de despliegue lo
   baja a minúsculas en el paso `meta` y pasa ese nombre al servidor; sin eso,
   `docker buildx` corta con «repository name must be lowercase».
+- **Los finales de línea los fija `.gitattributes`, no la máquina.** Con
+  `core.autocrlf=true` —lo normal en Windows— git escribía CRLF en el árbol de
+  trabajo y Prettier, configurado con `endOfLine: lf`, daba por mal formateado
+  medio repositorio después de cada `checkout`: se formateaba, se subía, y a la
+  siguiente operación de git volvía a fallar. `* text=auto eol=lf` lo corta de
+  raíz. Si algún día `pnpm format:check` marca ficheros que nadie ha tocado, es
+  que se ha colado algo que salta esa regla.
+- **Los hooks de git son ficheros en `.husky/`, no la configuración.** Tener
+  husky instalado y `lint-staged` configurado en `package.json` no ejecuta
+  nada: la carpeta estaba vacía y por eso llegaba a CI sin formatear. Los hooks
+  se reparten con `pnpm install` (el script `prepare`).
+- **En `lint-staged` va lo mismo que verifica CI, y nada más.** Con oxlint
+  dentro, un commit se bloqueaba por reglas que no comprueba ni `pnpm check` ni
+  el workflow —un `<th scope="row">` con su botón dentro, por ejemplo—. oxlint
+  sigue disponible a mano en `pnpm lint:fast`.
+- **La verificación de CI formatea en vez de morir**, y si cambia algo lo sube
+  en un commit con `[skip ci]`. El `[skip ci]` no es por ahorrar: sin él, ese
+  push cancelaría la propia ejecución por la regla de `concurrency`.
 
 ## Antes de dar algo por terminado
 

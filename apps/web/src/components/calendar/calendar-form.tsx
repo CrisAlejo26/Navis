@@ -40,7 +40,9 @@ export function CalendarForm({
    * mantenerla dos veces solo sirve para que se desincronicen. Si mañana se
    * crea el rol «Alabanza», ahí aparece.
    */
-  const labores = [...useRoleCatalog(open).values()];
+  // El superadmin queda fuera: no es una labor de la iglesia sino el nivel de
+  // acceso de quien administra la instalación, y no hay calendario de eso.
+  const labores = [...useRoleCatalog(open).values()].filter((rol) => rol.slug !== 'superadmin');
   const nombreDe = useRoleLabel();
   const createCalendar = useCreateCalendar(api);
   const updateCalendar = useUpdateCalendar(api);
