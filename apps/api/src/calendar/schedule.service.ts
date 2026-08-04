@@ -10,8 +10,9 @@ import {
 } from '@navis/shared';
 import { Between, In, Repository } from 'typeorm';
 
-import { BelieversService } from '../believers/believers.service';
-import { byTimeThenCongregation, meetingView, proposedMeeting, toIsoDay } from './calendar-format';
+import { BelieversRosterService } from '../believers/believers-roster.service';
+import { byTimeThenCongregation, meetingView, proposedMeeting } from './calendar-format';
+import { toIsoDay } from '../database/iso-day';
 import { CongregationsService } from './congregations.service';
 import type { MeetingPattern } from './meeting-pattern.entity';
 import { Meeting } from './meeting.entity';
@@ -37,7 +38,7 @@ export class ScheduleService {
     @InjectRepository(Meeting) private readonly meetings: Repository<Meeting>,
     private readonly congregations: CongregationsService,
     private readonly patterns: PatternsService,
-    private readonly believers: BelieversService,
+    private readonly believers: BelieversRosterService,
   ) {}
 
   async range(churchId: string, query: RangeQuery): Promise<CalendarRange> {

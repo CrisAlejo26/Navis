@@ -3,7 +3,7 @@ import { Pencil, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import { Button } from '@/components/ui/button';
-import { ACCENT_RAIL, ACCENT_TEXT, accentVars } from '@/lib/calendar/accents';
+import { ACCENT_RAIL, ACCENT_TEXT, accentVars } from '@/lib/accents';
 import { weekdayHeadings } from '@/lib/calendar/labels';
 import { cn } from '@/lib/cn';
 

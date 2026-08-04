@@ -3,8 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { believerName, type Preacher } from '@navis/shared';
 import { Repository } from 'typeorm';
 
-import { BelieversService } from '../believers/believers.service';
-import { toIsoDay } from './calendar-format';
+import { BelieversRosterService } from '../believers/believers-roster.service';
+import { toIsoDay } from '../database/iso-day';
 import { MeetingSlot } from './meeting-slot.entity';
 
 export interface PreacherQuery {
@@ -37,7 +37,7 @@ interface HistoryRow {
 export class PreachersService {
   constructor(
     @InjectRepository(MeetingSlot) private readonly slots: Repository<MeetingSlot>,
-    private readonly believers: BelieversService,
+    private readonly believers: BelieversRosterService,
   ) {}
 
   async list(churchId: string, query: PreacherQuery): Promise<Preacher[]> {

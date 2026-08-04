@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { ministrySchema } from './believers';
+import { ministrySchema } from './ministries';
 
 /**
  * Un **calendario**: un espacio de programación completo, con sus reuniones

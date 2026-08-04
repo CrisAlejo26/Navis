@@ -1,21 +1,22 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { DEFAULT_ALERT_AFTER_DAYS, type BelieverStatus } from '@navis/shared';
 import { Column, Entity, Index, OneToMany } from 'typeorm';
 
 import { BaseEntity } from '../common/entities/base.entity';
 import { UUID } from '../database/column-types';
+import { BelieverGift } from './believer-gift.entity';
 import { BelieverMinistry } from './believer-ministry.entity';
 
 /**
- * Una persona de la iglesia. Aquí está solo el **núcleo mínimo** que necesita
- * el calendario para poder programarle un turno (RFC 0002 §6): la ficha
- * completa —notas, familia, etiquetas, privacidad— llega con la RFC 0003
- * añadiendo columnas, sin rehacer nada de esto.
+ * Una persona de la iglesia, con su ficha completa (RFC 0003 §5.1).
  *
- * Se asigna a un creyente y no a una cuenta (D8): quien predica no tiene por
- * qué tener usuario en Navis. `user_id` queda reservado para el día en que lo
+ * Continúa la tabla del núcleo mínimo de la RFC 0002 §6; no crea otra (D1).
+ * Se asigna a un creyente y no a una cuenta: quien predica no tiene por qué
+ * tener usuario en Navis. `user_id` queda reservado para el día en que lo
  * tenga —«te toca el viernes» de la RFC 0006—, y hoy no lo usa nadie.
  */
 @Entity('believers')
+@Index('IDX_believers_church_search', ['churchId', 'searchName'])
 export class Believer extends BaseEntity {
   @ApiProperty()
   @Index()
@@ -38,9 +39,28 @@ export class Believer extends BaseEntity {
   @Column({ type: 'text', nullable: true })
   phone: string | null;
 
-  @ApiProperty({ description: 'Quien ya no está deja de proponerse, sin borrar su historial' })
-  @Column({ name: 'is_active', type: 'boolean', default: true })
-  isActive: boolean;
+  @ApiProperty({ description: 'Dónde está hoy: activo, nuevo, inactivo o trasladado (D2)' })
+  @Column({ type: 'text', default: 'activo' })
+  status: BelieverStatus;
+
+  @ApiProperty({ description: 'El nombre completo en minúsculas y sin acentos, para buscar (D14)' })
+  @Column({ name: 'search_name', type: 'text', default: '' })
+  searchName: string;
+
+  @ApiPropertyOptional({ description: 'Días de margen sin nota. `null` apaga el aviso (D3)' })
+  @Column({
+    name: 'alert_after_days',
+    type: 'int',
+    nullable: true,
+    default: DEFAULT_ALERT_AFTER_DAYS,
+  })
+  alertAfterDays: number | null;
+
+  @ApiPropertyOptional({
+    description: 'Derivado de la última nota; lo escribe solo NotesService (D4)',
+  })
+  @Column({ name: 'last_note_at', type: 'date', nullable: true })
+  lastNoteAt: string | null;
 
   @ApiPropertyOptional({ description: 'Su cuenta, si la tiene. Reservado (RFC 0002 §6.3)' })
   @Column({ name: 'user_id', type: 'text', nullable: true })
@@ -48,4 +68,7 @@ export class Believer extends BaseEntity {
 
   @OneToMany(() => BelieverMinistry, (ministry) => ministry.believer, { cascade: true })
   ministries: BelieverMinistry[];
+
+  @OneToMany(() => BelieverGift, (gift) => gift.believer, { cascade: true })
+  gifts: BelieverGift[];
 }

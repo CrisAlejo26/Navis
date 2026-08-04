@@ -58,6 +58,11 @@ services:
       # Solo escucha en localhost: quien publica al mundo es el proxy inverso
       # (nginx). Sin el 127.0.0.1, la API quedaría expuesta saltándoselo.
       - "127.0.0.1:${API_PORT:-3000}:3000"
+    volumes:
+      # Los audios de las notas. Van en disco y no en la base de datos, así que
+      # **entran aparte en las copias de seguridad**: sin este volumen, un
+      # `docker compose down -v` se los lleva (RFC 0003 §5.6).
+      - api-uploads:/app/data
 
   # Contenedor de un solo uso: aplica las migraciones y sale. No se levanta con
   # `up` (está bajo un perfil), solo con:
@@ -102,3 +107,4 @@ services:
 
 volumes:
   postgres-data:
+  api-uploads:

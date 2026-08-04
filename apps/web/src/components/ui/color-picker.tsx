@@ -2,7 +2,7 @@ import { ACCENT_PALETTE, CONGREGATION_ACCENTS } from '@navis/shared';
 import { Check, Pipette } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-import { ACCENT_RAIL, accentColor, accentVars } from '@/lib/calendar/accents';
+import { ACCENT_RAIL, accentColor, accentVars } from '@/lib/accents';
 import { cn } from '@/lib/cn';
 
 const COLORS = [...CONGREGATION_ACCENTS, ...ACCENT_PALETTE];

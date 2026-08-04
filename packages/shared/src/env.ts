@@ -43,6 +43,16 @@ export const apiEnvSchema = z
     /** Solo para `DB_DRIVER=sqlite`. Ruta relativa a la raíz del monorepo. */
     DB_SQLITE_PATH: z.string().default('./data/navis.sqlite'),
 
+    /**
+     * Dónde se guardan los ficheros que sube la gente —hoy, los audios de las
+     * notas—. Ruta relativa a la raíz del monorepo, como `DB_SQLITE_PATH`.
+     *
+     * Va **fuera** de la base de datos: un audio de dos minutos es un mega, y
+     * meterlos dentro engorda los volcados sin dar nada a cambio. En Docker es
+     * un volumen, y entra en las copias de seguridad como una carpeta más.
+     */
+    UPLOADS_PATH: z.string().default('./data/uploads'),
+
     POSTGRES_HOST: z.string().default('localhost'),
     POSTGRES_PORT: z.coerce.number().int().default(5432),
     POSTGRES_USER: z.string().optional(),

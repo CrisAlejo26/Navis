@@ -100,6 +100,35 @@ Padre)` parece perezoso, pero `emitDecoratorMetadata` escribe la clase en los
   texto. Pasó al mapear los `believer_id` nulos a cadena vacía antes de
   buscarlos: los identificadores vacíos se filtran **antes** de la consulta.
   Es el motivo por el que los e2e de la API se corren en los dos motores.
+- **Una columna `date` leída en crudo desde Postgres vuelve como `Date`**, y el
+  driver la construye a **medianoche local**: `toISOString().slice(0,10)`
+  devuelve entonces el día anterior en cualquier huso al este de Greenwich. El
+  `MAX(occurred_at)` de las notas daba el 31 de julio para una nota del 1 de
+  agosto. Se convierte con los getters locales, y en un solo sitio:
+  `apps/api/src/database/iso-day.ts`.
+- **Restar fechas no se escribe igual en los dos motores**: Postgres resta dos
+  `date` y devuelve un entero; SQLite no tiene tipo fecha y hay que pasar por
+  `julianday(date(...))` —con el `date()` puesto, o la resta incluye la hora y
+  deja de ser un número entero de días—. Está absorbido en `database/date-sql.ts`,
+  junto con el `NULLS FIRST`, que en SQLite ni existe.
+- **Con relaciones cargadas, `take`/`skip` de TypeORM pasan a una subconsulta
+  con `DISTINCT`**, y ahí Postgres exige que todo lo que se ordena esté en la
+  lista de selección. En un listado paginado se consulta la tabla sola con
+  `limit`/`offset` y las relaciones se piden aparte, ya con los identificadores
+  de la página.
+- **Al quitar una columna en SQLite, TypeORM recrea la tabla pero vuelve a
+  poner los índices que había.** O sea: una migración que los cree «por si
+  acaso» después de un `dropColumn` muere con «index already exists». Solo se
+  crean los **nuevos**.
+- **`@Res({ passthrough: true })` y un `pipe` no se llevan.** Nest cierra la
+  respuesta al volver del handler, así que el stream se corta a medias y
+  supertest lo ve como «Error: aborted». Para servir un fichero se devuelve un
+  `StreamableFile`, y `Res` queda solo para poner cabeceras.
+- **Un elemento solo admite una `animation` y un `animation-delay`.** La sonda
+  de creyentes hace tres cosas —entrar llenándose, transicionar al cambiar de
+  valor y latir escalonada cuando se desborda—, así que son tres capas
+  anidadas, cada una con la suya. Y el valor se anima con `transform: scaleX()`
+  y no con `width`, que el compositor no sabe resolver (Regla 9 §5).
 - **`calc()` sin espacios alrededor del `-` es CSS inválido.** En una clase de
   Tailwind (`w-[min(30rem,calc(100vw-2rem))]`) funciona porque el compilador lo
   normaliza; en un `style` en línea, la declaración entera se descarta sin
@@ -134,6 +163,20 @@ Padre)` parece perezoso, pero `emitDecoratorMetadata` escribe la clase en los
   dentro, un commit se bloqueaba por reglas que no comprueba ni `pnpm check` ni
   el workflow —un `<th scope="row">` con su botón dentro, por ejemplo—. oxlint
   sigue disponible a mano en `pnpm lint:fast`.
+- **En Playwright, un service worker activo se come los `page.route`.** En la
+  primera carga no controla la página y todo funciona; tras un `reload` sí, las
+  peticiones dejan de pasar por los `route` del test y la aplicación se queda
+  sin sesión. Los specs que sirven la API desde el navegador van con
+  `test.use({ serviceWorkers: 'block' })`; el service worker tiene su propio
+  spec.
+- **Una banda fija abajo se come la acción principal.** El aviso de la PWA
+  vivía ahí y no se iba solo, así que en un teléfono tapaba el botón que la
+  Regla 5 §4 manda poner justo en ese sitio. Lo que es una **noticia** va por
+  el `Toaster` —arriba y con temporizador—; lo que es una **decisión** puede
+  ser banda, pero se cierra y lleva `pointer-events-none` en el contenedor.
+- **Los ficheros subidos no están en la base de datos.** Los audios de las notas
+  viven en `UPLOADS_PATH` —un volumen de Docker— y **no entran en un volcado de
+  Postgres**: esa carpeta va aparte en las copias de seguridad.
 - **La verificación de CI formatea en vez de morir**, y si cambia algo lo sube
   en un commit con `[skip ci]`. El `[skip ci]` no es por ahorrar: sin él, ese
   push cancelaría la propia ejecución por la regla de `concurrency`.
