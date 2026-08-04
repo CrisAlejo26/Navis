@@ -320,34 +320,52 @@ los nulos cada motor: mejor no depender de eso.
 
 ### 5.7 La semana con la que se arranca
 
-Un calendario vacío no dice nada, y escribir siete reuniones desde cero antes de
-poder programar la primera es la clase de trámite que devuelve a la gente a la
-hoja de cálculo. Así que **cada sede nace con su semana** en cada calendario:
+Un calendario vacío no dice nada, y escribir siete reuniones desde cero antes
+de poder programar la primera es la clase de trámite que devuelve a la gente a
+la hoja de cálculo. Así que **cada sede nace con su semana** en cada
+calendario, y **cada ministerio tiene la suya**, porque el trabajo es distinto.
 
-| Día       | Reunión         | Hora  | Fases                                    |
-| --------- | --------------- | ----- | ---------------------------------------- |
-| Lunes     | Alabanza        | 19:00 | Introducción · Final                     |
-| Martes    | Estudio bíblico | 19:00 | Introducción · Final                     |
-| Miércoles | Enseñanza       | 19:00 | Introducción · Predicación · Testimonios |
-| Jueves    | Alabanza        | 19:00 | Introducción · Final                     |
-| Viernes   | Alabanza        | 19:00 | Introducción · Final                     |
-| Sábado    | Estudio bíblico | 18:00 | Introducción · Final                     |
-| Domingo   | Enseñanza       | 10:00 | Introducción · Predicación · Testimonios |
+**Los encuentros de la semana** son los mismos para todos —es la misma
+iglesia—: lunes, jueves y viernes alabanza; martes estudio bíblico; miércoles
+enseñanza; los tres a las 19:00. Sábado, estudio bíblico a las 18:00; domingo,
+enseñanza a las 10:00.
 
-Vive en `packages/shared/src/schemas/default-week.ts` porque la usan la
-migración, la API y los tests. Tres cosas que importan:
+Lo que cambia son las **fases**, que es lo que reparte cada ministerio:
+
+| Ministerio    | Qué se reparte                                                                                      |
+| ------------- | --------------------------------------------------------------------------------------------------- |
+| **Púlpito**   | Los tramos de la reunión: introducción y final; la enseñanza lleva además predicación y testimonios |
+| **Sonido**    | Un puesto de equipo y otro de apoyo, en cada encuentro                                              |
+| **Biblias**   | Un puesto en cada encuentro                                                                         |
+| **Recepción** | **Dos turnos de puerta**, con horario propio (abajo)                                                |
+
+Recepción no sigue el horario del encuentro porque su trabajo empieza antes:
+
+| Día             | Turnos                        |
+| --------------- | ----------------------------- |
+| Lunes a viernes | 18:30 – 19:30 · 19:30 – 20:30 |
+| Sábado          | 17:30 – 18:30 · 18:30 – 19:30 |
+| Domingo         | 09:30 – 10:30 · 10:30 – 11:30 |
+
+Los turnos se llaman por su horario a propósito: al repartir, la pregunta es
+«¿quién está de seis y media a siete y media?».
+
+Todo vive en `packages/shared/src/schemas/default-week.ts` (`defaultWeekFor`)
+porque lo usan la migración, la API y los tests. Tres cosas que importan:
 
 - **Es por sede, no por iglesia.** En Elda la alabanza puede caer otro día que
   en Benidorm, así que la semana se siembra en cada una y se ajusta allí.
 - **Es un punto de partida, no una ley**: se edita entera desde la
-  configuración del calendario, que es donde se ve agrupada por sede.
+  configuración del calendario —un festivo, un cambio de hora, un turno más—,
+  donde se ve agrupada por sede.
 - **No pisa nada.** La siembra comprueba antes si esa pareja calendario–sede ya
-  tiene alguna reunión fija: quien ya ajustó su semana no se la encuentra llena
-  otra vez.
+  tiene alguna reunión fija; y la migración que corrigió las semanas de
+  recepción, sonido y biblias solo tocó los calendarios **en los que nadie
+  había programado todavía**.
 
 Se siembra al crear un calendario —en todas sus sedes—, al crear una sede —en
-todos sus calendarios— y, para lo que ya existía, en la migración
-`SeedDefaultWeek`.
+todos sus calendarios— y, para lo que ya existía, en las migraciones
+`SeedDefaultWeek` y `ReseedMinistryWeeks`.
 
 ### 5.5 Por qué `date` y `time` y no `timestamptz`
 

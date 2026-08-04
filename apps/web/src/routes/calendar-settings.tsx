@@ -1,13 +1,16 @@
-import { useCongregations, useDeleteCalendar, usePatterns } from '@navis/api-client';
+import { useCongregations, usePatterns } from '@navis/api-client';
 import type { Congregation, MeetingPattern } from '@navis/shared';
 import { CalendarClock, ChevronLeft, Pencil, Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link, useNavigate } from 'react-router';
+import { Link } from 'react-router';
 
 import { CalendarForm } from '@/components/calendar/calendar-form';
 import { CongregationForm } from '@/components/calendar/congregation-form';
 import { CongregationRows } from '@/components/calendar/congregation-rows';
+import { DeleteCalendarDialog } from '@/components/calendar/delete-calendar-dialog';
+import { DeleteCongregationDialog } from '@/components/calendar/delete-congregation-dialog';
+import { DeletePatternDialog } from '@/components/calendar/delete-pattern-dialog';
 import { PatternForm } from '@/components/calendar/pattern-form';
 import { PatternRows } from '@/components/calendar/pattern-rows';
 import { Button } from '@/components/ui/button';
@@ -15,7 +18,6 @@ import { Card, CardTitle } from '@/components/ui/card';
 import { EmptyState } from '@/components/ui/empty-state';
 import { api } from '@/lib/api';
 import { useActiveCalendar } from '@/lib/calendar/use-active-calendar';
-import { toast } from '@/lib/toast';
 
 /**
  * Lo que hay detrás de **un** calendario: sus reuniones fijas, su nombre y las
@@ -26,17 +28,20 @@ import { toast } from '@/lib/toast';
  */
 export function CalendarSettingsPage() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const { calendar, calendars } = useActiveCalendar();
   const { data: congregations = [] } = useCongregations(api);
   const { data: patterns = [] } = usePatterns(api, calendar?.id ?? '');
-  const removeCalendar = useDeleteCalendar(api);
 
   const [congregation, setCongregation] = useState<Congregation | null>(null);
   const [addCongregation, setAddCongregation] = useState(false);
   const [renaming, setRenaming] = useState(false);
   const [pattern, setPattern] = useState<MeetingPattern | null>(null);
   const [creating, setCreating] = useState(false);
+
+  // Lo que está esperando confirmación antes de borrarse.
+  const [borrarCalendario, setBorrarCalendario] = useState(false);
+  const [borrarSede, setBorrarSede] = useState<Congregation | null>(null);
+  const [borrarPatron, setBorrarPatron] = useState<MeetingPattern | null>(null);
 
   const volver = `/calendar/${calendar?.slug ?? ''}`;
 
@@ -69,14 +74,7 @@ export function CalendarSettingsPage() {
               variant="ghost"
               size="sm"
               onClick={() => {
-                removeCalendar.mutate(calendar.id, {
-                  onSuccess: () => {
-                    void navigate('/calendar');
-                  },
-                  onError: () => {
-                    toast.error(t('calendar.lastCalendar'));
-                  },
-                });
+                setBorrarCalendario(true);
               }}
             >
               <Trash2 size={15} aria-hidden />
@@ -109,8 +107,8 @@ export function CalendarSettingsPage() {
           <PatternRows
             patterns={patterns}
             congregations={congregations}
-            calendarId={calendar?.id ?? ''}
             onEdit={setPattern}
+            onDelete={setBorrarPatron}
           />
         )}
       </Card>
@@ -131,8 +129,34 @@ export function CalendarSettingsPage() {
         </div>
 
         <p className="mb-2 text-sm text-muted-foreground">{t('calendar.congregationsHint')}</p>
-        <CongregationRows congregations={congregations} onEdit={setCongregation} />
+        <CongregationRows
+          congregations={congregations}
+          onEdit={setCongregation}
+          onDelete={setBorrarSede}
+        />
       </Card>
+
+      <DeleteCalendarDialog
+        calendar={borrarCalendario ? (calendar ?? null) : null}
+        onClose={() => {
+          setBorrarCalendario(false);
+        }}
+      />
+
+      <DeleteCongregationDialog
+        congregation={borrarSede}
+        onClose={() => {
+          setBorrarSede(null);
+        }}
+      />
+
+      <DeletePatternDialog
+        pattern={borrarPatron}
+        calendarId={calendar?.id ?? ''}
+        onClose={() => {
+          setBorrarPatron(null);
+        }}
+      />
 
       <CongregationForm
         open={addCongregation || Boolean(congregation)}

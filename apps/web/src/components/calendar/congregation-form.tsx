@@ -61,7 +61,13 @@ export function CongregationForm({
     if (congregation) {
       updateCongregation.mutate(
         { id: congregation.id, ...parsed.data },
-        { onSuccess: onClose, onError: fallo },
+        {
+          onSuccess: (guardada) => {
+            toast.success(t('calendar.saved', { name: guardada.name }));
+            onClose();
+          },
+          onError: fallo,
+        },
       );
       return;
     }

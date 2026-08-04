@@ -2,12 +2,24 @@ import { DEFAULT_WEEK } from '@navis/shared';
 import type { Repository } from 'typeorm';
 import { describe, expect, it, vi } from 'vitest';
 
+import type { Calendar } from './calendar.entity';
 import type { Congregation } from './congregation.entity';
 import type { MeetingPattern } from './meeting-pattern.entity';
 import type { PatternPhase } from './pattern-phase.entity';
 import { WeekSeederService } from './week-seeder.service';
 
-function build({ yaTiene = false, sedes = [{ id: 'elda', accent: 'success' }] } = {}) {
+interface Opciones {
+  /** Esa pareja calendario–sede ya tiene reuniones fijas. */
+  yaTiene?: boolean;
+  sedes?: { id: string; accent: string }[];
+  ministry?: string | null;
+}
+
+function build({
+  yaTiene = false,
+  sedes = [{ id: 'elda', accent: 'success' }],
+  ministry = 'pulpito',
+}: Opciones = {}) {
   const guardados: Partial<MeetingPattern>[] = [];
   const fases: Partial<PatternPhase>[][] = [];
 
@@ -33,7 +45,15 @@ function build({ yaTiene = false, sedes = [{ id: 'elda', accent: 'success' }] } 
     findOne: vi.fn(() => Promise.resolve(sedes[0])),
   } as unknown as Repository<Congregation>;
 
-  return { service: new WeekSeederService(patterns, phases, congregations), guardados, fases };
+  const calendars = {
+    findOne: vi.fn(() => Promise.resolve({ id: 'cal', ministry })),
+  } as unknown as Repository<Calendar>;
+
+  return {
+    service: new WeekSeederService(patterns, phases, congregations, calendars),
+    guardados,
+    fases,
+  };
 }
 
 describe('la semana de serie', () => {
@@ -62,6 +82,28 @@ describe('la semana de serie', () => {
     ]);
     expect(fases[6]?.map((phase) => phase.name)).toEqual(fases[2]?.map((phase) => phase.name));
     expect(fases[0]?.map((phase) => phase.name)).toEqual(['Introducción', 'Final']);
+  });
+
+  it('recepción arranca con dos turnos de puerta, y el sábado una hora antes', async () => {
+    const { service, guardados, fases } = build({ ministry: 'recepcion' });
+
+    await service.seed('c1', 'cal', 'elda');
+
+    expect(guardados.every((one) => one.name === 'Recepción')).toBe(true);
+    expect(guardados.find((one) => one.weekday === 1)?.startTime).toBe('18:30');
+    expect(guardados.find((one) => one.weekday === 6)?.startTime).toBe('17:30');
+    expect(guardados.find((one) => one.weekday === 0)?.startTime).toBe('09:30');
+    expect(fases[0]?.map((phase) => phase.name)).toEqual(['18:30 – 19:30', '19:30 – 20:30']);
+  });
+
+  it('sonido cubre cada encuentro con dos puestos', async () => {
+    const { service, guardados, fases } = build({ ministry: 'sonido' });
+
+    await service.seed('c1', 'cal', 'elda');
+
+    expect(guardados.find((one) => one.weekday === 1)?.name).toBe('Alabanza');
+    expect(fases.every((una) => una.length === 2)).toBe(true);
+    expect(fases[0]?.map((phase) => phase.name)).toEqual(['Equipo de sonido', 'Apoyo']);
   });
 
   it('no vuelve a sembrar donde ya hay algo: la semana ajustada no se pisa', async () => {

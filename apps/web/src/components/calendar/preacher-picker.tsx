@@ -10,6 +10,7 @@ import { Chip } from '@/components/ui/chip';
 import { Dialog } from '@/components/ui/dialog';
 import { SearchField } from '@/components/ui/search-field';
 import { api } from '@/lib/api';
+import { toast } from '@/lib/toast';
 import type { DateRange } from '@/lib/calendar/view-range';
 import { cn } from '@/lib/cn';
 
@@ -67,7 +68,9 @@ export function PreacherPicker({
       congregationId: target?.meeting.congregationId ?? null,
     });
 
-    onAssign(person.id, `${person.firstName} ${person.lastName}`.trim());
+    const nombre = `${person.firstName} ${person.lastName}`.trim();
+    toast.success(t('believers.created', { name: nombre }));
+    onAssign(person.id, nombre);
   };
 
   return (
