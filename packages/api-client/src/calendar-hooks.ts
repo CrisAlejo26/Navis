@@ -1,4 +1,5 @@
 import type {
+  Calendar,
   CalendarRange,
   CalendarSummary,
   Congregation,
@@ -11,6 +12,8 @@ import type { ApiClient } from './client';
 import { queryKeys } from './query-keys';
 
 export interface CalendarQuery {
+  /** De qué calendario: púlpito, sonido… (D15). */
+  calendarId: string;
   from: string;
   to: string;
   /** Sedes a las que acotar. Vacío es «todas». */
@@ -25,8 +28,14 @@ function toSearch({ from, to, congregationIds }: CalendarQuery): string {
 }
 
 /** Clave estable: dos vistas del mismo tramo comparten caché. */
-function keyOf(query: CalendarQuery): { from: string; to: string; congregations: string } {
+function keyOf(query: CalendarQuery): {
+  calendarId: string;
+  from: string;
+  to: string;
+  congregations: string;
+} {
   return {
+    calendarId: query.calendarId,
     from: query.from,
     to: query.to,
     congregations: [...(query.congregationIds ?? [])].sort().join(','),
@@ -44,8 +53,9 @@ export function useCalendar(
 ): UseQueryResult<CalendarRange> {
   return useQuery({
     queryKey: queryKeys.calendar.range(keyOf(query)),
-    queryFn: () => api.get<CalendarRange>(`/calendar?${toSearch(query)}`),
-    enabled,
+    queryFn: () =>
+      api.get<CalendarRange>(`/calendars/${query.calendarId}/schedule?${toSearch(query)}`),
+    enabled: enabled && Boolean(query.calendarId),
     staleTime: 30_000,
     placeholderData: (previous) => previous,
   });
@@ -59,8 +69,9 @@ export function useCalendarSummary(
 ): UseQueryResult<CalendarSummary> {
   return useQuery({
     queryKey: queryKeys.calendar.summary(keyOf(query)),
-    queryFn: () => api.get<CalendarSummary>(`/calendar/summary?${toSearch(query)}`),
-    enabled,
+    queryFn: () =>
+      api.get<CalendarSummary>(`/calendars/${query.calendarId}/summary?${toSearch(query)}`),
+    enabled: enabled && Boolean(query.calendarId),
     staleTime: 30_000,
   });
 }
@@ -68,16 +79,30 @@ export function useCalendarSummary(
 export function useCongregations(api: ApiClient, enabled = true): UseQueryResult<Congregation[]> {
   return useQuery({
     queryKey: queryKeys.calendar.congregations,
-    queryFn: () => api.get<Congregation[]>('/calendar/congregations'),
+    queryFn: () => api.get<Congregation[]>('/congregations'),
     enabled,
     staleTime: 300_000,
   });
 }
 
-export function usePatterns(api: ApiClient, enabled = true): UseQueryResult<MeetingPattern[]> {
+export function usePatterns(
+  api: ApiClient,
+  calendarId: string,
+  enabled = true,
+): UseQueryResult<MeetingPattern[]> {
   return useQuery({
-    queryKey: queryKeys.calendar.patterns,
-    queryFn: () => api.get<MeetingPattern[]>('/calendar/patterns'),
+    queryKey: queryKeys.calendar.patterns(calendarId),
+    queryFn: () => api.get<MeetingPattern[]>(`/calendars/${calendarId}/patterns`),
+    enabled: enabled && Boolean(calendarId),
+    staleTime: 300_000,
+  });
+}
+
+/** Los calendarios de la iglesia. De aquí salen las subentradas de la barra. */
+export function useCalendars(api: ApiClient, enabled = true): UseQueryResult<Calendar[]> {
+  return useQuery({
+    queryKey: queryKeys.calendar.calendars,
+    queryFn: () => api.get<Calendar[]>('/calendars'),
     enabled,
     staleTime: 300_000,
   });
@@ -104,8 +129,9 @@ export function usePreachers(
 
   return useQuery({
     queryKey: queryKeys.calendar.preachers({ ...keyOf(query), q: query.q ?? '', all: !!query.all }),
-    queryFn: () => api.get<Preacher[]>(`/calendar/preachers?${params.toString()}`),
-    enabled,
+    queryFn: () =>
+      api.get<Preacher[]>(`/calendars/${query.calendarId}/preachers?${params.toString()}`),
+    enabled: enabled && Boolean(query.calendarId),
     staleTime: 30_000,
   });
 }

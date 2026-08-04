@@ -23,17 +23,19 @@ export function PatternForm({
   open,
   onClose,
   congregations,
+  calendarId,
   pattern,
 }: {
   open: boolean;
+  calendarId: string;
   onClose: () => void;
   congregations: readonly Congregation[];
   /** Si viene, se edita; si no, se crea. */
   pattern?: MeetingPattern;
 }) {
   const { t } = useTranslation();
-  const createPattern = useCreatePattern(api);
-  const updatePattern = useUpdatePattern(api);
+  const createPattern = useCreatePattern(api, calendarId);
+  const updatePattern = useUpdatePattern(api, calendarId);
   const [phases, setPhases] = useState(pattern?.phases.map((phase) => phase.name) ?? ['', '']);
   const [error, setError] = useState<string | null>(null);
 

@@ -5,8 +5,9 @@ import { BelieversModule } from '../believers/believers.module';
 import { Church } from '../churches/church.entity';
 import { ChurchesModule } from '../churches/churches.module';
 import { AssignmentsService } from './assignments.service';
-import { CalendarController } from './calendar.controller';
-import { CalendarService } from './calendar.service';
+import { Calendar } from './calendar.entity';
+import { CalendarsController } from './calendars.controller';
+import { CalendarsService } from './calendars.service';
 import { Congregation } from './congregation.entity';
 import { CongregationsController } from './congregations.controller';
 import { CongregationsService } from './congregations.service';
@@ -18,6 +19,8 @@ import { PatternPhase } from './pattern-phase.entity';
 import { PatternsController } from './patterns.controller';
 import { PatternsService } from './patterns.service';
 import { PreachersService } from './preachers.service';
+import { ScheduleController } from './schedule.controller';
+import { ScheduleService } from './schedule.service';
 import { SummaryService } from './summary.service';
 
 /**
@@ -27,6 +30,7 @@ import { SummaryService } from './summary.service';
 @Module({
   imports: [
     TypeOrmModule.forFeature([
+      Calendar,
       Congregation,
       MeetingPattern,
       PatternPhase,
@@ -37,16 +41,22 @@ import { SummaryService } from './summary.service';
     ChurchesModule,
     BelieversModule,
   ],
-  controllers: [CalendarController, CongregationsController, PatternsController],
+  controllers: [
+    ScheduleController,
+    CalendarsController,
+    CongregationsController,
+    PatternsController,
+  ],
   providers: [
+    CalendarsService,
     CongregationsService,
     PatternsService,
-    CalendarService,
+    ScheduleService,
     MeetingsService,
     AssignmentsService,
     PreachersService,
     SummaryService,
   ],
-  exports: [CongregationsService, CalendarService],
+  exports: [CalendarsService, CongregationsService, ScheduleService],
 })
 export class CalendarModule {}

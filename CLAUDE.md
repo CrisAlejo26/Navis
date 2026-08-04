@@ -91,6 +91,11 @@ Padre)` parece perezoso, pero `emitDecoratorMetadata` escribe la clase en los
   'X' before initialization» al arrancar. En el lado hijo se referencia **por
   nombre** y con el tipo envuelto: `@ManyToOne('Padre', 'hijos')` y
   `padre: Relation<Padre>`, con `import type`.
+- **Un `IN ('')` contra una columna `uuid` revienta en Postgres** («invalid
+  input syntax for type uuid») y a SQLite le da igual, porque ahí todo es
+  texto. Pasó al mapear los `believer_id` nulos a cadena vacía antes de
+  buscarlos: los identificadores vacíos se filtran **antes** de la consulta.
+  Es el motivo por el que los e2e de la API se corren en los dos motores.
 - **`calc()` sin espacios alrededor del `-` es CSS inválido.** En una clase de
   Tailwind (`w-[min(30rem,calc(100vw-2rem))]`) funciona porque el compilador lo
   normaliza; en un `style` en línea, la declaración entera se descarta sin

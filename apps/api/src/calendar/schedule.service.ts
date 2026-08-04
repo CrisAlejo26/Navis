@@ -18,6 +18,8 @@ import { Meeting } from './meeting.entity';
 import { PatternsService } from './patterns.service';
 
 export interface RangeQuery {
+  /** De qué calendario: púlpito, sonido… (D15). */
+  calendarId: string;
   from: string;
   to: string;
   /** Sedes a las que acotar. Vacío o ausente es «todas». */
@@ -25,12 +27,12 @@ export interface RangeQuery {
 }
 
 /**
- * El calendario de un tramo: las reuniones que existen y las que **todavía no**
+ * La programación de un tramo de **un calendario**: las reuniones que existen y las que **todavía no**
  * —las que propone cada patrón— con la misma forma, para que la interfaz no
  * tenga que distinguirlas más que por un `id` nulo (D3).
  */
 @Injectable()
-export class CalendarService {
+export class ScheduleService {
   constructor(
     @InjectRepository(Meeting) private readonly meetings: Repository<Meeting>,
     private readonly congregations: CongregationsService,
@@ -46,12 +48,12 @@ export class CalendarService {
     const order = new Map(congregations.map((one) => [one.id, one.position]));
     const active = new Set(congregations.filter((one) => one.isActive).map((one) => one.id));
 
-    const meetings = await this.meetingsBetween(churchId, from, to, only);
+    const meetings = await this.meetingsBetween(churchId, query.calendarId, from, to, only);
     const names = await this.believers.namesOf(
-      meetings.flatMap((meeting) => (meeting.slots ?? []).map((slot) => slot.believerId ?? '')),
+      meetings.flatMap((meeting) => (meeting.slots ?? []).map((slot) => slot.believerId)),
     );
 
-    const patterns = (await this.patterns.activeFor(churchId)).filter(
+    const patterns = (await this.patterns.activeFor(churchId, query.calendarId)).filter(
       (pattern) =>
         active.has(pattern.congregationId) && (!only || only.has(pattern.congregationId)),
     );
@@ -84,6 +86,7 @@ export class CalendarService {
   /** Las reuniones materializadas del tramo, con sus fases. */
   meetingsBetween(
     churchId: string,
+    calendarId: string,
     from: string,
     to: string,
     only?: ReadonlySet<string> | null,
@@ -91,6 +94,7 @@ export class CalendarService {
     return this.meetings.find({
       where: {
         churchId,
+        calendarId,
         date: Between(from, to),
         ...(only ? { congregationId: In([...only]) } : {}),
       },

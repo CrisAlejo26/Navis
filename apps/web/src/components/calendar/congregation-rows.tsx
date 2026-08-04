@@ -1,6 +1,6 @@
 import { useDeleteCongregation } from '@navis/api-client';
 import type { Congregation } from '@navis/shared';
-import { Trash2 } from 'lucide-react';
+import { Pencil, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import { accentStyles } from '@/lib/calendar/accents';
@@ -9,10 +9,18 @@ import { toast } from '@/lib/toast';
 import { cn } from '@/lib/cn';
 
 /**
- * Las sedes de la iglesia. La última no se puede borrar: sin sede no se puede
- * programar nada, así que el servidor lo impide y aquí ni se ofrece.
+ * Las sedes de la iglesia: renombrar, cambiar de color y borrar.
+ *
+ * La última no se puede borrar: sin sede no se puede programar nada, así que
+ * el servidor lo impide y aquí ni se ofrece.
  */
-export function CongregationRows({ congregations }: { congregations: readonly Congregation[] }) {
+export function CongregationRows({
+  congregations,
+  onEdit,
+}: {
+  congregations: readonly Congregation[];
+  onEdit: (congregation: Congregation) => void;
+}) {
   const { t } = useTranslation();
   const remove = useDeleteCongregation(api);
 
@@ -37,10 +45,21 @@ export function CongregationRows({ congregations }: { congregations: readonly Co
             )}
           </span>
 
+          <button
+            type="button"
+            aria-label={`${t('common.edit')}: ${congregation.name}`}
+            onClick={() => {
+              onEdit(congregation);
+            }}
+            className="h-9 w-9 inline-flex shrink-0 cursor-pointer items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+          >
+            <Pencil size={15} aria-hidden />
+          </button>
+
           {congregations.length > 1 && (
             <button
               type="button"
-              aria-label={t('common.delete')}
+              aria-label={`${t('common.delete')}: ${congregation.name}`}
               onClick={() => {
                 remove.mutate(congregation.id, {
                   onError: () => {

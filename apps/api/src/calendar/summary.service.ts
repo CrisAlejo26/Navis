@@ -4,7 +4,7 @@ import type { CalendarSummary, PreacherBalance } from '@navis/shared';
 import { BelieversService } from '../believers/believers.service';
 import { toIsoDay } from './calendar-format';
 import { buildWarnings, type Assignment, type Gap } from './calendar-warnings';
-import { CalendarService, type RangeQuery } from './calendar.service';
+import { ScheduleService, type RangeQuery } from './schedule.service';
 
 /**
  * El reparto del tramo: quién ha subido cuántas veces, cuándo fue la última y
@@ -18,16 +18,22 @@ import { CalendarService, type RangeQuery } from './calendar.service';
 @Injectable()
 export class SummaryService {
   constructor(
-    private readonly calendar: CalendarService,
+    private readonly schedule: ScheduleService,
     private readonly believers: BelieversService,
   ) {}
 
   async summary(churchId: string, query: RangeQuery): Promise<CalendarSummary> {
     const only = query.congregationIds?.length ? new Set(query.congregationIds) : null;
-    const meetings = await this.calendar.meetingsBetween(churchId, query.from, query.to, only);
+    const meetings = await this.schedule.meetingsBetween(
+      churchId,
+      query.calendarId,
+      query.from,
+      query.to,
+      only,
+    );
 
     const names = await this.believers.namesOf(
-      meetings.flatMap((meeting) => (meeting.slots ?? []).map((slot) => slot.believerId ?? '')),
+      meetings.flatMap((meeting) => (meeting.slots ?? []).map((slot) => slot.believerId)),
     );
 
     const assignments: Assignment[] = [];

@@ -1,8 +1,11 @@
 import type {
+  Calendar,
   Congregation,
+  CreateCalendarInput,
   CreateCongregationInput,
   CreatePatternInput,
   MeetingPattern,
+  UpdateCalendarInput,
   UpdateCongregationInput,
   UpdatePatternInput,
 } from '@navis/shared';
@@ -24,7 +27,7 @@ export function useCreateCongregation(api: ApiClient) {
 
   return useMutation({
     mutationFn: (input: CreateCongregationInput) =>
-      api.post<Congregation>('/calendar/congregations', { ...input }),
+      api.post<Congregation>('/congregations', { ...input }),
     onSuccess: () => refresh(client),
   });
 }
@@ -34,7 +37,7 @@ export function useUpdateCongregation(api: ApiClient) {
 
   return useMutation({
     mutationFn: ({ id, ...input }: UpdateCongregationInput & { id: string }) =>
-      api.patch<Congregation>(`/calendar/congregations/${id}`, { ...input }),
+      api.patch<Congregation>(`/congregations/${id}`, { ...input }),
     onSuccess: () => refresh(client),
   });
 }
@@ -43,36 +46,65 @@ export function useDeleteCongregation(api: ApiClient) {
   const client = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: string) => api.delete<void>(`/calendar/congregations/${id}`),
+    mutationFn: (id: string) => api.delete<void>(`/congregations/${id}`),
     onSuccess: () => refresh(client),
   });
 }
 
-export function useCreatePattern(api: ApiClient) {
+export function useCreatePattern(api: ApiClient, calendarId: string) {
   const client = useQueryClient();
 
   return useMutation({
     mutationFn: (input: CreatePatternInput) =>
-      api.post<MeetingPattern>('/calendar/patterns', { ...input }),
+      api.post<MeetingPattern>(`/calendars/${calendarId}/patterns`, { ...input }),
     onSuccess: () => refresh(client),
   });
 }
 
-export function useUpdatePattern(api: ApiClient) {
+export function useUpdatePattern(api: ApiClient, calendarId: string) {
   const client = useQueryClient();
 
   return useMutation({
     mutationFn: ({ id, ...input }: UpdatePatternInput & { id: string }) =>
-      api.patch<MeetingPattern>(`/calendar/patterns/${id}`, { ...input }),
+      api.patch<MeetingPattern>(`/calendars/${calendarId}/patterns/${id}`, { ...input }),
     onSuccess: () => refresh(client),
   });
 }
 
-export function useDeletePattern(api: ApiClient) {
+export function useDeletePattern(api: ApiClient, calendarId: string) {
   const client = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: string) => api.delete<void>(`/calendar/patterns/${id}`),
+    mutationFn: (id: string) => api.delete<void>(`/calendars/${calendarId}/patterns/${id}`),
+    onSuccess: () => refresh(client),
+  });
+}
+
+/** Los calendarios: crear, renombrar y borrar (D15). */
+export function useCreateCalendar(api: ApiClient) {
+  const client = useQueryClient();
+
+  return useMutation({
+    mutationFn: (input: CreateCalendarInput) => api.post<Calendar>('/calendars', { ...input }),
+    onSuccess: () => refresh(client),
+  });
+}
+
+export function useUpdateCalendar(api: ApiClient) {
+  const client = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, ...input }: UpdateCalendarInput & { id: string }) =>
+      api.patch<Calendar>(`/calendars/${id}`, { ...input }),
+    onSuccess: () => refresh(client),
+  });
+}
+
+export function useDeleteCalendar(api: ApiClient) {
+  const client = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: string) => api.delete<void>(`/calendars/${id}`),
     onSuccess: () => refresh(client),
   });
 }

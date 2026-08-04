@@ -21,14 +21,16 @@ function weekdayLabel(weekday: number): string {
 export function PatternRows({
   patterns,
   congregations,
+  calendarId,
   onEdit,
 }: {
   patterns: readonly MeetingPattern[];
+  calendarId: string;
   congregations: readonly Congregation[];
   onEdit: (pattern: MeetingPattern) => void;
 }) {
   const { t } = useTranslation();
-  const remove = useDeletePattern(api);
+  const remove = useDeletePattern(api, calendarId);
   const nameOf = (id: string) => congregations.find((one) => one.id === id)?.name ?? '';
 
   return (

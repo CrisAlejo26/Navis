@@ -1,4 +1,4 @@
-import { PULPIT_MINISTRY, type Meeting, type MeetingSlot, type Preacher } from '@navis/shared';
+import { isMinistry, type Meeting, type MeetingSlot, type Preacher } from '@navis/shared';
 import { useCreateBeliever, usePreachers } from '@navis/api-client';
 import { UserPlus } from 'lucide-react';
 import { useState } from 'react';
@@ -29,12 +29,17 @@ export interface PickTarget {
 export function PreacherPicker({
   target,
   range,
+  calendarId,
+  ministry,
   onClose,
   onAssign,
   congregationName,
 }: {
   target: PickTarget | null;
   range: DateRange;
+  calendarId: string;
+  /** El ministerio del calendario: es a quien se propone primero (D16). */
+  ministry: string | null;
   onClose: () => void;
   onAssign: (believerId: string | null, name: string | null) => void;
   congregationName: (id: string | null) => string | undefined;
@@ -43,7 +48,11 @@ export function PreacherPicker({
   const [q, setQ] = useState('');
   const [all, setAll] = useState(false);
 
-  const { data: preachers = [] } = usePreachers(api, { ...range, q, all }, Boolean(target));
+  const { data: preachers = [] } = usePreachers(
+    api,
+    { ...range, calendarId, q, all },
+    Boolean(target),
+  );
   const createBeliever = useCreateBeliever(api);
 
   const addPerson = async () => {
@@ -51,7 +60,9 @@ export function PreacherPicker({
     const person = await createBeliever.mutateAsync({
       firstName,
       lastName: rest.join(' '),
-      ministries: [PULPIT_MINISTRY],
+      // Se da de alta ya con el ministerio del calendario: quien se añade
+      // desde el de sonido es de sonido.
+      ministries: ministry && isMinistry(ministry) ? [ministry] : [],
       congregationId: target?.meeting.congregationId ?? null,
     });
 
@@ -85,7 +96,7 @@ export function PreacherPicker({
               all ? 'bg-muted text-foreground' : 'text-muted-foreground hover:text-foreground',
             )}
           >
-            {t(all ? 'calendar.everyone' : 'calendar.onlyPulpit')}
+            {t(all ? 'calendar.everyone' : 'calendar.onlyMinistry')}
           </button>
         </div>
 

@@ -5,6 +5,7 @@ import { DataSource, type DataSourceOptions } from 'typeorm';
 import { env, isProduction, sqlitePath } from '../config/env';
 import { BelieverMinistry } from '../believers/believer-ministry.entity';
 import { Believer } from '../believers/believer.entity';
+import { Calendar } from '../calendar/calendar.entity';
 import { Congregation } from '../calendar/congregation.entity';
 import { MeetingPattern } from '../calendar/meeting-pattern.entity';
 import { MeetingSlot } from '../calendar/meeting-slot.entity';
@@ -32,6 +33,7 @@ const entities = [
   Role,
   Church,
   ChurchMember,
+  Calendar,
   Congregation,
   Believer,
   BelieverMinistry,

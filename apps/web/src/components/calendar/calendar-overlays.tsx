@@ -1,6 +1,6 @@
 import type { Congregation } from '@navis/shared';
 
-import { AddCongregationDialog } from '@/components/calendar/add-congregation-dialog';
+import { CongregationForm } from '@/components/calendar/congregation-form';
 import { AddMeetingDialog } from '@/components/calendar/add-meeting-dialog';
 import { BalancePanel } from '@/components/calendar/balance-panel';
 import { DayPanel } from '@/components/calendar/day-panel';
@@ -21,12 +21,18 @@ export function CalendarOverlays({
   churchName,
   canManage,
   congregationName,
+  calendarId,
+  calendarName,
+  ministry,
 }: {
   screen: ReturnType<typeof useCalendarScreen>;
   congregations: readonly Congregation[];
   churchName: string;
   canManage: boolean;
   congregationName: (id: string) => string | undefined;
+  calendarId: string;
+  calendarName: string;
+  ministry: string | null;
 }) {
   const { params } = screen;
   const day = screen.calendar.data?.days.find((one) => one.date === screen.openDay);
@@ -48,6 +54,8 @@ export function CalendarOverlays({
       <PreacherPicker
         target={screen.target}
         range={params.range}
+        calendarId={calendarId}
+        ministry={ministry}
         congregationName={(id) => (id ? congregationName(id) : undefined)}
         onClose={() => {
           screen.setTarget(null);
@@ -65,6 +73,8 @@ export function CalendarOverlays({
         churchName={churchName}
         congregations={congregations}
         congregationIds={params.filters.congregationIds}
+        calendarId={calendarId}
+        calendarName={calendarName}
       />
 
       <BalancePanel
@@ -73,10 +83,11 @@ export function CalendarOverlays({
           screen.setBalanceOpen(false);
         }}
         range={params.range}
+        calendarId={calendarId}
         congregationIds={params.filters.congregationIds}
       />
 
-      <AddCongregationDialog
+      <CongregationForm
         open={screen.addCongregation}
         onClose={() => {
           screen.setAddCongregation(false);
@@ -85,6 +96,7 @@ export function CalendarOverlays({
 
       <AddMeetingDialog
         date={screen.addMeetingFor ? screen.openDay : null}
+        calendarId={calendarId}
         congregations={congregations}
         congregationId={screen.addMeetingFor ?? ''}
         onClose={() => {

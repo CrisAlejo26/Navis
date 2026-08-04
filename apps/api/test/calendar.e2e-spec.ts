@@ -1,7 +1,7 @@
 import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import type { NestExpressApplication } from '@nestjs/platform-express';
-import type { CalendarRange, Congregation, Meeting, MeetingPattern } from '@navis/shared';
+import type { Calendar, CalendarRange, Congregation, Meeting, MeetingPattern } from '@navis/shared';
 import { toNodeHandler } from 'better-auth/node';
 import express from 'express';
 import request from 'supertest';
@@ -28,6 +28,7 @@ describe('Calendario (e2e)', () => {
   const password = 'Rebano2026Seguro';
   let cookie = '';
   let elda = '';
+  let calendarId = '';
   let patternId = '';
   let believerId = '';
 
@@ -83,16 +84,34 @@ describe('Calendario (e2e)', () => {
     await app.close();
   });
 
+  it('cada iglesia nace con sus cuatro calendarios', async () => {
+    const respuesta = await request(app.getHttpServer())
+      .get('/api/v1/calendars')
+      .set('Cookie', cookie)
+      .expect(200);
+
+    const calendarios = body<Calendar[]>(respuesta);
+    expect(calendarios.map((one) => one.slug)).toEqual([
+      'pulpito',
+      'recepcion',
+      'sonido',
+      'biblias',
+    ]);
+
+    calendarId = calendarios[0]?.id ?? '';
+    expect(calendarios[0]?.ministry).toBe('pulpito');
+  });
+
   it('cada iglesia nace con una sede, y se puede añadir otra', async () => {
     const inicial = await request(app.getHttpServer())
-      .get('/api/v1/calendar/congregations')
+      .get('/api/v1/congregations')
       .set('Cookie', cookie)
       .expect(200);
 
     expect(body<Congregation[]>(inicial)).toHaveLength(1);
 
     const creada = await request(app.getHttpServer())
-      .post('/api/v1/calendar/congregations')
+      .post('/api/v1/congregations')
       .set('Cookie', cookie)
       .send({ name: 'Elda' })
       .expect(201);
@@ -103,7 +122,7 @@ describe('Calendario (e2e)', () => {
 
   it('un patrón semanal llena los viernes sin crear una sola fila', async () => {
     const patron = await request(app.getHttpServer())
-      .post('/api/v1/calendar/patterns')
+      .post(`/api/v1/calendars/${calendarId}/patterns`)
       .set('Cookie', cookie)
       .send({
         congregationId: elda,
@@ -117,7 +136,7 @@ describe('Calendario (e2e)', () => {
     patternId = body<MeetingPattern>(patron).id;
 
     const calendario = await request(app.getHttpServer())
-      .get(`/api/v1/calendar?from=${rango.from}&to=${rango.to}`)
+      .get(`/api/v1/calendars/${calendarId}/schedule?from=${rango.from}&to=${rango.to}`)
       .set('Cookie', cookie)
       .expect(200);
 
@@ -142,7 +161,7 @@ describe('Calendario (e2e)', () => {
 
     const asignar = () =>
       request(app.getHttpServer())
-        .put('/api/v1/calendar/slots')
+        .put(`/api/v1/calendars/${calendarId}/slots`)
         .set('Cookie', cookie)
         .send({ date: viernes, patternId, position: 1, believerId })
         .expect(200);
@@ -154,7 +173,7 @@ describe('Calendario (e2e)', () => {
     expect(body<Meeting>(segunda).slots[1]?.believer?.name).toBe('Luis Fernando Ruiz');
 
     const calendario = await request(app.getHttpServer())
-      .get(`/api/v1/calendar?from=${viernes}&to=${viernes}`)
+      .get(`/api/v1/calendars/${calendarId}/schedule?from=${viernes}&to=${viernes}`)
       .set('Cookie', cookie)
       .expect(200);
 
@@ -165,14 +184,14 @@ describe('Calendario (e2e)', () => {
 
   it('el mismo día admite la programación de otra sede', async () => {
     const congregaciones = await request(app.getHttpServer())
-      .get('/api/v1/calendar/congregations')
+      .get('/api/v1/congregations')
       .set('Cookie', cookie)
       .expect(200);
 
     const otra = body<Congregation[]>(congregaciones).find((one) => one.id !== elda);
 
     await request(app.getHttpServer())
-      .post('/api/v1/calendar/meetings')
+      .post(`/api/v1/calendars/${calendarId}/meetings`)
       .set('Cookie', cookie)
       .send({
         congregationId: otra?.id,
@@ -184,7 +203,7 @@ describe('Calendario (e2e)', () => {
       .expect(201);
 
     const calendario = await request(app.getHttpServer())
-      .get(`/api/v1/calendar?from=${viernes}&to=${viernes}`)
+      .get(`/api/v1/calendars/${calendarId}/schedule?from=${viernes}&to=${viernes}`)
       .set('Cookie', cookie)
       .expect(200);
 
@@ -195,7 +214,7 @@ describe('Calendario (e2e)', () => {
 
   it('el resumen cuenta el reparto y avisa de lo que falta', async () => {
     const resumen = await request(app.getHttpServer())
-      .get(`/api/v1/calendar/summary?from=${rango.from}&to=${rango.to}`)
+      .get(`/api/v1/calendars/${calendarId}/summary?from=${rango.from}&to=${rango.to}`)
       .set('Cookie', cookie)
       .expect(200);
 
@@ -210,7 +229,7 @@ describe('Calendario (e2e)', () => {
 
   it('rechaza un rango de más de 92 días', async () => {
     await request(app.getHttpServer())
-      .get('/api/v1/calendar?from=2026-01-01&to=2026-12-31')
+      .get(`/api/v1/calendars/${calendarId}/schedule?from=2026-01-01&to=2026-12-31`)
       .set('Cookie', cookie)
       .expect(400);
   });

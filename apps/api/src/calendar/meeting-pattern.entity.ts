@@ -23,6 +23,11 @@ export class MeetingPattern extends BaseEntity {
   @Column({ name: 'church_id', type: UUID })
   churchId: string;
 
+  @ApiProperty({ description: 'De qué calendario es (D15)' })
+  @Index()
+  @Column({ name: 'calendar_id', type: UUID })
+  calendarId: string;
+
   @ApiProperty()
   @Index()
   @Column({ name: 'congregation_id', type: UUID })

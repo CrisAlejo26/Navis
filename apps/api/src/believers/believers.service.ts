@@ -98,8 +98,10 @@ export class BelieversService {
    * `withDeleted` a propósito: quien ya no está sigue apareciendo en los meses
    * en los que predicó. Se le deja de proponer, no se le borra de la historia.
    */
-  async namesOf(ids: readonly string[]): Promise<Map<string, string>> {
-    const unique = [...new Set(ids)];
+  async namesOf(ids: readonly (string | null)[]): Promise<Map<string, string>> {
+    // Los vacíos se caen aquí: en Postgres, un `IN ('')` contra una columna
+    // `uuid` no devuelve nada, revienta la consulta entera.
+    const unique = [...new Set(ids)].filter((id): id is string => Boolean(id));
     if (unique.length === 0) return new Map();
 
     const people = await this.believers.find({ where: { id: In(unique) }, withDeleted: true });

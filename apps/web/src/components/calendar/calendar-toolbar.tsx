@@ -19,10 +19,15 @@ export function CalendarToolbar({
   params,
   onShare,
   canManage,
+  calendarName,
+  calendarSlug,
 }: {
   params: CalendarParams;
   onShare: () => void;
   canManage: boolean;
+  /** Cuál de los calendarios se está mirando: púlpito, sonido… (D15). */
+  calendarName: string;
+  calendarSlug: string;
 }) {
   const { t } = useTranslation();
   const { density, setDensity } = useDensityStore();
@@ -50,6 +55,11 @@ export function CalendarToolbar({
         </div>
 
         <label className="group relative cursor-pointer">
+          {/* El calendario, encima del mes: es lo primero que hay que saber
+              cuando hay cuatro y todos se parecen. */}
+          <span className="font-semibold block text-[11px] tracking-[0.14em] text-muted-foreground uppercase">
+            {calendarName}
+          </span>
           <span className="text-xl font-semibold tracking-tight sm:text-2xl">
             {params.custom
               ? rangeTitle(params.custom.from, params.custom.to)
@@ -107,7 +117,7 @@ export function CalendarToolbar({
 
         {canManage && (
           <Link
-            to="/calendar/settings"
+            to={`/calendar/${calendarSlug}/settings`}
             className="h-8 px-3 text-sm sm:inline-flex hidden items-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
           >
             {t('calendar.settings')}
