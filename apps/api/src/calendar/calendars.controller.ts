@@ -7,6 +7,7 @@ import { ActiveChurchGuard } from '../common/guards/active-church.guard';
 import type { Calendar } from './calendar.entity';
 import { CalendarsService } from './calendars.service';
 import { CreateCalendarDto, UpdateCalendarDto } from './dto/calendar.dto';
+import { WeekSeederService } from './week-seeder.service';
 
 /**
  * Los calendarios de la iglesia: púlpito, recepción, sonido, biblias y los que
@@ -16,21 +17,45 @@ import { CreateCalendarDto, UpdateCalendarDto } from './dto/calendar.dto';
 @Controller('calendars')
 @UseGuards(ActiveChurchGuard)
 export class CalendarsController {
-  constructor(private readonly calendars: CalendarsService) {}
+  constructor(
+    private readonly calendars: CalendarsService,
+    private readonly week: WeekSeederService,
+  ) {}
 
   @Get()
   @RequirePermissions('calendar.view')
   @ApiOperation({ summary: 'Los calendarios, en su orden' })
   @ApiOkResponse({ description: 'Listado de calendarios' })
-  list(@CurrentChurch() churchId: string): Promise<Calendar[]> {
-    return this.calendars.ensureFor(churchId);
+  async list(@CurrentChurch() churchId: string): Promise<Calendar[]> {
+    const existentes = await this.calendars.list(churchId);
+    if (existentes.length > 0) return existentes;
+
+    /*
+     * Primera vez en esta iglesia: nacen los cuatro de serie y, con ellos, su
+     * semana en cada sede. La comprobación va antes a propósito —este endpoint
+     * se llama en cada carga de la aplicación— para no repasar la siembra
+     * entera cada vez.
+     */
+    const calendars = await this.calendars.ensureFor(churchId);
+    for (const calendar of calendars) await this.week.seedCalendar(churchId, calendar.id);
+
+    return calendars;
   }
 
   @Post()
   @RequirePermissions('calendar.manage')
   @ApiOperation({ summary: 'Crea un calendario' })
-  create(@CurrentChurch() churchId: string, @Body() dto: CreateCalendarDto): Promise<Calendar> {
-    return this.calendars.create(churchId, dto);
+  async create(
+    @CurrentChurch() churchId: string,
+    @Body() dto: CreateCalendarDto,
+  ): Promise<Calendar> {
+    const calendar = await this.calendars.create(churchId, dto);
+
+    // Un calendario vacío no dice nada: nace con la semana de serie en cada
+    // sede, y de ahí se ajusta (RFC 0002 §5.7).
+    await this.week.seedCalendar(churchId, calendar.id);
+
+    return calendar;
   }
 
   @Patch(':id')

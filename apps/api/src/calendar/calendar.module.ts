@@ -22,6 +22,7 @@ import { PreachersService } from './preachers.service';
 import { ScheduleController } from './schedule.controller';
 import { ScheduleService } from './schedule.service';
 import { SummaryService } from './summary.service';
+import { WeekSeederService } from './week-seeder.service';
 
 /**
  * El calendario de programaciones (RFC 0002): sedes, patrones semanales,
@@ -56,6 +57,7 @@ import { SummaryService } from './summary.service';
     AssignmentsService,
     PreachersService,
     SummaryService,
+    WeekSeederService,
   ],
   exports: [CalendarsService, CongregationsService, ScheduleService],
 })

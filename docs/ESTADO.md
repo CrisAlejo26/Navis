@@ -62,9 +62,11 @@ comprobado que empaqueta correctamente).
   [`deploy.yml`](../.github/workflows/deploy.yml), que reutiliza el CI como
   puerta de entrada, publica imágenes, migra, despliega y revierte si `/health`
   no responde. Ver [`DESPLIEGUE.md`](./DESPLIEGUE.md).
-- **Calendario de programaciones** (RFC 0002): sedes dentro de la iglesia,
-  reuniones fijas por día de la semana con sus fases, asignación en dos toques
-  con reparto y avisos, cuatro vistas (mes, semana, agenda y personas) con sus
+- **Calendario de programaciones** (RFC 0002): **varios calendarios** —púlpito,
+  recepción, sonido y biblias— como subentradas de la barra lateral, sedes
+  dentro de la iglesia, reuniones fijas por día de la semana con sus fases
+  —cada sede arranca con la semana de serie—, asignación en dos toques con
+  reparto y avisos, cuatro vistas (mes, semana, agenda y personas) con sus
   filtros en la URL, y la lámina en PNG que sustituye a la captura del Excel.
 - **Documentación**: ocho RFC y seis ADR en [`docs/`](./).
 

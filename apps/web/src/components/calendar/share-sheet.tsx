@@ -9,6 +9,7 @@ import { type PosterAspect } from '@/components/calendar/poster-size';
 import { usePosterExport } from '@/components/calendar/use-poster-export';
 import { usePosterImage } from '@/components/calendar/use-poster-image';
 import { Button } from '@/components/ui/button';
+import { Chip } from '@/components/ui/chip';
 import { Dialog } from '@/components/ui/dialog';
 import { api } from '@/lib/api';
 import { longDay, rangeTitle } from '@/lib/calendar/labels';
@@ -199,32 +200,5 @@ export function ShareSheet({
         </div>
       </div>
     </Dialog>
-  );
-}
-
-function Chip({
-  active,
-  onClick,
-  children,
-}: {
-  active: boolean;
-  onClick: () => void;
-  children: React.ReactNode;
-}) {
-  return (
-    <button
-      type="button"
-      aria-pressed={active}
-      onClick={onClick}
-      className={cn(
-        'h-8 px-3 text-xs font-medium cursor-pointer rounded-full border',
-        'focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none',
-        active
-          ? 'border-foreground/25 bg-foreground/8 text-foreground'
-          : 'border-transparent bg-muted text-muted-foreground hover:text-foreground',
-      )}
-    >
-      {children}
-    </button>
   );
 }

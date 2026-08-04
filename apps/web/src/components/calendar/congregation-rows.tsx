@@ -3,6 +3,7 @@ import type { Congregation } from '@navis/shared';
 import { Pencil, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
+import { Button } from '@/components/ui/button';
 import { accentStyles } from '@/lib/calendar/accents';
 import { api } from '@/lib/api';
 import { toast } from '@/lib/toast';
@@ -45,20 +46,19 @@ export function CongregationRows({
             )}
           </span>
 
-          <button
-            type="button"
+          <Button
             aria-label={`${t('common.edit')}: ${congregation.name}`}
             onClick={() => {
               onEdit(congregation);
             }}
-            className="h-9 w-9 inline-flex shrink-0 cursor-pointer items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+            variant="ghost"
+            size="icon"
           >
             <Pencil size={15} aria-hidden />
-          </button>
+          </Button>
 
           {congregations.length > 1 && (
-            <button
-              type="button"
+            <Button
               aria-label={`${t('common.delete')}: ${congregation.name}`}
               onClick={() => {
                 remove.mutate(congregation.id, {
@@ -67,10 +67,12 @@ export function CongregationRows({
                   },
                 });
               }}
-              className="h-9 w-9 inline-flex shrink-0 cursor-pointer items-center justify-center rounded-md text-muted-foreground hover:bg-destructive/10 hover:text-destructive focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+              variant="ghost"
+              size="icon"
+              className="hover:bg-destructive/10 hover:text-destructive"
             >
               <Trash2 size={15} aria-hidden />
-            </button>
+            </Button>
           )}
         </li>
       ))}

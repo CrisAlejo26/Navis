@@ -318,6 +318,37 @@ NULL`— y se escribe a mano en la migración. Sin la primera condición, dos
 reuniones puntuales del mismo día chocarían en Postgres… o no, según cómo trate
 los nulos cada motor: mejor no depender de eso.
 
+### 5.7 La semana con la que se arranca
+
+Un calendario vacío no dice nada, y escribir siete reuniones desde cero antes de
+poder programar la primera es la clase de trámite que devuelve a la gente a la
+hoja de cálculo. Así que **cada sede nace con su semana** en cada calendario:
+
+| Día       | Reunión         | Hora  | Fases                                    |
+| --------- | --------------- | ----- | ---------------------------------------- |
+| Lunes     | Alabanza        | 19:00 | Introducción · Final                     |
+| Martes    | Estudio bíblico | 19:00 | Introducción · Final                     |
+| Miércoles | Enseñanza       | 19:00 | Introducción · Predicación · Testimonios |
+| Jueves    | Alabanza        | 19:00 | Introducción · Final                     |
+| Viernes   | Alabanza        | 19:00 | Introducción · Final                     |
+| Sábado    | Estudio bíblico | 18:00 | Introducción · Final                     |
+| Domingo   | Enseñanza       | 10:00 | Introducción · Predicación · Testimonios |
+
+Vive en `packages/shared/src/schemas/default-week.ts` porque la usan la
+migración, la API y los tests. Tres cosas que importan:
+
+- **Es por sede, no por iglesia.** En Elda la alabanza puede caer otro día que
+  en Benidorm, así que la semana se siembra en cada una y se ajusta allí.
+- **Es un punto de partida, no una ley**: se edita entera desde la
+  configuración del calendario, que es donde se ve agrupada por sede.
+- **No pisa nada.** La siembra comprueba antes si esa pareja calendario–sede ya
+  tiene alguna reunión fija: quien ya ajustó su semana no se la encuentra llena
+  otra vez.
+
+Se siembra al crear un calendario —en todas sus sedes—, al crear una sede —en
+todos sus calendarios— y, para lo que ya existía, en la migración
+`SeedDefaultWeek`.
+
 ### 5.5 Por qué `date` y `time` y no `timestamptz`
 
 Guardar la reunión del viernes como un instante UTC obliga a convertir en cada
