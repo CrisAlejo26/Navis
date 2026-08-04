@@ -36,7 +36,13 @@ export function CalendarPage() {
   const { params, congregations, calendar } = screen;
   const range = calendar.data;
 
-  const nameOf = (id: string) => congregations.find((one) => one.id === id)?.name;
+  /*
+   * Con **una sola sede** su nombre no se escribe en la cinta (D12): repetir
+   * «Iglesia Central» en cada reunión no distingue nada y roba el sitio de lo
+   * que sí importa, que es quién ocupa cada fase.
+   */
+  const nameOf = (id: string) =>
+    congregations.length > 1 ? congregations.find((one) => one.id === id)?.name : undefined;
   const churchName =
     churches?.items.find((one) => one.id === churches.activeId)?.name ?? t('common.appName');
 

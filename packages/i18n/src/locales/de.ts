@@ -308,6 +308,21 @@ export const de = {
     onlyMinistry: 'Nur dieser Dienst',
     editCongregation: 'Standort bearbeiten',
     congregationsHint: 'Die Standorte gehören der Gemeinde: sie gelten für alle Kalender.',
+    saved: '{{name}} gespeichert',
+    patternCreated: '{{name}} erstellt',
+    patternDeleted: '{{name}} gelöscht',
+    meetingCreated: '{{name}} hinzugefügt',
+    calendarDeleted: '{{name}} gelöscht',
+    congregationDeleted: '{{name}} gelöscht',
+    assigned: '{{name}} für {{phase}}',
+    cleared: '{{phase}} bleibt frei',
+    deleteTitle: '{{name}} löschen?',
+    deleteCalendarBody:
+      'Er geht mit seinen festen Versammlungen und allem, was darin schon geplant ist. Das lässt sich nicht rückgängig machen.',
+    deleteCongregationBody:
+      'Er wird nicht mehr vorgeschlagen und verschwindet aus dem Kalender. Das dort Geplante bleibt erhalten.',
+    deletePatternBody:
+      'Sie füllt den Kalender nicht mehr. Die daraus schon geplanten Tage bleiben, wie sie sind.',
   },
   believers: {
     title: 'Personen',

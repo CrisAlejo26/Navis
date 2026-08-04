@@ -1,4 +1,3 @@
-import { useDeletePattern } from '@navis/api-client';
 import type { Congregation, MeetingPattern } from '@navis/shared';
 import { Pencil, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -6,7 +5,6 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { accentStyles } from '@/lib/calendar/accents';
 import { weekdayHeadings } from '@/lib/calendar/labels';
-import { api } from '@/lib/api';
 import { cn } from '@/lib/cn';
 
 /** Lunes es 0 en la cabecera y domingo es 0 en el dato: se traduce una vez. */
@@ -25,16 +23,16 @@ function weekdayLabel(weekday: number): string {
 export function PatternRows({
   patterns,
   congregations,
-  calendarId,
   onEdit,
+  onDelete,
 }: {
   patterns: readonly MeetingPattern[];
   congregations: readonly Congregation[];
-  calendarId: string;
   onEdit: (pattern: MeetingPattern) => void;
+  /** Lo confirma `DeletePatternDialog`: aquí solo se pide. */
+  onDelete: (pattern: MeetingPattern) => void;
 }) {
   const { t } = useTranslation();
-  const remove = useDeletePattern(api, calendarId);
   const varias = congregations.length > 1;
 
   return (
@@ -93,7 +91,7 @@ export function PatternRows({
                   <Button
                     aria-label={`${t('common.delete')}: ${pattern.name}`}
                     onClick={() => {
-                      remove.mutate(pattern.id);
+                      onDelete(pattern);
                     }}
                     variant="ghost"
                     size="icon"

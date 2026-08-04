@@ -72,6 +72,13 @@ export function useCalendarScreen(calendarId: string) {
         believerName: name,
       },
       {
+        onSuccess: () => {
+          toast.success(
+            believerId
+              ? t('calendar.assigned', { name, phase: target.slot.name })
+              : t('calendar.cleared', { phase: target.slot.name }),
+          );
+        },
         onError: () => {
           toast.error(t('calendar.saveFailed'));
         },

@@ -305,6 +305,21 @@ export const en = {
     onlyMinistry: 'This ministry only',
     editCongregation: 'Edit campus',
     congregationsHint: 'Campuses belong to the church: they apply to every calendar.',
+    saved: '{{name}} saved',
+    patternCreated: '{{name}} created',
+    patternDeleted: '{{name}} deleted',
+    meetingCreated: '{{name}} added',
+    calendarDeleted: '{{name}} deleted',
+    congregationDeleted: '{{name}} deleted',
+    assigned: '{{name}} on {{phase}}',
+    cleared: '{{phase}} left open',
+    deleteTitle: 'Delete {{name}}?',
+    deleteCalendarBody:
+      'It goes with its regular meetings and everything already scheduled in it. This cannot be undone.',
+    deleteCongregationBody:
+      'It stops being offered and leaves the calendar. What was already scheduled there is kept.',
+    deletePatternBody:
+      'It stops filling the calendar. The days already scheduled from it stay as they are.',
   },
   believers: {
     title: 'People',

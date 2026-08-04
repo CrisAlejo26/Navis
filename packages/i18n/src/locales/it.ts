@@ -306,6 +306,21 @@ export const it = {
     onlyMinistry: 'Solo di questo ministero',
     editCongregation: 'Modifica la sede',
     congregationsHint: 'Le sedi sono della chiesa: valgono per tutti i calendari.',
+    saved: '{{name}} salvato',
+    patternCreated: '{{name}} creata',
+    patternDeleted: '{{name}} eliminata',
+    meetingCreated: '{{name}} aggiunta',
+    calendarDeleted: '{{name}} eliminato',
+    congregationDeleted: '{{name}} eliminata',
+    assigned: '{{name}} in {{phase}}',
+    cleared: '{{phase}} da assegnare',
+    deleteTitle: 'Eliminare {{name}}?',
+    deleteCalendarBody:
+      'Se ne va con le sue riunioni fisse e con tutto ciò che è già programmato. Non si può annullare.',
+    deleteCongregationBody:
+      'Smette di essere proposta ed esce dal calendario. Ciò che era già programmato lì si conserva.',
+    deletePatternBody:
+      'Smette di riempire il calendario. I giorni già programmati a partire da essa restano come sono.',
   },
   believers: {
     title: 'Persone',

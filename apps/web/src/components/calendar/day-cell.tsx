@@ -44,11 +44,16 @@ export function DayCell({
       className={cn(
         'p-1.5 gap-1 relative flex flex-col border-t border-l bg-card',
         outside && 'bg-muted/25 text-muted-foreground',
+        /*
+         * Hoy se tiñe **la celda entera**, no una raya en el borde: entre
+         * carriles de colores de las sedes, una línea de tres píxeles no se
+         * encuentra. El azul de marca en tinte suave se distingue de un
+         * vistazo y no compite con el color de ninguna sede.
+         */
+        isToday && 'bg-brand/10 dark:bg-brand/20',
         selected && 'ring-2 ring-ring ring-inset',
       )}
     >
-      {isToday && <span aria-hidden className="top-0 inset-x-0 absolute h-[3px] bg-brand" />}
-
       <button
         type="button"
         data-day-button

@@ -307,6 +307,21 @@ export const fr = {
     onlyMinistry: 'Ce ministère uniquement',
     editCongregation: 'Modifier le site',
     congregationsHint: "Les sites sont ceux de l'église : ils valent pour tous les calendriers.",
+    saved: '{{name}} enregistré',
+    patternCreated: '{{name}} créée',
+    patternDeleted: '{{name}} supprimée',
+    meetingCreated: '{{name}} ajoutée',
+    calendarDeleted: '{{name}} supprimé',
+    congregationDeleted: '{{name}} supprimé',
+    assigned: '{{name}} pour {{phase}}',
+    cleared: '{{phase}} laissé libre',
+    deleteTitle: 'Supprimer {{name}} ?',
+    deleteCalendarBody:
+      "Il part avec ses réunions régulières et tout ce qui y est déjà programmé. C'est irréversible.",
+    deleteCongregationBody:
+      "Il n'est plus proposé et quitte le calendrier. Ce qui y était programmé est conservé.",
+    deletePatternBody:
+      'Elle cesse de remplir le calendrier. Les jours déjà programmés à partir d’elle restent tels quels.',
   },
   believers: {
     title: 'Personnes',

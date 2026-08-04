@@ -58,7 +58,10 @@ export function CalendarForm({
       updateCalendar.mutate(
         { id: calendar.id, ...parsed.data },
         {
-          onSuccess: onClose,
+          onSuccess: (guardado) => {
+            toast.success(t('calendar.saved', { name: guardado.name }));
+            onClose();
+          },
           onError: () => {
             setError(t('calendar.saveFailed'));
           },

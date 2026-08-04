@@ -12,6 +12,7 @@ import { Select } from '@/components/ui/select';
 import { api } from '@/lib/api';
 import { longDay } from '@/lib/calendar/labels';
 import { formText } from '@/lib/form';
+import { toast } from '@/lib/toast';
 
 /**
  * Una reunión suelta: la que no nace de ninguna reunión fija. Sirve para la
@@ -55,7 +56,10 @@ export function AddMeetingDialog({
 
     setError(null);
     createMeeting.mutate(parsed.data, {
-      onSuccess: onClose,
+      onSuccess: (creada) => {
+        toast.success(t('calendar.meetingCreated', { name: creada.name }));
+        onClose();
+      },
       onError: () => {
         setError(t('calendar.saveFailed'));
       },

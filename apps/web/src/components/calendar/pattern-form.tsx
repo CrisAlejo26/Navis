@@ -12,6 +12,7 @@ import { Select } from '@/components/ui/select';
 import { api } from '@/lib/api';
 import { weekdayHeadings } from '@/lib/calendar/labels';
 import { formText } from '@/lib/form';
+import { toast } from '@/lib/toast';
 
 /**
  * Una reunión fija: «los viernes en Elda a las 20:00, con estas fases».
