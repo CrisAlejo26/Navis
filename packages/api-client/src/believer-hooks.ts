@@ -1,68 +1,75 @@
-import type { Believer, CreateBelieverInput, UpdateBelieverInput } from '@navis/shared';
-import { useMutation, useQuery, useQueryClient, type UseQueryResult } from '@tanstack/react-query';
+import type { BelieverListItem, BelieversQuery, BelieversSummary, Paginated } from '@navis/shared';
+import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 
 import type { ApiClient } from './client';
 import { queryKeys } from './query-keys';
 
-export interface BelieversQuery {
-  q?: string;
-  ministry?: string;
-  includeInactive?: boolean;
+/** `?page=2&status=activo&status=nuevo`. Lo vacío no viaja. */
+function toSearch(query: BelieversQuery): string {
+  const params = new URLSearchParams();
+
+  if (query.page && query.page > 1) params.set('page', String(query.page));
+  if (query.limit) params.set('limit', String(query.limit));
+  if (query.search) params.set('search', query.search);
+  for (const status of query.status ?? []) params.append('status', status);
+  if (query.congregationId) params.set('congregationId', query.congregationId);
+  if (query.giftId) params.set('giftId', query.giftId);
+  if (query.attention) params.set('attention', 'true');
+  if (query.sort) params.set('sort', query.sort);
+  if (query.order) params.set('order', query.order);
+
+  return params.toString();
 }
 
-export function useBelievers(
-  api: ApiClient,
-  query: BelieversQuery = {},
-  enabled = true,
-): UseQueryResult<Believer[]> {
-  const params = new URLSearchParams();
-  if (query.q) params.set('q', query.q);
-  if (query.ministry) params.set('ministry', query.ministry);
-  if (query.includeInactive) params.set('includeInactive', 'true');
-
-  return useQuery({
-    queryKey: queryKeys.believers.list(query),
-    queryFn: () => api.get<Believer[]>(`/believers?${params.toString()}`),
-    enabled,
-    staleTime: 60_000,
-  });
+/** Clave estable: el mismo filtro escrito en otro orden comparte caché. */
+function keyOf(query: BelieversQuery): object {
+  return { ...query, status: [...(query.status ?? [])].sort().join(',') };
 }
 
 /**
- * Al tocar a una persona se invalida también el calendario: su nombre sale en
- * la cinta de cada reunión que ocupa.
+ * La página de creyentes, con la sonda de cada uno ya calculada por el
+ * servidor (RFC 0003 §6.1).
+ *
+ * `placeholderData` mantiene la página anterior mientras llega la siguiente:
+ * sin él, cambiar de página vacía la tabla y da un salto de alto.
  */
-function refresh(client: ReturnType<typeof useQueryClient>) {
-  return Promise.all([
-    client.invalidateQueries({ queryKey: queryKeys.believers.all }),
-    client.invalidateQueries({ queryKey: queryKeys.calendar.all }),
-  ]);
-}
-
-export function useCreateBeliever(api: ApiClient) {
-  const client = useQueryClient();
-
-  return useMutation({
-    mutationFn: (input: CreateBelieverInput) => api.post<Believer>('/believers', { ...input }),
-    onSuccess: () => refresh(client),
+export function useBelievers(
+  api: ApiClient,
+  query: BelieversQuery,
+  enabled = true,
+): UseQueryResult<Paginated<BelieverListItem>> {
+  return useQuery({
+    queryKey: queryKeys.believers.list(keyOf(query)),
+    queryFn: () => api.get<Paginated<BelieverListItem>>(`/believers?${toSearch(query)}`),
+    enabled,
+    staleTime: 30_000,
+    placeholderData: (previous) => previous,
   });
 }
 
-export function useUpdateBeliever(api: ApiClient) {
-  const client = useQueryClient();
-
-  return useMutation({
-    mutationFn: ({ id, ...input }: UpdateBelieverInput & { id: string }) =>
-      api.patch<Believer>(`/believers/${id}`, { ...input }),
-    onSuccess: () => refresh(client),
+/** Las cuentas de la cabecera: viven en las pastillas, no en un panel (§7.1). */
+export function useBelieversSummary(
+  api: ApiClient,
+  enabled = true,
+): UseQueryResult<BelieversSummary> {
+  return useQuery({
+    queryKey: queryKeys.believers.summary,
+    queryFn: () => api.get<BelieversSummary>('/believers/summary'),
+    enabled,
+    staleTime: 30_000,
   });
 }
 
-export function useDeleteBeliever(api: ApiClient) {
-  const client = useQueryClient();
-
-  return useMutation({
-    mutationFn: (id: string) => api.delete<void>(`/believers/${id}`),
-    onSuccess: () => refresh(client),
+/** La ficha entera, que es lo que abre `/believers/:id` (D12). */
+export function useBeliever(
+  api: ApiClient,
+  id: string,
+  enabled = true,
+): UseQueryResult<BelieverListItem> {
+  return useQuery({
+    queryKey: queryKeys.believers.one(id),
+    queryFn: () => api.get<BelieverListItem>(`/believers/${id}`),
+    enabled: enabled && Boolean(id),
+    staleTime: 30_000,
   });
 }

@@ -15,17 +15,6 @@ export function toHm(value: string | null | undefined): string {
 }
 
 /**
- * El día como texto `AAAA-MM-DD`.
- *
- * Los dos motores devuelven texto en las columnas `date`, pero un `Date` que
- * se colase aquí volvería a arrastrar husos horarios (D5), así que se corta el
- * paso en un solo sitio.
- */
-export function toIsoDay(value: string | Date): string {
-  return typeof value === 'string' ? value.slice(0, 10) : value.toISOString().slice(0, 10);
-}
-
-/**
  * La reunión que **todavía no existe**: la propuesta que sale de un patrón
  * para un día concreto (D3). Se distingue porque su `id` y los de sus fases
  * son nulos; al asignar a alguien, el servidor la materializa.

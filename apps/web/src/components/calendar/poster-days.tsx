@@ -1,6 +1,6 @@
 import type { CalendarRange } from '@navis/shared';
 
-import { accentHex } from '@/lib/calendar/accents';
+import { accentHex } from '@/lib/accents';
 import { longDay } from '@/lib/calendar/labels';
 import type { PosterPalette } from './poster-palette';
 
