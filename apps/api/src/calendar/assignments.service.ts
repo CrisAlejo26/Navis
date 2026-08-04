@@ -5,7 +5,7 @@ import {
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import type { AssignSlotInput, Meeting as MeetingView } from '@navis/shared';
+import { isSchedulable, type AssignSlotInput, type Meeting as MeetingView } from '@navis/shared';
 import { DataSource, Repository } from 'typeorm';
 
 import { BelieversService } from '../believers/believers.service';
@@ -32,8 +32,10 @@ export class AssignmentsService {
 
   async assign(churchId: string, input: AssignSlotInput): Promise<MeetingView> {
     if (input.believerId) {
+      // Se programa a quien sigue viniendo: es lo que antes decía `is_active` y
+      // ahora dice el estado, sin dos fuentes de verdad (RFC 0003 D2).
       const person = await this.believers.require(churchId, input.believerId);
-      if (!person.isActive) {
+      if (!isSchedulable(person.status)) {
         throw new UnprocessableEntityException('Esa persona ya no está activa');
       }
     }

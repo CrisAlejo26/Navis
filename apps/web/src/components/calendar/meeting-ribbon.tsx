@@ -2,7 +2,7 @@ import type { Meeting, MeetingSlot } from '@navis/shared';
 import { useTranslation } from 'react-i18next';
 
 import { SlotLine } from '@/components/calendar/slot-line';
-import { ACCENT_RAIL, ACCENT_TEXT, accentVars } from '@/lib/calendar/accents';
+import { ACCENT_RAIL, ACCENT_TEXT, accentVars } from '@/lib/accents';
 import { slotMatches, type DisplayFilters } from '@/lib/calendar/filter';
 import { cn } from '@/lib/cn';
 

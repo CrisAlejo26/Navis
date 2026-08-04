@@ -50,9 +50,20 @@ export const queryKeys = {
     patterns: (calendarId: string) => [...queryKeys.calendar.all, 'patterns', calendarId] as const,
     preachers: (query: object) => [...queryKeys.calendar.all, 'preachers', query] as const,
   },
+  /**
+   * Todo lo de creyentes cuelga de la misma raíz —bitácora y dones incluidos—
+   * porque casi todo se toca a la vez: escribir una nota mueve la sonda de la
+   * fila, las cuentas de la cabecera y, si es de tipo «don», la ficha.
+   */
   believers: {
     all: ['believers'] as const,
     list: (query: object) => [...queryKeys.believers.all, 'list', query] as const,
+    summary: ['believers', 'summary'] as const,
+    one: (id: string) => [...queryKeys.believers.all, 'one', id] as const,
+    notes: (id: string, query: object) => [...queryKeys.believers.all, 'notes', id, query] as const,
+    noteDays: (id: string, range: object) =>
+      [...queryKeys.believers.all, 'noteDays', id, range] as const,
+    gifts: ['believers', 'gifts'] as const,
   },
   health: ['health'] as const,
 } as const;

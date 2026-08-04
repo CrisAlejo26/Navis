@@ -8,7 +8,7 @@ import type {
 } from '@navis/shared';
 import { Repository } from 'typeorm';
 
-import { BelieversService } from '../believers/believers.service';
+import { BelieversRosterService } from '../believers/believers-roster.service';
 import { meetingView } from './calendar-format';
 import { CongregationsService } from './congregations.service';
 import { MeetingSlot } from './meeting-slot.entity';
@@ -25,7 +25,7 @@ export class MeetingsService {
     @InjectRepository(Meeting) private readonly meetings: Repository<Meeting>,
     @InjectRepository(MeetingSlot) private readonly slots: Repository<MeetingSlot>,
     private readonly congregations: CongregationsService,
-    private readonly believers: BelieversService,
+    private readonly believers: BelieversRosterService,
   ) {}
 
   /** Una reunión puntual: la que no nace de ningún patrón. */

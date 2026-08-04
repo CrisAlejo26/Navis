@@ -2,19 +2,72 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { ChurchesModule } from '../churches/churches.module';
+import { UsersModule } from '../users/users.module';
+import { AudioStorageService } from './audio-storage.service';
+import { BelieverGift } from './believer-gift.entity';
+import { BelieverHistoryService } from './believer-history.service';
+import { BelieverLinksService } from './believer-links.service';
 import { BelieverMinistry } from './believer-ministry.entity';
+import { BelieverNote } from './believer-note.entity';
+import { BelieverNotesController } from './believer-notes.controller';
+import { BelieverNotesService } from './believer-notes.service';
 import { Believer } from './believer.entity';
+import { BelieversPageService } from './believers-page.service';
+import { BelieversRosterService } from './believers-roster.service';
+import { BelieversSummaryService } from './believers-summary.service';
 import { BelieversController } from './believers.controller';
 import { BelieversService } from './believers.service';
+import { Gift } from './gift.entity';
+import { GiftsController } from './gifts.controller';
+import { GiftsService } from './gifts.service';
+import { NoteAudio } from './note-audio.entity';
+import { NoteAudiosController } from './note-audios.controller';
+import { NoteAudiosService } from './note-audios.service';
+import { NotesViewService } from './notes-view.service';
 
 /**
- * El núcleo mínimo de creyentes (RFC 0002 §6). Depende de `ChurchesModule`
- * porque `ActiveChurchGuard` necesita resolver la iglesia activa.
+ * Los creyentes, su bitácora con audios y el catálogo de dones (RFC 0003).
+ *
+ * Depende de `ChurchesModule` porque `ActiveChurchGuard` necesita resolver la
+ * iglesia activa y el aviso necesita saber qué día es allí; y de `UsersModule`
+ * para firmar cada nota con el nombre de quien la escribió.
+ *
+ * Solo exporta lo que consume el calendario: la lista llana de personas y la
+ * ficha. Ni la bitácora ni los dones salen de aquí (RFC 0002 D10: programar un
+ * turno no puede obligar a abrir la ficha pastoral de nadie).
  */
 @Module({
-  imports: [TypeOrmModule.forFeature([Believer, BelieverMinistry]), ChurchesModule],
-  controllers: [BelieversController],
-  providers: [BelieversService],
-  exports: [BelieversService],
+  imports: [
+    TypeOrmModule.forFeature([
+      Believer,
+      BelieverMinistry,
+      Gift,
+      BelieverGift,
+      BelieverNote,
+      NoteAudio,
+    ]),
+    ChurchesModule,
+    UsersModule,
+  ],
+  controllers: [
+    BelieversController,
+    BelieverNotesController,
+    NoteAudiosController,
+    GiftsController,
+  ],
+  providers: [
+    BelieversService,
+    BelieversRosterService,
+    BelieversPageService,
+    BelieversSummaryService,
+    BelieverLinksService,
+    BelieverNotesService,
+    BelieverHistoryService,
+    NotesViewService,
+    NoteAudiosService,
+    AudioStorageService,
+    GiftsService,
+  ],
+  exports: [BelieversService, BelieversRosterService],
 })
 export class BelieversModule {}

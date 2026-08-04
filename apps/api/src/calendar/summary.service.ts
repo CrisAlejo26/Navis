@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import type { CalendarSummary, PreacherBalance } from '@navis/shared';
 
-import { BelieversService } from '../believers/believers.service';
-import { toIsoDay } from './calendar-format';
+import { BelieversRosterService } from '../believers/believers-roster.service';
+import { toIsoDay } from '../database/iso-day';
 import { buildWarnings, type Assignment, type Gap } from './calendar-warnings';
 import { ScheduleService, type RangeQuery } from './schedule.service';
 
@@ -19,7 +19,7 @@ import { ScheduleService, type RangeQuery } from './schedule.service';
 export class SummaryService {
   constructor(
     private readonly schedule: ScheduleService,
-    private readonly believers: BelieversService,
+    private readonly believers: BelieversRosterService,
   ) {}
 
   async summary(churchId: string, query: RangeQuery): Promise<CalendarSummary> {

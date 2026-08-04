@@ -1,28 +1,58 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import type { Ministry } from '@navis/shared';
+import {
+  BELIEVER_SORT_FIELDS,
+  BELIEVER_STATUSES,
+  DEFAULT_BELIEVER_SORT,
+  type BelieverSortField,
+  type BelieverStatus,
+} from '@navis/shared';
 import { Transform } from 'class-transformer';
-import { IsBoolean, IsOptional, IsString, MaxLength } from 'class-validator';
+import { IsArray, IsBoolean, IsIn, IsOptional, IsUUID } from 'class-validator';
+
+import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
+
+/** `?status=activo&status=nuevo` y también `?status=activo,nuevo`. */
+const lista = ({ value }: { value: unknown }): unknown => {
+  if (typeof value === 'string') return value.split(',').filter(Boolean);
+  return value;
+};
 
 const booleano = ({ value }: { value: unknown }): unknown =>
   typeof value === 'string' ? value === 'true' : value;
 
-/** Filtros del listado de personas. Llegan por query string. */
-export class BelieversQueryDto {
-  @ApiPropertyOptional({ description: 'Busca por nombre o apellidos' })
+/**
+ * Filtros del listado de creyentes (RFC 0003 §6.1).
+ *
+ * Los identificadores vienen validados como UUID a propósito: es lo que impide
+ * que llegue una cadena vacía a un `IN ('')` contra una columna `uuid`, que en
+ * Postgres revienta la consulta entera (CLAUDE.md).
+ */
+export class BelieversQueryDto extends PaginationQueryDto {
+  @ApiPropertyOptional({ enum: BELIEVER_STATUSES, isArray: true })
   @IsOptional()
-  @IsString()
-  @MaxLength(80)
-  q?: string;
+  @Transform(lista)
+  @IsArray()
+  @IsIn(BELIEVER_STATUSES, { each: true })
+  status?: BelieverStatus[];
 
-  @ApiPropertyOptional({ example: 'pulpito' })
+  @ApiPropertyOptional({ description: 'Solo los de esa sede' })
   @IsOptional()
-  @IsString()
-  @MaxLength(40)
-  ministry?: Ministry;
+  @IsUUID()
+  congregationId?: string;
 
-  @ApiPropertyOptional({ description: 'Incluye también a quien ya no está' })
+  @ApiPropertyOptional({ description: 'Solo quien tenga ese don' })
+  @IsOptional()
+  @IsUUID()
+  giftId?: string;
+
+  @ApiPropertyOptional({ description: 'Deja solo a quien ha agotado su margen' })
   @IsOptional()
   @Transform(booleano)
   @IsBoolean()
-  includeInactive?: boolean;
+  attention?: boolean;
+
+  @ApiPropertyOptional({ enum: BELIEVER_SORT_FIELDS, default: DEFAULT_BELIEVER_SORT })
+  @IsOptional()
+  @IsIn(BELIEVER_SORT_FIELDS)
+  sort: BelieverSortField = DEFAULT_BELIEVER_SORT;
 }

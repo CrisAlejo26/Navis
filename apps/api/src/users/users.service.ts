@@ -77,6 +77,23 @@ export class UsersService {
   }
 
   /**
+   * El nombre de cada una de esas cuentas, para firmar lo que escribieron sin
+   * una consulta por línea. Los identificadores vacíos se filtran antes.
+   */
+  async namesOf(ids: readonly (string | null)[]): Promise<Map<string, string>> {
+    const unique = [...new Set(ids)].filter((id): id is string => Boolean(id));
+    if (unique.length === 0) return new Map();
+
+    const marks = unique.map((_id, index) => p(index + 1)).join(', ');
+    const rows = await this.dataSource.query<{ id: string; name: string }[]>(
+      `SELECT "id", "name" FROM "user" WHERE "id" IN (${marks})`,
+      [...unique],
+    );
+
+    return new Map(rows.map((row) => [row.id, row.name]));
+  }
+
+  /**
    * Listado con búsqueda, filtro por rol, orden y paginación en el servidor.
    *
    * `churchIds` es el **alcance**: las iglesias cuyas cuentas se pueden ver. Una

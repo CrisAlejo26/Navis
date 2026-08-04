@@ -4,7 +4,7 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { EmptyState } from '@/components/ui/empty-state';
-import { ACCENT_RAIL, accentVars } from '@/lib/calendar/accents';
+import { ACCENT_RAIL, accentVars } from '@/lib/accents';
 import { dayNumber } from '@/lib/calendar/labels';
 import { peopleRows } from '@/lib/calendar/people';
 import { cn } from '@/lib/cn';

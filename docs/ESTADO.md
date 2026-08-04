@@ -68,6 +68,13 @@ comprobado que empaqueta correctamente).
   —cada sede arranca con la semana de serie—, asignación en dos toques con
   reparto y avisos, cuatro vistas (mes, semana, agenda y personas) con sus
   filtros en la URL, y la lámina en PNG que sustituye a la captura del Excel.
+- **Creyentes, bitácora y aviso de inactividad** (RFC 0003): la ficha completa
+  sobre la tabla `believers` que adelantó el calendario —estado, dones y margen
+  de aviso—, el historial de notas de seis tipos con su fecha, el catálogo de
+  dones por iglesia con siete de serie, y el listado paginado en el servidor
+  con filtros en la URL, tabla y fichas. El elemento que sostiene la pantalla es
+  **la sonda**: cuánto margen queda con cada persona antes de que haga falta
+  escribir algo de ella. La app móvil se queda con su pantalla puente (§7.9).
 - **Documentación**: ocho RFC y seis ADR en [`docs/`](./).
 
 ## Producción
@@ -92,24 +99,26 @@ código 503 en vez de un 502 en blanco.
 
 ## Siguiente paso — por dónde continuar
 
-El **calendario de programaciones ([RFC 0002](./rfcs/0002-calendario-de-programaciones.md))
-ya está implementado en API y web**: sedes, reuniones fijas, asignación por
-fases, cuatro vistas, filtros y la lámina que se comparte por WhatsApp. Con él
-se ha adelantado el **núcleo mínimo de creyentes** (nombre, teléfono, sede
-habitual y ministerio), así que la RFC 0003 continúa esa tabla en vez de
-crearla.
+El **calendario ([RFC 0002](./rfcs/0002-calendario-de-programaciones.md))** y
+los **creyentes con su bitácora ([RFC 0003](./rfcs/0003-creyentes-y-notas.md))**
+ya están implementados en API y web. Con ellos hay por fin datos de verdad:
+personas, reuniones y notas fechadas.
 
 Lo que sigue:
 
-1. **[RFC 0003](./rfcs/0003-creyentes-y-notas.md) — creyentes y notas.** La
-   ficha completa y el historial, sobre la tabla `believers` que ya existe.
-2. **[RFC 0001](./rfcs/0001-panel-de-metricas.md) — panel de métricas**, que ya
-   tendrá datos que contar.
-3. **[RFC 0006](./rfcs/0006-comunicaciones.md) — comunicaciones**, la primera
-   que añade WebSocket.
-4. **[RFC 0004](./rfcs/0004-profecias-personales.md)** y
+1. **[RFC 0001](./rfcs/0001-panel-de-metricas.md) — panel de métricas**, que ya
+   tiene datos que contar: quién pide atención, cuántas notas hay este mes y
+   cómo va el reparto del calendario.
+2. **[RFC 0006](./rfcs/0006-comunicaciones.md) — comunicaciones**, la primera
+   que añade WebSocket. Es también donde entra notificar el aviso de
+   inactividad fuera de la pantalla (RFC 0003, Alcance).
+3. **[RFC 0004](./rfcs/0004-profecias-personales.md)** y
    **[RFC 0005](./rfcs/0005-suenos-personales.md)**, que comparten el patrón de
-   privacidad y son los mejores candidatos para el servicio de IA local.
+   privacidad y son los mejores candidatos para el servicio de IA local. La
+   0004 es además donde se decide si las notas pasan a ser privadas (D10).
+4. **La pestaña de creyentes en la app móvil**, que se dejó fuera a propósito:
+   el tipo, el esquema y los hooks ya se escribieron compartidos, así que solo
+   falta el JSX (§7.9).
 
 Pendientes menores, cuando toque:
 

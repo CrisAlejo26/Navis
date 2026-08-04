@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ProfilesModule } from '../profiles/profiles.module';
 import { ChurchMember } from './church-member.entity';
 import { Church } from './church.entity';
+import { ChurchClockService } from './church-clock.service';
 import { ChurchesController } from './churches.controller';
 import { ChurchesService } from './churches.service';
 
@@ -14,7 +15,7 @@ import { ChurchesService } from './churches.service';
 @Module({
   imports: [TypeOrmModule.forFeature([Church, ChurchMember]), ProfilesModule],
   controllers: [ChurchesController],
-  providers: [ChurchesService],
-  exports: [ChurchesService],
+  providers: [ChurchesService, ChurchClockService],
+  exports: [ChurchesService, ChurchClockService],
 })
 export class ChurchesModule {}
