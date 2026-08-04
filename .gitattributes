@@ -1,0 +1,39 @@
+# Finales de línea: LF dentro del repositorio **y también al sacarlos**.
+#
+# Sin este fichero manda la configuración de cada máquina, y en Windows
+# `core.autocrlf=true` escribe CRLF en el árbol de trabajo. Prettier está
+# configurado con `endOfLine: lf`, así que después de cualquier `checkout`,
+# `reset` o `stash` daba por mal formateado medio repositorio sin que nadie
+# hubiera tocado nada: `pnpm check` fallaba, se formateaba, y a la siguiente
+# operación de git volvía a fallar.
+#
+# Con `eol=lf` el árbol de trabajo tiene lo mismo que el repositorio en las
+# cuatro plataformas, que es lo que esperan Prettier, ESLint y los contenedores.
+* text=auto eol=lf
+
+# Las dos excepciones, y son de verdad: los guiones de Windows necesitan CRLF
+# —cmd.exe no entiende un LF suelto—…
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+
+# …y los de shell no lo admiten nunca: un CR al final del shebang deja un
+# «bad interpreter» que no hay forma de leer.
+*.sh text eol=lf
+
+# Binarios: que git no intente convertir nada ni enseñar diffs de ruido.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.icns binary
+*.ai binary
+*.pdf binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.otf binary
+*.keystore binary
+*.jar binary
