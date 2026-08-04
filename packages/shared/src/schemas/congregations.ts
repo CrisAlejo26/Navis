@@ -62,9 +62,7 @@ export function isAccent(value: string): boolean {
 }
 
 /** La misma comprobación para `class-validator`, que solo entiende expresiones. */
-export const ACCENT_PATTERN = new RegExp(
-  `^(${CONGREGATION_ACCENTS.join('|')}|#[0-9a-fA-F]{6})$`,
-);
+export const ACCENT_PATTERN = new RegExp(`^(${CONGREGATION_ACCENTS.join('|')}|#[0-9a-fA-F]{6})$`);
 
 export const accentSchema = z
   .string()

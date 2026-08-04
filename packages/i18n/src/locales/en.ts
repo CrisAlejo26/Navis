@@ -223,6 +223,7 @@ export const en = {
     congregationName: 'Campus name',
     congregationCity: 'City',
     congregationColor: 'Colour',
+    customColor: 'Another colour',
     congregationCreated: '{{name}} added',
     lastCongregation: 'The only campus cannot be deleted',
     noProgramme: 'Nothing scheduled',

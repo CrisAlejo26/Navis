@@ -225,6 +225,7 @@ export const de = {
     congregationName: 'Name des Standorts',
     congregationCity: 'Stadt',
     congregationColor: 'Farbe',
+    customColor: 'Andere Farbe',
     congregationCreated: '{{name}} hinzugefügt',
     lastCongregation: 'Der einzige Standort kann nicht gelöscht werden',
     noProgramme: 'Nichts geplant',

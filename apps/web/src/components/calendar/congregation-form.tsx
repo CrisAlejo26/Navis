@@ -1,13 +1,17 @@
 import { useCreateCongregation, useUpdateCongregation } from '@navis/api-client';
-import { CONGREGATION_ACCENTS, createCongregationSchema, type Congregation } from '@navis/shared';
+import {
+  DEFAULT_CONGREGATION_ACCENT,
+  createCongregationSchema,
+  type Congregation,
+} from '@navis/shared';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { FormError } from '@/components/auth/form-error';
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
+import { ColorPicker } from '@/components/ui/color-picker';
 import { Input } from '@/components/ui/input';
-import { accentStyles } from '@/lib/calendar/accents';
 import { api } from '@/lib/api';
 import { formText } from '@/lib/form';
 import { toast } from '@/lib/toast';
@@ -35,7 +39,7 @@ export function CongregationForm({
   const { t } = useTranslation();
   const createCongregation = useCreateCongregation(api);
   const updateCongregation = useUpdateCongregation(api);
-  const [accent, setAccent] = useState(congregation?.accent);
+  const [accent, setAccent] = useState(congregation?.accent ?? DEFAULT_CONGREGATION_ACCENT);
   const [error, setError] = useState<string | null>(null);
 
   const submit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -45,7 +49,7 @@ export function CongregationForm({
     const parsed = createCongregationSchema.safeParse({
       name: formText(form.get('name')),
       city: formText(form.get('city')) || undefined,
-      ...(accent ? { accent } : {}),
+      accent,
     });
 
     if (!parsed.success) {
@@ -101,29 +105,7 @@ export function CongregationForm({
           defaultValue={congregation?.city ?? ''}
         />
 
-        <fieldset className="gap-2 flex flex-col">
-          <legend className="text-sm font-medium">{t('calendar.congregationColor')}</legend>
-          <div className="gap-2 flex flex-wrap">
-            {CONGREGATION_ACCENTS.map((one) => (
-              <button
-                key={one}
-                type="button"
-                aria-label={one}
-                aria-pressed={one === (accent ?? congregation?.accent)}
-                onClick={() => {
-                  setAccent(one);
-                }}
-                className={cn(
-                  'h-8 w-8 cursor-pointer rounded-full border-2 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none',
-                  accentStyles(one).rail,
-                  one === (accent ?? congregation?.accent)
-                    ? 'border-foreground'
-                    : 'border-transparent',
-                )}
-              />
-            ))}
-          </div>
-        </fieldset>
+        <ColorPicker value={accent} onChange={setAccent} label={t('calendar.congregationColor')} />
 
         <FormError message={error} />
 

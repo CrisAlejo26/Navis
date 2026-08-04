@@ -3,7 +3,7 @@ import { Pencil, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import { Button } from '@/components/ui/button';
-import { accentStyles } from '@/lib/calendar/accents';
+import { ACCENT_RAIL, accentVars } from '@/lib/calendar/accents';
 import { cn } from '@/lib/cn';
 
 /**
@@ -30,10 +30,8 @@ export function CongregationRows({
         <li key={congregation.id} className="gap-3 py-3 flex items-center">
           <span
             aria-hidden
-            className={cn(
-              'h-8 w-1.5 shrink-0 rounded-full',
-              accentStyles(congregation.accent).rail,
-            )}
+            style={accentVars(congregation.accent)}
+            className={cn('h-8 w-1.5 shrink-0 rounded-full', ACCENT_RAIL)}
           />
 
           <span className="min-w-0 flex-1">

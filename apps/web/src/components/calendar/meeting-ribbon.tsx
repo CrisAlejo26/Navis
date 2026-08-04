@@ -2,7 +2,7 @@ import type { Meeting, MeetingSlot } from '@navis/shared';
 import { useTranslation } from 'react-i18next';
 
 import { SlotLine } from '@/components/calendar/slot-line';
-import { accentStyles } from '@/lib/calendar/accents';
+import { ACCENT_RAIL, ACCENT_TEXT, accentVars } from '@/lib/calendar/accents';
 import { slotMatches, type DisplayFilters } from '@/lib/calendar/filter';
 import { cn } from '@/lib/cn';
 
@@ -35,14 +35,15 @@ export function MeetingRibbon({
   stacked?: boolean;
 }) {
   const { t } = useTranslation();
-  const accent = accentStyles(meeting.accent);
+  const accent = accentVars(meeting.accent);
   const cancelled = meeting.status === 'cancelada';
 
   return (
     <article className={cn('pl-2.5 relative', cancelled && 'opacity-55')}>
       <span
         aria-hidden
-        className={cn('left-0 inset-y-0.5 absolute w-[3px] rounded-full', accent.rail)}
+        style={accent}
+        className={cn('left-0 inset-y-0.5 absolute w-[3px] rounded-full', ACCENT_RAIL)}
       />
 
       {/* La sede se lee antes que nada: cuando el mismo viernes hay tres, es lo
@@ -51,10 +52,11 @@ export function MeetingRibbon({
       <header className="gap-1.5 px-1 flex items-baseline">
         {congregationName && (
           <span
+            style={accent}
             className={cn(
               'font-semibold truncate tracking-[0.08em]',
               size === 'sm' ? 'text-[11px]' : 'text-[12px]',
-              accent.text,
+              ACCENT_TEXT,
             )}
           >
             {congregationName}

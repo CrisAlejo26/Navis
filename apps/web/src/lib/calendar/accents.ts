@@ -1,48 +1,55 @@
+import { isCongregationAccent, type CongregationAccent } from '@navis/shared';
 import { brandColorHex, themeColorsHex, type ResolvedTheme } from '@navis/theme';
+import type { CSSProperties } from 'react';
 
 /**
  * Cómo se pinta cada sede: el carril de su cinta, su etiqueta y su punto.
  *
- * Es un **mapa de variantes** (Regla 1) y no una clase construida al vuelo:
- * `bg-${accent}` no existiría para Tailwind, que solo ve las clases escritas.
+ * El color viaja en una **variable CSS propia** (`--sede`) y las clases la
+ * leen. Es lo que permite que una sede lleve un color de la paleta ampliada o
+ * uno elegido a mano sin que Tailwind tenga que conocerlo: `bg-${color}` no
+ * existiría, porque el compilador solo ve las clases escritas (Regla 1).
  */
-interface AccentStyles {
-  /** El carril vertical de la cinta. */
-  rail: string;
-  /** El texto de la sede en la cabecera del carril. */
-  text: string;
-  /** El fondo suave de su etiqueta. */
-  chip: string;
+/** El carril vertical de la cinta, el punto y cualquier superficie del color. */
+export const ACCENT_RAIL = 'bg-[var(--sede)]';
+
+/** El nombre de la sede escrito de su color. */
+export const ACCENT_TEXT = 'text-[var(--sede)]';
+
+export type AccentVars = CSSProperties & Record<'--sede', string>;
+
+/**
+ * Los seis colores de siempre son **tokens**, no hexadecimales: siguen
+ * cambiando con el tema y cumpliendo contraste en claro y en oscuro (Regla 3).
+ */
+const TOKEN_VAR: Record<CongregationAccent, string> = {
+  primary: 'var(--color-primary)',
+  accent: 'var(--color-accent)',
+  success: 'var(--color-success)',
+  warning: 'var(--color-warning)',
+  destructive: 'var(--color-destructive)',
+  brand: 'var(--color-brand)',
+};
+
+const HEX = /^#[0-9a-fA-F]{6}$/;
+
+/** El color de una sede tal cual lo entiende CSS. */
+export function accentColor(accent: string): string {
+  if (isCongregationAccent(accent)) return TOKEN_VAR[accent];
+  return HEX.test(accent) ? accent : TOKEN_VAR.primary;
 }
 
-const FALLBACK: AccentStyles = {
-  rail: 'bg-primary',
-  text: 'text-primary',
-  chip: 'bg-primary/10 text-primary',
-};
-
-export const ACCENT_STYLES: Record<string, AccentStyles> = {
-  primary: FALLBACK,
-  accent: { rail: 'bg-accent', text: 'text-accent', chip: 'bg-accent/15 text-accent' },
-  success: { rail: 'bg-success', text: 'text-success', chip: 'bg-success/12 text-success' },
-  warning: { rail: 'bg-warning', text: 'text-warning', chip: 'bg-warning/15 text-warning' },
-  destructive: {
-    rail: 'bg-destructive',
-    text: 'text-destructive',
-    chip: 'bg-destructive/10 text-destructive',
-  },
-  brand: { rail: 'bg-brand', text: 'text-brand', chip: 'bg-brand/10 text-brand' },
-};
-
-export function accentStyles(accent: string): AccentStyles {
-  return ACCENT_STYLES[accent] ?? FALLBACK;
+export function accentVars(accent: string): AccentVars {
+  return { '--sede': accentColor(accent) };
 }
 
 /**
  * El mismo color en hexadecimal, para la lámina que se comparte: se rasteriza
- * a imagen y `oklch` no sobrevive a ese viaje (RFC 0002 D14).
+ * a imagen y ni `oklch` ni una variable sobreviven a ese viaje (RFC 0002 D14).
  */
 export function accentHex(accent: string, theme: ResolvedTheme = 'light'): string {
+  if (HEX.test(accent)) return accent;
+
   const palette = themeColorsHex[theme];
 
   if (accent === 'accent') return palette.accent;
