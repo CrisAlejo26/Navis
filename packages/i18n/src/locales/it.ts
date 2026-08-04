@@ -224,6 +224,7 @@ export const it = {
     congregationName: 'Nome della sede',
     congregationCity: 'Città',
     congregationColor: 'Colore',
+    customColor: 'Altro colore',
     congregationCreated: '{{name}} aggiunta',
     lastCongregation: "Non si può eliminare l'unica sede",
     noProgramme: 'Niente in programma',

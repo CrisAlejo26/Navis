@@ -4,7 +4,7 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { EmptyState } from '@/components/ui/empty-state';
-import { accentStyles } from '@/lib/calendar/accents';
+import { ACCENT_RAIL, accentVars } from '@/lib/calendar/accents';
 import { dayNumber } from '@/lib/calendar/labels';
 import { peopleRows } from '@/lib/calendar/people';
 import { cn } from '@/lib/cn';
@@ -81,10 +81,8 @@ export function PeopleView({
                     {turnos.length > 0 && (
                       <span
                         title={turnos.map((turno) => turno.detail).join(' · ')}
-                        className={cn(
-                          'h-4 w-4 mx-auto block rounded-[4px]',
-                          accentStyles(turnos[0]?.accent ?? 'primary').rail,
-                        )}
+                        style={accentVars(turnos[0]?.accent ?? 'primary')}
+                        className={cn('h-4 w-4 mx-auto block rounded-[4px]', ACCENT_RAIL)}
                       >
                         <span className="sr-only">{turnos[0]?.detail}</span>
                       </span>

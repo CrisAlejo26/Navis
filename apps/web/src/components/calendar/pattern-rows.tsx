@@ -3,7 +3,7 @@ import { Pencil, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import { Button } from '@/components/ui/button';
-import { accentStyles } from '@/lib/calendar/accents';
+import { ACCENT_RAIL, ACCENT_TEXT, accentVars } from '@/lib/calendar/accents';
 import { weekdayHeadings } from '@/lib/calendar/labels';
 import { cn } from '@/lib/cn';
 
@@ -45,9 +45,10 @@ export function PatternRows({
           <section key={congregation.id}>
             {varias && (
               <h3
+                style={accentVars(congregation.accent)}
                 className={cn(
                   'mb-1 font-semibold text-[11px] tracking-[0.14em] uppercase',
-                  accentStyles(congregation.accent).text,
+                  ACCENT_TEXT,
                 )}
               >
                 {congregation.name}
@@ -59,10 +60,8 @@ export function PatternRows({
                 <li key={pattern.id} className="gap-3 py-3 flex items-center">
                   <span
                     aria-hidden
-                    className={cn(
-                      'h-8 w-1.5 shrink-0 rounded-full',
-                      accentStyles(pattern.accent).rail,
-                    )}
+                    style={accentVars(pattern.accent)}
+                    className={cn('h-8 w-1.5 shrink-0 rounded-full', ACCENT_RAIL)}
                   />
 
                   <span className="min-w-0 flex-1">

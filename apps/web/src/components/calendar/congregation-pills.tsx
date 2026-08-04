@@ -3,7 +3,7 @@ import { Plus } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import { Chip } from '@/components/ui/chip';
-import { accentStyles } from '@/lib/calendar/accents';
+import { ACCENT_RAIL, accentVars } from '@/lib/calendar/accents';
 import { cn } from '@/lib/cn';
 
 /**
@@ -35,7 +35,6 @@ export function CongregationPills({
 
       {congregations.map((congregation) => {
         const active = selected.includes(congregation.id);
-        const accent = accentStyles(congregation.accent);
 
         return (
           <Chip
@@ -45,7 +44,11 @@ export function CongregationPills({
               onToggle(congregation.id);
             }}
           >
-            <span aria-hidden className={cn('h-2 w-2 rounded-full', accent.rail)} />
+            <span
+              aria-hidden
+              style={accentVars(congregation.accent)}
+              className={cn('h-2 w-2 rounded-full', ACCENT_RAIL)}
+            />
             {congregation.name}
           </Chip>
         );

@@ -71,7 +71,6 @@
   },
   "lint-staged": {
     "*.{js,jsx,mjs,cjs,ts,tsx}": [
-      "oxlint --fix",
       "eslint --fix --no-warn-ignored",
       "prettier --write"
     ],
