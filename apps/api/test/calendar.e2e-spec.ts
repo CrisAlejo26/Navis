@@ -132,10 +132,14 @@ describe('Calendario (e2e)', () => {
     expect(semana.find((one) => one.weekday === 3)?.name).toBe('Enseñanza');
     expect(semana.find((one) => one.weekday === 0)?.startTime.slice(0, 5)).toBe('10:00');
     expect(semana.find((one) => one.weekday === 6)?.startTime.slice(0, 5)).toBe('18:00');
+    // El púlpito reparte los tramos de la reunión y, todos los días, quién
+    // queda encargado y quién abre la iglesia.
     expect(semana.find((one) => one.weekday === 3)?.phases.map((phase) => phase.name)).toEqual([
       'Introducción',
       'Predicación',
       'Testimonios',
+      'Encargado',
+      'Abre iglesia',
     ]);
 
     // El viernes de Elda sale del patrón, sin crear una sola fila.

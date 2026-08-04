@@ -1,5 +1,6 @@
 import { addDays, endOfMonth, startOfMonth, startOfWeek } from '@navis/shared';
 
+import type { PosterAspect } from '@/components/calendar/poster-size';
 import type { DateRange } from './view-range';
 
 /**
@@ -56,7 +57,12 @@ export function shareRangeFor(preset: SharePreset, anchor: string, day: string |
   return { from, to: addDays(from, (WEEKS[preset] ?? 1) * 7 - 1) };
 }
 
-/** Vertical para un día o una semana; apaisada para lo que ya no cabe. */
-export function suggestedAspect(preset: SharePreset): 'portrait' | 'landscape' {
-  return preset === 'day' || preset === 'week' ? 'portrait' : 'landscape';
+/**
+ * Vertical para un día suelto, **tabla** para una semana —que es como se manda
+ * hoy al grupo, una columna por día y sede— y apaisada para lo que ya no cabe.
+ */
+export function suggestedAspect(preset: SharePreset): PosterAspect {
+  if (preset === 'day') return 'portrait';
+  if (preset === 'week' || preset === 'twoWeeks') return 'table';
+  return 'landscape';
 }

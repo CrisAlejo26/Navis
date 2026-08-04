@@ -6,7 +6,7 @@
  * tercero es el que siempre funciona.
  */
 function toFile(blob: Blob, fileName: string): File {
-  return new File([blob], fileName, { type: 'image/png' });
+  return new File([blob], fileName, { type: blob.type || 'image/png' });
 }
 
 /** Si este aparato sabe compartir ficheros. En varios escritorios, no. */
@@ -26,7 +26,7 @@ export async function copyImage(blob: Blob): Promise<void> {
   await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
 }
 
-export function downloadImage(blob: Blob, fileName: string): void {
+export function downloadFile(blob: Blob, fileName: string): void {
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.href = url;
@@ -44,7 +44,12 @@ export async function copyText(text: string): Promise<void> {
 }
 
 /** `navis-elda-2026-08-15.png`: se entiende sin abrirlo. */
-export function posterFileName(from: string, to: string, congregation?: string): string {
+export function posterFileName(
+  from: string,
+  to: string,
+  congregation?: string,
+  extension = 'png',
+): string {
   const sede = congregation
     ? `-${congregation
         .normalize('NFD')
@@ -54,5 +59,5 @@ export function posterFileName(from: string, to: string, congregation?: string):
         .replace(/^-|-$/g, '')}`
     : '';
 
-  return `navis${sede}-${from}${from === to ? '' : `_${to}`}.png`;
+  return `navis${sede}-${from}${from === to ? '' : `_${to}`}.${extension}`;
 }

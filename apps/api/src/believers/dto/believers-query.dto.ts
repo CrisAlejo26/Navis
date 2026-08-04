@@ -1,7 +1,7 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { MINISTRIES, type Ministry } from '@navis/shared';
+import type { Ministry } from '@navis/shared';
 import { Transform } from 'class-transformer';
-import { IsBoolean, IsIn, IsOptional, IsString, MaxLength } from 'class-validator';
+import { IsBoolean, IsOptional, IsString, MaxLength } from 'class-validator';
 
 const booleano = ({ value }: { value: unknown }): unknown =>
   typeof value === 'string' ? value === 'true' : value;
@@ -14,9 +14,10 @@ export class BelieversQueryDto {
   @MaxLength(80)
   q?: string;
 
-  @ApiPropertyOptional({ enum: MINISTRIES })
+  @ApiPropertyOptional({ example: 'pulpito' })
   @IsOptional()
-  @IsIn(MINISTRIES)
+  @IsString()
+  @MaxLength(40)
   ministry?: Ministry;
 
   @ApiPropertyOptional({ description: 'Incluye también a quien ya no está' })

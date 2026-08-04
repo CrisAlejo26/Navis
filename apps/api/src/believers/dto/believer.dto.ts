@@ -1,14 +1,14 @@
 import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
-import { MINISTRIES, type Ministry } from '@navis/shared';
+import type { Ministry } from '@navis/shared';
 import { Transform } from 'class-transformer';
 import {
   IsArray,
   IsBoolean,
-  IsIn,
   IsOptional,
   IsString,
   IsUUID,
   Length,
+  Matches,
   ValidateIf,
 } from 'class-validator';
 
@@ -46,10 +46,11 @@ export class CreateBelieverDto {
   @IsUUID()
   congregationId?: string | null;
 
-  @ApiPropertyOptional({ enum: MINISTRIES, isArray: true })
+  /** Sus **labores**: los slugs de los roles con los que se le puede programar. */
+  @ApiPropertyOptional({ example: ['pulpito'] })
   @IsOptional()
   @IsArray()
-  @IsIn(MINISTRIES, { each: true })
+  @Matches(/^[a-z0-9-]{2,40}$/, { each: true })
   ministries?: Ministry[];
 }
 

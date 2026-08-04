@@ -1,8 +1,9 @@
 import { useCreateCalendar, useUpdateCalendar } from '@navis/api-client';
-import { createCalendarSchema, MINISTRIES, type Calendar } from '@navis/shared';
+import { createCalendarSchema, type Calendar } from '@navis/shared';
+import { Info } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 
 import { FormError } from '@/components/auth/form-error';
 import { Button } from '@/components/ui/button';
@@ -10,8 +11,8 @@ import { Dialog } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
 import { api } from '@/lib/api';
-import { MINISTRY_LABELS } from '@/lib/calendar/ministries';
 import { formText } from '@/lib/form';
+import { useRoleCatalog, useRoleLabel } from '@/lib/roles';
 import { toast } from '@/lib/toast';
 
 /**
@@ -33,6 +34,14 @@ export function CalendarForm({
 }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  /*
+   * Las **labores** salen del catálogo de roles y no de una lista aparte: son
+   * la misma lista de la iglesia —púlpito, recepción, sonido, biblias— y
+   * mantenerla dos veces solo sirve para que se desincronicen. Si mañana se
+   * crea el rol «Alabanza», ahí aparece.
+   */
+  const labores = [...useRoleCatalog(open).values()];
+  const nombreDe = useRoleLabel();
   const createCalendar = useCreateCalendar(api);
   const updateCalendar = useUpdateCalendar(api);
   const [error, setError] = useState<string | null>(null);
@@ -91,18 +100,35 @@ export function CalendarForm({
       <form onSubmit={submit} className="gap-4 flex flex-col" noValidate>
         <Input name="name" label={t('calendar.calendarName')} defaultValue={calendar?.name} />
 
-        <Select
-          name="ministry"
-          label={t('calendar.ministry')}
-          defaultValue={calendar?.ministry ?? ''}
-        >
-          <option value="">{t('calendar.ministryNone')}</option>
-          {MINISTRIES.map((ministry) => (
-            <option key={ministry} value={ministry}>
-              {t(MINISTRY_LABELS[ministry])}
-            </option>
-          ))}
-        </Select>
+        <div className="gap-1.5 flex flex-col">
+          <Select
+            name="ministry"
+            label={t('calendar.labor')}
+            defaultValue={calendar?.ministry ?? ''}
+          >
+            <option value="">{t('calendar.laborNone')}</option>
+            {labores.map((rol) => (
+              <option key={rol.slug} value={rol.slug}>
+                {nombreDe(rol)}
+              </option>
+            ))}
+          </Select>
+
+          {/* Dónde se administran, porque la lista no se edita desde aquí. */}
+          <p className="gap-1.5 text-xs flex items-start text-muted-foreground">
+            <Info size={14} aria-hidden className="mt-0.5 shrink-0" />
+            <span>
+              {t('calendar.laborHint')}{' '}
+              <Link
+                to="/users"
+                className="font-medium text-primary underline-offset-4 hover:underline"
+              >
+                {t('nav.users')}
+              </Link>
+              .
+            </span>
+          </p>
+        </div>
 
         <FormError message={error} />
 

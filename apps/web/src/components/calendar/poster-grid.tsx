@@ -68,6 +68,24 @@ export function PosterGrid({
                 }}
               >
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                  {/* Qué reunión es y a qué hora, antes de los nombres: una
+                      lista de personas sin eso no dice a qué se las convoca. */}
+                  <span
+                    style={{
+                      fontSize: '14px',
+                      fontWeight: 600,
+                      letterSpacing: '0.08em',
+                      textTransform: 'uppercase',
+                      color: accentHex(meeting.accent, palette.theme),
+                    }}
+                  >
+                    {meeting.name}
+                    <span style={{ fontWeight: 400, color: palette.muted }}>
+                      {' '}
+                      {meeting.startTime}
+                    </span>
+                  </span>
+
                   {meeting.slots
                     .filter((slot) => slot.believer)
                     .map((slot) => (

@@ -34,6 +34,11 @@ export function shortDay(iso: string): string {
   return format(iso, { weekday: 'short', day: 'numeric' });
 }
 
+/** «Lunes», «Martes»… el nombre del día, para las cabeceras de la tabla. */
+export function weekdayName(iso: string): string {
+  return capitalize(format(iso, { weekday: 'long' }));
+}
+
 export function dayNumber(iso: string): string {
   return format(iso, { day: 'numeric' });
 }

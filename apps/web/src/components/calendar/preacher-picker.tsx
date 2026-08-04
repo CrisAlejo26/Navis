@@ -95,7 +95,7 @@ export function PreacherPicker({
               setAll(!all);
             }}
           >
-            {t(all ? 'calendar.everyone' : 'calendar.onlyMinistry')}
+            {t(all ? 'calendar.everyone' : 'calendar.onlyLabor')}
           </Chip>
         </div>
 

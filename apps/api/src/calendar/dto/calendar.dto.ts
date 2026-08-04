@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
-import { MINISTRIES, type Ministry } from '@navis/shared';
+import type { Ministry } from '@navis/shared';
 import { Transform } from 'class-transformer';
-import { IsIn, IsInt, IsOptional, IsString, Length, Min, ValidateIf } from 'class-validator';
+import { IsInt, IsOptional, IsString, Length, Matches, Min, ValidateIf } from 'class-validator';
 
 const trimmed = ({ value }: { value: unknown }): unknown =>
   typeof value === 'string' ? value.trim() : value;
@@ -14,10 +14,12 @@ export class CreateCalendarDto {
   @Transform(trimmed)
   name: string;
 
-  @ApiPropertyOptional({ enum: MINISTRIES })
+  /** La **labor**: el slug de un rol del catálogo (`pulpito`, `sonido`…). */
+  @ApiPropertyOptional({ example: 'pulpito' })
   @IsOptional()
   @ValidateIf((_object, value) => value !== null)
-  @IsIn(MINISTRIES)
+  @IsString()
+  @Matches(/^[a-z0-9-]{2,40}$/)
   ministry?: Ministry | null;
 }
 

@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 import { isoDateSchema, timeSchema } from './common';
-import { CONGREGATION_ACCENTS } from './congregations';
+import { accentSchema } from './congregations';
 
 /** Domingo es 0, como en `Date.getDay()`. */
 export const WEEKDAYS = [0, 1, 2, 3, 4, 5, 6] as const;
@@ -53,7 +53,7 @@ export const createPatternSchema = z.object({
   name: z.string().trim().min(2, 'La reunión necesita un nombre').max(80),
   weekday: z.number().int().min(0).max(6),
   startTime: timeSchema,
-  accent: z.enum(CONGREGATION_ACCENTS).optional(),
+  accent: accentSchema.optional(),
   validFrom: isoDateSchema.nullable().optional(),
   validTo: isoDateSchema.nullable().optional(),
   phases: z.array(phaseInputSchema).min(1, 'Hace falta al menos una fase').max(MAX_PHASES),

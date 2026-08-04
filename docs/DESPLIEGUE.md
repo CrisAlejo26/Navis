@@ -200,8 +200,19 @@ servidor acepte SSH» agota los diez intentos.
 
 Eso **no** es la clave ni el usuario —esos fallan con un error de
 autenticación, no con un timeout—: los paquetes del runner no llegan a
-`sshd`. Y que el puerto conteste desde tu máquina no descarta nada, porque lo
-normal es que el filtro sea por IP de origen. Dónde mirar, por orden:
+`sshd`.
+
+**Lo primero, relanzar el job.** En este servidor ya ha pasado dos veces que la
+espera agotara los intentos y media hora después el despliegue entrara sin
+tocar nada: no había firewall de por medio —`ufw` acepta el 22 desde cualquier
+sitio, `fail2ban` no tenía a nadie baneado y `sshd` registraba conexiones de
+runners el mismo día— sino un corte de red aguas arriba. Las imágenes ya están
+en GHCR, así que relanzar cuesta un minuto. Por eso la espera es de quince
+minutos y no de cuatro.
+
+Si vuelve a fallar, entonces sí hay algo filtrando. Que el puerto conteste desde
+tu máquina no descarta nada, porque lo normal es que el filtro sea por IP de
+origen. Dónde mirar, por orden:
 
 | Sospecha                             | Cómo se comprueba en el servidor    |
 | ------------------------------------ | ----------------------------------- |
