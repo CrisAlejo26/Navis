@@ -35,5 +35,22 @@ export const queryKeys = {
     all: ['users'] as const,
     list: (query: object) => [...queryKeys.users.all, 'list', query] as const,
   },
+  /**
+   * Todo lo del calendario cuelga de la misma raíz —incluidas sedes y
+   * patrones— para que al asignar a alguien, al cambiar de sede o al cambiar
+   * de iglesia baste con invalidar `all`.
+   */
+  calendar: {
+    all: ['calendar'] as const,
+    range: (query: object) => [...queryKeys.calendar.all, 'range', query] as const,
+    summary: (query: object) => [...queryKeys.calendar.all, 'summary', query] as const,
+    congregations: ['calendar', 'congregations'] as const,
+    patterns: ['calendar', 'patterns'] as const,
+    preachers: (query: object) => [...queryKeys.calendar.all, 'preachers', query] as const,
+  },
+  believers: {
+    all: ['believers'] as const,
+    list: (query: object) => [...queryKeys.believers.all, 'list', query] as const,
+  },
   health: ['health'] as const,
 } as const;

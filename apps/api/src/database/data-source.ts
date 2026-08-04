@@ -3,6 +3,13 @@ import { dirname } from 'node:path';
 import { DataSource, type DataSourceOptions } from 'typeorm';
 
 import { env, isProduction, sqlitePath } from '../config/env';
+import { BelieverMinistry } from '../believers/believer-ministry.entity';
+import { Believer } from '../believers/believer.entity';
+import { Congregation } from '../calendar/congregation.entity';
+import { MeetingPattern } from '../calendar/meeting-pattern.entity';
+import { MeetingSlot } from '../calendar/meeting-slot.entity';
+import { Meeting } from '../calendar/meeting.entity';
+import { PatternPhase } from '../calendar/pattern-phase.entity';
 import { ChurchMember } from '../churches/church-member.entity';
 import { Church } from '../churches/church.entity';
 import { Profile } from '../profiles/profile.entity';
@@ -20,7 +27,19 @@ const logging: DataSourceOptions['logging'] = isProduction
  * ficheros `.ts`, cosa que no sabe hacer: falla con «Invalid or unexpected
  * token». Al añadir una entidad nueva, se añade aquí.
  */
-const entities = [Profile, Role, Church, ChurchMember];
+const entities = [
+  Profile,
+  Role,
+  Church,
+  ChurchMember,
+  Congregation,
+  Believer,
+  BelieverMinistry,
+  MeetingPattern,
+  PatternPhase,
+  Meeting,
+  MeetingSlot,
+];
 
 /**
  * Las migraciones sí van por patrón, pero con UNA extensión: si aceptase

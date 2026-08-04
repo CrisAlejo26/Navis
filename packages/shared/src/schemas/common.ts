@@ -32,3 +32,20 @@ export const apiErrorSchema = z.object({
 export type ApiErrorBody = z.infer<typeof apiErrorSchema>;
 
 export const uuidSchema = z.uuid();
+
+/**
+ * Un día del calendario, `AAAA-MM-DD`, tal y como lo devuelven Postgres y
+ * SQLite para una columna `date`.
+ *
+ * Es texto y no `Date` a propósito (RFC 0002 §5.5): la reunión del viernes es
+ * del viernes en cualquier huso, y en cuanto se convierte a un instante
+ * aparece el clásico desfase de un día.
+ */
+export const isoDateSchema = z
+  .string()
+  .regex(/^\d{4}-\d{2}-\d{2}$/, 'La fecha debe tener el formato AAAA-MM-DD');
+
+/** Una hora de reloj de pared, `HH:MM`. Por el mismo motivo que `isoDateSchema`. */
+export const timeSchema = z
+  .string()
+  .regex(/^([01]\d|2[0-3]):[0-5]\d$/, 'La hora debe tener el formato HH:MM');

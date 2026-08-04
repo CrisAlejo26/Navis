@@ -7,6 +7,8 @@ interface DialogProps {
   onClose: () => void;
   title: string;
   description?: string;
+  /** Ancho del modal. Lo que enseña una vista previa necesita más que un formulario. */
+  width?: string;
   children: ReactNode;
 }
 
@@ -20,7 +22,14 @@ interface DialogProps {
  * Toda acción importante o destructiva pasa por aquí: nada se ejecuta con un
  * solo clic sin confirmación.
  */
-export function Dialog({ open, onClose, title, description, children }: DialogProps) {
+export function Dialog({
+  open,
+  onClose,
+  title,
+  description,
+  width = 'min(30rem, calc(100vw - 2rem))',
+  children,
+}: DialogProps) {
   const { t } = useTranslation();
   const ref = useRef<HTMLDialogElement>(null);
 
@@ -38,7 +47,8 @@ export function Dialog({ open, onClose, title, description, children }: DialogPr
       aria-labelledby="dialog-title"
       onClose={onClose}
       onCancel={onClose}
-      className="p-0 shadow-lg backdrop:bg-black/45 m-auto w-[min(30rem,calc(100vw-2rem))] rounded-xl border bg-card text-card-foreground"
+      style={{ width }}
+      className="p-0 shadow-lg backdrop:bg-black/45 m-auto max-w-none rounded-xl border bg-card text-card-foreground"
     >
       {open && (
         <div className="p-5 animate-page-in">

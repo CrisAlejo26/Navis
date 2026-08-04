@@ -7,6 +7,8 @@ import { LoggerModule } from 'nestjs-pino';
 
 import { AiModule } from './ai/ai.module';
 import { AuthModule } from './auth/auth.module';
+import { BelieversModule } from './believers/believers.module';
+import { CalendarModule } from './calendar/calendar.module';
 import { ChurchesModule } from './churches/churches.module';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 import { PermissionsGuard } from './common/guards/permissions.guard';
@@ -43,6 +45,8 @@ import { WeatherModule } from './weather/weather.module';
     AuthModule,
     ProfilesModule,
     ChurchesModule,
+    BelieversModule,
+    CalendarModule,
     RolesModule,
     UsersModule,
     SetupModule,
