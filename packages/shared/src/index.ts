@@ -10,6 +10,7 @@ export * from './schemas/calendars';
 export * from './schemas/churches';
 export * from './schemas/common';
 export * from './schemas/congregations';
+export * from './schemas/default-week';
 export * from './schemas/patterns';
 export * from './schemas/profile';
 export * from './schemas/roles';

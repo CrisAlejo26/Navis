@@ -3,6 +3,7 @@ import { X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import { CongregationPills } from '@/components/calendar/congregation-pills';
+import { Chip } from '@/components/ui/chip';
 import { SearchField } from '@/components/ui/search-field';
 import type { CalendarParams } from '@/lib/calendar/params';
 import { cn } from '@/lib/cn';
@@ -56,34 +57,26 @@ export function CalendarFilters({
         className="sm:w-56 w-full"
       />
 
-      <button
-        type="button"
-        aria-pressed={filters.pending}
+      <Chip
+        active={filters.pending}
+        tone="warning"
         onClick={() => {
           setFilters({ pending: !filters.pending });
         }}
-        className={cn(
-          'h-8 px-3 text-xs font-medium cursor-pointer rounded-full border',
-          'focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none',
-          filters.pending
-            ? 'border-warning/40 bg-warning/15 text-warning'
-            : 'border-transparent bg-muted text-muted-foreground hover:text-foreground',
-        )}
       >
         {t('calendar.filterPending')}
-      </button>
+      </Chip>
 
       {filters.personId && (
-        <button
-          type="button"
+        <Chip
+          active
           onClick={() => {
             setFilters({ personId: null });
           }}
-          className="h-8 gap-1.5 px-3 text-xs font-medium inline-flex cursor-pointer items-center rounded-full bg-foreground/8 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
         >
           {personName ?? t('calendar.filterPerson')}
           <X size={12} aria-hidden />
-        </button>
+        </Chip>
       )}
 
       {hasFilters && (

@@ -36,22 +36,26 @@ export function CalendarToolbar({
     <div className="gap-3 flex flex-wrap items-center justify-between">
       <div className="gap-2 min-w-0 flex items-center">
         <div className="gap-0.5 flex items-center">
-          <Arrow
-            label={t('common.previous')}
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label={t('common.previous')}
             onClick={() => {
               params.step(-1);
             }}
           >
             <ChevronLeft size={18} aria-hidden />
-          </Arrow>
-          <Arrow
-            label={t('common.next')}
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label={t('common.next')}
             onClick={() => {
               params.step(1);
             }}
           >
             <ChevronRight size={18} aria-hidden />
-          </Arrow>
+          </Button>
         </div>
 
         <label className="group relative cursor-pointer">
@@ -130,26 +134,5 @@ export function CalendarToolbar({
         </Button>
       </div>
     </div>
-  );
-}
-
-function Arrow({
-  label,
-  onClick,
-  children,
-}: {
-  label: string;
-  onClick: () => void;
-  children: React.ReactNode;
-}) {
-  return (
-    <button
-      type="button"
-      aria-label={label}
-      onClick={onClick}
-      className="h-9 w-9 inline-flex cursor-pointer items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-    >
-      {children}
-    </button>
   );
 }

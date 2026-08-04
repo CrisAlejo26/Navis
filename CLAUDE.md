@@ -91,6 +91,10 @@ Padre)` parece perezoso, pero `emitDecoratorMetadata` escribe la clase en los
   'X' before initialization» al arrancar. En el lado hijo se referencia **por
   nombre** y con el tipo envuelto: `@ManyToOne('Padre', 'hijos')` y
   `padre: Relation<Padre>`, con `import type`.
+- **Una relación sin `ORDER BY` no vuelve ordenada en Postgres.** Las fases de
+  una reunión salían en el orden de inserción en SQLite —por casualidad— y
+  desordenadas en Postgres («predicación, testimonios, introducción»). El orden
+  se pide en la consulta: `order: { phases: { position: 'ASC' } }`.
 - **Un `IN ('')` contra una columna `uuid` revienta en Postgres** («invalid
   input syntax for type uuid») y a SQLite le da igual, porque ahí todo es
   texto. Pasó al mapear los `believer_id` nulos a cadena vacía antes de

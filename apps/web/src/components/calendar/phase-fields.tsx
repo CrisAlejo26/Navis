@@ -34,16 +34,17 @@ export function PhaseFields({
             className="flex-1"
           />
           {phases.length > 1 && (
-            <button
-              type="button"
+            <Button
+              variant="ghost"
+              size="icon"
               aria-label={t('common.delete')}
               onClick={() => {
                 onChange(phases.filter((_one, i) => i !== index));
               }}
-              className="h-9 w-9 inline-flex shrink-0 cursor-pointer items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+              className="shrink-0"
             >
               <X size={15} aria-hidden />
-            </button>
+            </Button>
           )}
         </div>
       ))}

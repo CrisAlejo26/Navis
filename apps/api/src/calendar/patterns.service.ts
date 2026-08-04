@@ -26,7 +26,14 @@ export class PatternsService {
     return this.patterns.find({
       where: { churchId, calendarId },
       relations: { phases: true },
-      order: { weekday: 'ASC', startTime: 'ASC' },
+      /*
+       * Las fases se ordenan **en la consulta**: sin `ORDER BY`, Postgres las
+       * devuelve en el orden que le conviene y la reunión se lee «predicación,
+       * testimonios, introducción». En SQLite salían por casualidad en el
+       * orden de inserción, que es justo la clase de suerte que esconde el
+       * fallo hasta producción.
+       */
+      order: { weekday: 'ASC', startTime: 'ASC', phases: { position: 'ASC' } },
     });
   }
 
@@ -87,10 +94,10 @@ export class PatternsService {
     const pattern = await this.patterns.findOne({
       where: { id, churchId },
       relations: { phases: true },
+      order: { phases: { position: 'ASC' } },
     });
     if (!pattern) throw new NotFoundException('Ese patrón no existe en esta iglesia');
 
-    pattern.phases.sort((a, b) => a.position - b.position);
     return pattern;
   }
 

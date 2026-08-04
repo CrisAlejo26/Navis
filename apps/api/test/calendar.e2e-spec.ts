@@ -120,34 +120,35 @@ describe('Calendario (e2e)', () => {
     expect(body<Congregation>(creada).accent).not.toBe(body<Congregation[]>(inicial)[0]?.accent);
   });
 
-  it('un patrón semanal llena los viernes sin crear una sola fila', async () => {
-    const patron = await request(app.getHttpServer())
-      .post(`/api/v1/calendars/${calendarId}/patterns`)
-      .set('Cookie', cookie)
-      .send({
-        congregationId: elda,
-        name: 'Culto',
-        weekday: 5,
-        startTime: '20:00',
-        phases: [{ name: 'Introducción' }, { name: 'Enseñanza' }],
-      })
-      .expect(201);
-
-    patternId = body<MeetingPattern>(patron).id;
-
-    const calendario = await request(app.getHttpServer())
-      .get(`/api/v1/calendars/${calendarId}/schedule?from=${rango.from}&to=${rango.to}`)
+  it('cada sede nace con la semana de serie, y el mes se llena solo', async () => {
+    const respuesta = await request(app.getHttpServer())
+      .get(`/api/v1/calendars/${calendarId}/patterns`)
       .set('Cookie', cookie)
       .expect(200);
 
-    const dias = body<CalendarRange>(calendario).days.filter((day) => day.meetings.length > 0);
-    expect(dias.map((day) => day.date)).toEqual([
-      '2026-08-07',
-      '2026-08-14',
-      '2026-08-21',
-      '2026-08-28',
+    const semana = body<MeetingPattern[]>(respuesta).filter((one) => one.congregationId === elda);
+
+    expect(semana).toHaveLength(7);
+    expect(semana.find((one) => one.weekday === 3)?.name).toBe('Enseñanza');
+    expect(semana.find((one) => one.weekday === 0)?.startTime.slice(0, 5)).toBe('10:00');
+    expect(semana.find((one) => one.weekday === 6)?.startTime.slice(0, 5)).toBe('18:00');
+    expect(semana.find((one) => one.weekday === 3)?.phases.map((phase) => phase.name)).toEqual([
+      'Introducción',
+      'Predicación',
+      'Testimonios',
     ]);
-    expect(dias[0]?.meetings[0]?.id).toBeNull();
+
+    // El viernes de Elda sale del patrón, sin crear una sola fila.
+    patternId = semana.find((one) => one.weekday === 5)?.id ?? '';
+
+    const calendario = await request(app.getHttpServer())
+      .get(`/api/v1/calendars/${calendarId}/schedule?from=${viernes}&to=${viernes}`)
+      .set('Cookie', cookie)
+      .expect(200);
+
+    const propuestas = body<CalendarRange>(calendario).days[0]?.meetings ?? [];
+    expect(propuestas.some((meeting) => meeting.patternId === patternId)).toBe(true);
+    expect(propuestas.every((meeting) => meeting.id === null)).toBe(true);
   });
 
   it('asignar a alguien materializa la reunión, y repetirlo no la duplica', async () => {
@@ -178,8 +179,9 @@ describe('Calendario (e2e)', () => {
       .expect(200);
 
     const delDia = body<CalendarRange>(calendario).days[0]?.meetings ?? [];
-    expect(delDia).toHaveLength(1);
-    expect(delDia[0]?.id).not.toBeNull();
+    const materializada = delDia.filter((meeting) => meeting.patternId === patternId);
+    expect(materializada).toHaveLength(1);
+    expect(materializada[0]?.id).not.toBeNull();
   });
 
   it('el mismo día admite la programación de otra sede', async () => {
@@ -196,8 +198,8 @@ describe('Calendario (e2e)', () => {
       .send({
         congregationId: otra?.id,
         date: viernes,
-        startTime: '18:00',
-        name: 'Culto',
+        startTime: '22:00',
+        name: 'Vigilia',
         phases: [{ name: 'Introducción' }],
       })
       .expect(201);
@@ -208,8 +210,10 @@ describe('Calendario (e2e)', () => {
       .expect(200);
 
     const delDia = body<CalendarRange>(calendario).days[0]?.meetings ?? [];
-    expect(delDia).toHaveLength(2);
-    expect(delDia[0]?.startTime).toBe('18:00');
+    const deLaOtra = delDia.filter((meeting) => meeting.congregationId === otra?.id);
+    expect(deLaOtra.some((meeting) => meeting.name === 'Vigilia')).toBe(true);
+    // Y la de Elda sigue ahí: dos sedes conviven el mismo día.
+    expect(delDia.some((meeting) => meeting.congregationId === elda)).toBe(true);
   });
 
   it('el resumen cuenta el reparto y avisa de lo que falta', async () => {

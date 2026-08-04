@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import { PreacherRow } from '@/components/calendar/preacher-row';
 import { Button } from '@/components/ui/button';
+import { Chip } from '@/components/ui/chip';
 import { Dialog } from '@/components/ui/dialog';
 import { SearchField } from '@/components/ui/search-field';
 import { api } from '@/lib/api';
@@ -84,20 +85,15 @@ export function PreacherPicker({
             label={t('calendar.searchPerson')}
             className="flex-1"
           />
-          <button
-            type="button"
-            aria-pressed={all}
+          <Chip
+            active={all}
+            className="h-10 shrink-0"
             onClick={() => {
               setAll(!all);
             }}
-            className={cn(
-              'h-10 px-3 text-xs font-medium shrink-0 cursor-pointer rounded-lg border',
-              'focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none',
-              all ? 'bg-muted text-foreground' : 'text-muted-foreground hover:text-foreground',
-            )}
           >
             {t(all ? 'calendar.everyone' : 'calendar.onlyMinistry')}
-          </button>
+          </Chip>
         </div>
 
         <ul className="max-h-72 -mx-1 flex flex-col overflow-y-auto">
