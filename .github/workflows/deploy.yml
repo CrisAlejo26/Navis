@@ -120,8 +120,10 @@ jobs:
     needs: configurado
     if: ${{ needs.configurado.outputs.listo == 'true' && !inputs.skip_verify }}
     uses: ./.github/workflows/ci.yml
+    # De escritura porque la verificación sube el formato si encuentra algo sin
+    # formatear, en vez de tirar el despliegue por una coma.
     permissions:
-      contents: read
+      contents: write
 
   # --- 2. Imágenes ------------------------------------------------------------
   images:

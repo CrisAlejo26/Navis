@@ -24,6 +24,9 @@ jobs:
   check:
     name: Formato, lint, tipos y tests
     runs-on: ubuntu-latest
+    # De escritura para poder subir el formato arreglado (ver el paso «Formato»).
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v6
 
@@ -39,7 +42,40 @@ jobs:
       - name: Compilar los paquetes compartidos
         run: pnpm build:packages
 
-      - run: pnpm format:check
+      # Una coma mal puesta no puede tumbar un despliegue.
+      #
+      # Antes esto era `format:check` a secas y moría en rojo; ahora **formatea
+      # y sigue**, y si ha cambiado algo lo sube en un commit aparte para que el
+      # repositorio no se quede desincronizado. El commit lleva `[skip ci]`
+      # porque lo que hay que verificar ya se está verificando aquí, con los
+      # ficheros ya corregidos —y sin eso, el push cancelaría esta misma
+      # ejecución por la regla de `concurrency`—.
+      #
+      # La red de seguridad de verdad es el hook de `pre-commit`, que formatea
+      # antes de que nada de esto salga de tu máquina. Esto es el respaldo.
+      - name: Formato
+        run: pnpm format
+
+      - name: Subir el formato arreglado
+        # Solo en ramas de este repositorio: en un `pull_request` lo que hay
+        # bajado es el commit de mezcla, y empujarlo sería empujar otra cosa.
+        if: github.event_name != 'pull_request'
+        run: |
+          set -euo pipefail
+          if [ -z "$(git status --porcelain)" ]; then
+            echo "Todo estaba formateado."
+            exit 0
+          fi
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'style: formatear con prettier [skip ci]'
+
+          # Sin permiso de escritura —al llamarlo desde otro workflow, por
+          # ejemplo— esto no puede fallar la verificación: se avisa y se sigue.
+          git push origin "HEAD:${GITHUB_REF_NAME}" || echo "::warning::No se ha podido subir el formato; queda arreglado solo en esta ejecución."
+
       - run: pnpm lint
       - run: pnpm typecheck
       - run: pnpm test

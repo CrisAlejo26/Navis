@@ -1,0 +1,3 @@
+# El mensaje sigue Conventional Commits: es lo que lee `pnpm release` para
+# decidir la versión y escribir el registro de cambios.
+pnpm commitlint --edit "$1"
