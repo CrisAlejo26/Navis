@@ -36,13 +36,18 @@ const conFases = (phases: (nombre: string) => readonly string[]): WeeklyMeeting[
   ENCUENTROS.map((encuentro) => ({ ...encuentro, phases: phases(encuentro.name) }));
 
 /**
- * Púlpito: los tramos de la reunión. La enseñanza lleva predicación y
- * testimonios; la alabanza y el estudio, apertura y cierre.
+ * Púlpito: los tramos de la reunión más los dos puestos que hay **todos los
+ * días** —quien queda encargado y quien abre la iglesia—.
+ *
+ * La enseñanza lleva predicación y testimonios en lugar del cierre; la
+ * alabanza y el estudio, apertura y final.
  */
+const FIJOS = ['Encargado', 'Abre iglesia'] as const;
+
 export const DEFAULT_WEEK: readonly WeeklyMeeting[] = conFases((nombre) =>
   nombre === 'Enseñanza'
-    ? ['Introducción', 'Predicación', 'Testimonios']
-    : ['Introducción', 'Final'],
+    ? ['Introducción', 'Predicación', 'Testimonios', ...FIJOS]
+    : ['Introducción', 'Final', ...FIJOS],
 );
 
 /**

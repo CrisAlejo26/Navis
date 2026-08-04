@@ -20,7 +20,37 @@ export function serializeXhtml(node: HTMLElement): string {
   return new XMLSerializer().serializeToString(copy);
 }
 
-export async function nodeToPng(node: HTMLElement, scale = 2): Promise<Blob> {
+export async function nodeToPng(node: HTMLElement, scale = 3): Promise<Blob> {
+  const canvas = await nodeToCanvas(node, scale);
+
+  const blob = await new Promise<Blob | null>((resolve) => {
+    canvas.toBlob(resolve, 'image/png');
+  });
+  if (!blob) throw new Error('No se ha podido generar la imagen');
+
+  return blob;
+}
+
+/** La misma lámina en JPEG, que es lo que se puede incrustar en un PDF. */
+export async function nodeToJpeg(
+  node: HTMLElement,
+  scale = 3,
+): Promise<{ bytes: Uint8Array<ArrayBuffer>; width: number; height: number }> {
+  const canvas = await nodeToCanvas(node, scale);
+
+  const blob = await new Promise<Blob | null>((resolve) => {
+    canvas.toBlob(resolve, 'image/jpeg', 0.92);
+  });
+  if (!blob) throw new Error('No se ha podido generar la imagen');
+
+  return {
+    bytes: new Uint8Array(await blob.arrayBuffer()),
+    width: canvas.width,
+    height: canvas.height,
+  };
+}
+
+async function nodeToCanvas(node: HTMLElement, scale: number): Promise<HTMLCanvasElement> {
   /*
    * `offsetWidth`/`offsetHeight` y **no** `getBoundingClientRect`: la vista
    * previa enseña la lámina reducida con `transform: scale`, y el rectángulo
@@ -48,14 +78,12 @@ export async function nodeToPng(node: HTMLElement, scale = 2): Promise<Blob> {
   const context = canvas.getContext('2d');
   if (!context) throw new Error('El navegador no ha dado contexto de canvas');
 
-  // Fondo opaco: un PNG transparente se ve fatal sobre el verde de WhatsApp.
+  // Fondo opaco: ni un PNG transparente sobre el verde de WhatsApp ni un JPEG,
+  // que directamente no sabe de transparencias.
+  context.fillStyle = getComputedStyle(node).backgroundColor || '#ffffff';
+  context.fillRect(0, 0, canvas.width, canvas.height);
   context.scale(scale, scale);
   context.drawImage(image, 0, 0, ancho, alto);
 
-  const blob = await new Promise<Blob | null>((resolve) => {
-    canvas.toBlob(resolve, 'image/png');
-  });
-  if (!blob) throw new Error('No se ha podido generar la imagen');
-
-  return blob;
+  return canvas;
 }

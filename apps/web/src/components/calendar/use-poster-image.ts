@@ -33,7 +33,12 @@ export function usePosterImage(
     // Un respiro para que el navegador termine de maquetar la lámina —y de
     // decodificar el logo— antes de fotografiarla.
     const timer = setTimeout(() => {
-      void nodeToPng(node)
+      /*
+       * Al **triple** de escala: la lámina se mira en un teléfono y se amplía
+       * con los dedos, y ahí un PNG justo de píxeles se deshace. Pesa más, pero
+       * es lo que se manda una vez y se lee muchas.
+       */
+      void nodeToPng(node, 3)
         .then((blob) => {
           if (!vigente) return;
           creada = URL.createObjectURL(blob);

@@ -1,16 +1,23 @@
 import { z } from 'zod';
 
 /**
- * Para qué está disponible una persona.
+ * Para qué está disponible una persona: su **labor** —así se llama en la
+ * interfaz—.
  *
- * No es un rol de la tabla `roles` —eso son permisos de una cuenta, y quien
- * predica puede no tener cuenta— ni todavía una etiqueta de la RFC 0003:
- * responde a una pregunta operativa, «¿a quién puedo poner aquí?» (RFC 0002
- * §6.2). Cada calendario dice cuál es el suyo (D16).
+ * El valor es el `slug` de un rol del catálogo, porque las labores de una
+ * iglesia y sus roles son la misma lista (púlpito, recepción, sonido,
+ * biblias…) y mantenerla dos veces solo sirve para que se desincronicen. No
+ * son *permisos*: quien predica puede no tener ni cuenta (D8).
+ *
+ * Se valida como texto y no contra la tabla: una labor que ya no exista deja
+ * de proponer a nadie, que es exactamente lo que tiene que pasar.
  */
 export const MINISTRIES = ['pulpito', 'recepcion', 'sonido', 'biblias'] as const;
 
-export type Ministry = (typeof MINISTRIES)[number];
+/** Las que trae la instalación de serie; el catálogo puede tener más. */
+export type Ministry = string;
+
+export const ministrySchema = z.string().trim().min(2).max(40);
 
 export const PULPIT_MINISTRY: Ministry = 'pulpito';
 
@@ -20,8 +27,9 @@ export const PULPIT_MINISTRY: Ministry = 'pulpito';
  * El ministerio de un calendario viaja como texto —la tabla la puede tocar una
  * migración futura—, así que se comprueba antes de usarlo como tal (Regla 10).
  */
+/** Si ese texto tiene forma de labor: el slug de un rol. */
 export function isMinistry(value: string): value is Ministry {
-  return (MINISTRIES as readonly string[]).includes(value);
+  return /^[a-z0-9-]{2,40}$/.test(value);
 }
 
 /**
@@ -48,7 +56,7 @@ export const createBelieverSchema = z.object({
   lastName: z.string().trim().max(80).optional(),
   phone: z.string().trim().max(40).optional(),
   congregationId: z.uuid().nullable().optional(),
-  ministries: z.array(z.enum(MINISTRIES)).optional(),
+  ministries: z.array(ministrySchema).optional(),
 });
 
 export type CreateBelieverInput = z.infer<typeof createBelieverSchema>;

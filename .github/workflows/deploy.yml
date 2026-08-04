@@ -223,9 +223,14 @@ jobs:
       # Un despliegue entero se perdió porque el servidor no contestó a UNA
       # conexión: `dial tcp :22: i/o timeout` en la copia, y con él se fueron
       # los diez minutos de verificación e imágenes que ya estaban hechos. Aquí
-      # se espera a que el puerto responda antes de intentar nada, y de paso se
-      # distingue el corte pasajero —contesta al segundo intento— del bloqueo de
-      # firewall, que no contesta nunca y hay que ir a mirarlo al servidor.
+      # se espera a que el puerto responda antes de intentar nada.
+      #
+      # La espera es de **quince minutos**, no de cuatro: lo que se ha visto en
+      # este servidor no es un firewall —ufw acepta el 22 desde cualquier sitio,
+      # fail2ban no ha baneado a nadie y el propio `sshd` registra despliegues
+      # que sí entraron el mismo día— sino cortes de red aguas arriba que duran
+      # varios minutos y se van solos. Rendirse a los cuatro tiraba un
+      # despliegue bueno por un corte que se iba a arreglar solo.
       #
       # El host no se imprime: este repositorio es público (ver la nota de `env`).
       - name: Esperar a que el servidor acepte SSH
@@ -235,16 +240,20 @@ jobs:
         run: |
           set -uo pipefail
 
-          for intento in $(seq 1 10); do
+          # Los primeros intentos, seguidos —un corte de segundos es lo más
+          # frecuente—; a partir del quinto, cada medio minuto.
+          for intento in $(seq 1 30); do
             if timeout 10 bash -c ": > /dev/tcp/$DEPLOY_HOST/$DEPLOY_PORT" 2>/dev/null; then
               echo "El servidor acepta conexiones (intento $intento)."
               exit 0
             fi
-            echo "Intento $intento: sin respuesta. Reintento en 15 s."
-            sleep 15
+
+            espera=$([ "$intento" -le 5 ] && echo 10 || echo 30)
+            echo "Intento $intento: sin respuesta. Reintento en $espera s."
+            sleep "$espera"
           done
 
-          echo "::error::El servidor no acepta conexiones SSH desde el runner. No es la clave ni el usuario: los paquetes no llegan. Mira el firewall del proveedor y fail2ban (docs/DESPLIEGUE.md)."
+          echo "::error::Quince minutos sin respuesta en el puerto SSH. No es la clave ni el usuario —esos fallarían autenticando, no con un timeout—: los paquetes no llegan. Relanza este job antes de nada, que las imágenes ya están publicadas y no hay que reconstruir; si vuelve a fallar, mira el firewall del proveedor y fail2ban (docs/DESPLIEGUE.md)."
           exit 1
 
       # Las dos acciones que reciben la clave privada van clavadas al SHA, no a

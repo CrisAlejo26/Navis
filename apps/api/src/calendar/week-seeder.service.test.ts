@@ -73,15 +73,23 @@ describe('la semana de serie', () => {
       [0, 'Enseñanza', '10:00'],
     ]);
 
-    // El miércoles y el domingo son de enseñanza: predicación y testimonios,
-    // sin cierre.
+    // El miércoles y el domingo son de enseñanza: predicación y testimonios en
+    // lugar del cierre. Encargado y quien abre la iglesia están **todos** los
+    // días.
     expect(fases[2]?.map((phase) => phase.name)).toEqual([
       'Introducción',
       'Predicación',
       'Testimonios',
+      'Encargado',
+      'Abre iglesia',
     ]);
     expect(fases[6]?.map((phase) => phase.name)).toEqual(fases[2]?.map((phase) => phase.name));
-    expect(fases[0]?.map((phase) => phase.name)).toEqual(['Introducción', 'Final']);
+    expect(fases[0]?.map((phase) => phase.name)).toEqual([
+      'Introducción',
+      'Final',
+      'Encargado',
+      'Abre iglesia',
+    ]);
   });
 
   it('recepción arranca con dos turnos de puerta, y el sábado una hora antes', async () => {

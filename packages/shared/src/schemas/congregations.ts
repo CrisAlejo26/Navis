@@ -26,6 +26,52 @@ export function isCongregationAccent(value: string): value is CongregationAccent
 }
 
 /**
+ * La paleta ampliada, en hexadecimal.
+ *
+ * Con seis colores no llega: una iglesia con diez sedes acababa repitiendo, y
+ * el color es justo lo que distingue una columna de otra de un vistazo. Son
+ * dieciséis tonos separados en el círculo y de luminosidad media, que es lo
+ * que permite leerlos **en claro y en oscuro** sin dos valores por color.
+ *
+ * Quien quiera otro lo escribe: cualquier `#rrggbb` vale (`accentSchema`).
+ */
+export const ACCENT_PALETTE = [
+  '#2140cf',
+  '#0284c7',
+  '#0891b2',
+  '#0d9488',
+  '#16a34a',
+  '#65a30d',
+  '#ca8a04',
+  '#ea580c',
+  '#dc2626',
+  '#e11d48',
+  '#db2777',
+  '#c026d3',
+  '#9333ea',
+  '#6d28d9',
+  '#4f46e5',
+  '#57534e',
+] as const;
+
+const HEX = /^#[0-9a-fA-F]{6}$/;
+
+/** Un color de sede: uno de los tokens de siempre o un hexadecimal. */
+export function isAccent(value: string): boolean {
+  return isCongregationAccent(value) || HEX.test(value);
+}
+
+/** La misma comprobación para `class-validator`, que solo entiende expresiones. */
+export const ACCENT_PATTERN = new RegExp(
+  `^(${CONGREGATION_ACCENTS.join('|')}|#[0-9a-fA-F]{6})$`,
+);
+
+export const accentSchema = z
+  .string()
+  .trim()
+  .refine(isAccent, 'El color tiene que ser un token o un hexadecimal como #2140cf');
+
+/**
  * Una **sede**: un lugar de reunión de la iglesia (RFC 0002 §5.1).
  *
  * No es una iglesia: no tiene cuentas, ni permisos, ni creyentes propios. Es
@@ -52,7 +98,7 @@ export type Congregation = z.infer<typeof congregationSchema>;
 export const createCongregationSchema = z.object({
   name: z.string().trim().min(2, 'El nombre de la sede es obligatorio').max(80),
   city: z.string().trim().max(120).optional(),
-  accent: z.enum(CONGREGATION_ACCENTS).optional(),
+  accent: accentSchema.optional(),
 });
 
 export type CreateCongregationInput = z.infer<typeof createCongregationSchema>;

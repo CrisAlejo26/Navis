@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
-import { CONGREGATION_ACCENTS, type CongregationAccent } from '@navis/shared';
+import { ACCENT_PATTERN, ACCENT_PALETTE, CONGREGATION_ACCENTS } from '@navis/shared';
 import { Transform } from 'class-transformer';
-import { IsBoolean, IsIn, IsOptional, IsString, Length } from 'class-validator';
+import { IsBoolean, IsOptional, IsString, Length, Matches } from 'class-validator';
 
 const trimmed = ({ value }: { value: unknown }): unknown =>
   typeof value === 'string' ? value.trim() : value;
@@ -25,10 +25,13 @@ export class CreateCongregationDto {
   @Transform(trimmed)
   city?: string;
 
-  @ApiPropertyOptional({ enum: CONGREGATION_ACCENTS })
+  @ApiPropertyOptional({
+    description: 'Un token de la paleta o un hexadecimal',
+    examples: [...CONGREGATION_ACCENTS, ...ACCENT_PALETTE],
+  })
   @IsOptional()
-  @IsIn(CONGREGATION_ACCENTS)
-  accent?: CongregationAccent;
+  @Matches(ACCENT_PATTERN)
+  accent?: string;
 }
 
 export class UpdateCongregationDto extends PartialType(CreateCongregationDto) {

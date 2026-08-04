@@ -7,7 +7,8 @@ import { useTranslation } from 'react-i18next';
 import { PosterDays } from './poster-days';
 import { PosterGrid } from './poster-grid';
 import { posterPalette } from './poster-palette';
-import { POSTER_WIDTH, type PosterAspect } from './poster-size';
+import { posterWidth, type PosterAspect } from './poster-size';
+import { PosterTable } from './poster-table';
 
 /**
  * **La lámina que se comparte.** No es una captura de la pantalla: es una
@@ -42,7 +43,7 @@ export const Poster = forwardRef<
     <div
       ref={ref}
       style={{
-        width: `${String(POSTER_WIDTH[aspect])}px`,
+        width: `${String(posterWidth(aspect, range))}px`,
         background: palette.background,
         color: palette.foreground,
         fontFamily: 'ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif',
@@ -70,7 +71,7 @@ export const Poster = forwardRef<
       <div style={{ padding: '40px 44px 20px', fontSize: '40px', fontWeight: 600 }}>{title}</div>
 
       <div style={{ padding: '0 44px 40px' }}>
-        {aspect === 'portrait' ? (
+        {aspect === 'portrait' && (
           <PosterDays
             range={range}
             palette={palette}
@@ -78,8 +79,15 @@ export const Poster = forwardRef<
             showCongregation={showCongregation}
             unassignedLabel={t('calendar.unassigned')}
           />
-        ) : (
-          <PosterGrid range={range} palette={palette} month={month} />
+        )}
+        {aspect === 'landscape' && <PosterGrid range={range} palette={palette} month={month} />}
+        {aspect === 'table' && (
+          <PosterTable
+            range={range}
+            palette={palette}
+            congregationName={congregationName}
+            showCongregation={showCongregation}
+          />
         )}
       </div>
 

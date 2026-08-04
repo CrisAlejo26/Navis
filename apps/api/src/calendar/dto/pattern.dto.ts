@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
-import { CONGREGATION_ACCENTS, MAX_PHASES, type CongregationAccent } from '@navis/shared';
+import { ACCENT_PATTERN, ACCENT_PALETTE, CONGREGATION_ACCENTS, MAX_PHASES } from '@navis/shared';
 import { Transform, Type } from 'class-transformer';
 import {
   ArrayMaxSize,
@@ -53,10 +53,13 @@ export class CreatePatternDto {
   @Matches(/^([01]\d|2[0-3]):[0-5]\d$/, { message: 'La hora debe tener el formato HH:MM' })
   startTime: string;
 
-  @ApiPropertyOptional({ enum: CONGREGATION_ACCENTS })
+  @ApiPropertyOptional({
+    description: 'Un token de la paleta o un hexadecimal',
+    examples: [...CONGREGATION_ACCENTS, ...ACCENT_PALETTE],
+  })
   @IsOptional()
-  @IsIn(CONGREGATION_ACCENTS)
-  accent?: CongregationAccent;
+  @Matches(ACCENT_PATTERN)
+  accent?: string;
 
   @ApiPropertyOptional({ example: '2026-09-01' })
   @IsOptional()

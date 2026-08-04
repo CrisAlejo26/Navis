@@ -1,6 +1,6 @@
 import { useCalendar } from '@navis/api-client';
 import type { Congregation } from '@navis/shared';
-import { Copy, Download, Printer, Send, Type } from 'lucide-react';
+import { Copy, Download, FileText, Image as ImageIcon, Printer, Send, Type } from 'lucide-react';
 import { useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -11,6 +11,7 @@ import { usePosterImage } from '@/components/calendar/use-poster-image';
 import { Button } from '@/components/ui/button';
 import { Chip } from '@/components/ui/chip';
 import { Dialog } from '@/components/ui/dialog';
+import { MenuButton } from '@/components/ui/menu-button';
 import { api } from '@/lib/api';
 import { longDay, rangeTitle } from '@/lib/calendar/labels';
 import { posterFileName } from '@/lib/calendar/share';
@@ -24,6 +25,17 @@ import {
   type SharePreset,
 } from '@/lib/calendar/share-range';
 import { cn } from '@/lib/cn';
+
+/** Las tres formas de la lámina, con lo que hace cada una. */
+const ASPECTS: { value: PosterAspect; labelKey: string; hintKey: string }[] = [
+  { value: 'portrait', labelKey: 'calendar.sharePortrait', hintKey: 'calendar.sharePortraitHint' },
+  { value: 'table', labelKey: 'calendar.shareTable', hintKey: 'calendar.shareTableHint' },
+  {
+    value: 'landscape',
+    labelKey: 'calendar.shareLandscape',
+    hintKey: 'calendar.shareLandscapeHint',
+  },
+];
 
 /**
  * Lo que hoy se hace con una captura de pantalla, hecho bien: se elige el
@@ -81,6 +93,7 @@ export function ShareSheet({
 
   const exporter = usePosterExport(poster, image.blob, {
     fileName: posterFileName(range.from, range.to, sede),
+    pdfName: posterFileName(range.from, range.to, sede, 'pdf'),
     title,
     landscape: chosen === 'landscape',
     text: () =>
@@ -102,37 +115,50 @@ export function ShareSheet({
       width="min(46rem, calc(100vw - 2rem))"
     >
       <div className="gap-4 flex flex-col">
-        <div className="gap-1.5 flex flex-wrap">
-          {SHARE_PRESETS.map((option) => (
-            <Chip
-              key={option}
-              active={option === preset}
-              onClick={() => {
-                setPreset(option);
-                setAspect(null);
-              }}
-            >
-              {t(SHARE_LABELS[option])}
-            </Chip>
-          ))}
-          <span className="mx-1 w-px self-stretch bg-border" aria-hidden />
-          <Chip
-            active={chosen === 'portrait'}
-            onClick={() => {
-              setAspect('portrait');
-            }}
-          >
-            {t('calendar.sharePortrait')}
-          </Chip>
-          <Chip
-            active={chosen === 'landscape'}
-            onClick={() => {
-              setAspect('landscape');
-            }}
-          >
-            {t('calendar.shareLandscape')}
-          </Chip>
-        </div>
+        {/*
+         * Dos preguntas distintas, dos bloques con su título: **qué** tramo se
+         * manda y **con qué forma**. En una sola fila de pastillas se leían
+         * como una lista de nueve opciones sueltas.
+         */}
+        <fieldset className="gap-1.5 flex flex-col">
+          <legend className="mb-1 font-semibold text-[11px] tracking-[0.14em] text-muted-foreground uppercase">
+            {t('calendar.shareRange')}
+          </legend>
+          <div className="gap-1.5 flex flex-wrap">
+            {SHARE_PRESETS.map((option) => (
+              <Chip
+                key={option}
+                active={option === preset}
+                onClick={() => {
+                  setPreset(option);
+                  setAspect(null);
+                }}
+              >
+                {t(SHARE_LABELS[option])}
+              </Chip>
+            ))}
+          </div>
+        </fieldset>
+
+        <fieldset className="gap-1.5 flex flex-col">
+          <legend className="mb-1 font-semibold text-[11px] tracking-[0.14em] text-muted-foreground uppercase">
+            {t('calendar.shareAspect')}
+          </legend>
+          <div className="gap-1.5 flex flex-wrap">
+            {ASPECTS.map(({ value, labelKey, hintKey }) => (
+              <Chip
+                key={value}
+                active={chosen === value}
+                title={t(hintKey)}
+                onClick={() => {
+                  setAspect(value);
+                }}
+              >
+                {t(labelKey)}
+              </Chip>
+            ))}
+          </div>
+        </fieldset>
 
         {/*
          * La vista previa **es** la imagen que se manda: se rasteriza la
@@ -153,49 +179,117 @@ export function ShareSheet({
           )}
         </div>
 
-        <div aria-hidden className="top-0 fixed -left-[9999px] opacity-0">
-          {data && (
-            <Poster
-              ref={poster}
-              range={data}
-              aspect={chosen}
-              theme={theme}
-              churchName={churchName}
-              subtitle={soleName}
-              title={title}
-              month={anchor.slice(0, 7)}
-              congregationName={nameOf}
-              showCongregation={showCongregation}
-            />
-          )}
+        {/*
+         * La lámina de verdad se pinta a tamaño real fuera de la vista —es lo
+         * que se fotografía—. Va **absoluta dentro de una caja de 0×0 que
+         * recorta**, y no fija: el diálogo se anima con `transform`, y eso lo
+         * convierte en el bloque contenedor de lo fijo, así que la lámina
+         * colgaba por debajo y dejaba un palmo de blanco al final del modal.
+         */}
+        <div aria-hidden className="h-0 w-0 relative overflow-hidden">
+          <div className="top-0 left-0 absolute opacity-0">
+            {data && (
+              <Poster
+                ref={poster}
+                range={data}
+                aspect={chosen}
+                theme={theme}
+                churchName={churchName}
+                subtitle={soleName}
+                title={title}
+                month={anchor.slice(0, 7)}
+                congregationName={nameOf}
+                showCongregation={showCongregation}
+              />
+            )}
+          </div>
         </div>
 
         <div className="gap-2 flex flex-wrap">
-          <Button size="lg" isLoading={exporter.busy} onClick={() => void exporter.send()}>
-            <Send size={16} aria-hidden />
-            {t('calendar.shareSend')}
-          </Button>
+          {/*
+           * Mandar también pregunta el formato: WhatsApp recomprime las
+           * **imágenes** hasta que la letra pequeña deja de leerse, pero un
+           * documento llega tal cual. Por eso el PDF está aquí y no escondido
+           * en «Descargar».
+           */}
+          <MenuButton
+            variant="primary"
+            size="lg"
+            icon={<Send size={16} aria-hidden />}
+            label={t('calendar.shareSend')}
+            options={[
+              {
+                id: 'image',
+                label: t('calendar.shareAsImage'),
+                hint: t('calendar.shareAsImageHint'),
+                icon: <ImageIcon size={15} aria-hidden />,
+                onSelect: () => void exporter.send(),
+              },
+              {
+                id: 'pdf',
+                label: t('calendar.shareAsPdf'),
+                hint: t('calendar.shareAsPdfHint'),
+                icon: <FileText size={15} aria-hidden />,
+                onSelect: () => void exporter.pdf(),
+              },
+            ]}
+          />
 
-          {exporter.canCopy && (
-            <Button variant="secondary" onClick={() => void exporter.copy()}>
-              <Copy size={15} aria-hidden />
-              {t('calendar.shareCopyImage')}
-            </Button>
-          )}
+          {/*
+           * Copiar y descargar son **dos acciones con dos formatos cada una**,
+           * no cuatro botones: en fila ocupaban dos líneas y dejaban «Copiar
+           * como texto» descolgado abajo, que es justo lo que no se leía.
+           */}
+          <MenuButton
+            variant="secondary"
+            icon={<Copy size={15} aria-hidden />}
+            label={t('calendar.shareCopy')}
+            options={[
+              ...(exporter.canCopy
+                ? [
+                    {
+                      id: 'image',
+                      label: t('calendar.shareAsImage'),
+                      hint: t('calendar.shareAsImageHint'),
+                      icon: <ImageIcon size={15} aria-hidden />,
+                      onSelect: () => void exporter.copy(),
+                    },
+                  ]
+                : []),
+              {
+                id: 'text',
+                label: t('calendar.shareAsText'),
+                hint: t('calendar.shareAsTextHint'),
+                icon: <Type size={15} aria-hidden />,
+                onSelect: () => void exporter.copyAsText(),
+              },
+            ]}
+          />
 
-          <Button variant="ghost" onClick={() => void exporter.download()}>
-            <Download size={15} aria-hidden />
-            {t('calendar.shareDownload')}
-          </Button>
+          <MenuButton
+            icon={<Download size={15} aria-hidden />}
+            label={t('calendar.shareDownload')}
+            options={[
+              {
+                id: 'png',
+                label: t('calendar.shareAsImage'),
+                hint: t('calendar.shareAsImageHint'),
+                icon: <ImageIcon size={15} aria-hidden />,
+                onSelect: () => void exporter.download(),
+              },
+              {
+                id: 'pdf',
+                label: t('calendar.shareAsPdf'),
+                hint: t('calendar.shareAsPdfHint'),
+                icon: <FileText size={15} aria-hidden />,
+                onSelect: () => void exporter.pdf(),
+              },
+            ]}
+          />
 
           <Button variant="ghost" onClick={exporter.print}>
             <Printer size={15} aria-hidden />
             {t('calendar.sharePrint')}
-          </Button>
-
-          <Button variant="ghost" onClick={() => void exporter.copyAsText()}>
-            <Type size={15} aria-hidden />
-            {t('calendar.shareCopyText')}
           </Button>
         </div>
       </div>

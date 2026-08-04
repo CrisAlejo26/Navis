@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { MINISTRIES } from './believers';
+import { ministrySchema } from './believers';
 
 /**
  * Un **calendario**: un espacio de programación completo, con sus reuniones
@@ -18,7 +18,7 @@ export const calendarSchema = z.object({
   name: z.string(),
   /** Derivado del nombre. Es lo que va en la URL: `/calendar/pulpito`. */
   slug: z.string(),
-  /** A quién propone el selector de personas. Nulo es «a cualquiera». */
+  /** La **labor** a la que propone: el slug de un rol. Nulo es «a cualquiera». */
   ministry: z.string().nullable(),
   position: z.number().int(),
 });
@@ -27,7 +27,7 @@ export type Calendar = z.infer<typeof calendarSchema>;
 
 export const createCalendarSchema = z.object({
   name: z.string().trim().min(2, 'El calendario necesita un nombre').max(60),
-  ministry: z.enum(MINISTRIES).nullable().optional(),
+  ministry: ministrySchema.nullable().optional(),
 });
 
 export type CreateCalendarInput = z.infer<typeof createCalendarSchema>;
