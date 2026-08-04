@@ -30,6 +30,14 @@ const SettingsPage = lazy(() =>
 const UsersPage = lazy(() =>
   import('@/routes/users').then((module) => ({ default: module.UsersPage })),
 );
+const CalendarPage = lazy(() =>
+  import('@/routes/calendar').then((module) => ({ default: module.CalendarPage })),
+);
+const CalendarSettingsPage = lazy(() =>
+  import('@/routes/calendar-settings').then((module) => ({
+    default: module.CalendarSettingsPage,
+  })),
+);
 const LabPage = lazy(() => import('@/routes/lab').then((module) => ({ default: module.LabPage })));
 const NoAccessPage = lazy(() =>
   import('@/routes/no-access').then((module) => ({ default: module.NoAccessPage })),
@@ -128,6 +136,26 @@ export const router = createBrowserRouter([
       })),
       // Muestrario de piezas de interfaz. No está en la navegación: se abre a
       // mano cuando hay que mirar con calma algo que solo se ve un instante.
+      {
+        path: 'calendar',
+        element: (
+          <RequirePermission permission="calendar.view">
+            <Lazy>
+              <CalendarPage />
+            </Lazy>
+          </RequirePermission>
+        ),
+      },
+      {
+        path: 'calendar/settings',
+        element: (
+          <RequirePermission permission="calendar.manage">
+            <Lazy>
+              <CalendarSettingsPage />
+            </Lazy>
+          </RequirePermission>
+        ),
+      },
       {
         path: 'lab',
         element: (

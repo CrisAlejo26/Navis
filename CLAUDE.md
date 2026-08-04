@@ -85,6 +85,27 @@ check` fallaba con errores de sintaxis en un fichero que nadie había tocado.
   app.config.ts, tauri.conf.json, Cargo.toml y Cargo.lock). No la toques a
   mano: `pnpm release` los sincroniza y hay un test que falla si alguno se
   queda descolgado.
+- **Padre e hijo de TypeORM no se importan el uno al otro.** `@ManyToOne(() =>
+Padre)` parece perezoso, pero `emitDecoratorMetadata` escribe la clase en los
+  metadatos y la evalúa al cargar el módulo: el par acaba en «Cannot access
+  'X' before initialization» al arrancar. En el lado hijo se referencia **por
+  nombre** y con el tipo envuelto: `@ManyToOne('Padre', 'hijos')` y
+  `padre: Relation<Padre>`, con `import type`.
+- **`calc()` sin espacios alrededor del `-` es CSS inválido.** En una clase de
+  Tailwind (`w-[min(30rem,calc(100vw-2rem))]`) funciona porque el compilador lo
+  normaliza; en un `style` en línea, la declaración entera se descarta sin
+  avisar. Escríbelo `calc(100vw - 2rem)`.
+- **Un hijo ancho dentro de un `flex-col` ensancha al padre**: `min-width: auto`
+  impide que el elemento se encoja, así que un `<dialog>` con una imagen grande
+  dentro se sale de la pantalla aunque tenga `width` puesto. Se arregla con
+  `min-w-0` en el contenedor.
+- **`getBoundingClientRect` incluye los `transform` de los ancestros** y
+  `offsetWidth`/`offsetHeight` no. Para medir algo que se está enseñando
+  reducido —la lámina del calendario dentro de su vista previa— van los
+  segundos, o la imagen sale recortada.
+- **Crear y desconectar un `ResizeObserver` en cada render lo deja mudo**: la
+  primera medición se entrega de forma asíncrona y el `cleanup` la cancela
+  antes de que llegue. El efecto lleva dependencias.
 - **GHCR solo acepta nombres de imagen en minúsculas**, y `github.repository`
   conserva las mayúsculas (`CrisAlejo26/Navis`). El workflow de despliegue lo
   baja a minúsculas en el paso `meta` y pasa ese nombre al servidor; sin eso,

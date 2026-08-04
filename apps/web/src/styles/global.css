@@ -19,12 +19,20 @@
   --animate-drift: drift 26s linear infinite;
   --animate-drift-slow: drift 42s linear infinite reverse;
   --animate-slide-in: slide-in 240ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-slide-in-right: slide-in-right 240ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 /* El panel de navegación de móvil, entrando desde el borde izquierdo. */
 @keyframes slide-in {
   from {
     transform: translate3d(-100%, 0, 0);
+  }
+}
+
+/* El panel de detalle del calendario, que entra por donde se ha tirado. */
+@keyframes slide-in-right {
+  from {
+    transform: translate3d(100%, 0, 0);
   }
 }
 

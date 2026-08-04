@@ -9,12 +9,6 @@ import type { NavKey } from '@/routes/placeholder';
  */
 export const PUENTES = [
   {
-    path: 'calendar',
-    titleKey: 'nav.calendar',
-    rfc: '0002-calendario-de-programaciones.md',
-    permission: 'calendar.view',
-  },
-  {
     path: 'believers',
     titleKey: 'nav.believers',
     rfc: '0003-creyentes-y-notas.md',

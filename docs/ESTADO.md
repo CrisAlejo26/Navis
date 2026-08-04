@@ -1,6 +1,6 @@
 # Estado del proyecto
 
-_Última actualización: 2026-08-03_
+_Última actualización: 2026-08-04_
 
 ## Resumen
 
@@ -62,7 +62,11 @@ comprobado que empaqueta correctamente).
   [`deploy.yml`](../.github/workflows/deploy.yml), que reutiliza el CI como
   puerta de entrada, publica imágenes, migra, despliega y revierte si `/health`
   no responde. Ver [`DESPLIEGUE.md`](./DESPLIEGUE.md).
-- **Documentación**: siete RFC y seis ADR en [`docs/`](./).
+- **Calendario de programaciones** (RFC 0002): sedes dentro de la iglesia,
+  reuniones fijas por día de la semana con sus fases, asignación en dos toques
+  con reparto y avisos, cuatro vistas (mes, semana, agenda y personas) con sus
+  filtros en la URL, y la lámina en PNG que sustituye a la captura del Excel.
+- **Documentación**: ocho RFC y seis ADR en [`docs/`](./).
 
 ## Producción
 
@@ -86,16 +90,22 @@ código 503 en vez de un 502 en blanco.
 
 ## Siguiente paso — por dónde continuar
 
-Implementar las features, en este orden:
+El **calendario de programaciones ([RFC 0002](./rfcs/0002-calendario-de-programaciones.md))
+ya está implementado en API y web**: sedes, reuniones fijas, asignación por
+fases, cuatro vistas, filtros y la lámina que se comparte por WhatsApp. Con él
+se ha adelantado el **núcleo mínimo de creyentes** (nombre, teléfono, sede
+habitual y ministerio), así que la RFC 0003 continúa esa tabla en vez de
+crearla.
 
-1. **[RFC 0003](./rfcs/0003-creyentes-y-notas.md) — creyentes y notas.** Es el
-   núcleo del que cuelga todo lo demás.
-2. **[RFC 0002](./rfcs/0002-calendario-de-programaciones.md) — calendario.**
-3. **[RFC 0001](./rfcs/0001-panel-de-metricas.md) — panel de métricas**, que ya
+Lo que sigue:
+
+1. **[RFC 0003](./rfcs/0003-creyentes-y-notas.md) — creyentes y notas.** La
+   ficha completa y el historial, sobre la tabla `believers` que ya existe.
+2. **[RFC 0001](./rfcs/0001-panel-de-metricas.md) — panel de métricas**, que ya
    tendrá datos que contar.
-4. **[RFC 0006](./rfcs/0006-comunicaciones.md) — comunicaciones**, la primera
+3. **[RFC 0006](./rfcs/0006-comunicaciones.md) — comunicaciones**, la primera
    que añade WebSocket.
-5. **[RFC 0004](./rfcs/0004-profecias-personales.md)** y
+4. **[RFC 0004](./rfcs/0004-profecias-personales.md)** y
    **[RFC 0005](./rfcs/0005-suenos-personales.md)**, que comparten el patrón de
    privacidad y son los mejores candidatos para el servicio de IA local.
 
