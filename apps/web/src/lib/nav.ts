@@ -55,12 +55,14 @@ export const NAV_ITEMS: readonly NavItem[] = [
     permission: 'dashboard.view',
   },
   {
+    // Sin `permission` a propósito (RFC 0004 D2): las profecías son de cada
+    // usuario y no de la iglesia, así que exigir un permiso de rol dejaría a
+    // alguien fuera de las suyas propias. Basta con tener sesión.
     to: '/prophecies',
     labelKey: 'nav.prophecies',
     Icon: Sparkles,
     end: false,
     group: 'general',
-    permission: 'prophecies.view',
   },
   {
     to: '/dreams',

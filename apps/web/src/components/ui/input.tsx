@@ -1,4 +1,4 @@
-import type { InputHTMLAttributes, ReactNode } from 'react';
+import type { InputHTMLAttributes, ReactNode, Ref } from 'react';
 
 import { cn } from '@/lib/cn';
 
@@ -9,9 +9,18 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   error?: string;
   /** Control pegado al borde derecho del campo (ver la contraseña, por ejemplo). */
   trailing?: ReactNode;
+  /**
+   * Llega hasta el `<input>` de dentro. Hace falta para pedir el foco desde
+   * fuera: dentro de un `<dialog>` modal lo reparte el navegador al abrirlo, así
+   * que `autoFocus` no vale y hay que pedirlo después.
+   *
+   * En React 19 `ref` es una prop más de un componente de función; no hace
+   * falta `forwardRef`.
+   */
+  ref?: Ref<HTMLInputElement>;
 }
 
-export function Input({ label, hint, error, trailing, className, id, ...props }: InputProps) {
+export function Input({ label, hint, error, trailing, className, id, ref, ...props }: InputProps) {
   const inputId = id ?? props.name;
   const describedBy = error
     ? `${String(inputId)}-error`
@@ -29,6 +38,7 @@ export function Input({ label, hint, error, trailing, className, id, ...props }:
 
       <div className="relative">
         <input
+          ref={ref}
           id={inputId}
           aria-invalid={Boolean(error)}
           aria-describedby={describedBy}

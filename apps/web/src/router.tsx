@@ -47,6 +47,15 @@ const BelieverPage = lazy(() =>
 const GiftsPage = lazy(() =>
   import('@/routes/gifts').then((module) => ({ default: module.GiftsPage })),
 );
+const PropheciesPage = lazy(() =>
+  import('@/routes/prophecies').then((module) => ({ default: module.PropheciesPage })),
+);
+const PropheciesListPage = lazy(() =>
+  import('@/routes/prophecies-list').then((module) => ({ default: module.PropheciesListPage })),
+);
+const ProphecyPage = lazy(() =>
+  import('@/routes/prophecy').then((module) => ({ default: module.ProphecyPage })),
+);
 const LabPage = lazy(() => import('@/routes/lab').then((module) => ({ default: module.LabPage })));
 const NoAccessPage = lazy(() =>
   import('@/routes/no-access').then((module) => ({ default: module.NoAccessPage })),
@@ -195,6 +204,36 @@ export const router = createBrowserRouter([
               <BelieverPage />
             </Lazy>
           </RequirePermission>
+        ),
+      },
+      // Las profecías **no llevan `RequirePermission`**, y es a propósito (RFC
+      // 0004 D2): son de cada usuario y no de la iglesia, así que exigir un
+      // permiso de rol dejaría a alguien fuera de las suyas propias.
+      //
+      // `/prophecies/list` va declarada **antes** que `/prophecies/:id`: con el
+      // orden al revés, «list» se resolvería como el identificador de una.
+      {
+        path: 'prophecies',
+        element: (
+          <Lazy>
+            <PropheciesPage />
+          </Lazy>
+        ),
+      },
+      {
+        path: 'prophecies/list',
+        element: (
+          <Lazy>
+            <PropheciesListPage />
+          </Lazy>
+        ),
+      },
+      {
+        path: 'prophecies/:id',
+        element: (
+          <Lazy>
+            <ProphecyPage />
+          </Lazy>
         ),
       },
       // Muestrario de piezas de interfaz. No está en la navegación: se abre a

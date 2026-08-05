@@ -18,6 +18,8 @@ import { PatternPhase } from '../calendar/pattern-phase.entity';
 import { ChurchMember } from '../churches/church-member.entity';
 import { Church } from '../churches/church.entity';
 import { Profile } from '../profiles/profile.entity';
+import { ProphecyFulfillment } from '../prophecies/prophecy-fulfillment.entity';
+import { Prophecy } from '../prophecies/prophecy.entity';
 import { Role } from '../roles/role.entity';
 
 const logging: DataSourceOptions['logging'] = isProduction
@@ -49,6 +51,8 @@ const entities = [
   PatternPhase,
   Meeting,
   MeetingSlot,
+  Prophecy,
+  ProphecyFulfillment,
 ];
 
 /**

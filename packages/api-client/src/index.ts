@@ -12,5 +12,7 @@ export * from './client';
 export * from './gift-hooks';
 export * from './hooks';
 export * from './note-hooks';
+export * from './prophecy-hooks';
+export * from './prophecy-mutations';
 export * from './query-client';
 export * from './query-keys';

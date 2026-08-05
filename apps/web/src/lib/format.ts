@@ -41,6 +41,18 @@ export function formatMonth(iso: string): string {
 }
 
 /**
+ * «05/26». El mes en corto para un eje de gráfico, donde no cabe «mayo de 2026»
+ * y doce nombres largos se solapan o se giran (RFC 0004 §7.3).
+ *
+ * Cifras y no el nombre del mes a propósito: así ocupa lo mismo en los seis
+ * idiomas, que es justo lo que hace falta en un eje de ancho fijo.
+ */
+export function formatShortMonth(iso: string): string {
+  const [year = '', month = ''] = iso.slice(0, 7).split('-');
+  return `${month}/${year.slice(2)}`;
+}
+
+/**
  * «hace 3 semanas», «hace 2 meses». Sale de `Intl.RelativeTimeFormat` y no de
  * una cadena montada a mano: cada idioma tiene sus reglas y ya las sabe (Regla
  * 2 §6).
