@@ -27,6 +27,7 @@ export function NavGroup({
   collapsed,
   onNavigate,
   onAdd,
+  addLabel,
 }: {
   item: NavItem;
   entries: readonly NavChild[];
@@ -34,6 +35,8 @@ export function NavGroup({
   onNavigate?: () => void;
   /** Alta rápida al pie de la lista, solo para quien puede gestionarlos. */
   onAdd?: () => void;
+  /** Ya traducido: no dice lo mismo en calendarios que en listas. */
+  addLabel: string;
 }) {
   const { t } = useTranslation();
   const { pathname } = useLocation();
@@ -118,7 +121,7 @@ export function NavGroup({
               className="gap-2 px-3 py-2 text-sm flex cursor-pointer items-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
             >
               <Plus size={14} aria-hidden />
-              {t('calendar.addCalendar')}
+              {addLabel}
             </button>
           )}
         </div>

@@ -11,13 +11,20 @@ import { FileStorageService, type FileScope } from './file-storage.service';
  * propio son los tipos —sin `svg`, que es un documento con scripts dentro— y el
  * tope de ocho megas.
  */
+/** Lo que llega de multer, reducido a lo que de verdad se usa (Regla 10). */
+export interface UploadedImage {
+  buffer: Buffer;
+  mimetype: string;
+  size: number;
+}
+
 @Injectable()
 export class ImageStorageService {
   constructor(private readonly files: FileStorageService) {}
 
   async save(
     scope: FileScope,
-    file: { buffer: Buffer; mimetype: string; size: number },
+    file: UploadedImage,
   ): Promise<{ storageKey: string; mimeType: string }> {
     if (!isImageMimeType(file.mimetype)) {
       throw new BadRequestException('Ese fichero no es una imagen');

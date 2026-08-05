@@ -21,6 +21,12 @@ export const PERMISSIONS = [
   'calendar.manage',
   'believers.view',
   'believers.manage',
+  'lists.view',
+  'lists.manage',
+  // Editar una lista y **echarla a internet** no son la misma acción (RFC 0010
+  // D8), así que publicar tiene permiso propio. Gestionar accesos va con él:
+  // repartir llaves es parte de abrir la puerta.
+  'lists.share',
   'communications.view',
   'communications.manage',
   'users.view',
@@ -49,6 +55,7 @@ export const PERMISSION_MODULES = [
   'dashboard',
   'calendar',
   'believers',
+  'lists',
   'communications',
   'users',
   'roles',

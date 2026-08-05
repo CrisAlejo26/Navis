@@ -73,6 +73,16 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
         cleanupOutdatedCaches: true,
         navigateFallback: '/index.html',
+        /*
+         * **Lo que el service worker no debe contestar** (RFC 0010 D15).
+         *
+         * Sin esto, una vez instalado responde `index.html` a *cualquier*
+         * navegación —incluida `/l/<token>`— y la petición **nunca llega a
+         * nginx ni a la API**: el enlace público funcionaría en un teléfono
+         * cualquiera y fallaría justo en el de quien tiene la aplicación
+         * instalada, que es quien lo comparte.
+         */
+        navigateFallbackDenylist: [/^\/l\//, /^\/api\//],
         runtimeCaching: [
           {
             // La API siempre primero por red; la caché solo salva el modo avión.

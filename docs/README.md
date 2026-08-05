@@ -30,6 +30,8 @@ Estructura estándar de la industria para separar **decisiones** de **propuestas
 | [0006](./rfcs/0006-comunicaciones.md)                    | Comunicaciones (chat y avisos)                          | Borrador     |
 | [0007](./rfcs/0007-modo-local-y-servidor.md)             | Modo local y servidor compartido                        | Implementado |
 | [0008](./rfcs/0008-iglesias-como-espacios-de-trabajo.md) | Iglesias como espacios de trabajo, y permisos por vista | Borrador     |
+| [0009](./rfcs/0009-exportar-listados.md)                 | Exportar lo que se ve                                   | Implementado |
+| [0010](./rfcs/0010-listas-compartidas.md)                | Listas compartidas, con enlace público y accesos        | Implementado |
 
 Orden sugerido de implementación: **0008 → 0003 → 0002 → 0001 → 0006 → 0004 →
 0005**. El 0008 va primero porque decide de quién son los datos y quién los ve:

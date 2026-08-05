@@ -6,12 +6,23 @@ export interface BelieverFilters {
   status: BelieverStatus[];
   congregationId: string;
   giftId: string;
+  /** Solo quien esté en esa lista. Es la vuelta del camino de la RFC 0010 D5. */
+  listId: string;
+  /**
+   * Solo quien esté en esa cantidad de listas o más (RFC 0010 D36).
+   *
+   * No tiene control propio en la barra de filtros: se llega **desde la portada
+   * de listas**, con la línea «7 personas están en 4 listas o más». Aquí solo se
+   * lee de la URL, se cuenta y se puede quitar.
+   */
+  inLists: number;
   attention: boolean;
   /** Cuántos hay puestos: es lo que dice el botón «Filtros (2)» en móvil. */
   count: number;
   toggleStatus: (status: BelieverStatus) => void;
   setCongregation: (id: string) => void;
   setGift: (id: string) => void;
+  setList: (id: string) => void;
   toggleAttention: () => void;
   clear: () => void;
 }
@@ -61,6 +72,8 @@ export function useBelieverFilters(): BelieverFilters {
 
   const congregationId = params.get('congregationId') ?? '';
   const giftId = params.get('giftId') ?? '';
+  const listId = params.get('listId') ?? '';
+  const inLists = Number(params.get('inLists') ?? '') || 0;
   const attention = params.get('attention') === 'true';
 
   return useMemo(
@@ -68,8 +81,16 @@ export function useBelieverFilters(): BelieverFilters {
       status,
       congregationId,
       giftId,
+      listId,
+      inLists,
       attention,
-      count: status.length + (congregationId ? 1 : 0) + (giftId ? 1 : 0) + (attention ? 1 : 0),
+      count:
+        status.length +
+        (congregationId ? 1 : 0) +
+        (giftId ? 1 : 0) +
+        (listId ? 1 : 0) +
+        (inLists ? 1 : 0) +
+        (attention ? 1 : 0),
       toggleStatus: (one: BelieverStatus) => {
         const next = status.includes(one)
           ? status.filter((each) => each !== one)
@@ -82,13 +103,24 @@ export function useBelieverFilters(): BelieverFilters {
       setGift: (id: string) => {
         update({ giftId: id });
       },
+      setList: (id: string) => {
+        // Elegir una lista concreta deja sin sentido «en cuatro o más».
+        update({ listId: id, inLists: null });
+      },
       toggleAttention: () => {
         update({ attention: attention ? null : 'true' });
       },
       clear: () => {
-        update({ status: [], congregationId: null, giftId: null, attention: null });
+        update({
+          status: [],
+          congregationId: null,
+          giftId: null,
+          listId: null,
+          inLists: null,
+          attention: null,
+        });
       },
     }),
-    [status, congregationId, giftId, attention, update],
+    [status, congregationId, giftId, listId, inLists, attention, update],
   );
 }

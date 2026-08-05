@@ -39,6 +39,22 @@ export interface BelieversQuery {
   status?: readonly BelieverStatus[];
   congregationId?: string;
   giftId?: string;
+  /**
+   * Solo quien tenga esa **labor** (`pulpito`).
+   *
+   * Lo tenía el selector del calendario y no el listado, y hacía falta en los
+   * dos: es uno de los filtros con los que se llena una lista (RFC 0010 D5).
+   */
+  ministry?: string;
+  /** Solo quien esté en esa lista. Es la vuelta del camino de la RFC 0010 D5. */
+  listId?: string;
+  /**
+   * Solo quien esté en **esa cantidad de listas o más** (RFC 0010 D36).
+   *
+   * Es a donde lleva la línea «7 personas están en 4 listas o más» de la portada
+   * de listas: una cifra que no lleva a ninguna parte es un adorno.
+   */
+  inLists?: number;
   /** Deja solo a quien ha agotado su margen. */
   attention?: boolean;
   sort?: BelieverSortField;

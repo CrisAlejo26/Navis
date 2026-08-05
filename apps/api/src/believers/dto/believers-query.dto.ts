@@ -6,8 +6,19 @@ import {
   type BelieverSortField,
   type BelieverStatus,
 } from '@navis/shared';
-import { Transform } from 'class-transformer';
-import { IsArray, IsBoolean, IsIn, IsOptional, IsUUID } from 'class-validator';
+import { Transform, Type } from 'class-transformer';
+import {
+  IsArray,
+  IsBoolean,
+  IsIn,
+  IsInt,
+  IsOptional,
+  IsString,
+  IsUUID,
+  Length,
+  Max,
+  Min,
+} from 'class-validator';
 
 import { commaList } from '../../common/dto/comma-list';
 import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
@@ -39,6 +50,25 @@ export class BelieversQueryDto extends PaginationQueryDto {
   @IsOptional()
   @IsUUID()
   giftId?: string;
+
+  @ApiPropertyOptional({ description: 'Solo quien tenga esa labor', example: 'pulpito' })
+  @IsOptional()
+  @IsString()
+  @Length(1, 40)
+  ministry?: string;
+
+  @ApiPropertyOptional({ description: 'Solo quien esté en esa lista (RFC 0010 §8.7)' })
+  @IsOptional()
+  @IsUUID()
+  listId?: string;
+
+  @ApiPropertyOptional({ description: 'Solo quien esté en esa cantidad de listas o más (D36)' })
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(2)
+  @Max(50)
+  inLists?: number;
 
   @ApiPropertyOptional({ description: 'Deja solo a quien ha agotado su margen' })
   @IsOptional()

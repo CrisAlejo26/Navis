@@ -2,6 +2,7 @@ import {
   believerName,
   type BelieverListItem,
   type Congregation,
+  type ListSummary,
   type MinistryCatalog,
   type IsoDate,
 } from '@navis/shared';
@@ -17,6 +18,7 @@ import { GiftTags } from '@/components/believers/gift-tags';
 import { MinistryTags } from '@/components/believers/ministry-tags';
 import { Sonda } from '@/components/believers/sonda';
 import { StatusBadge } from '@/components/believers/status-badge';
+import { ListDots } from '@/components/lists/list-dots';
 import { TableCell } from '@/components/ui/table';
 import { accentVars } from '@/lib/accents';
 import { cn } from '@/lib/cn';
@@ -26,6 +28,9 @@ export interface BelieverCells extends BelieverActionHandlers {
   congregation: Congregation | undefined;
   /** El catálogo de labores: la fila guarda slugs, el nombre y el color están aquí. */
   ministries: readonly MinistryCatalog[];
+  /** Las listas de la iglesia y en cuáles está esta persona (RFC 0010 §8.7). */
+  lists: readonly ListSummary[];
+  listIds: readonly string[] | undefined;
   today: IsoDate;
   canManage: boolean;
   /** Posición en la página: escalona la entrada y el latido de la sonda. */
@@ -47,6 +52,8 @@ export function BelieverRow({
   believer,
   congregation,
   ministries,
+  lists,
+  listIds,
   showPhoto,
   today,
   canManage,
@@ -95,12 +102,17 @@ export function BelieverRow({
       )}
 
       <TableCell>
-        <Link
-          to={`/believers/${believer.id}`}
-          className="font-medium rounded-sm text-[15px] hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-        >
-          {name}
-        </Link>
+        <span className="gap-1.5 flex items-center">
+          <Link
+            to={`/believers/${believer.id}`}
+            className="font-medium rounded-sm text-[15px] hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+          >
+            {name}
+          </Link>
+          {/* Quien mira una fila tiene que ver de un vistazo que ese nombre
+              está hoy en un cartel (RFC 0010 §8.7). */}
+          <ListDots lists={lists} listIds={listIds} />
+        </span>
         {believer.phone && (
           <span className="text-xs block text-muted-foreground tabular-nums">{believer.phone}</span>
         )}

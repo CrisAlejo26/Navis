@@ -3,6 +3,8 @@ import {
   useBelieversSummary,
   useCongregations,
   useGifts,
+  useListMemberships,
+  useLists,
   useMinistries,
 } from '@navis/api-client';
 import {
@@ -14,6 +16,8 @@ import {
   type Gift,
   type MinistryCatalog,
   type IsoDate,
+  type ListMemberships,
+  type ListSummary,
   type Paginated,
   type BelieversSummary,
 } from '@navis/shared';
@@ -33,10 +37,21 @@ export interface BelieversScreen {
   gifts: Gift[];
   /** El catálogo de labores, para resolver a nombre y color los slugs de cada fila. */
   ministries: MinistryCatalog[];
+  /**
+   * Las listas de la iglesia y en cuáles está cada persona (RFC 0010 §8.7).
+   *
+   * Salen de **una sola llamada por iglesia** que se cachea, y no de un `join`
+   * dentro del listado paginado: con relaciones cargadas, `take`/`skip` de
+   * TypeORM se van a una subconsulta con `DISTINCT` (CLAUDE.md).
+   */
+  lists: ListSummary[];
+  memberships: ListMemberships;
   /** La sede de cada persona, resuelta una vez y no en cada fila. */
   congregationOf: (id: string | null) => Congregation | undefined;
   today: IsoDate;
   canManage: boolean;
+  /** Meter a alguien en una lista es otro permiso: es de listas, no de fichas. */
+  canManageLists: boolean;
   isLoading: boolean;
   isError: boolean;
   refetch: () => void;
@@ -65,6 +80,8 @@ export function useBelieversScreen(): BelieversScreen {
     status: filters.status,
     congregationId: filters.congregationId || undefined,
     giftId: filters.giftId || undefined,
+    listId: filters.listId || undefined,
+    inLists: filters.inLists || undefined,
     attention: filters.attention || undefined,
     sort: query.sort,
     order: query.order,
@@ -74,6 +91,11 @@ export function useBelieversScreen(): BelieversScreen {
   const { data: congregations = [] } = useCongregations(api);
   const { data: gifts = [] } = useGifts(api);
   const { data: ministries = [] } = useMinistries(api);
+  // Los nombres de las listas también son información: sin `lists.view` no se
+  // piden ni se pintan los puntos (§7.1).
+  const puedeVerListas = can('lists.view');
+  const { data: lists = [] } = useLists(api, puedeVerListas);
+  const { data: memberships = {} } = useListMemberships(api, puedeVerListas);
 
   const byId = useMemo(() => new Map(congregations.map((one) => [one.id, one])), [congregations]);
 
@@ -85,11 +107,14 @@ export function useBelieversScreen(): BelieversScreen {
     congregations,
     gifts,
     ministries,
+    lists,
+    memberships,
     congregationOf: (id) => (id === null ? undefined : byId.get(id)),
     // El día de quien mira: la sonda del cliente y la del servidor pueden
     // discrepar en el cambio de día, y la del cliente es la que se está viendo.
     today: todayIn(Intl.DateTimeFormat().resolvedOptions().timeZone),
     canManage: can('believers.manage'),
+    canManageLists: can('lists.manage'),
     isLoading: list.isFetching && !list.data,
     isError: list.isError,
     refetch: () => {

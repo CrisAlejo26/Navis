@@ -20,6 +20,9 @@ export function toBelieverSearch(query: BelieversQuery): string {
   for (const status of query.status ?? []) params.append('status', status);
   if (query.congregationId) params.set('congregationId', query.congregationId);
   if (query.giftId) params.set('giftId', query.giftId);
+  if (query.ministry) params.set('ministry', query.ministry);
+  if (query.listId) params.set('listId', query.listId);
+  if (query.inLists) params.set('inLists', String(query.inLists));
   if (query.attention) params.set('attention', 'true');
   if (query.sort) params.set('sort', query.sort);
   if (query.order) params.set('order', query.order);

@@ -17,6 +17,7 @@ import { env, isProduction } from './config/env';
 import { dataSourceOptions } from './database/data-source';
 import { DreamsModule } from './dreams/dreams.module';
 import { HealthModule } from './health/health.module';
+import { ListsModule } from './lists/lists.module';
 import { ProfilesModule } from './profiles/profiles.module';
 import { PropheciesModule } from './prophecies/prophecies.module';
 import { RolesModule } from './roles/roles.module';
@@ -49,6 +50,7 @@ import { WeatherModule } from './weather/weather.module';
     ChurchesModule,
     BelieversModule,
     CalendarModule,
+    ListsModule,
     PropheciesModule,
     DreamsModule,
     RolesModule,

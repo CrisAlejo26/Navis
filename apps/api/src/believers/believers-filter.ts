@@ -49,6 +49,37 @@ export function applyFilters(
     );
   }
 
+  if (query.ministry) {
+    builder.andWhere(
+      `EXISTS (SELECT 1 FROM believer_ministries m
+               WHERE m.believer_id = believer.id AND m.ministry = :ministry AND m.deleted_at IS NULL)`,
+      { ministry: query.ministry },
+    );
+  }
+
+  /*
+   * Los dos filtros de listas (RFC 0010 §8.7, D36).
+   *
+   * Van como subconsulta contra `list_members` y no como relación cargada: con
+   * relaciones, `take`/`skip` de TypeORM se van a una subconsulta con `DISTINCT`
+   * y Postgres exige entonces que todo lo que se ordena esté en la lista de
+   * selección (CLAUDE.md). Es la misma forma que ya usan dones y labores.
+   */
+  if (query.listId) {
+    builder.andWhere(
+      `EXISTS (SELECT 1 FROM list_members lm
+               WHERE lm.believer_id = believer.id AND lm.list_id = :listId)`,
+      { listId: query.listId },
+    );
+  }
+
+  if (query.inLists && query.inLists > 1) {
+    builder.andWhere(
+      `(SELECT COUNT(*) FROM list_members lm WHERE lm.believer_id = believer.id) >= :inLists`,
+      { inLists: query.inLists },
+    );
+  }
+
   if (query.attention) builder.andWhere(`(${NEEDS_ATTENTION})`);
 
   return builder;
