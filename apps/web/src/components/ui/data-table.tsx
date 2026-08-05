@@ -1,5 +1,5 @@
 import { TriangleAlert, type LucideIcon } from 'lucide-react';
-import type { ReactNode } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Button } from '@/components/ui/button';
@@ -27,6 +27,14 @@ interface DataTableProps<TItem> {
   renderCard: (item: TItem, index: number) => ReactNode;
   /** Clases extra para la fila: un filete que marca la que pide atención. */
   rowClassName?: (item: TItem) => string | undefined;
+  /**
+   * Estilo por fila, con su posición en la página.
+   *
+   * Existe para escalonar la entrada: la clase de animación la pone
+   * `rowClassName`, pero el retardo depende del índice y eso no cabe en una
+   * clase de Tailwind (Regla 9 §5).
+   */
+  rowStyle?: (item: TItem, index: number) => CSSProperties | undefined;
   emptyIcon: LucideIcon;
   emptyTitle: string;
   /** Búsqueda y filtros, sobre la tabla. */
@@ -57,6 +65,7 @@ export function DataTable<TItem>({
   renderRow,
   renderCard,
   rowClassName,
+  rowStyle,
   emptyIcon,
   emptyTitle,
   toolbar,
@@ -101,7 +110,11 @@ export function DataTable<TItem>({
             {!isLoading &&
               !isError &&
               items?.map((item, index) => (
-                <TableRow key={getKey(item)} className={rowClassName?.(item)}>
+                <TableRow
+                  key={getKey(item)}
+                  className={rowClassName?.(item)}
+                  style={rowStyle?.(item, index)}
+                >
                   {renderRow(item, index)}
                 </TableRow>
               ))}

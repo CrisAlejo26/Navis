@@ -177,6 +177,36 @@ Padre)` parece perezoso, pero `emitDecoratorMetadata` escribe la clase en los
 - **Los ficheros subidos no están en la base de datos.** Los audios de las notas
   viven en `UPLOADS_PATH` —un volumen de Docker— y **no entran en un volcado de
   Postgres**: esa carpeta va aparte en las copias de seguridad.
+- **Las profecías no llevan `church_id`, y no falta.** Son de cada usuario y no
+  de una iglesia (RFC 0004 D1): es el único módulo del proyecto sin esa columna,
+  sin `ActiveChurchGuard` y sin permisos de rol. La única barrera de acceso es
+  el filtro por dueño, y por eso vive en `PropheciesRepository` —que lo exige en
+  todos sus métodos— y no en el controlador. Si alguien añade un endpoint ahí,
+  el test que hay que copiar es el e2e que intenta leer la profecía de otro.
+- **Un método de servicio que valida y lanza tiene que ser `async`.** Sin él,
+  la excepción sale de forma **síncrona** al llamarlo, en vez de rechazando la
+  promesa: `expect(...).rejects` no la ve y un `.catch()` del llamador tampoco.
+  Pasó con `PropheciesService.create`, y lo cazó el test.
+- **Exportar una constante junto a un componente rompe el recambio en
+  caliente.** La regla `react-refresh/only-export-components` avisa: un módulo
+  con un componente **solo** exporta componentes. Los mapas de iconos y de
+  clases van a su propio fichero (`lib/prophecies/state-icons.ts`).
+- **En React 19 `ref` es una prop más**: `Input` y `Textarea` la declaran y la
+  pasan al elemento, sin `forwardRef`. Hace falta porque dentro de un `<dialog>`
+  modal el foco lo reparte el navegador al abrirlo y `autoFocus` no vale.
+- **`setState` dentro de un efecto para copiar props es un error de lint**, no
+  un aviso. Cuando un formulario tiene que nacer con datos que llegan tarde, se
+  monta con `key` cuando ya están (ver `ProphecyForm` → `ProphecyFormBody`): así
+  su estado nace correcto y ningún `refetch` pisa lo que se está escribiendo.
+- **Una fila de listado no sirve para editar lo que trunca.** `ProphecyListItem`
+  lleva un `excerpt` del cuerpo, no el cuerpo: el formulario de edición recibe
+  el **identificador** y lo vuelve a pedir. Guardar desde la fila habría
+  recortado el texto sin avisar.
+- **recharts vive detrás de una sola puerta.** Solo se importa en
+  `components/prophecies/charts/`, y la portada lo carga con `React.lazy`: son
+  ~370 kB que se quedan en su propio trozo (`charts-*.js`) y no entran en el
+  bundle inicial. Si algún día se cambia por SVG propio, se toca esa carpeta y
+  ninguna otra.
 - **La verificación de CI formatea en vez de morir**, y si cambia algo lo sube
   en un commit con `[skip ci]`. El `[skip ci]` no es por ahorrar: sin él, ese
   push cancelaría la propia ejecución por la regla de `concurrency`.

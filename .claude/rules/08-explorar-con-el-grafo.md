@@ -65,8 +65,11 @@ es donde aparecen los `@Injectable()`, `@Module()` y compañía de la API.
 ## 4. Recetas que funcionan aquí
 
 ```cypher
--- Todos los endpoints, sin abrir un controlador
-MATCH (r:Route) RETURN r.name AS ruta, r.method AS metodo
+-- Todos los endpoints, sin abrir un controlador.
+-- OJO: hoy los nodos Route están incompletos — ver §5. Para las rutas
+-- añadidas después de la RFC 0002, la consulta fiable es la de abajo.
+MATCH (m:Method) WHERE m.file_path ENDS WITH '.controller.ts'
+RETURN m.qualified_name AS metodo, m.file_path AS fichero ORDER BY fichero
 
 -- Los controladores de la API (el nombre es más fiable que el decorador,
 -- porque @ApiTags se cuela primero en decorator_tags)
@@ -94,8 +97,18 @@ enseña qué se ha movido y qué cuelga de ello.
   igual de bien.
 - **Los ADR del proyecto viven en `docs/adr/`**, no en el almacén de ADR del
   MCP. Léelos como ficheros.
+- **Los nodos `Route` están incompletos, y es la única laguna del grafo.**
+  Ficheros, funciones, clases, métodos y llamadas sí están todo: 608 ficheros
+  indexados, con `docs/`, `scripts/` y `packages/i18n` dentro. Pero de rutas
+  solo hay **catorce**, sin `file_path`, y ninguna de creyentes, notas, dones
+  ni audios — el extractor no las saca de los controladores de Nest con
+  versionado por URI. La superficie de un módulo se pregunta por sus métodos
+  (§4), no por sus `Route`. Si algún día `MATCH (r:Route)` devuelve las
+  cincuenta y pico reales, esta nota sobra.
 - **Un índice viejo miente con mucha seguridad.** Si has añadido, movido o
-  borrado ficheros y vas a seguir explorando, **reindexa**.
+  borrado ficheros y vas a seguir explorando, **reindexa**. Hay un hook de
+  `SessionStart` en `.claude/settings.local.json` que lo hace al abrir sesión;
+  durante la sesión, después de tocar ficheros, lo reindexas tú.
 
 ## 6. Cuándo sí vale ir directo
 

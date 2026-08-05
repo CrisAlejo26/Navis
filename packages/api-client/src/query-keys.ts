@@ -65,5 +65,19 @@ export const queryKeys = {
       [...queryKeys.believers.all, 'noteDays', id, range] as const,
     gifts: ['believers', 'gifts'] as const,
   },
+  /**
+   * Las profecías de quien ha entrado (RFC 0004).
+   *
+   * Todo cuelga de la misma raíz porque casi todo se toca a la vez: anotar un
+   * cumplimiento cambia el estado de la fila, las cuentas de la portada y el
+   * gráfico mensual. **No lleva la iglesia en la clave**: no depende de ella
+   * (D1), así que cambiar de espacio de trabajo no la invalida.
+   */
+  prophecies: {
+    all: ['prophecies'] as const,
+    list: (query: object) => [...queryKeys.prophecies.all, 'list', query] as const,
+    stats: ['prophecies', 'stats'] as const,
+    one: (id: string) => [...queryKeys.prophecies.all, 'one', id] as const,
+  },
   health: ['health'] as const,
 } as const;
