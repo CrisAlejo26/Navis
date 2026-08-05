@@ -7,6 +7,7 @@ import { FulfillmentForm } from '@/components/prophecies/fulfillment-form';
 import { PropheciesCards } from '@/components/prophecies/prophecies-cards';
 import { PropheciesHeader } from '@/components/prophecies/prophecies-header';
 import { PropheciesTable } from '@/components/prophecies/prophecies-table';
+import { PropheciesExportDialog } from '@/components/prophecies/prophecies-export-dialog';
 import { PropheciesToolbar } from '@/components/prophecies/prophecies-toolbar';
 import { PropheciesYear } from '@/components/prophecies/prophecies-year';
 import { ProphecyForm } from '@/components/prophecies/prophecy-form';
@@ -33,6 +34,7 @@ export function PropheciesListPage() {
   const [editing, setEditing] = useState<ProphecyListItem | null>(null);
   const [fulfilling, setFulfilling] = useState<ProphecyListItem | null>(null);
   const [deleting, setDeleting] = useState<ProphecyListItem | null>(null);
+  const [exporting, setExporting] = useState(false);
 
   /** Lo mismo alimenta la fila de la tabla y la ficha (§7.5). */
   const cells = (prophecy: ProphecyListItem, index: number): ProphecyCells => ({
@@ -49,7 +51,14 @@ export function PropheciesListPage() {
     },
   });
 
-  const toolbar = <PropheciesToolbar screen={screen} />;
+  const toolbar = (
+    <PropheciesToolbar
+      screen={screen}
+      onExport={() => {
+        setExporting(true);
+      }}
+    />
+  );
   const items = screen.page?.items ?? [];
 
   return (
@@ -118,6 +127,14 @@ export function PropheciesListPage() {
         prophecy={deleting}
         onClose={() => {
           setDeleting(null);
+        }}
+      />
+
+      <PropheciesExportDialog
+        open={exporting}
+        screen={screen}
+        onClose={() => {
+          setExporting(false);
         }}
       />
     </section>

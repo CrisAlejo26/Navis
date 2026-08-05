@@ -9,26 +9,21 @@ import {
 import { Transform, Type } from 'class-transformer';
 import { IsArray, IsIn, IsInt, IsISO8601, IsOptional, IsUUID, Length, Min } from 'class-validator';
 
+import { commaList } from '../../common/dto/comma-list';
 import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
-
-/** `?state=apuntado&state=estudio` y también `?state=apuntado,estudio`. */
-const lista = ({ value }: { value: unknown }): unknown => {
-  if (typeof value === 'string') return value.split(',').filter(Boolean);
-  return value;
-};
 
 /** Filtros del listado de sueños (RFC 0005 §6.1). */
 export class DreamsQueryDto extends PaginationQueryDto {
   @ApiPropertyOptional({ enum: DREAM_STATES, isArray: true })
   @IsOptional()
-  @Transform(lista)
+  @Transform(commaList)
   @IsArray()
   @IsIn(DREAM_STATES, { each: true })
   state?: DreamState[];
 
   @ApiPropertyOptional({ type: [String], description: 'Suman: el que lleve cualquiera de ellas' })
   @IsOptional()
-  @Transform(lista)
+  @Transform(commaList)
   @IsArray()
   @IsUUID('4', { each: true })
   emotion?: string[];

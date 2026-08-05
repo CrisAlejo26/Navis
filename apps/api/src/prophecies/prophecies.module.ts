@@ -4,10 +4,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { FulfillmentsController } from './fulfillments.controller';
 import { FulfillmentsService } from './fulfillments.service';
 import { PropheciesController } from './prophecies.controller';
+import { PropheciesExportService } from './prophecies-export.service';
 import { PropheciesPageService } from './prophecies-page.service';
 import { PropheciesRepository } from './prophecies.repository';
 import { PropheciesService } from './prophecies.service';
 import { ProphecyFulfillment } from './prophecy-fulfillment.entity';
+import { ProphecyRowsService } from './prophecy-rows.service';
 import { ProphecyStatsService } from './prophecy-stats.service';
 import { Prophecy } from './prophecy.entity';
 
@@ -24,7 +26,9 @@ import { Prophecy } from './prophecy.entity';
   providers: [
     PropheciesRepository,
     PropheciesService,
+    ProphecyRowsService,
     PropheciesPageService,
+    PropheciesExportService,
     ProphecyStatsService,
     FulfillmentsService,
   ],

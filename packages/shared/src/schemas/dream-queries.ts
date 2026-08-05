@@ -48,6 +48,21 @@ export interface DreamsQuery {
   order?: 'asc' | 'desc';
 }
 
+/**
+ * La fila que se exporta (RFC 0009 §6.3).
+ *
+ * Lleva **el cuerpo entero**, la interpretación y lo que significó al
+ * cumplirse: las tres cosas que la fila del listado no trae y que son justo
+ * las que alguien quiere releer fuera de la aplicación.
+ */
+export interface DreamExportRow extends Omit<DreamListItem, 'excerpt'> {
+  body: string;
+  interpretation: string | null;
+  fulfillmentMeaning: string | null;
+  /** Cuándo se apuntó, que no es la noche en que se soñó. */
+  createdAt: string;
+}
+
 /** Una noche de la franja. Vienen las 84, con las vacías a cero (D19). */
 export interface DreamNight {
   /** `AAAA-MM-DD`. */

@@ -97,7 +97,19 @@ comprobado que empaqueta correctamente).
   teñidas según cuánto se soñó, con el total de cada semana debajo, y cada celda
   abriendo el listado de esa noche. La app móvil se queda fuera, como en las
   anteriores.
-- **Documentación**: ocho RFC y seis ADR en [`docs/`](./).
+- **Exportar lo que se ve** (RFC 0009): creyentes, profecías y sueños salen a
+  **Excel, PDF, imagen, Markdown y CSV**, con los filtros de la URL puestos y,
+  en creyentes, con la selección de filas si la hay. El fichero lo escribe el
+  navegador —los seis idiomas y los colores del dato viven ahí— y el servidor
+  solo pone las filas, por un `/export` por módulo con tope de 2000 y aviso de
+  truncado. **Sin ninguna dependencia nueva**: el `.xlsx` se escribe a mano
+  sobre un ZIP propio, y el PDF y la imagen salen del rasterizador que dejó el
+  calendario, ahora en `lib/share/`. El Excel lleva la banda `#2140cf`, la fila
+  de encabezados fija, filtro automático, fechas que son fechas y una segunda
+  hoja «Resumen» con barras dentro de la celda. El elemento que sostiene el
+  diálogo es **la hoja**: una sola vista previa que cambia de piel al elegir
+  formato.
+- **Documentación**: diez RFC y seis ADR en [`docs/`](./).
 
 ## Producción
 
@@ -125,23 +137,30 @@ El **calendario ([RFC 0002](./rfcs/0002-calendario-de-programaciones.md))**, los
 **creyentes con su bitácora ([RFC 0003](./rfcs/0003-creyentes-y-notas.md))**, las
 **profecías personales ([RFC 0004](./rfcs/0004-profecias-personales.md))** y los
 **sueños personales ([RFC 0005](./rfcs/0005-suenos-personales.md))** ya están
-implementados en API y web. Con ellos hay por fin datos de verdad: personas,
-reuniones, notas fechadas, palabras con su cumplimiento y noches con lo que se
-soñó en ellas.
+implementados en API y web, y con ellos **exportar lo que se ve
+([RFC 0009](./rfcs/0009-exportar-listados.md))**. Con todo eso hay por fin datos
+de verdad: personas, reuniones, notas fechadas, palabras con su cumplimiento,
+noches con lo que se soñó en ellas —y una forma de sacarlo de la aplicación que
+no es hacer una captura de pantalla.
 
 Lo que sigue:
 
 1. **[RFC 0001](./rfcs/0001-panel-de-metricas.md) — panel de métricas**, que ya
    tiene datos que contar: quién pide atención, cuántas notas hay este mes y
    cómo va el reparto del calendario.
-2. **[RFC 0006](./rfcs/0006-comunicaciones.md) — comunicaciones**, la primera
+2. **[RFC 0010](./rfcs/0010-listas-compartidas.md) — listas**, la primera
+   funcionalidad que sale a internet: listas de creyentes con un enlace que se
+   abre sin cuenta, abiertas o restringidas a unos accesos concedidos lista a
+   lista, con su tarjeta de WhatsApp y la analítica de quién las ve. Depende de
+   la 0009 para los formatos, que ya está.
+3. **[RFC 0006](./rfcs/0006-comunicaciones.md) — comunicaciones**, la primera
    que añade WebSocket. Es también donde entra notificar el aviso de
    inactividad fuera de la pantalla (RFC 0003, Alcance).
-3. **Llevar el color de sueños a la portada de profecías**: sus seis tarjetas
+4. **Llevar el color de sueños a la portada de profecías**: sus seis tarjetas
    siguen siendo `bg-card` con degradados al 8 %, que sobre fondo claro es
    blanco. El lenguaje ya está escrito (RFC 0005 §7.1) y `StatCard` ya tiene los
    tonos; falta elegir cuál lleva cada una.
-4. **La pestaña de creyentes en la app móvil**, que se dejó fuera a propósito:
+5. **La pestaña de creyentes en la app móvil**, que se dejó fuera a propósito:
    el tipo, el esquema y los hooks ya se escribieron compartidos, así que solo
    falta el JSX (§7.9).
 
