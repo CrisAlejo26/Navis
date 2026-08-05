@@ -1,6 +1,6 @@
 import { useBeliever, useCongregations, useGifts } from '@navis/api-client';
 import { todayIn } from '@navis/shared';
-import { ChevronLeft, UserSearch } from 'lucide-react';
+import { UserSearch } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate, useParams } from 'react-router';
@@ -9,6 +9,7 @@ import { BelieverForm } from '@/components/believers/believer-form';
 import { BelieverIdentity } from '@/components/believers/believer-identity';
 import { BelieverLog } from '@/components/believers/believer-log';
 import { DeleteBelieverDialog } from '@/components/believers/delete-believer-dialog';
+import { BackLink } from '@/components/ui/back-link';
 import { EmptyState } from '@/components/ui/empty-state';
 import { PageSkeleton } from '@/components/ui/page-skeleton';
 import { api } from '@/lib/api';
@@ -53,15 +54,11 @@ export function BelieverPage() {
 
   return (
     <section className="gap-5 flex flex-col">
-      <Link
-        to="/believers"
-        className="gap-1.5 text-sm -ml-1 inline-flex w-fit items-center rounded-sm text-muted-foreground hover:text-foreground"
-      >
-        <ChevronLeft size={16} aria-hidden />
-        {t('believers.backToList')}
-      </Link>
+      <BackLink to="/believers" label={t('believers.backToList')} />
 
-      <div className="gap-6 lg:grid-cols-[22rem_1fr] grid items-start">
+      {/* A lo ancho y de arriba abajo, como la ficha de un sueño: la cabecera
+          teñida primero y debajo la bitácora con sus formas de verla. */}
+      <div className="gap-4 flex flex-col">
         <BelieverIdentity
           believer={believer}
           congregation={congregations.find((one) => one.id === believer.congregationId)}

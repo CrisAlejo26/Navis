@@ -14,6 +14,7 @@ import { ProphecyForm } from '@/components/prophecies/prophecy-form';
 import { ProphecyIdentity } from '@/components/prophecies/prophecy-identity';
 import { ProphecyJourney } from '@/components/prophecies/prophecy-journey';
 import { ProphecyViewSwitch } from '@/components/prophecies/prophecy-view-switch';
+import { BackLink } from '@/components/ui/back-link';
 import { PageSkeleton } from '@/components/ui/page-skeleton';
 import { api } from '@/lib/api';
 import { useProphecyDetailViewStore } from '@/lib/prophecies/detail-view';
@@ -25,9 +26,13 @@ import { toast } from '@/lib/toast';
  * Es una ruta y no un panel lateral: se comparte por enlace, se abre en otra
  * pestaña y tiene sitio para un texto largo y para años de cumplimientos.
  *
- * La columna derecha se lee de **cuatro formas**, y cada una responde a una
- * pregunta distinta: qué ha pasado en orden, déjame releerla, cuándo pasó cada
- * cosa, y enséñamelo todo a la vez.
+ * La palabra se lee de **cuatro formas**, y cada una responde a una pregunta
+ * distinta: qué ha pasado en orden, déjame releerla, cuándo pasó cada cosa, y
+ * enséñamelo todo a la vez.
+ *
+ * Ocupa el ancho entero y va de arriba abajo, como la ficha de un sueño: la
+ * cabecera teñida por estado y debajo el texto. Antes la identidad vivía en una
+ * columna de 20 rem a la izquierda y la palabra empezaba a media pantalla.
  */
 export function ProphecyPage() {
   const { t } = useTranslation();
@@ -61,79 +66,85 @@ export function ProphecyPage() {
   };
 
   return (
-    <section className="gap-6 lg:grid-cols-[20rem_1fr] animate-page-in grid">
-      <ProphecyIdentity
-        prophecy={prophecy}
-        today={today}
-        onEdit={() => {
-          setEditing(true);
-        }}
-        onFulfill={() => {
-          setFulfilling(true);
-        }}
-        onMarkFulfilled={() => {
-          setMarking(true);
-        }}
-        onReopen={reopen}
-        onDelete={() => {
-          setDeleting(true);
-        }}
-      />
+    <section className="gap-4 animate-page-in flex flex-col">
+      <BackLink to="/prophecies/list" label={t('prophecies.open')} />
 
-      <div className="gap-4 min-w-0 flex flex-col">
-        <div className="flex justify-end">
-          <ProphecyViewSwitch />
-        </div>
+      {/* A lo ancho y de arriba abajo, como la ficha de un sueño: la cabecera
+          teñida primero y debajo el texto con sus cuatro vistas (D21). */}
+      <div className="gap-4 flex flex-col">
+        <ProphecyIdentity
+          prophecy={prophecy}
+          today={today}
+          onEdit={() => {
+            setEditing(true);
+          }}
+          onFulfill={() => {
+            setFulfilling(true);
+          }}
+          onMarkFulfilled={() => {
+            setMarking(true);
+          }}
+          onReopen={reopen}
+          onDelete={() => {
+            setDeleting(true);
+          }}
+        />
 
-        {/* La clave remonta al cambiar de vista y relanza la animación: es un
+        <div className="gap-4 min-w-0 flex flex-col">
+          <div className="flex justify-end">
+            <ProphecyViewSwitch />
+          </div>
+
+          {/* La clave remonta al cambiar de vista y relanza la animación: es un
             fundido, sin desplazamiento —no se está yendo a otro sitio— (§7.8). */}
-        <div key={view} className="gap-6 flex flex-col">
-          {view !== 'recorrido' && (
-            <article
-              style={{ animationDelay: '40ms' }}
-              className="p-4 sm:p-6 animate-rise-in rounded-xl border bg-card"
-            >
-              <p
-                className={
-                  view === 'lectura'
-                    ? 'max-w-prose text-[17px] leading-[1.75] whitespace-pre-wrap'
-                    : 'max-w-prose leading-relaxed text-[15px] whitespace-pre-wrap'
-                }
+          <div key={view} className="gap-6 flex flex-col">
+            {view !== 'recorrido' && (
+              <article
+                style={{ animationDelay: '40ms' }}
+                className="p-4 sm:p-6 animate-rise-in rounded-xl border bg-card"
               >
-                {prophecy.body}
-              </p>
-            </article>
-          )}
+                <p
+                  className={
+                    view === 'lectura'
+                      ? 'max-w-prose text-[17px] leading-[1.75] whitespace-pre-wrap'
+                      : 'max-w-prose leading-relaxed text-[15px] whitespace-pre-wrap'
+                  }
+                >
+                  {prophecy.body}
+                </p>
+              </article>
+            )}
 
-          {view === 'bitacora' && (
-            <section
-              style={{ animationDelay: '120ms' }}
-              className="gap-3 animate-rise-in flex flex-col"
-            >
-              <h2 className="text-sm font-medium">{t('prophecies.fulfillments')}</h2>
-              <FulfillmentList
-                fulfillments={prophecy.fulfillments}
-                onEdit={setEditingFulfillment}
-                onDelete={setDeletingFulfillment}
-              />
-            </section>
-          )}
+            {view === 'bitacora' && (
+              <section
+                style={{ animationDelay: '120ms' }}
+                className="gap-3 animate-rise-in flex flex-col"
+              >
+                <h2 className="text-sm font-medium">{t('prophecies.fulfillments')}</h2>
+                <FulfillmentList
+                  fulfillments={prophecy.fulfillments}
+                  onEdit={setEditingFulfillment}
+                  onDelete={setDeletingFulfillment}
+                />
+              </section>
+            )}
 
-          {view === 'fichas' && (
-            <section
-              style={{ animationDelay: '120ms' }}
-              className="gap-3 animate-rise-in flex flex-col"
-            >
-              <h2 className="text-sm font-medium">{t('prophecies.fulfillments')}</h2>
-              <FulfillmentCards
-                fulfillments={prophecy.fulfillments}
-                onEdit={setEditingFulfillment}
-                onDelete={setDeletingFulfillment}
-              />
-            </section>
-          )}
+            {view === 'fichas' && (
+              <section
+                style={{ animationDelay: '120ms' }}
+                className="gap-3 animate-rise-in flex flex-col"
+              >
+                <h2 className="text-sm font-medium">{t('prophecies.fulfillments')}</h2>
+                <FulfillmentCards
+                  fulfillments={prophecy.fulfillments}
+                  onEdit={setEditingFulfillment}
+                  onDelete={setDeletingFulfillment}
+                />
+              </section>
+            )}
 
-          {view === 'recorrido' && <ProphecyJourney prophecy={prophecy} today={today} />}
+            {view === 'recorrido' && <ProphecyJourney prophecy={prophecy} today={today} />}
+          </div>
         </div>
       </div>
 

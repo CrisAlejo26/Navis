@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import { PropheciesFilters } from '@/components/prophecies/prophecies-filters';
 import { Button } from '@/components/ui/button';
+import { ClearFiltersButton } from '@/components/ui/clear-filters-button';
 import { Drawer } from '@/components/ui/drawer';
 import { SearchField } from '@/components/ui/search-field';
 import { cn } from '@/lib/cn';
@@ -42,6 +43,8 @@ export function PropheciesToolbar({ screen }: { screen: PropheciesScreen }) {
           label={t('prophecies.search')}
           className="min-w-0 flex-1"
         />
+
+        <ClearFiltersButton count={screen.filters.count} onClear={screen.filters.clear} />
 
         <Button
           variant="secondary"

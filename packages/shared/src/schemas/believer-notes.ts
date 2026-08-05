@@ -17,6 +17,15 @@ export const NOTE_KINDS = [
   'vision',
   'experiencia',
   'don',
+  /**
+   * **Corrección**: algo que se hizo mal y hubo que hablar.
+   *
+   * Se llama así y no «falta» ni «amonestación» a propósito: lo que se anota es
+   * la conversación, no el expediente. Va la última de la lista porque es la
+   * que menos se escribe, y es la única cuyo color es `destructive` —la
+   * distingue de un vistazo en una bitácora de diez años—.
+   */
+  'correccion',
 ] as const;
 
 export type NoteKind = (typeof NOTE_KINDS)[number];

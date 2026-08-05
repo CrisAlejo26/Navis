@@ -4,7 +4,7 @@ import { Suspense, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 
-import { MonthlyChart } from '@/components/prophecies/charts/lazy';
+import { MonthlyChart } from '@/components/charts/lazy';
 import { PropheciesHeader } from '@/components/prophecies/prophecies-header';
 import { ProphecyForm } from '@/components/prophecies/prophecy-form';
 import { StatGrid } from '@/components/prophecies/stat-grid';

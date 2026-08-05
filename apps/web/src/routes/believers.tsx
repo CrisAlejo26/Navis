@@ -44,6 +44,7 @@ export function BelieversPage() {
   const cells = (believer: BelieverListItem, index: number): BelieverCells => ({
     believer,
     congregation: screen.congregationOf(believer.congregationId),
+    ministries: screen.ministries,
     today: screen.today,
     canManage: screen.canManage,
     index,

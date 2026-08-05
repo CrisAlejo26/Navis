@@ -1,4 +1,10 @@
-import { useCreateBeliever, useUpdateBeliever } from '@navis/api-client';
+import {
+  useCreateBeliever,
+  useDeleteBelieverPhoto,
+  useMinistries,
+  useUpdateBeliever,
+  useUploadBelieverPhoto,
+} from '@navis/api-client';
 import {
   DEFAULT_ALERT_AFTER_DAYS,
   DEFAULT_BELIEVER_STATUS,
@@ -12,6 +18,7 @@ import { useState, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { BelieverFields, type BelieverDraft } from '@/components/believers/believer-fields';
+import { PhotoField, type PhotoDraft } from '@/components/believers/photo-field';
 import { FormError } from '@/components/auth/form-error';
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
@@ -38,12 +45,21 @@ export function BelieverForm({ open, onClose, believer, congregations, gifts }: 
   const { t } = useTranslation();
   const create = useCreateBeliever(api);
   const update = useUpdateBeliever(api);
+  const uploadPhoto = useUploadBelieverPhoto(api);
+  const removePhoto = useDeleteBelieverPhoto(api);
+
+  // El catálogo de labores se pide aquí y no se pasa por props como el de
+  // dones: es una consulta cacheada cinco minutos, y hacerla llegar hasta este
+  // diálogo cruzando tres pantallas sería ruido en las tres.
+  const { data: ministries = [] } = useMinistries(api, open);
 
   const [draft, setDraft] = useState<BelieverDraft>({
     status: believer?.status ?? DEFAULT_BELIEVER_STATUS,
     alertAfterDays: believer ? believer.alertAfterDays : DEFAULT_ALERT_AFTER_DAYS,
     giftIds: believer?.gifts.map((one) => one.id) ?? [],
+    ministries: believer?.ministries ?? [],
   });
+  const [photo, setPhoto] = useState<PhotoDraft>({ kind: 'keep' });
   const [error, setError] = useState<string | null>(null);
 
   const submit = (event: FormEvent<HTMLFormElement>) => {
@@ -68,13 +84,25 @@ export function BelieverForm({ open, onClose, believer, congregations, gifts }: 
       setError(t('errors.generic'));
     };
 
+    /**
+     * La foto va **después** de guardar: al crear no hay a quién colgarla, y al
+     * editar da igual el orden. Si falla, la persona ya está guardada y solo se
+     * pierde la imagen, que es la mitad recuperable de las dos.
+     */
+    const savePhoto = async (id: string) => {
+      if (photo.kind === 'upload') await uploadPhoto.mutateAsync({ id, file: photo.file });
+      else if (photo.kind === 'remove') await removePhoto.mutateAsync(id);
+    };
+
     if (believer) {
       update.mutate(
         { id: believer.id, ...parsed.data },
         {
           onSuccess: () => {
-            toast.success(t('believers.updated'));
-            onClose();
+            void savePhoto(believer.id).then(() => {
+              toast.success(t('believers.updated'));
+              onClose();
+            });
           },
           onError: failed,
         },
@@ -84,8 +112,10 @@ export function BelieverForm({ open, onClose, believer, congregations, gifts }: 
 
     create.mutate(parsed.data, {
       onSuccess: (created) => {
-        toast.success(t('believers.created', { name: believerName(created) }));
-        onClose();
+        void savePhoto(created.id).then(() => {
+          toast.success(t('believers.created', { name: believerName(created) }));
+          onClose();
+        });
       },
       onError: failed,
     });
@@ -99,11 +129,19 @@ export function BelieverForm({ open, onClose, believer, congregations, gifts }: 
     >
       <form onSubmit={submit} className="gap-4 flex flex-col" noValidate>
         <BelieverFields
+          ministries={ministries}
           believer={believer}
           congregations={congregations}
           gifts={gifts}
           draft={draft}
           onChange={setDraft}
+        />
+
+        <PhotoField
+          believerId={believer?.id}
+          hasPhoto={believer?.hasPhoto ?? false}
+          value={photo}
+          onChange={setPhoto}
         />
 
         <FormError message={error} />

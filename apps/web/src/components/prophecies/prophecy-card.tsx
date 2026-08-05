@@ -4,7 +4,7 @@ import { Link } from 'react-router';
 import { ProphecyActions } from '@/components/prophecies/prophecy-actions';
 import type { ProphecyCells } from '@/components/prophecies/prophecy-row';
 import { StateBadge } from '@/components/prophecies/state-badge';
-import { formatDate, formatNumber } from '@/lib/format';
+import { formatDay, formatNumber } from '@/lib/format';
 
 /**
  * La misma profecía como ficha: es lo que se ve por debajo de `md` y también en
@@ -31,7 +31,7 @@ export function ProphecyCard({ prophecy, onEdit, onFulfill, onDelete }: Prophecy
       <p className="line-clamp-3 text-[13px] text-muted-foreground">{prophecy.excerpt}</p>
 
       <div className="gap-x-3 gap-y-1 text-xs flex flex-wrap items-center text-muted-foreground tabular-nums">
-        <span>{t('prophecies.receivedOn', { date: formatDate(prophecy.receivedAt) })}</span>
+        <span>{t('prophecies.receivedOn', { date: formatDay(prophecy.receivedAt) })}</span>
         <span aria-hidden>·</span>
         <span>
           {prophecy.fulfilledAt

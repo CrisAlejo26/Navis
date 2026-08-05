@@ -65,12 +65,14 @@ export const NAV_ITEMS: readonly NavItem[] = [
     group: 'general',
   },
   {
+    // Sin `permission`, por lo mismo (RFC 0005 D2). Antes exigía `dreams.view`,
+    // que era un fallo en dos direcciones: dejaba a alguien sin ver **sus
+    // propios** sueños y sugería que un administrador podía ver los de otro.
     to: '/dreams',
     labelKey: 'nav.dreams',
     Icon: Moon,
     end: false,
     group: 'general',
-    permission: 'dreams.view',
   },
   {
     to: '/calendar',

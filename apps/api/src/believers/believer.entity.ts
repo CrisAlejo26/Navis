@@ -66,6 +66,18 @@ export class Believer extends BaseEntity {
   @Column({ name: 'user_id', type: 'text', nullable: true })
   userId: string | null;
 
+  /**
+   * Su fotografía, si la tiene: la clave del fichero en disco.
+   *
+   * **La imagen no está aquí**, como los audios: vive bajo `UPLOADS_PATH`, en
+   * la carpeta de su iglesia, y esta columna es lo único que la encuentra. Es
+   * opcional del todo —casi nadie va a subirla— y por eso la interfaz no
+   * inventa un círculo con iniciales cuando falta: enseña lo que hay.
+   */
+  @ApiPropertyOptional({ description: 'El nombre del fichero en disco, generado por el servidor' })
+  @Column({ name: 'photo_key', type: 'text', nullable: true })
+  photoKey: string | null;
+
   @OneToMany(() => BelieverMinistry, (ministry) => ministry.believer, { cascade: true })
   ministries: BelieverMinistry[];
 

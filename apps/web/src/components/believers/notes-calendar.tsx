@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { accentVars } from '@/lib/accents';
 import { NOTE_ORDER, NOTE_STYLES } from '@/lib/believers/note-kinds';
 import { cn } from '@/lib/cn';
-import { formatDate, formatMonth } from '@/lib/format';
+import { formatDay, formatMonth } from '@/lib/format';
 
 /** El lunes es el primer día de la semana; la semana europea empieza ahí. */
 const DIAS_ANTES = (iso: string) => (new Date(`${iso}T00:00:00Z`).getUTCDay() + 6) % 7;
@@ -107,10 +107,10 @@ export function NotesCalendar({
                       title={
                         note
                           ? t('notes.calendarDay', {
-                              date: formatDate(day, 'short'),
+                              date: formatDay(day, 'short'),
                               total: String(note.total),
                             })
-                          : formatDate(day, 'short')
+                          : formatDay(day, 'short')
                       }
                       style={kind ? accentVars(NOTE_STYLES[kind].accent) : undefined}
                       className={cn(
@@ -128,7 +128,7 @@ export function NotesCalendar({
                   : delMes
                       .map((day) =>
                         t('notes.calendarDay', {
-                          date: formatDate(day, 'short'),
+                          date: formatDay(day, 'short'),
                           total: String(byDate.get(day)?.total ?? 0),
                         }),
                       )

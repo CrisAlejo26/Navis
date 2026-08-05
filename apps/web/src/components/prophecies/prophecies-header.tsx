@@ -1,5 +1,6 @@
 import type { PropheciesStats } from '@navis/shared';
 import { Plus } from 'lucide-react';
+import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Button } from '@/components/ui/button';
@@ -15,9 +16,12 @@ import { formatNumber } from '@/lib/format';
 export function PropheciesHeader({
   stats,
   onAdd,
+  children,
 }: {
   stats: PropheciesStats | undefined;
   onAdd: () => void;
+  /** Lo que acompaña a la acción principal. El listado pone ahí las fechas. */
+  children?: ReactNode;
 }) {
   const { t } = useTranslation();
 
@@ -36,11 +40,15 @@ export function PropheciesHeader({
         )}
       </div>
 
-      {/* 48 px: es la acción principal y se pulsa de pie (Regla 5 §4). */}
-      <Button size="lg" className="shrink-0" onClick={onAdd}>
-        <Plus size={18} aria-hidden />
-        {t('prophecies.add')}
-      </Button>
+      <div className="gap-2 flex shrink-0 flex-wrap items-center">
+        {children}
+
+        {/* 48 px: es la acción principal y se pulsa de pie (Regla 5 §4). */}
+        <Button size="lg" onClick={onAdd}>
+          <Plus size={18} aria-hidden />
+          {t('prophecies.add')}
+        </Button>
+      </div>
     </header>
   );
 }
