@@ -134,6 +134,24 @@ export async function montarApi(
       });
     }
 
+    /**
+     * Exportar (RFC 0009): las mismas filas sin paginar. Va **antes** que
+     * `/believers`, que compara la ruta entera y no la dejaría pasar de todas
+     * formas, pero el orden deja claro cuál manda.
+     */
+    if (path === '/believers/export') {
+      const ids = url.searchParams.getAll('ids');
+      const rows =
+        ids.length > 0 ? data.believers.filter((one) => ids.includes(one.id)) : data.believers;
+
+      return json(route, {
+        rows,
+        total: rows.length,
+        returned: rows.length,
+        truncated: false,
+      });
+    }
+
     if (path === '/believers') {
       const only = url.searchParams.get('attention') === 'true';
       const items = only ? data.believers.filter((one) => one.needsAttention) : data.believers;

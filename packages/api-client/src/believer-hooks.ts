@@ -4,8 +4,14 @@ import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 import type { ApiClient } from './client';
 import { queryKeys } from './query-keys';
 
-/** `?page=2&status=activo&status=nuevo`. Lo vacío no viaja. */
-function toSearch(query: BelieversQuery): string {
+/**
+ * `?page=2&status=activo&status=nuevo`. Lo vacío no viaja.
+ *
+ * Se llama `toBelieverSearch` y no `toSearch` porque el paquete reexporta todo
+ * en plano y profecías ya tiene el suyo: dos `toSearch` en el mismo `index` se
+ * pisan sin avisar (CLAUDE.md).
+ */
+export function toBelieverSearch(query: BelieversQuery): string {
   const params = new URLSearchParams();
 
   if (query.page && query.page > 1) params.set('page', String(query.page));
@@ -40,7 +46,7 @@ export function useBelievers(
 ): UseQueryResult<Paginated<BelieverListItem>> {
   return useQuery({
     queryKey: queryKeys.believers.list(keyOf(query)),
-    queryFn: () => api.get<Paginated<BelieverListItem>>(`/believers?${toSearch(query)}`),
+    queryFn: () => api.get<Paginated<BelieverListItem>>(`/believers?${toBelieverSearch(query)}`),
     enabled,
     staleTime: 30_000,
     placeholderData: (previous) => previous,

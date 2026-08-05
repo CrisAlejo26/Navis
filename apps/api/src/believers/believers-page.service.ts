@@ -1,16 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import type { BelieverListItem, BelieversQuery, IsoDate, Paginated } from '@navis/shared';
-import { In, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 
 import { nullsFor } from '../database/date-sql';
-import { BelieverGift } from './believer-gift.entity';
-import { BelieverMinistry } from './believer-ministry.entity';
-import { BelieverNote } from './believer-note.entity';
+import { BelieverRowsService } from './believer-rows.service';
 import { Believer } from './believer.entity';
 import { applyFilters, SORT_COLUMN } from './believers-filter';
-import { giftsByBeliever, toListItem } from './believers.mapper';
-import { GiftsService } from './gifts.service';
 
 /** La consulta ya resuelta: lo que llega del DTO con sus valores por defecto. */
 export type BelieverPageQuery = BelieversQuery &
@@ -22,16 +18,15 @@ export type BelieverPageQuery = BelieversQuery &
  *
  * Está aparte de `BelieversService` porque es otra cosa: allí se escribe una
  * ficha, aquí se arma una consulta con seis filtros, cuatro órdenes y un
- * cálculo de días que no se escribe igual en Postgres que en SQLite.
+ * cálculo de días que no se escribe igual en Postgres que en SQLite. Lo que
+ * viene después —labores, dones y cuentas— lo pone `BelieverRowsService`, que
+ * es lo mismo que necesita la exportación (RFC 0009).
  */
 @Injectable()
 export class BelieversPageService {
   constructor(
     @InjectRepository(Believer) private readonly believers: Repository<Believer>,
-    @InjectRepository(BelieverMinistry) private readonly ministries: Repository<BelieverMinistry>,
-    @InjectRepository(BelieverGift) private readonly links: Repository<BelieverGift>,
-    @InjectRepository(BelieverNote) private readonly notes: Repository<BelieverNote>,
-    private readonly gifts: GiftsService,
+    private readonly rows: BelieverRowsService,
   ) {}
 
   async findPage(
@@ -60,59 +55,13 @@ export class BelieversPageService {
       .limit(query.limit);
 
     const [people, total] = await builder.getManyAndCount();
-    const ids = people.map((person) => person.id);
-
-    const [catalog, ministries, links, counts] = await Promise.all([
-      this.gifts.ensureFor(churchId),
-      this.ministriesOf(ids),
-      ids.length ? this.links.find({ where: { believerId: In(ids) } }) : [],
-      this.countNotes(ids),
-    ]);
-
-    const giftsOf = giftsByBeliever(links, catalog);
 
     return {
-      items: people.map((person) =>
-        toListItem({
-          believer: person,
-          ministries: ministries.get(person.id) ?? [],
-          gifts: giftsOf.get(person.id) ?? [],
-          notesCount: counts.get(person.id) ?? 0,
-          today,
-        }),
-      ),
+      items: await this.rows.of(churchId, people, today),
       total,
       page: query.page,
       limit: query.limit,
       totalPages: Math.max(1, Math.ceil(total / query.limit)),
     };
-  }
-
-  /** Las labores de la página, agrupadas por persona. */
-  private async ministriesOf(ids: readonly string[]): Promise<Map<string, string[]>> {
-    if (ids.length === 0) return new Map();
-
-    const rows = await this.ministries.find({ where: { believerId: In([...ids]) } });
-    const grouped = new Map<string, string[]>();
-    for (const row of rows) {
-      grouped.set(row.believerId, [...(grouped.get(row.believerId) ?? []), row.ministry]);
-    }
-
-    return grouped;
-  }
-
-  /** Cuántas notas tiene cada uno, de una consulta agrupada y no de N. */
-  private async countNotes(ids: readonly string[]): Promise<Map<string, number>> {
-    if (ids.length === 0) return new Map();
-
-    const rows = await this.notes
-      .createQueryBuilder('note')
-      .select('note.believer_id', 'believerId')
-      .addSelect('COUNT(*)', 'total')
-      .where('note.believerId IN (:...ids)', { ids: [...ids] })
-      .groupBy('note.believer_id')
-      .getRawMany<{ believerId: string; total: string | number }>();
-
-    return new Map(rows.map((row) => [row.believerId, Number(row.total)]));
   }
 }

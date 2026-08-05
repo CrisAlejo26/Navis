@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import { DeleteDreamDialog } from '@/components/dreams/delete-dream-dialog';
 import { DreamForm } from '@/components/dreams/dream-form';
+import { DreamsExportDialog } from '@/components/dreams/dreams-export-dialog';
 import { DreamsHeader } from '@/components/dreams/dreams-header';
 import { DreamsTable } from '@/components/dreams/dreams-table';
 import { DreamsToolbar } from '@/components/dreams/dreams-toolbar';
@@ -29,6 +30,7 @@ export function DreamsListPage() {
   const [creating, setCreating] = useState(false);
   const [editing, setEditing] = useState<DreamListItem | null>(null);
   const [deleting, setDeleting] = useState<DreamListItem | null>(null);
+  const [exporting, setExporting] = useState(false);
 
   /** Lo mismo alimenta la fila de la tabla y la ficha de móvil (§7.5). */
   const cells = (dream: DreamListItem, index: number): DreamCells => ({
@@ -59,7 +61,18 @@ export function DreamsListPage() {
         />
       </DreamsHeader>
 
-      <DreamsTable screen={screen} cells={cells} toolbar={<DreamsToolbar screen={screen} />} />
+      <DreamsTable
+        screen={screen}
+        cells={cells}
+        toolbar={
+          <DreamsToolbar
+            screen={screen}
+            onExport={() => {
+              setExporting(true);
+            }}
+          />
+        }
+      />
 
       {/* Al editar viaja el identificador y el formulario carga el sueño
           entero: la fila solo trae un extracto del cuerpo. */}
@@ -78,6 +91,14 @@ export function DreamsListPage() {
         dream={deleting}
         onClose={() => {
           setDeleting(null);
+        }}
+      />
+
+      <DreamsExportDialog
+        open={exporting}
+        screen={screen}
+        onClose={() => {
+          setExporting(false);
         }}
       />
     </section>

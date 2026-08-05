@@ -55,3 +55,17 @@ export interface BelieversSummary {
   needsAttention: number;
   newThisMonth: number;
 }
+
+/**
+ * La fila que se exporta (RFC 0009 §6.3).
+ *
+ * Es **la misma** que la del listado, y aquí sí coinciden: una persona no
+ * tiene ningún campo largo que la fila trunque, así que no hay nada que volver
+ * a pedir. En profecías y en sueños no pasa eso —allí la fila lleva un
+ * `excerpt`— y por eso allí sí hay una forma propia.
+ *
+ * El alias existe igualmente para que el tipo se llame por lo que es en cada
+ * sitio: si algún día la ficha crece con un campo que el listado no lleve, se
+ * cambia esta línea y no las tres que la usan.
+ */
+export type BelieverExportRow = BelieverListItem;

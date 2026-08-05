@@ -1,6 +1,8 @@
 import type { DreamState } from '@navis/shared';
 import { Compass, MoonStar, Sunrise, type LucideIcon } from 'lucide-react';
 
+import { NEUTRAL_ACCENT } from '@/lib/export/columns';
+
 /**
  * El icono de cada estado (RFC 0005 §7.5).
  *
@@ -19,6 +21,17 @@ export const STATE_ICON: Record<DreamState, LucideIcon> = {
   estudio: Compass,
   /** El amanecer: pasó. */
   cumplido: Sunrise,
+};
+
+/**
+ * El mismo color, esta vez como **acento** —token o hexadecimal— para lo que
+ * no entiende de clases: la pastilla de una exportación en Excel o en la
+ * lámina (RFC 0009 D9). Sale de aquí y no se vuelve a elegir.
+ */
+export const STATE_ACCENT: Record<DreamState, string> = {
+  apuntado: NEUTRAL_ACCENT,
+  estudio: 'primary',
+  cumplido: 'success',
 };
 
 /** El color de cada estado, del token que le toca. */

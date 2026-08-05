@@ -2,9 +2,11 @@ import { ValidationPipe, VersioningType } from '@nestjs/common';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import { Test } from '@nestjs/testing';
 import type {
+  ExportResponse,
   Paginated,
   PropheciesStats,
   Prophecy,
+  ProphecyExportRow,
   ProphecyFulfillment,
   ProphecyListItem,
 } from '@navis/shared';
@@ -186,6 +188,58 @@ describe('Profecías personales (e2e)', () => {
     expect(stats.total).toBe(0);
     expect(stats.fulfillmentRate).toBeNull();
     expect(stats.medianWaitingDays).toBeNull();
+  });
+
+  /**
+   * Exportar es otra forma del mismo listado (RFC 0009), así que hereda la
+   * única barrera que tiene este módulo: el filtro por dueño. Lo que sí es
+   * propio es que la fila lleva **el cuerpo entero** y no el extracto.
+   */
+  describe('exportar (RFC 0009)', () => {
+    it('devuelve las filas con el cuerpo entero, no con el extracto', async () => {
+      const response = await login(mia).get('/api/v1/prophecies/export');
+
+      expect(response.status).toBe(200);
+      const salida = body<ExportResponse<ProphecyExportRow>>(response);
+
+      expect(salida.returned).toBe(salida.rows.length);
+      expect(salida.truncated).toBe(false);
+      expect(salida.rows.every((row) => typeof row.body === 'string' && row.body.length > 0)).toBe(
+        true,
+      );
+      expect(salida.rows.every((row) => !('excerpt' in row))).toBe(true);
+    });
+
+    it('respeta los mismos filtros que el listado', async () => {
+      const listado = body<Paginated<ProphecyListItem>>(
+        await login(mia).get('/api/v1/prophecies?state=camino'),
+      );
+      const exportado = body<ExportResponse<ProphecyExportRow>>(
+        await login(mia).get('/api/v1/prophecies/export?state=camino'),
+      );
+
+      expect(exportado.total).toBe(listado.total);
+      expect(exportado.rows.map((row) => row.id).sort()).toEqual(
+        listado.items.map((one) => one.id).sort(),
+      );
+    });
+
+    it('con una selección manda la selección y lo demás se ignora', async () => {
+      const salida = body<ExportResponse<ProphecyExportRow>>(
+        await login(mia).get(`/api/v1/prophecies/export?ids=${casa}&state=cumplida`),
+      );
+
+      expect(salida.rows.map((row) => row.id)).toEqual([casa]);
+    });
+
+    it('otro usuario no se lleva ni una de mis profecías', async () => {
+      const salida = body<ExportResponse<ProphecyExportRow>>(
+        await login(deOtro).get(`/api/v1/prophecies/export?ids=${casa}`),
+      );
+
+      expect(salida.total).toBe(0);
+      expect(salida.rows).toEqual([]);
+    });
   });
 
   describe('la barrera del dueño (D1)', () => {

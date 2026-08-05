@@ -1,6 +1,6 @@
 import { useEffect, useState, type RefObject } from 'react';
 
-import { nodeToPng } from '@/lib/calendar/rasterize';
+import { nodeToPng } from '@/lib/share/rasterize';
 
 export interface PosterImage {
   blob: Blob | null;

@@ -19,6 +19,7 @@ export * from './schemas/default-week';
 export * from './schemas/dream-queries';
 export * from './schemas/dreams';
 export * from './schemas/emotions';
+export * from './schemas/export';
 export * from './schemas/gifts';
 export * from './schemas/ministries';
 export * from './schemas/note-audio';
