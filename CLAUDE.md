@@ -244,6 +244,32 @@ Padre)` parece perezoso, pero `emitDecoratorMetadata` escribe la clase en los
 - **La verificación de CI formatea en vez de morir**, y si cambia algo lo sube
   en un commit con `[skip ci]`. El `[skip ci]` no es por ahorrar: sin él, ese
   push cancelaría la propia ejecución por la regla de `concurrency`.
+- **Un `IN (...)` no garantiza el orden de lo que devuelve.** Al meter tres
+  personas de golpe en una lista, `find({ where: { id: In(ids) } })` las
+  devolvía en el orden de inserción en Postgres y en otro en SQLite, y ese es el
+  orden con el que quedaban numeradas en un cartel publicado. Lo que tenga que
+  salir en el orden en que llegó se recompone **a partir de la petición**, no de
+  la consulta (`ListMembersService.add`).
+- **`Array.isArray` sobre un `unknown` lo estrecha a `any[]`**, no a
+  `unknown[]`: el elemento sale `any` y con él vuelven los `no-unsafe-*` de la
+  Regla 10 justo donde se creía estar comprobando. Se usa un predicado propio
+  (`value is readonly unknown[]`), como en la migración `CreateLists`.
+- **El filtro de excepciones aplana el cuerpo del error.** `AllExceptionsFilter`
+  construye un `ApiErrorBody` fijo, así que un campo suelto puesto en un
+  `HttpException` no llega al cliente. Lo que la pantalla necesita para pintarse
+  —la puerta de una lista restringida, el tiempo que falta de un 429— va en
+  `data`, que es el único campo que viaja entero.
+- **El cliente de API redirige a `/login` ante un 401**, y eso es lo correcto en
+  el panel y un desastre en la página pública de una lista: allí el 401 **es la
+  puerta** y quien la abre no tiene cuenta. Por eso hay un segundo cliente sin
+  `onUnauthorized` (`lib/lists/public-api.ts`), y es la única razón de que
+  exista.
+- **El service worker se come cualquier navegación que no esté en la
+  denylist.** Con `navigateFallback: '/index.html'` y sin
+  `navigateFallbackDenylist`, `/l/<token>` lo contesta él y la petición no llega
+  ni a nginx ni a la API: el enlace público funciona en un teléfono cualquiera y
+  falla justo en el de quien tiene la PWA instalada. Hay un e2e que lo cubre
+  instalando el service worker y entrando por el enlace.
 
 ## Antes de dar algo por terminado
 

@@ -1,13 +1,12 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-import { AppNav } from '@/components/app-nav';
+import { AppNav, type NavBranch } from '@/components/app-nav';
 import { ChurchSwitcher } from '@/components/church-switcher';
 import { Logo } from '@/components/logo';
 import { SessionFooter } from '@/components/session-footer';
 import { cn } from '@/lib/cn';
-import type { NavChild } from '@/components/nav-group';
-import type { NavItem } from '@/lib/nav';
+import type { NavChildren, NavItem } from '@/lib/nav';
 import { useSidebarStore } from '@/lib/sidebar';
 
 /**
@@ -26,12 +25,10 @@ import { useSidebarStore } from '@/lib/sidebar';
  */
 export function AppSidebar({
   items,
-  calendars,
-  onAddCalendar,
+  branches,
 }: {
   items: readonly NavItem[];
-  calendars?: readonly NavChild[];
-  onAddCalendar?: () => void;
+  branches?: Partial<Record<NavChildren, NavBranch>>;
 }) {
   const { t } = useTranslation();
   const collapsed = useSidebarStore((state) => state.collapsed);
@@ -72,12 +69,7 @@ export function AppSidebar({
       </div>
 
       <div className="min-h-0 p-2 flex flex-1 flex-col overflow-x-hidden overflow-y-auto">
-        <AppNav
-          items={items}
-          collapsed={collapsed}
-          calendars={calendars}
-          onAddCalendar={onAddCalendar}
-        />
+        <AppNav items={items} collapsed={collapsed} branches={branches} />
       </div>
 
       <div className="p-2 shrink-0">

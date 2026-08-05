@@ -18,7 +18,7 @@ export const ACCENT_RAIL = 'bg-[var(--acento)]';
 /** El nombre escrito de su color. */
 export const ACCENT_TEXT = 'text-[var(--acento)]';
 
-export type AccentVars = CSSProperties & Record<'--acento', string>;
+export type AccentVars = CSSProperties & Record<'--acento' | '--acento-fg', string>;
 
 /**
  * Los seis colores de siempre son **tokens**, no hexadecimales: siguen
@@ -42,7 +42,43 @@ export function accentColor(accent: string): string {
 }
 
 export function accentVars(accent: string): AccentVars {
-  return { '--acento': accentColor(accent) };
+  return { '--acento': accentColor(accent), '--acento-fg': accentForeground(accent) };
+}
+
+/** El `-foreground` de los seis tokens de siempre, que sí lo traen puesto. */
+const TOKEN_FOREGROUND: Record<CongregationAccent, string> = {
+  primary: 'var(--color-primary-foreground)',
+  accent: 'var(--color-accent-foreground)',
+  success: 'var(--color-success-foreground)',
+  warning: 'var(--color-warning-foreground)',
+  destructive: 'var(--color-destructive-foreground)',
+  brand: 'var(--color-brand-foreground)',
+};
+
+/**
+ * El color del texto sobre una **superficie rellena** de ese acento.
+ *
+ * Un fondo sin su texto es la forma más rápida de quedarse sin contraste
+ * (Regla 3 §2), y los dieciséis de la paleta ampliada son hexadecimales sueltos
+ * que no traen pareja. Se calcula de su luminancia y **no cambia con el tema**,
+ * igual que el color: el panel del tablón es del color de la lista en claro y en
+ * oscuro (RFC 0010 D37, Regla 3 §6).
+ */
+export function accentForeground(accent: string): string {
+  if (isCongregationAccent(accent)) return TOKEN_FOREGROUND[accent];
+  if (!HEX.test(accent)) return TOKEN_FOREGROUND.primary;
+
+  return luminance(accent) > 0.45 ? '#101728' : '#ffffff';
+}
+
+/** Luminancia relativa (WCAG), que es lo que decide si el texto va claro u oscuro. */
+function luminance(hex: string): number {
+  const canal = (from: number) => {
+    const value = Number.parseInt(hex.slice(from, from + 2), 16) / 255;
+    return value <= 0.03928 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
+  };
+
+  return 0.2126 * canal(1) + 0.7152 * canal(3) + 0.0722 * canal(5);
 }
 
 /**

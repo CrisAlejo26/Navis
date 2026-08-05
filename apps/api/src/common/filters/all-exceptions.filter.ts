@@ -27,6 +27,9 @@ export class AllExceptionsFilter implements ExceptionFilter {
     let message = 'Error interno del servidor';
     let error: string | undefined;
     let details: string[] | undefined;
+    // Lo que el cliente necesita para pintar la pantalla del error. Hoy solo lo
+    // usa la puerta de una lista restringida (RFC 0010 §7.3).
+    let data: unknown;
 
     if (exception instanceof HttpException) {
       status = exception.getStatus();
@@ -35,8 +38,9 @@ export class AllExceptionsFilter implements ExceptionFilter {
       if (typeof payload === 'string') {
         message = payload;
       } else {
-        const body = payload as { message?: string | string[]; error?: string };
+        const body = payload as { message?: string | string[]; error?: string; data?: unknown };
         error = body.error;
+        data = body.data;
         if (Array.isArray(body.message)) {
           // Errores del ValidationPipe: una entrada por campo inválido.
           message = 'Datos no válidos';
@@ -65,6 +69,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
       message,
       error,
       details,
+      data,
       path: request.url,
       timestamp: new Date().toISOString(),
     };
