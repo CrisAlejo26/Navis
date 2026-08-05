@@ -1,6 +1,8 @@
 import type { ProphecyState } from '@navis/shared';
 import { Anchor, Hourglass, Waves, type LucideIcon } from 'lucide-react';
 
+import { NEUTRAL_ACCENT } from '@/lib/export/columns';
+
 /**
  * El icono de cada estado (RFC 0004 §7.1).
  *
@@ -18,6 +20,17 @@ export const STATE_ICON: Record<ProphecyState, LucideIcon> = {
   camino: Waves,
   /** Un ancla: se llegó. */
   cumplida: Anchor,
+};
+
+/**
+ * El mismo color, esta vez como **acento** —token o hexadecimal— para lo que
+ * no entiende de clases: la pastilla de una exportación en Excel o en la
+ * lámina (RFC 0009 D9). Sale de aquí y no se vuelve a elegir.
+ */
+export const STATE_ACCENT: Record<ProphecyState, string> = {
+  espera: NEUTRAL_ACCENT,
+  camino: 'primary',
+  cumplida: 'success',
 };
 
 /** El color de cada estado, del token que le toca. */

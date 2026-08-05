@@ -11,6 +11,7 @@ export * from './church-hooks';
 export * from './client';
 export * from './dream-hooks';
 export * from './dream-mutations';
+export * from './export-hooks';
 export * from './gift-hooks';
 export * from './hooks';
 export * from './ministry-hooks';

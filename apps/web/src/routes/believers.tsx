@@ -2,7 +2,8 @@ import type { BelieverListItem } from '@navis/shared';
 import { useState } from 'react';
 
 import { BelieverForm } from '@/components/believers/believer-form';
-import { BulkCongregationBar } from '@/components/believers/bulk-congregation-bar';
+import { BelieversExportDialog } from '@/components/believers/believers-export-dialog';
+import { BulkBar } from '@/components/believers/bulk-bar';
 import type { BelieverCells } from '@/components/believers/believer-row';
 import { BelieversCards } from '@/components/believers/believers-cards';
 import { BelieversHeader } from '@/components/believers/believers-header';
@@ -28,6 +29,7 @@ export function BelieversPage() {
   const [editing, setEditing] = useState<BelieverListItem | null>(null);
   const [noting, setNoting] = useState<BelieverListItem | null>(null);
   const [deleting, setDeleting] = useState<BelieverListItem | null>(null);
+  const [exporting, setExporting] = useState(false);
 
   // La selección es de esta página y de este momento: cambiar de página o de
   // filtro la deja como estaba a propósito, para que nadie asigne una sede a
@@ -67,7 +69,14 @@ export function BelieversPage() {
     },
   });
 
-  const toolbar = <BelieversToolbar screen={screen} />;
+  const toolbar = (
+    <BelieversToolbar
+      screen={screen}
+      onExport={() => {
+        setExporting(true);
+      }}
+    />
+  );
 
   return (
     <section className="gap-6 flex flex-col">
@@ -79,18 +88,22 @@ export function BelieversPage() {
         }}
       />
 
-      {screen.canManage && (
-        <BulkCongregationBar
-          selected={selected}
-          congregations={screen.congregations}
-          onDone={() => {
-            setSelected([]);
-          }}
-          onClear={() => {
-            setSelected([]);
-          }}
-        />
-      )}
+      {/* La barra sale con o sin permiso de gestión: exportar lo marcado no
+          cambia nada, y quien puede verlo puede copiarlo a mano (RFC 0009 D12). */}
+      <BulkBar
+        selected={selected}
+        congregations={screen.congregations}
+        canManage={screen.canManage}
+        onExport={() => {
+          setExporting(true);
+        }}
+        onDone={() => {
+          setSelected([]);
+        }}
+        onClear={() => {
+          setSelected([]);
+        }}
+      />
 
       {/* Cambiar de vista es un fundido, sin desplazamiento: no se está yendo a
           otro sitio (§7.8). La clave hace que React remonte y la animación
@@ -137,6 +150,16 @@ export function BelieversPage() {
         believer={deleting}
         onClose={() => {
           setDeleting(null);
+        }}
+      />
+
+      {/* Con filas marcadas se lleva la selección; sin ellas, los filtros (D1). */}
+      <BelieversExportDialog
+        open={exporting}
+        selected={selected}
+        screen={screen}
+        onClose={() => {
+          setExporting(false);
         }}
       />
     </section>

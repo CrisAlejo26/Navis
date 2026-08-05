@@ -2,6 +2,7 @@ import {
   prophecyState,
   waitingDays,
   type Prophecy as ProphecyView,
+  type ProphecyExportRow,
   type ProphecyFulfillment as FulfillmentView,
   type ProphecyListItem,
 } from '@navis/shared';
@@ -63,6 +64,36 @@ export function toListItem(
     waitingDays: waitingDays(progress, today),
     fulfillmentsCount: fulfillmentDays.length,
     fulfillmentDays: [...fulfillmentDays],
+  };
+}
+
+/**
+ * La fila que se va a un fichero (RFC 0009 §6.3).
+ *
+ * Es la del listado con **el cuerpo entero** en lugar del extracto, más la
+ * fecha de alta. Los campos se escriben uno a uno y no se copian con un
+ * `...rest`: así, el día que la fila del listado gane una columna, el
+ * compilador obliga a decidir si va también al fichero o no.
+ */
+export function toExportRow(
+  prophecy: Prophecy,
+  today: string,
+  fulfillmentDays: readonly string[],
+): ProphecyExportRow {
+  const item = toListItem(prophecy, today, fulfillmentDays);
+
+  return {
+    id: item.id,
+    title: item.title,
+    body: prophecy.body,
+    receivedAt: item.receivedAt,
+    fulfilledAt: item.fulfilledAt,
+    lastFulfillmentAt: item.lastFulfillmentAt,
+    state: item.state,
+    waitingDays: item.waitingDays,
+    fulfillmentsCount: item.fulfillmentsCount,
+    fulfillmentDays: item.fulfillmentDays,
+    createdAt: prophecy.createdAt.toISOString(),
   };
 }
 

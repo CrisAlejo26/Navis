@@ -1,4 +1,11 @@
-import { CalendarRange, LayoutGrid, Route, SlidersHorizontal, Table2 } from 'lucide-react';
+import {
+  CalendarRange,
+  Download,
+  LayoutGrid,
+  Route,
+  SlidersHorizontal,
+  Table2,
+} from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -26,7 +33,13 @@ const VIEWS = [
  * dice cuántos hay puestos (§7.9): en línea ocuparían media pantalla antes de
  * llegar a la primera palabra.
  */
-export function PropheciesToolbar({ screen }: { screen: PropheciesScreen }) {
+export function PropheciesToolbar({
+  screen,
+  onExport,
+}: {
+  screen: PropheciesScreen;
+  onExport: () => void;
+}) {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const view = usePropheciesViewStore((state) => state.view);
@@ -58,6 +71,19 @@ export function PropheciesToolbar({ screen }: { screen: PropheciesScreen }) {
           {screen.filters.count > 0
             ? t('prophecies.filtersTotal', { total: screen.filters.count })
             : t('prophecies.filters')}
+        </Button>
+
+        {/* Secundario y sin rótulo en estrecho: la acción principal de esta
+            pantalla es apuntar una profecía (RFC 0009 §7.1). */}
+        <Button
+          variant="secondary"
+          size="md"
+          className="shrink-0"
+          aria-label={t('export.title')}
+          onClick={onExport}
+        >
+          <Download size={16} aria-hidden />
+          <span className="sm:inline hidden">{t('export.title')}</span>
         </Button>
 
         <div

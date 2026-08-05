@@ -12,19 +12,14 @@ import {
 import { Transform } from 'class-transformer';
 import { IsArray, IsIn, IsISO8601, IsOptional, Length } from 'class-validator';
 
+import { commaList } from '../../common/dto/comma-list';
 import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
-
-/** `?state=espera&state=camino` y también `?state=espera,camino`. */
-const lista = ({ value }: { value: unknown }): unknown => {
-  if (typeof value === 'string') return value.split(',').filter(Boolean);
-  return value;
-};
 
 /** Filtros del listado de profecías (RFC 0004 §6.1). */
 export class PropheciesQueryDto extends PaginationQueryDto {
   @ApiPropertyOptional({ enum: PROPHECY_STATES, isArray: true })
   @IsOptional()
-  @Transform(lista)
+  @Transform(commaList)
   @IsArray()
   @IsIn(PROPHECY_STATES, { each: true })
   state?: ProphecyState[];

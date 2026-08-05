@@ -2,9 +2,11 @@ import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import type {
+  BelieverExportRow,
   BelieverListItem,
   BelieverNote,
   BelieversSummary,
+  ExportResponse,
   Gift,
   NoteAudio,
   NoteCounts,
@@ -317,6 +319,52 @@ describe('Creyentes y notas (e2e)', () => {
     // Nadie ha agotado su margen todavía: se acaban de dar de alta.
     const piden = await get('/api/v1/believers?attention=true').expect(200);
     expect(body<Paginated<BelieverListItem>>(piden).total).toBe(0);
+  });
+
+  /**
+   * Exportar es otra forma del mismo listado (RFC 0009): los mismos filtros,
+   * el mismo guard de iglesia y el mismo permiso. Lo propio es que no pagina y
+   * que una selección manda sobre todo lo demás (D1).
+   */
+  describe('exportar (RFC 0009)', () => {
+    it('trae las filas del filtro sin paginar y dice cuántas hay', async () => {
+      const salida = body<ExportResponse<BelieverExportRow>>(
+        await get('/api/v1/believers/export').expect(200),
+      );
+
+      expect(salida.total).toBe(3);
+      expect(salida.returned).toBe(3);
+      expect(salida.truncated).toBe(false);
+      // Lo que se lleva es la ficha entera: dones y labores resueltos.
+      expect(salida.rows.every((row) => Array.isArray(row.gifts))).toBe(true);
+    });
+
+    it('respeta los mismos filtros que el listado', async () => {
+      const salida = body<ExportResponse<BelieverExportRow>>(
+        await get('/api/v1/believers/export?status=nuevo').expect(200),
+      );
+
+      expect(salida.total).toBe(1);
+      expect(salida.rows.map((row) => row.status)).toEqual(['nuevo']);
+    });
+
+    it('con una selección manda la selección y se ignora el filtro', async () => {
+      const salida = body<ExportResponse<BelieverExportRow>>(
+        await get(`/api/v1/believers/export?ids=${jesus}&status=inactivo`).expect(200),
+      );
+
+      expect(salida.rows.map((row) => row.id)).toEqual([jesus]);
+    });
+
+    /** Quien marcó filas y las desmarcó no espera que le salgan las doscientas. */
+    it('una selección de nadie no se convierte en «pues entonces todo»', async () => {
+      const salida = body<ExportResponse<BelieverExportRow>>(
+        await get('/api/v1/believers/export?ids=8f14e45f-ceea-467a-9a4a-1a0b5f6e4e2b').expect(200),
+      );
+
+      expect(salida.total).toBe(0);
+      expect(salida.rows).toEqual([]);
+    });
   });
 
   it('un creyente de otra iglesia no existe para quien pregunta', async () => {

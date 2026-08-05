@@ -10,16 +10,24 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
-import type { BelieverListItem, BelieversSummary, Paginated } from '@navis/shared';
+import type {
+  BelieverExportRow,
+  BelieverListItem,
+  BelieversSummary,
+  ExportResponse,
+  Paginated,
+} from '@navis/shared';
 
 import { ChurchClockService } from '../churches/church-clock.service';
 import { CurrentChurch } from '../common/decorators/current-church.decorator';
 import { RequirePermissions } from '../common/decorators/permissions.decorator';
 import { ActiveChurchGuard } from '../common/guards/active-church.guard';
+import { BelieversExportService } from './believers-export.service';
 import { BelieversPageService } from './believers-page.service';
 import { BelieversSummaryService } from './believers-summary.service';
 import { BelieversService } from './believers.service';
 import { CreateBelieverDto, SetCongregationDto, UpdateBelieverDto } from './dto/believer.dto';
+import { BelieversExportQueryDto } from './dto/believers-export.dto';
 import { BelieversQueryDto } from './dto/believers-query.dto';
 
 /**
@@ -40,6 +48,7 @@ export class BelieversController {
     private readonly believers: BelieversService,
     private readonly page: BelieversPageService,
     private readonly summaries: BelieversSummaryService,
+    private readonly exports: BelieversExportService,
     private readonly clock: ChurchClockService,
   ) {}
 
@@ -63,6 +72,25 @@ export class BelieversController {
   @ApiOperation({ summary: 'Las cuentas de la cabecera' })
   async summary(@CurrentChurch() churchId: string): Promise<BelieversSummary> {
     return this.summaries.of(churchId, await this.clock.today(churchId));
+  }
+
+  /**
+   * Antes que `:id`, como `summary`. **Sin permiso propio** (RFC 0009 D12):
+   * quien puede ver esto en pantalla puede copiarlo a mano, así que un
+   * `export.*` aparte no protegería nada y daría a entender que sí.
+   */
+  @Get('export')
+  @RequirePermissions('believers.view')
+  @ApiOperation({ summary: 'Las filas del listado sin paginar, para exportarlas' })
+  async export(
+    @CurrentChurch() churchId: string,
+    @Query() query: BelieversExportQueryDto,
+  ): Promise<ExportResponse<BelieverExportRow>> {
+    return this.exports.export(
+      churchId,
+      { ...query, search: query.search || undefined },
+      await this.clock.today(churchId),
+    );
   }
 
   @Post()
