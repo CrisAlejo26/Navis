@@ -1,7 +1,7 @@
 # RFC 0010: Listas
 
-- **Estado**: Borrador
-- **Fecha**: 2026-08-05
+- **Estado**: **Implementado** (API y web)
+- **Fecha**: 2026-08-05 · implementado el mismo día
 - **Apps afectadas**: **api y web** (escritorio la hereda). Móvil, no: ver
   «Fuera de alcance». Toca además **nginx**, el **prefijo global de la API** y
   el **service worker**: los tres están en §11, y sin cualquiera de ellos la

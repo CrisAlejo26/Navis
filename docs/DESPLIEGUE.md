@@ -58,6 +58,26 @@ se salta entero y lo deja anotado en el resumen de la ejecución.
 - Un usuario con acceso SSH por clave y permiso para ejecutar `docker`, con la
   clave pública de despliegue en su `authorized_keys`.
 
+- **`TRUST_PROXY=true` en ese `.env`** (RFC 0010 D32). Sin él, la API ve a todo
+  el mundo con la misma dirección —la del proxy—, y el freno de la puerta de las
+  listas restringidas deja fuera a la congregación entera a los diez intentos.
+  Con `trust proxy` puesto, `request.ip` coge **el último** elemento de
+  `X-Forwarded-For`, que es el que añade nginx y el único que no puede
+  inventarse quien llama.
+
+- **El bloque `location /l/` en la configuración de nginx**, apuntando al
+  contenedor de la API y **antes** del `location /` (RFC 0010 D14). Está en
+  [`docker/nginx/navis.officetools.es.conf`](../docker/nginx/navis.officetools.es.conf);
+  al actualizarlo hay que copiarlo al servidor y recargar nginx:
+
+  ```bash
+  sudo nginx -t && sudo systemctl reload nginx
+  ```
+
+  Sin ese bloque, el enlace público de una lista lo contesta la web con el
+  `index.html` de siempre y la tarjeta de WhatsApp sale con el título genérico
+  de Navis para todas las listas.
+
 Los únicos ficheros que Actions copia al servidor son
 [`docker-compose.deploy.yml`](../docker-compose.deploy.yml) —que no construye
 nada: tira de las imágenes ya publicadas— y el script de limpieza.

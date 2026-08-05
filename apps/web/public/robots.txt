@@ -1,2 +1,10 @@
 User-agent: *
 Disallow: /
+
+# Los enlaces públicos de las listas, explícitos aunque ya estén dentro del
+# `Disallow: /` de arriba (RFC 0010 D10): un enlace público no es un sitio web
+# público —se comparte con quien se comparte y no se busca en Google—, y que
+# esté escrito evita que un cambio futuro en la primera regla los abra sin que
+# nadie lo note. El documento de `/l/` lleva además su propio `noindex`.
+Disallow: /l/
+Disallow: /lists/s/

@@ -50,6 +50,20 @@ const GiftsPage = lazy(() =>
 const MinistriesPage = lazy(() =>
   import('@/routes/ministries').then((module) => ({ default: module.MinistriesPage })),
 );
+const ListsPage = lazy(() =>
+  import('@/routes/lists').then((module) => ({ default: module.ListsPage })),
+);
+const ListPage = lazy(() =>
+  import('@/routes/list').then((module) => ({ default: module.ListPage })),
+);
+// La página pública va en su propio trozo y **no arrastra el panel**: es la
+// primera ruta que se carga sin sesión y sin iglesia (RFC 0010 §8.1).
+const PublicListPage = lazy(() =>
+  import('@/routes/public-list').then((module) => ({ default: module.PublicListPage })),
+);
+const ListAccessPage = lazy(() =>
+  import('@/routes/list-access').then((module) => ({ default: module.ListAccessPage })),
+);
 const PropheciesPage = lazy(() =>
   import('@/routes/prophecies').then((module) => ({ default: module.PropheciesPage })),
 );
@@ -81,6 +95,23 @@ function Lazy({ children }: { children: React.ReactNode }) {
 }
 
 export const router = createBrowserRouter([
+  /*
+   * **La página pública de una lista** (RFC 0010 §8.1, D40).
+   *
+   * Va fuera de `ProtectedRoute` y fuera de `AppLayout`, al lado de `/login`:
+   * dentro del layout arrastraría el selector de iglesia, la barra lateral y una
+   * petición de sesión que no hay. Y va declarada **antes** que `/lists/:slug`,
+   * o «s» se leería como el slug de una lista —la misma trampa de
+   * `/prophecies/list` y `/dreams/list`—.
+   */
+  {
+    path: '/lists/s/:token',
+    element: (
+      <Lazy>
+        <PublicListPage />
+      </Lazy>
+    ),
+  },
   // Mientras la instalación no tenga ninguna cuenta, acceder y darse de alta
   // llevan a crear la de administrador: un login que nadie podría pasar no
   // sirve de nada (ver SetupGate).
@@ -182,6 +213,28 @@ export const router = createBrowserRouter([
           <RequirePermission permission="calendar.manage">
             <Lazy>
               <CalendarSettingsPage />
+            </Lazy>
+          </RequirePermission>
+        ),
+      },
+      // `/lists` es el tablón y cada lista vive en su `slug`, igual que los
+      // calendarios (RFC 0010 D3). La pública va fuera de este layout.
+      {
+        path: 'lists',
+        element: (
+          <RequirePermission permission="lists.view">
+            <Lazy>
+              <ListsPage />
+            </Lazy>
+          </RequirePermission>
+        ),
+      },
+      {
+        path: 'lists/:slug',
+        element: (
+          <RequirePermission permission="lists.view">
+            <Lazy>
+              <ListPage />
             </Lazy>
           </RequirePermission>
         ),
@@ -300,6 +353,18 @@ export const router = createBrowserRouter([
           <RequirePermission permission="users.view">
             <Lazy>
               <UsersPage />
+            </Lazy>
+          </RequirePermission>
+        ),
+      },
+      // El directorio de accesos vive en ajustes y no colgando de una lista,
+      // porque un acceso es de la iglesia (RFC 0010 D19).
+      {
+        path: 'settings/access',
+        element: (
+          <RequirePermission permission="lists.share">
+            <Lazy>
+              <ListAccessPage />
             </Lazy>
           </RequirePermission>
         ),

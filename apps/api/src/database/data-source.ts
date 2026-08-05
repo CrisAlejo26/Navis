@@ -22,6 +22,12 @@ import { DreamAudio } from '../dreams/dream-audio.entity';
 import { DreamEmotion } from '../dreams/dream-emotion.entity';
 import { Dream } from '../dreams/dream.entity';
 import { Emotion } from '../dreams/emotion.entity';
+import { ListAccessLog } from '../lists/list-access-log.entity';
+import { ListGrant } from '../lists/list-grant.entity';
+import { ListMember } from '../lists/list-member.entity';
+import { ListView } from '../lists/list-view.entity';
+import { ListViewer } from '../lists/list-viewer.entity';
+import { List } from '../lists/list.entity';
 import { Profile } from '../profiles/profile.entity';
 import { ProphecyFulfillment } from '../prophecies/prophecy-fulfillment.entity';
 import { Prophecy } from '../prophecies/prophecy.entity';
@@ -63,6 +69,12 @@ const entities = [
   Emotion,
   DreamEmotion,
   DreamAudio,
+  List,
+  ListMember,
+  ListViewer,
+  ListGrant,
+  ListView,
+  ListAccessLog,
 ];
 
 /**

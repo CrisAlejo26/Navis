@@ -90,7 +90,19 @@ export async function montarApi(
         activeChurchId: CHURCH,
       });
     }
-    if (path === '/congregations' || path === '/gifts' || path === '/calendars') {
+    /*
+     * Los que devuelven una lista **tienen que devolver una lista**: con el
+     * `{}` del comodín de abajo, un `.filter` de la pantalla revienta y el
+     * fallo aparece a diez componentes de distancia (RFC 0010 §8.7).
+     */
+    if (
+      path === '/congregations' ||
+      path === '/gifts' ||
+      path === '/ministries' ||
+      path === '/calendars' ||
+      path === '/lists' ||
+      path === '/list-viewers'
+    ) {
       return json(route, []);
     }
 

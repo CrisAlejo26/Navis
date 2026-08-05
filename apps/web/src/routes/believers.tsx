@@ -47,6 +47,8 @@ export function BelieversPage() {
     believer,
     congregation: screen.congregationOf(believer.congregationId),
     ministries: screen.ministries,
+    lists: screen.lists,
+    listIds: screen.memberships[believer.id],
     today: screen.today,
     canManage: screen.canManage,
     index,
@@ -93,7 +95,9 @@ export function BelieversPage() {
       <BulkBar
         selected={selected}
         congregations={screen.congregations}
+        lists={screen.lists}
         canManage={screen.canManage}
+        canManageLists={screen.canManageLists}
         onExport={() => {
           setExporting(true);
         }}

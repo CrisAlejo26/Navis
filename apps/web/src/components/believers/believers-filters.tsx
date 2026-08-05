@@ -1,4 +1,4 @@
-import type { BelieversSummary, Congregation, Gift } from '@navis/shared';
+import type { BelieversSummary, Congregation, Gift, ListSummary } from '@navis/shared';
 import { useTranslation } from 'react-i18next';
 
 import { StatusPills } from '@/components/believers/status-pills';
@@ -10,6 +10,8 @@ interface FiltersProps {
   summary: BelieversSummary | undefined;
   congregations: readonly Congregation[];
   gifts: readonly Gift[];
+  /** Las listas de la iglesia. Vacío para quien no puede verlas (RFC 0010 §8.7). */
+  lists: readonly ListSummary[];
 }
 
 /**
@@ -19,9 +21,10 @@ interface FiltersProps {
  * La sede solo aparece si hay más de una, y los dones solo los activos: filtrar
  * por algo que ya nadie usa es una opción que ocupa sitio y no devuelve nada.
  */
-export function BelieversFilters({ filters, summary, congregations, gifts }: FiltersProps) {
+export function BelieversFilters({ filters, summary, congregations, gifts, lists }: FiltersProps) {
   const { t } = useTranslation();
   const active = gifts.filter((gift) => gift.isActive);
+  const activas = lists.filter((one) => one.isActive);
 
   return (
     // Todo en **una fila** que se dobla si no cabe: en dos filas fijas, la
@@ -70,6 +73,27 @@ export function BelieversFilters({ filters, summary, congregations, gifts }: Fil
             {active.map((gift) => (
               <option key={gift.id} value={gift.id}>
                 {gift.name}
+              </option>
+            ))}
+          </Select>
+        )}
+
+        {/* Es la vuelta del camino de la RFC 0010 D5: el filtro llena la lista
+            y, desde aquí, la lista filtra a quien está en ella. */}
+        {activas.length > 0 && (
+          <Select
+            size="sm"
+            value={filters.listId}
+            aria-label={t('lists.filterByList')}
+            className="sm:w-48"
+            onChange={(event) => {
+              filters.setList(event.target.value);
+            }}
+          >
+            <option value="">{t('lists.allLists')}</option>
+            {activas.map((one) => (
+              <option key={one.id} value={one.id}>
+                {one.name}
               </option>
             ))}
           </Select>

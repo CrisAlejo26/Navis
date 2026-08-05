@@ -40,7 +40,16 @@ async function bootstrap(): Promise<void> {
   app.use(express.json({ limit: '1mb' }));
   app.use(express.urlencoded({ extended: true }));
 
-  app.setGlobalPrefix(env.API_PREFIX, { exclude: ['health'] });
+  /*
+   * `/l/<token>` queda fuera del prefijo y del versionado, como `/health`
+   * (RFC 0010 D14): con `/api/v1/l/…` el enlace dejaría de ser el enlace, y ese
+   * enlace es lo que se pega en un chat. Las tres rutas van escritas una a una
+   * en vez de con comodín: es la superficie pública del proyecto y conviene que
+   * se lea exactamente cuál es.
+   */
+  app.setGlobalPrefix(env.API_PREFIX, {
+    exclude: ['health', 'l/:token', 'l/:token/card.png', 'l/:token/photos/:believerId'],
+  });
   app.enableVersioning({ type: VersioningType.URI, defaultVersion: env.API_VERSION });
 
   app.useGlobalPipes(
