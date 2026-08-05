@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import { Drawer } from '@/components/ui/drawer';
 import { api } from '@/lib/api';
-import { formatDate } from '@/lib/format';
+import { formatDay } from '@/lib/format';
 import type { DateRange } from '@/lib/calendar/view-range';
 
 const WARNING_KEYS: Record<CalendarWarning['kind'], string> = {
@@ -58,7 +58,7 @@ export function BalancePanel({
             {data?.warnings.map((warning, index) => (
               <li key={`${warning.kind}-${warning.date}-${String(index)}`} className="text-sm">
                 <span className="text-xs text-muted-foreground tabular-nums">
-                  {formatDate(warning.date, 'short')}
+                  {formatDay(warning.date, 'short')}
                 </span>{' '}
                 {t(WARNING_KEYS[warning.kind], {
                   name: warning.believerName ?? '',
@@ -80,7 +80,7 @@ export function BalancePanel({
                 <span className="text-sm font-medium truncate">{person.name}</span>
                 <span className="text-xs text-muted-foreground tabular-nums">
                   {person.times}
-                  {person.lastDate ? ` · ${formatDate(person.lastDate, 'short')}` : ''}
+                  {person.lastDate ? ` · ${formatDay(person.lastDate, 'short')}` : ''}
                 </span>
               </li>
             ))}

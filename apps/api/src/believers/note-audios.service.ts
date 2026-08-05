@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 import type { ReadStream } from 'node:fs';
 
-import { AudioStorageService } from './audio-storage.service';
+import { AudioStorageService, churchScope } from '../media/audio-storage.service';
 import { NoteAudio } from './note-audio.entity';
 
 /** Lo que llega de multer, reducido a lo que de verdad se usa (Regla 10). */
@@ -35,7 +35,7 @@ export class NoteAudiosService {
     file: UploadedAudio,
     options: { recorded: boolean; durationSeconds: number | null },
   ): Promise<NoteAudio> {
-    const stored = await this.storage.save(churchId, file);
+    const stored = await this.storage.save(churchScope(churchId), file);
 
     return this.audios.save(
       this.audios.create({

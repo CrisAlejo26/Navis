@@ -8,6 +8,7 @@ import { BelieverMinistry } from '../believers/believer-ministry.entity';
 import { BelieverNote } from '../believers/believer-note.entity';
 import { Believer } from '../believers/believer.entity';
 import { Gift } from '../believers/gift.entity';
+import { Ministry } from '../believers/ministry.entity';
 import { NoteAudio } from '../believers/note-audio.entity';
 import { Calendar } from '../calendar/calendar.entity';
 import { Congregation } from '../calendar/congregation.entity';
@@ -17,7 +18,13 @@ import { Meeting } from '../calendar/meeting.entity';
 import { PatternPhase } from '../calendar/pattern-phase.entity';
 import { ChurchMember } from '../churches/church-member.entity';
 import { Church } from '../churches/church.entity';
+import { DreamAudio } from '../dreams/dream-audio.entity';
+import { DreamEmotion } from '../dreams/dream-emotion.entity';
+import { Dream } from '../dreams/dream.entity';
+import { Emotion } from '../dreams/emotion.entity';
 import { Profile } from '../profiles/profile.entity';
+import { ProphecyFulfillment } from '../prophecies/prophecy-fulfillment.entity';
+import { Prophecy } from '../prophecies/prophecy.entity';
 import { Role } from '../roles/role.entity';
 
 const logging: DataSourceOptions['logging'] = isProduction
@@ -45,10 +52,17 @@ const entities = [
   BelieverGift,
   BelieverNote,
   NoteAudio,
+  Ministry,
   MeetingPattern,
   PatternPhase,
   Meeting,
   MeetingSlot,
+  Prophecy,
+  ProphecyFulfillment,
+  Dream,
+  Emotion,
+  DreamEmotion,
+  DreamAudio,
 ];
 
 /**

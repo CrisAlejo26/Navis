@@ -24,7 +24,10 @@ export function BelieversFilters({ filters, summary, congregations, gifts }: Fil
   const active = gifts.filter((gift) => gift.isActive);
 
   return (
-    <div className="gap-3 flex flex-col">
+    // Todo en **una fila** que se dobla si no cabe: en dos filas fijas, la
+    // cabecera de la tabla se comía un tercio de la pantalla antes del primer
+    // nombre.
+    <div className="gap-x-3 gap-y-2 flex flex-wrap items-center">
       <StatusPills
         summary={summary}
         selected={filters.status}
@@ -33,7 +36,7 @@ export function BelieversFilters({ filters, summary, congregations, gifts }: Fil
         onToggleAttention={filters.toggleAttention}
       />
 
-      <div className="gap-2 sm:flex-row flex flex-col">
+      <div className="gap-2 flex flex-wrap items-center">
         {congregations.length > 1 && (
           <Select
             size="sm"

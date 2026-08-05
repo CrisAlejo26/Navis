@@ -1,4 +1,10 @@
-import { useBelievers, useBelieversSummary, useCongregations, useGifts } from '@navis/api-client';
+import {
+  useBelievers,
+  useBelieversSummary,
+  useCongregations,
+  useGifts,
+  useMinistries,
+} from '@navis/api-client';
 import {
   BELIEVER_SORT_FIELDS,
   DEFAULT_BELIEVER_SORT,
@@ -6,6 +12,7 @@ import {
   type BelieverListItem,
   type Congregation,
   type Gift,
+  type MinistryCatalog,
   type IsoDate,
   type Paginated,
   type BelieversSummary,
@@ -24,6 +31,8 @@ export interface BelieversScreen {
   summary: BelieversSummary | undefined;
   congregations: Congregation[];
   gifts: Gift[];
+  /** El catálogo de labores, para resolver a nombre y color los slugs de cada fila. */
+  ministries: MinistryCatalog[];
   /** La sede de cada persona, resuelta una vez y no en cada fila. */
   congregationOf: (id: string | null) => Congregation | undefined;
   today: IsoDate;
@@ -64,6 +73,7 @@ export function useBelieversScreen(): BelieversScreen {
   const summary = useBelieversSummary(api);
   const { data: congregations = [] } = useCongregations(api);
   const { data: gifts = [] } = useGifts(api);
+  const { data: ministries = [] } = useMinistries(api);
 
   const byId = useMemo(() => new Map(congregations.map((one) => [one.id, one])), [congregations]);
 
@@ -74,6 +84,7 @@ export function useBelieversScreen(): BelieversScreen {
     summary: summary.data,
     congregations,
     gifts,
+    ministries,
     congregationOf: (id) => (id === null ? undefined : byId.get(id)),
     // El día de quien mira: la sonda del cliente y la del servidor pueden
     // discrepar en el cambio de día, y la del cliente es la que se está viendo.

@@ -7,6 +7,7 @@ import {
 import {
   DEFAULT_NOTE_KIND,
   createNoteSchema,
+  noteAudioPath,
   type BelieverNote,
   type Gift,
   type NoteKind,
@@ -14,7 +15,7 @@ import {
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { AudioField, type PendingAudio } from '@/components/believers/audio-field';
+import { AudioField, type PendingAudio } from '@/components/audio/audio-field';
 import { NoteFields } from '@/components/believers/note-fields';
 import { ReminderField, type ReminderDraft } from '@/components/believers/reminder-field';
 import { FormError } from '@/components/auth/form-error';
@@ -127,7 +128,7 @@ export function NoteForm({ open, onClose, believerId, gifts, note }: NoteFormPro
         onClose();
       })
       .catch(() => {
-        setError(pending.length > 0 ? t('notes.audio.failed') : t('errors.generic'));
+        setError(pending.length > 0 ? t('common.audio.failed') : t('errors.generic'));
       });
   };
 
@@ -153,6 +154,8 @@ export function NoteForm({ open, onClose, believerId, gifts, note }: NoteFormPro
 
         <AudioField
           saved={note?.audios ?? []}
+          path={noteAudioPath}
+          filename="nota"
           pending={pending}
           onAdd={(audio) => {
             setPending((previous) => [...previous, audio]);

@@ -14,6 +14,7 @@ const NINGUNA: NoteCounts = {
   vision: 0,
   experiencia: 0,
   don: 0,
+  correccion: 0,
   total: 0,
 };
 

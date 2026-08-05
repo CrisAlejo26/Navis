@@ -2,12 +2,14 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { ChurchesModule } from '../churches/churches.module';
+import { MediaModule } from '../media/media.module';
 import { UsersModule } from '../users/users.module';
-import { AudioStorageService } from './audio-storage.service';
 import { BelieverGift } from './believer-gift.entity';
 import { BelieverHistoryService } from './believer-history.service';
 import { BelieverLinksService } from './believer-links.service';
 import { BelieverMinistry } from './believer-ministry.entity';
+import { BelieverPhotosController } from './believer-photos.controller';
+import { BelieverPhotosService } from './believer-photos.service';
 import { BelieverNote } from './believer-note.entity';
 import { BelieverNotesController } from './believer-notes.controller';
 import { BelieverNotesService } from './believer-notes.service';
@@ -20,6 +22,9 @@ import { BelieversService } from './believers.service';
 import { Gift } from './gift.entity';
 import { GiftsController } from './gifts.controller';
 import { GiftsService } from './gifts.service';
+import { MinistriesController } from './ministries.controller';
+import { MinistriesService } from './ministries.service';
+import { Ministry } from './ministry.entity';
 import { NoteAudio } from './note-audio.entity';
 import { NoteAudiosController } from './note-audios.controller';
 import { NoteAudiosService } from './note-audios.service';
@@ -45,15 +50,19 @@ import { NotesViewService } from './notes-view.service';
       BelieverGift,
       BelieverNote,
       NoteAudio,
+      Ministry,
     ]),
     ChurchesModule,
     UsersModule,
+    MediaModule,
   ],
   controllers: [
     BelieversController,
     BelieverNotesController,
     NoteAudiosController,
     GiftsController,
+    MinistriesController,
+    BelieverPhotosController,
   ],
   providers: [
     BelieversService,
@@ -65,8 +74,9 @@ import { NotesViewService } from './notes-view.service';
     BelieverHistoryService,
     NotesViewService,
     NoteAudiosService,
-    AudioStorageService,
     GiftsService,
+    MinistriesService,
+    BelieverPhotosService,
   ],
   exports: [BelieversService, BelieversRosterService],
 })
