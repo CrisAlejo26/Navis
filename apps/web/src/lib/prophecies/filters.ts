@@ -11,10 +11,14 @@ import { useSearchParams } from 'react-router';
 export interface ProphecyFilters {
   state: ProphecyState[];
   window: ProphecyWindow;
+  /** El tramo a medida, que manda sobre la ventana rápida cuando está puesto. */
+  from: string;
+  to: string;
   /** Cuántos hay puestos: es lo que dice el botón «Filtros (2)» en móvil. */
   count: number;
   toggleState: (state: ProphecyState) => void;
   setWindow: (window: ProphecyWindow) => void;
+  setRange: (range: { from: string; to: string }) => void;
   clear: () => void;
 }
 
@@ -60,23 +64,34 @@ export function useProphecyFilters(): ProphecyFilters {
   const raw = params.get('window') ?? '';
   const window = isProphecyWindow(raw) ? raw : DEFAULT_PROPHECY_WINDOW;
 
+  const from = params.get('from') ?? '';
+  const to = params.get('to') ?? '';
+
   return useMemo(
     () => ({
       state,
       window,
-      count: state.length + (window === DEFAULT_PROPHECY_WINDOW ? 0 : 1),
+      from,
+      to,
+      count:
+        state.length + (window === DEFAULT_PROPHECY_WINDOW ? 0 : 1) + (from ? 1 : 0) + (to ? 1 : 0),
       toggleState: (one: ProphecyState) => {
         update({
           state: state.includes(one) ? state.filter((each) => each !== one) : [...state, one],
         });
       },
+      // Elegir una ventana rápida limpia el tramo a medida: tener los dos
+      // puestos deja una pantalla que dice una cosa y filtra otra.
       setWindow: (next: ProphecyWindow) => {
-        update({ window: next === DEFAULT_PROPHECY_WINDOW ? null : next });
+        update({ window: next === DEFAULT_PROPHECY_WINDOW ? null : next, from: null, to: null });
+      },
+      setRange: (range: { from: string; to: string }) => {
+        update({ from: range.from || null, to: range.to || null, window: null });
       },
       clear: () => {
-        update({ state: [], window: null });
+        update({ state: [], window: null, from: null, to: null });
       },
     }),
-    [state, window, update],
+    [state, window, from, to, update],
   );
 }

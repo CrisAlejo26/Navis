@@ -3,7 +3,7 @@ import { Pencil, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import { Button } from '@/components/ui/button';
-import { formatDate } from '@/lib/format';
+import { formatDay } from '@/lib/format';
 
 /**
  * Los cumplimientos parciales, hacia atrás (RFC 0004 §7.6).
@@ -53,7 +53,7 @@ export function FulfillmentList({
               dateTime={fulfillment.occurredAt}
               className="font-medium tracking-wide text-[11px] text-muted-foreground uppercase tabular-nums"
             >
-              {formatDate(fulfillment.occurredAt)}
+              {formatDay(fulfillment.occurredAt)}
             </time>
 
             <span className="gap-0.5 flex shrink-0">

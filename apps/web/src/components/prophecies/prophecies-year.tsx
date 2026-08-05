@@ -2,7 +2,7 @@ import type { ProphecyListItem } from '@navis/shared';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 
-import { formatDate } from '@/lib/format';
+import { formatDay } from '@/lib/format';
 
 /** Los doce meses del año, como índices. El nombre lo pone `Intl`. */
 const MONTHS = Array.from({ length: 12 }, (_, index) => index);
@@ -56,8 +56,8 @@ export function PropheciesYear({ items, today }: { items: ProphecyListItem[]; to
                       <Link
                         key={`r-${one.id}`}
                         to={`/prophecies/${one.id}`}
-                        title={`${one.title} · ${t('prophecies.receivedOn', { date: formatDate(one.receivedAt) })}`}
-                        aria-label={`${one.title}: ${t('prophecies.receivedOn', { date: formatDate(one.receivedAt) })}`}
+                        title={`${one.title} · ${t('prophecies.receivedOn', { date: formatDay(one.receivedAt) })}`}
+                        aria-label={`${one.title}: ${t('prophecies.receivedOn', { date: formatDay(one.receivedAt) })}`}
                         className="h-2 w-2 block rounded-full bg-primary focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                       />
                     ))}
@@ -65,8 +65,8 @@ export function PropheciesYear({ items, today }: { items: ProphecyListItem[]; to
                       <Link
                         key={`c-${one.id}`}
                         to={`/prophecies/${one.id}`}
-                        title={`${one.title} · ${t('prophecies.fulfilledOn', { date: formatDate(one.fulfilledAt ?? today) })}`}
-                        aria-label={`${one.title}: ${t('prophecies.fulfilledOn', { date: formatDate(one.fulfilledAt ?? today) })}`}
+                        title={`${one.title} · ${t('prophecies.fulfilledOn', { date: formatDay(one.fulfilledAt ?? today) })}`}
+                        aria-label={`${one.title}: ${t('prophecies.fulfilledOn', { date: formatDay(one.fulfilledAt ?? today) })}`}
                         className="h-2 w-2 block rotate-45 bg-success focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                       />
                     ))}

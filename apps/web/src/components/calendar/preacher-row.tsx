@@ -2,7 +2,7 @@ import type { Preacher } from '@navis/shared';
 import { Check } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-import { formatDate } from '@/lib/format';
+import { formatDay } from '@/lib/format';
 import { cn } from '@/lib/cn';
 
 /**
@@ -47,7 +47,7 @@ export function PreacherRow({
           <span className="mt-0.5 gap-2 flex text-[11px] text-muted-foreground">
             <span>
               {preacher.lastDate
-                ? t('calendar.lastTime', { date: formatDate(preacher.lastDate, 'short') })
+                ? t('calendar.lastTime', { date: formatDay(preacher.lastDate, 'short') })
                 : t('calendar.never')}
             </span>
             <span aria-hidden>·</span>

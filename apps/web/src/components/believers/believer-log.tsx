@@ -10,7 +10,6 @@ import { NotesBody } from '@/components/believers/notes-body';
 import { NotesViewSwitch } from '@/components/believers/notes-view-switch';
 import { SearchField } from '@/components/ui/search-field';
 import { api } from '@/lib/api';
-import { cn } from '@/lib/cn';
 import { useNotesViewStore } from '@/lib/believers/note-view';
 
 interface LogProps {
@@ -73,16 +72,13 @@ export function BelieverLog({
     update.mutate({ id: note.id, remindDone: note.remindDoneAt === null });
   };
 
+  // Ocupa el ancho entero en **todas** las vistas. La bitácora se quedaba en
+  // 46 rem porque la identidad vivía en una columna a la izquierda y con ella
+  // la prosa ya salía estrecha; ahora la cabecera va arriba y ese tope solo
+  // dejaba media pantalla en blanco. El ancho de lectura (Regla 5 §3) se limita
+  // donde toca —en el texto de cada nota— y no en el contenedor.
   return (
-    <div
-      className={cn(
-        'min-w-0 gap-4 flex flex-col',
-        // La bitácora es prosa y se le limita el ancho de lectura (Regla 5 §3);
-        // una tabla y un calendario no son prosa y con ese límite se quedan
-        // cortos, así que ocupan lo que hay.
-        view === 'log' && 'max-w-[46rem]',
-      )}
-    >
+    <div className="gap-4 min-w-0 flex flex-col">
       <div className="gap-2 flex flex-wrap items-center">
         <SearchField
           value={search}

@@ -1,5 +1,6 @@
 import type { ProphecyListItem } from '@navis/shared';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { DeleteProphecyDialog } from '@/components/prophecies/delete-prophecy-dialog';
 import { FulfillmentForm } from '@/components/prophecies/fulfillment-form';
@@ -11,6 +12,8 @@ import { PropheciesYear } from '@/components/prophecies/prophecies-year';
 import { ProphecyForm } from '@/components/prophecies/prophecy-form';
 import type { ProphecyCells } from '@/components/prophecies/prophecy-row';
 import { Travesia } from '@/components/prophecies/travesia';
+import { BackLink } from '@/components/ui/back-link';
+import { DateRangeButton } from '@/components/ui/date-range-button';
 import { usePropheciesScreen } from '@/lib/prophecies/use-prophecies-screen';
 import { usePropheciesViewStore } from '@/lib/prophecies/view';
 
@@ -22,6 +25,7 @@ import { usePropheciesViewStore } from '@/lib/prophecies/view';
  * estado y el orden por fecha de recepción.
  */
 export function PropheciesListPage() {
+  const { t } = useTranslation();
   const screen = usePropheciesScreen();
   const view = usePropheciesViewStore((state) => state.view);
 
@@ -49,13 +53,21 @@ export function PropheciesListPage() {
   const items = screen.page?.items ?? [];
 
   return (
-    <section className="gap-6 flex flex-col">
+    <section className="gap-4 flex flex-col">
+      <BackLink to="/prophecies" label={t('prophecies.title')} />
+
       <PropheciesHeader
         stats={screen.stats}
         onAdd={() => {
           setCreating(true);
         }}
-      />
+      >
+        <DateRangeButton
+          from={screen.filters.from}
+          to={screen.filters.to}
+          onChange={screen.filters.setRange}
+        />
+      </PropheciesHeader>
 
       {/* Cambiar de vista es un fundido, sin desplazamiento: no se está yendo a
           otro sitio (§7.8). La clave hace que React remonte y la animación

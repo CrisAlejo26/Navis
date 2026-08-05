@@ -9,11 +9,11 @@
  * El formato es `modulo.accion`: `view` es entrar y leer, `manage` es crear,
  * editar y borrar. Cada rol guarda los suyos en la tabla `roles`.
  *
- * **Las profecías no están aquí, y es a propósito** (RFC 0004 D2). Son de cada
- * usuario y no de la iglesia, así que un permiso de rol dejaría a alguien fuera
- * de sus propias profecías privadas y sugeriría que un administrador puede ver
- * las de otro. Su autorización es una sola regla y no es configurable: eres el
- * dueño o no lo eres.
+ * **Las profecías y los sueños no están aquí, y es a propósito** (RFC 0004 D2 y
+ * RFC 0005 D2). Son de cada usuario y no de la iglesia, así que un permiso de
+ * rol dejaría a alguien fuera de lo suyo —de sus propios sueños privados— y
+ * sugeriría que un administrador puede ver los de otro. Su autorización es una
+ * sola regla y no es configurable: eres el dueño o no lo eres.
  */
 export const PERMISSIONS = [
   'dashboard.view',
@@ -23,8 +23,6 @@ export const PERMISSIONS = [
   'believers.manage',
   'communications.view',
   'communications.manage',
-  'dreams.view',
-  'dreams.manage',
   'users.view',
   'users.manage',
   'roles.manage',
@@ -52,7 +50,6 @@ export const PERMISSION_MODULES = [
   'calendar',
   'believers',
   'communications',
-  'dreams',
   'users',
   'roles',
   'churches',

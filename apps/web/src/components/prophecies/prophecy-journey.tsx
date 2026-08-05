@@ -2,7 +2,7 @@ import { prophecyState, waitingDays, type Prophecy, type ProphecyListItem } from
 import { useTranslation } from 'react-i18next';
 
 import { TravesiaTrack } from '@/components/prophecies/travesia-track';
-import { formatDate } from '@/lib/format';
+import { formatDay } from '@/lib/format';
 import { percentOf, travesiaRange } from '@/lib/prophecies/travesia';
 
 /**
@@ -53,9 +53,9 @@ export function ProphecyJourney({ prophecy, today }: { prophecy: Prophecy; today
         <TravesiaTrack item={item} range={range} index={0} />
 
         <div className="text-xs flex justify-between text-muted-foreground tabular-nums">
-          <span>{t('prophecies.receivedOn', { date: formatDate(prophecy.receivedAt) })}</span>
+          <span>{t('prophecies.receivedOn', { date: formatDay(prophecy.receivedAt) })}</span>
           {prophecy.fulfilledAt && (
-            <span>{t('prophecies.fulfilledOn', { date: formatDate(prophecy.fulfilledAt) })}</span>
+            <span>{t('prophecies.fulfilledOn', { date: formatDay(prophecy.fulfilledAt) })}</span>
           )}
         </div>
       </div>
@@ -71,7 +71,7 @@ export function ProphecyJourney({ prophecy, today }: { prophecy: Prophecy; today
               className="gap-3 p-3 animate-rise-in flex items-start rounded-lg border bg-background/40"
             >
               <span className="w-20 font-medium shrink-0 text-[11px] text-muted-foreground tabular-nums">
-                {formatDate(fulfillment.occurredAt, 'short')}
+                {formatDay(fulfillment.occurredAt, 'short')}
               </span>
               <p className="text-sm min-w-0 leading-relaxed whitespace-pre-wrap">
                 {fulfillment.text}

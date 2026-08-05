@@ -64,6 +64,7 @@ export const queryKeys = {
     noteDays: (id: string, range: object) =>
       [...queryKeys.believers.all, 'noteDays', id, range] as const,
     gifts: ['believers', 'gifts'] as const,
+    ministries: ['believers', 'ministries'] as const,
   },
   /**
    * Las profecías de quien ha entrado (RFC 0004).
@@ -78,6 +79,14 @@ export const queryKeys = {
     list: (query: object) => [...queryKeys.prophecies.all, 'list', query] as const,
     stats: ['prophecies', 'stats'] as const,
     one: (id: string) => [...queryKeys.prophecies.all, 'one', id] as const,
+  },
+  dreams: {
+    all: ['dreams'] as const,
+    list: (query: object) => [...queryKeys.dreams.all, 'list', query] as const,
+    stats: ['dreams', 'stats'] as const,
+    one: (id: string) => [...queryKeys.dreams.all, 'one', id] as const,
+    /** El vocabulario de emociones. Cuelga de sueños: sus cuentas cambian con ellos. */
+    emotions: ['dreams', 'emotions'] as const,
   },
   health: ['health'] as const,
 } as const;

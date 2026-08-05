@@ -5,7 +5,7 @@ import { Link } from 'react-router';
 import { ProphecyActions } from '@/components/prophecies/prophecy-actions';
 import { StateBadge } from '@/components/prophecies/state-badge';
 import { TableCell } from '@/components/ui/table';
-import { formatDate, formatNumber } from '@/lib/format';
+import { formatDay, formatNumber } from '@/lib/format';
 
 /** Lo mismo alimenta la fila de la tabla y la ficha de móvil (§7.5). */
 export interface ProphecyCells {
@@ -34,7 +34,7 @@ export function ProphecyRow({ prophecy, onEdit, onFulfill, onDelete }: ProphecyC
         </span>
       </TableCell>
 
-      <TableCell className="text-sm tabular-nums">{formatDate(prophecy.receivedAt)}</TableCell>
+      <TableCell className="text-sm tabular-nums">{formatDay(prophecy.receivedAt)}</TableCell>
 
       <TableCell>
         <StateBadge state={prophecy.state} />

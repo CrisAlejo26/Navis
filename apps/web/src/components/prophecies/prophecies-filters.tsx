@@ -4,7 +4,6 @@ import {
   type PropheciesStats,
   type ProphecyWindow,
 } from '@navis/shared';
-import { RotateCcw } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -90,7 +89,9 @@ export function PropheciesFilters({
         {PROPHECY_WINDOWS.map((window) => (
           <Chip
             key={window}
-            active={filters.window === window}
+            // Con un tramo a medida puesto, ninguna ventana rápida está activa:
+            // decir «Todo» mientras se filtra por dos semanas sería mentir.
+            active={!filters.from && !filters.to && filters.window === window}
             onClick={() => {
               filters.setWindow(window);
             }}
@@ -99,19 +100,6 @@ export function PropheciesFilters({
           </Chip>
         ))}
       </Grupo>
-
-      {/* Solo aparece cuando hay algo que quitar: un botón que no hace nada
-          ocupa sitio y enseña a ignorarlo. */}
-      {filters.count > 0 && (
-        <button
-          type="button"
-          onClick={filters.clear}
-          className="gap-1.5 text-xs lg:mt-6 px-2 py-1 font-medium inline-flex cursor-pointer items-center self-start rounded-md text-muted-foreground hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-        >
-          <RotateCcw size={13} aria-hidden />
-          {t('prophecies.clearFilters')}
-        </button>
-      )}
     </div>
   );
 }

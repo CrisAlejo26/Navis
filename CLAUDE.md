@@ -207,6 +207,21 @@ Padre)` parece perezoso, pero `emitDecoratorMetadata` escribe la clase en los
   ~370 kB que se quedan en su propio trozo (`charts-*.js`) y no entran en el
   bundle inicial. Si algún día se cambia por SVG propio, se toca esa carpeta y
   ninguna otra.
+- **`formatDate` con un día de calendario pinta el día anterior.** Es la pareja
+  en la interfaz de la trampa de `iso-day.ts`: `new Date('2026-03-14')` es
+  medianoche **UTC**, y al pintarla en la hora local de cualquier huso al oeste
+  de Greenwich sale el 13. En Bogotá, todas las fechas de profecías salían un
+  día antes. Para `AAAA-MM-DD` va `formatDay`, que formatea en UTC; `formatDate`
+  queda para instantes de verdad.
+- **El barril de `packages/api-client` reexporta en plano.** Dos módulos con una
+  función del mismo nombre —había un `toSearch` en profecías y otro en sueños—
+  se pisan en el `index.ts` sin que nadie avise. Por eso el de sueños se llama
+  `toDreamSearch`.
+- **Los audios se guardan por ámbito, y el de iglesia no lleva prefijo.**
+  `AudioStorageService` recibe `churchScope(id)` o `userScope(id)`; el primero
+  escribe en `<uploads>/<churchId>/` porque **ahí están ya** los ficheros de las
+  notas y su `storage_key` apunta a esa ruta. Moverlos para que quedara
+  simétrico obligaría a tocar disco y base de datos a la vez para no ganar nada.
 - **La verificación de CI formatea en vez de morir**, y si cambia algo lo sube
   en un commit con `[skip ci]`. El `[skip ci]` no es por ahorrar: sin él, ese
   push cancelaría la propia ejecución por la regla de `concurrency`.

@@ -1,11 +1,13 @@
 import type { PropheciesStats } from '@navis/shared';
+import { Clock, Sparkles } from 'lucide-react';
 import { Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { RateRing, Sparkline } from '@/components/prophecies/charts/lazy';
-import { StatCard } from '@/components/prophecies/stat-card';
+import { RateRing, Sparkline } from '@/components/charts/lazy';
 import { Skeleton } from '@/components/ui/skeleton';
+import { StatCard } from '@/components/ui/stat-card';
 import { formatNumber } from '@/lib/format';
+import { STATE_ICON } from '@/lib/prophecies/state-icons';
 
 const LISTA = '/prophecies/list';
 
@@ -14,6 +16,14 @@ const LISTA = '/prophecies/list';
  *
  * Cada una abre el listado con su filtro ya puesto en la URL: **la métrica es
  * la navegación**. La grande es la de la tasa, con el anillo y el reparto.
+ *
+ * El color sigue las reglas de la RFC 0005 §7.1, que nacieron mirando
+ * justamente esta pantalla: antes eran seis tarjetas `bg-card` con degradados
+ * al 8 %, y sobre fondo claro eso es blanco. Ahora hay **una rellena** —el
+ * total, que es el ancla— y tres con acento de verdad, cada una con el color de
+ * su estado: ámbar lo que espera, azul lo que está en camino, verde lo
+ * cumplido. Los colores salen de tokens, así que cambian solos entre el tema
+ * claro y el oscuro (Regla 3 §2).
  */
 export function StatGrid({ stats }: { stats: PropheciesStats }) {
   const { t } = useTranslation();
@@ -27,22 +37,29 @@ export function StatGrid({ stats }: { stats: PropheciesStats }) {
       <StatCard
         to={LISTA}
         index={0}
+        tone="filled"
+        Icon={Sparkles}
         label={t('prophecies.stats.total')}
         value={formatNumber(stats.total)}
         cta={t('prophecies.open')}
-        gradient="bg-gradient-to-br from-primary/8 to-transparent"
       >
-        {/* El reparto entre los tres estados, como una sola barra. */}
-        <span aria-hidden className="h-1.5 flex overflow-hidden rounded-full bg-muted">
+        {/* El reparto entre los tres estados, como una sola barra. Sobre el
+            relleno azul los tres colores de siempre no se distinguirían, así
+            que aquí la barra se pinta en la pareja `-foreground`, con tres
+            opacidades: es la misma información con el contraste de este fondo. */}
+        <span
+          aria-hidden
+          className="h-1.5 flex overflow-hidden rounded-full bg-primary-foreground/20"
+        >
           {(['espera', 'camino', 'cumplida'] as const).map((state) => (
             <span
               key={state}
               className={
                 state === 'espera'
-                  ? 'bg-muted-foreground/40'
+                  ? 'bg-primary-foreground/35'
                   : state === 'camino'
-                    ? 'bg-primary'
-                    : 'bg-success'
+                    ? 'bg-primary-foreground/65'
+                    : 'bg-primary-foreground'
               }
               style={{
                 width: `${String(stats.total === 0 ? 0 : (stats.byState[state] / stats.total) * 100)}%`,
@@ -55,6 +72,9 @@ export function StatGrid({ stats }: { stats: PropheciesStats }) {
       <StatCard
         to={`${LISTA}?state=espera`}
         index={1}
+        tone="accent"
+        accent="accent"
+        Icon={STATE_ICON.espera}
         label={t('prophecies.stats.waiting')}
         value={formatNumber(stats.byState.espera)}
         hint={stats.longestWaiting?.title}
@@ -63,6 +83,9 @@ export function StatGrid({ stats }: { stats: PropheciesStats }) {
       <StatCard
         to={`${LISTA}?state=camino`}
         index={2}
+        tone="accent"
+        accent="primary"
+        Icon={STATE_ICON.camino}
         label={t('prophecies.stats.onTheWay')}
         value={formatNumber(stats.byState.camino)}
       />
@@ -70,6 +93,9 @@ export function StatGrid({ stats }: { stats: PropheciesStats }) {
       <StatCard
         to={`${LISTA}?state=cumplida&window=year`}
         index={3}
+        tone="accent"
+        accent="success"
+        Icon={STATE_ICON.cumplida}
         label={t('prophecies.stats.fulfilledThisYear')}
         value={formatNumber(stats.fulfilledThisYear)}
         wide
@@ -82,6 +108,7 @@ export function StatGrid({ stats }: { stats: PropheciesStats }) {
       <StatCard
         to={`${LISTA}?sort=received&order=asc`}
         index={4}
+        Icon={Clock}
         label={t('prophecies.stats.typicalWait')}
         value={
           stats.medianWaitingDays === null

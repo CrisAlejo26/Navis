@@ -47,6 +47,9 @@ const BelieverPage = lazy(() =>
 const GiftsPage = lazy(() =>
   import('@/routes/gifts').then((module) => ({ default: module.GiftsPage })),
 );
+const MinistriesPage = lazy(() =>
+  import('@/routes/ministries').then((module) => ({ default: module.MinistriesPage })),
+);
 const PropheciesPage = lazy(() =>
   import('@/routes/prophecies').then((module) => ({ default: module.PropheciesPage })),
 );
@@ -55,6 +58,15 @@ const PropheciesListPage = lazy(() =>
 );
 const ProphecyPage = lazy(() =>
   import('@/routes/prophecy').then((module) => ({ default: module.ProphecyPage })),
+);
+const DreamsPage = lazy(() =>
+  import('@/routes/dreams').then((module) => ({ default: module.DreamsPage })),
+);
+const DreamsListPage = lazy(() =>
+  import('@/routes/dreams-list').then((module) => ({ default: module.DreamsListPage })),
+);
+const DreamPage = lazy(() =>
+  import('@/routes/dream').then((module) => ({ default: module.DreamPage })),
 );
 const LabPage = lazy(() => import('@/routes/lab').then((module) => ({ default: module.LabPage })));
 const NoAccessPage = lazy(() =>
@@ -197,6 +209,16 @@ export const router = createBrowserRouter([
         ),
       },
       {
+        path: 'believers/ministries',
+        element: (
+          <RequirePermission permission="believers.manage">
+            <Lazy>
+              <MinistriesPage />
+            </Lazy>
+          </RequirePermission>
+        ),
+      },
+      {
         path: 'believers/:id',
         element: (
           <RequirePermission permission="believers.view">
@@ -233,6 +255,32 @@ export const router = createBrowserRouter([
         element: (
           <Lazy>
             <ProphecyPage />
+          </Lazy>
+        ),
+      },
+      // Los sueños, igual: sin `RequirePermission` (RFC 0005 D2) y con `list`
+      // declarada antes que `:id`, por el mismo motivo.
+      {
+        path: 'dreams',
+        element: (
+          <Lazy>
+            <DreamsPage />
+          </Lazy>
+        ),
+      },
+      {
+        path: 'dreams/list',
+        element: (
+          <Lazy>
+            <DreamsListPage />
+          </Lazy>
+        ),
+      },
+      {
+        path: 'dreams/:id',
+        element: (
+          <Lazy>
+            <DreamPage />
           </Lazy>
         ),
       },

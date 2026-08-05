@@ -4,7 +4,7 @@ import { Link } from 'react-router';
 
 import { StateBadge } from '@/components/prophecies/state-badge';
 import { TravesiaTrack } from '@/components/prophecies/travesia-track';
-import { formatDate, formatNumber } from '@/lib/format';
+import { formatDay, formatNumber } from '@/lib/format';
 import { percentOf, travesiaRange } from '@/lib/prophecies/travesia';
 
 /**
@@ -50,7 +50,15 @@ export function Travesia({ items, today }: { items: ProphecyListItem[]; today: s
               >
                 {item.title}
               </Link>
-              <StateBadge state={item.state} className="mt-0.5 px-0 border-none" />
+              {/* La fecha, a la vista: en esta vista solo estaba en la
+                  etiqueta accesible, así que quien la miraba veía el trayecto
+                  pero no **cuándo** empezó. */}
+              <div className="gap-2 mt-0.5 flex flex-wrap items-center">
+                <StateBadge state={item.state} className="px-0 border-none" />
+                <span className="text-xs text-muted-foreground tabular-nums">
+                  {formatDay(item.receivedAt)}
+                </span>
+              </div>
             </div>
 
             <div className="min-w-0 flex-1">
@@ -58,7 +66,7 @@ export function Travesia({ items, today }: { items: ProphecyListItem[]; today: s
               {/* Lo que de verdad se lee: el trazado va `aria-hidden`. */}
               <span className="sr-only">
                 {t('prophecies.trackLabel', {
-                  date: formatDate(item.receivedAt),
+                  date: formatDay(item.receivedAt),
                   state: t(`prophecies.state.${item.state}`),
                   days: formatNumber(item.waitingDays),
                 })}

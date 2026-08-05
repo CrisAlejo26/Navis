@@ -4,8 +4,10 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 
 import { BelieverActions } from '@/components/believers/believer-actions';
+import { BelieverPhoto } from '@/components/believers/believer-photo';
 import type { BelieverCells } from '@/components/believers/believer-row';
 import { GiftTags } from '@/components/believers/gift-tags';
+import { MinistryTags } from '@/components/believers/ministry-tags';
 import { Sonda } from '@/components/believers/sonda';
 import { StatusBadge } from '@/components/believers/status-badge';
 import { accentVars } from '@/lib/accents';
@@ -21,6 +23,7 @@ import { cn } from '@/lib/cn';
 export function BelieverCard({
   believer,
   congregation,
+  ministries,
   today,
   canManage,
   index,
@@ -52,6 +55,10 @@ export function BelieverCard({
               className="mt-1 h-4 w-4 rounded shrink-0 cursor-pointer accent-primary focus-visible:ring-2 focus-visible:ring-ring"
             />
           )}
+
+          {/* Aquí la foto va con el nombre y no en una columna: en una ficha no
+              hay columnas que dejar vacías, así que sale siempre que la haya. */}
+          <BelieverPhoto believer={believer} size="md" />
 
           <div className="min-w-0">
             <Link
@@ -91,6 +98,7 @@ export function BelieverCard({
       </div>
 
       <GiftTags gifts={believer.gifts} max={4} />
+      <MinistryTags slugs={believer.ministries} catalog={ministries} max={3} />
 
       <div className="pt-1 mt-auto">
         <Sonda believer={believer} today={today} variant="block" index={index} />

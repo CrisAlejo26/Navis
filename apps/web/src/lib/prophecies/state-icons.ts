@@ -26,3 +26,16 @@ export const STATE_TONE: Record<ProphecyState, string> = {
   camino: 'text-primary',
   cumplida: 'text-success',
 };
+
+/**
+ * El tinte de la cabecera de la ficha, según en qué estado está (§7.6).
+ *
+ * Es lo mismo que hace la ficha de un sueño con sus emociones: el color lo pone
+ * el dato y no la pantalla, así que dos profecías no se abren iguales. Al 22 %
+ * y no al 8: por debajo del 12 % no se ve (RFC 0005 §7.1.3).
+ */
+export const STATE_SURFACE: Record<ProphecyState, string> = {
+  espera: 'bg-muted',
+  camino: 'bg-gradient-to-br from-primary/22 to-primary/5',
+  cumplida: 'bg-gradient-to-br from-success/22 to-success/5',
+};

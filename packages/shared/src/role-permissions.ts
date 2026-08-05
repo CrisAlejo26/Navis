@@ -27,8 +27,6 @@ export const ROLE_PERMISSIONS: Record<Role, readonly string[]> = {
     'believers.manage',
     'communications.view',
     'communications.manage',
-    'dreams.view',
-    'dreams.manage',
     'users.view',
     'users.manage',
     'churches.view',

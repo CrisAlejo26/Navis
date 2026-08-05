@@ -15,6 +15,7 @@ import { PermissionsGuard } from './common/guards/permissions.guard';
 import { SessionGuard } from './common/guards/session.guard';
 import { env, isProduction } from './config/env';
 import { dataSourceOptions } from './database/data-source';
+import { DreamsModule } from './dreams/dreams.module';
 import { HealthModule } from './health/health.module';
 import { ProfilesModule } from './profiles/profiles.module';
 import { PropheciesModule } from './prophecies/prophecies.module';
@@ -49,6 +50,7 @@ import { WeatherModule } from './weather/weather.module';
     BelieversModule,
     CalendarModule,
     PropheciesModule,
+    DreamsModule,
     RolesModule,
     UsersModule,
     SetupModule,

@@ -47,6 +47,10 @@ export function usePropheciesScreen(): PropheciesScreen {
     search: query.search || undefined,
     state: filters.state,
     window: filters.window,
+    // El tramo a medida manda sobre la ventana rápida: el servidor usa `from`
+    // en cuanto llega y deja de calcularlo desde `window` (RFC 0004 §6.1).
+    from: filters.from || undefined,
+    to: filters.to || undefined,
     sort: query.sort,
     order: query.order,
   });
