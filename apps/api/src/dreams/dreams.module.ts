@@ -7,8 +7,10 @@ import { DreamAudiosController } from './dream-audios.controller';
 import { DreamAudiosService } from './dream-audios.service';
 import { DreamEmotion } from './dream-emotion.entity';
 import { DreamEmotionsRepository } from './dream-emotions.repository';
+import { DreamRowsService } from './dream-rows.service';
 import { DreamStatsService } from './dream-stats.service';
 import { Dream } from './dream.entity';
+import { DreamsExportService } from './dreams-export.service';
 import { DreamsPageService } from './dreams-page.service';
 import { DreamsController } from './dreams.controller';
 import { DreamsRepository } from './dreams.repository';
@@ -37,7 +39,9 @@ import { EmotionsService } from './emotions.service';
     EmotionsRepository,
     DreamEmotionsRepository,
     DreamsService,
+    DreamRowsService,
     DreamsPageService,
+    DreamsExportService,
     DreamStatsService,
     EmotionsService,
     DreamAudiosService,

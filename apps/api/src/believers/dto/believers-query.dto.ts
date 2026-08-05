@@ -9,13 +9,8 @@ import {
 import { Transform } from 'class-transformer';
 import { IsArray, IsBoolean, IsIn, IsOptional, IsUUID } from 'class-validator';
 
+import { commaList } from '../../common/dto/comma-list';
 import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
-
-/** `?status=activo&status=nuevo` y también `?status=activo,nuevo`. */
-const lista = ({ value }: { value: unknown }): unknown => {
-  if (typeof value === 'string') return value.split(',').filter(Boolean);
-  return value;
-};
 
 const booleano = ({ value }: { value: unknown }): unknown =>
   typeof value === 'string' ? value === 'true' : value;
@@ -30,7 +25,7 @@ const booleano = ({ value }: { value: unknown }): unknown =>
 export class BelieversQueryDto extends PaginationQueryDto {
   @ApiPropertyOptional({ enum: BELIEVER_STATUSES, isArray: true })
   @IsOptional()
-  @Transform(lista)
+  @Transform(commaList)
   @IsArray()
   @IsIn(BELIEVER_STATUSES, { each: true })
   status?: BelieverStatus[];

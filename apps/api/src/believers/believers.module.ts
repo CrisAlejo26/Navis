@@ -13,7 +13,9 @@ import { BelieverPhotosService } from './believer-photos.service';
 import { BelieverNote } from './believer-note.entity';
 import { BelieverNotesController } from './believer-notes.controller';
 import { BelieverNotesService } from './believer-notes.service';
+import { BelieverRowsService } from './believer-rows.service';
 import { Believer } from './believer.entity';
+import { BelieversExportService } from './believers-export.service';
 import { BelieversPageService } from './believers-page.service';
 import { BelieversRosterService } from './believers-roster.service';
 import { BelieversSummaryService } from './believers-summary.service';
@@ -67,7 +69,9 @@ import { NotesViewService } from './notes-view.service';
   providers: [
     BelieversService,
     BelieversRosterService,
+    BelieverRowsService,
     BelieversPageService,
+    BelieversExportService,
     BelieversSummaryService,
     BelieverLinksService,
     BelieverNotesService,

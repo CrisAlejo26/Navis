@@ -1,12 +1,21 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
-import type { Dream as DreamView, DreamListItem, DreamsStats, Paginated } from '@navis/shared';
+import type {
+  Dream as DreamView,
+  DreamExportRow,
+  DreamListItem,
+  DreamsStats,
+  ExportResponse,
+  Paginated,
+} from '@navis/shared';
 
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { DreamStatsService } from './dream-stats.service';
+import { DreamsExportService } from './dreams-export.service';
 import { DreamsPageService } from './dreams-page.service';
 import { DreamsService } from './dreams.service';
 import { CreateDreamDto, UpdateDreamDto } from './dto/dream.dto';
+import { DreamsExportQueryDto } from './dto/dreams-export.dto';
 import { DreamsQueryDto } from './dto/dreams-query.dto';
 
 /**
@@ -26,6 +35,7 @@ export class DreamsController {
     private readonly dreams: DreamsService,
     private readonly page: DreamsPageService,
     private readonly stats: DreamStatsService,
+    private readonly exports: DreamsExportService,
   ) {}
 
   @Get()
@@ -45,6 +55,16 @@ export class DreamsController {
   @ApiOperation({ summary: 'Las cuentas de la portada' })
   summary(@CurrentUser('id') ownerId: string): Promise<DreamsStats> {
     return this.stats.stats(ownerId);
+  }
+
+  /* Antes de `:id`, por lo mismo que `stats`. */
+  @Get('export')
+  @ApiOperation({ summary: 'Los míos sin paginar, para exportarlos' })
+  export(
+    @CurrentUser('id') ownerId: string,
+    @Query() query: DreamsExportQueryDto,
+  ): Promise<ExportResponse<DreamExportRow>> {
+    return this.exports.export(ownerId, { ...query, search: query.search || undefined });
   }
 
   @Post()

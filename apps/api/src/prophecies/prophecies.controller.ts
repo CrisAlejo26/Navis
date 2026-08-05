@@ -1,15 +1,19 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import type {
+  ExportResponse,
   Paginated,
   PropheciesStats,
   Prophecy as ProphecyView,
+  ProphecyExportRow,
   ProphecyListItem,
 } from '@navis/shared';
 
 import { CurrentUser } from '../common/decorators/current-user.decorator';
+import { PropheciesExportQueryDto } from './dto/prophecies-export.dto';
 import { PropheciesQueryDto } from './dto/prophecies-query.dto';
 import { CreateProphecyDto, UpdateProphecyDto } from './dto/prophecy.dto';
+import { PropheciesExportService } from './prophecies-export.service';
 import { PropheciesPageService } from './prophecies-page.service';
 import { toProphecyView } from './prophecies.mapper';
 import { PropheciesService } from './prophecies.service';
@@ -32,6 +36,7 @@ export class PropheciesController {
     private readonly prophecies: PropheciesService,
     private readonly page: PropheciesPageService,
     private readonly stats: ProphecyStatsService,
+    private readonly exports: PropheciesExportService,
   ) {}
 
   @Get()
@@ -49,6 +54,18 @@ export class PropheciesController {
   @ApiOperation({ summary: 'Las cuentas de la portada' })
   summary(@CurrentUser('id') ownerId: string): Promise<PropheciesStats> {
     return this.stats.stats(ownerId);
+  }
+
+  /* Antes de `:id`, por lo mismo que `stats`. Va filtrado por dueño como todo
+     lo de aquí, y por eso el e2e que intenta exportar lo de otro devuelve una
+     lista vacía y no un 403 (RFC 0009 D12). */
+  @Get('export')
+  @ApiOperation({ summary: 'Las mías sin paginar, para exportarlas' })
+  export(
+    @CurrentUser('id') ownerId: string,
+    @Query() query: PropheciesExportQueryDto,
+  ): Promise<ExportResponse<ProphecyExportRow>> {
+    return this.exports.export(ownerId, { ...query, search: query.search || undefined });
   }
 
   @Post()

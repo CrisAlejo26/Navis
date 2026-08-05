@@ -1,9 +1,6 @@
 import { useState, type RefObject } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { buildPdf } from '@/lib/calendar/pdf';
-import { printNode } from '@/lib/calendar/print';
-import { nodeToJpeg } from '@/lib/calendar/rasterize';
 import {
   canCopyImage,
   canShareFiles,
@@ -11,7 +8,10 @@ import {
   copyText,
   downloadFile,
   shareFile,
-} from '@/lib/calendar/share';
+} from '@/lib/share/files';
+import { buildPdf } from '@/lib/share/pdf';
+import { printNode } from '@/lib/share/print';
+import { nodeToJpeg } from '@/lib/share/rasterize';
 import { toast } from '@/lib/toast';
 
 /**
@@ -84,7 +84,8 @@ export function usePosterExport(
 
       setBusy(true);
       try {
-        const documento = buildPdf(await nodeToJpeg(node));
+        // Una sola página: la lámina es un cartel, no un listado (RFC 0009 D6).
+        const documento = buildPdf([await nodeToJpeg(node)]);
 
         if (canShareFiles(documento, options.pdfName)) {
           await shareFile(documento, options.pdfName, options.title);

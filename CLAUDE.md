@@ -169,6 +169,12 @@ Padre)` parece perezoso, pero `emitDecoratorMetadata` escribe la clase en los
   sin sesión. Los specs que sirven la API desde el navegador van con
   `test.use({ serviceWorkers: 'block' })`; el service worker tiene su propio
   spec.
+- **En local, Playwright reutiliza el `preview` que ya esté escuchando.** El
+  `webServer` lleva `reuseExistingServer: !CI`, así que si quedó uno vivo en el
+  4173 de una sesión anterior, `pnpm test:e2e` **no reconstruye**: corre contra
+  el build viejo y los tests de lo recién escrito fallan con un «no encuentro el
+  botón» perfectamente creíble. Si un e2e falla por algo que en el código está,
+  mira el puerto antes que el test.
 - **Una banda fija abajo se come la acción principal.** El aviso de la PWA
   vivía ahí y no se iba solo, así que en un teléfono tapaba el botón que la
   Regla 5 §4 manda poner justo en ese sitio. Lo que es una **noticia** va por
@@ -222,6 +228,19 @@ Padre)` parece perezoso, pero `emitDecoratorMetadata` escribe la clase en los
   escribe en `<uploads>/<churchId>/` porque **ahí están ya** los ficheros de las
   notas y su `storage_key` apunta a esa ruta. Moverlos para que quedara
   simétrico obligaría a tocar disco y base de datos a la vez para no ganar nada.
+- **Un `.xlsx` es un ZIP de siete XML y el orden de los elementos es ley.**
+  `styles.xml` pide `fonts`, `fills`, `borders`, `cellStyleXfs`, `cellXfs` y
+  `cellStyles` en ese orden, y una hoja pide `sheetViews`, `cols`, `sheetData`,
+  `autoFilter` y `mergeCells` en el suyo. Con uno fuera de sitio Excel no abre
+  el fichero: ofrece repararlo. Y lo mismo con un **carácter de control** dentro
+  de un texto, que es inválido en XML 1.0 y se cuela copiando de cualquier
+  sitio: se limpian en `escapeXml`. Lo escribe `lib/export/xlsx/`, sin
+  librería, como el PDF de la lámina.
+- **Las fechas del Excel van con el formato 14, el corto integrado.** Escribir
+  `dd/mm/yyyy` a mano deja el fichero en español para siempre; el 14 se pinta
+  con la configuración regional de quien lo abre. El valor es un número de
+  serie desde el **30 de diciembre de 1899**, no desde el 1 de enero de 1900:
+  Excel se cree que 1900 fue bisiesto.
 - **La verificación de CI formatea en vez de morir**, y si cambia algo lo sube
   en un commit con `[skip ci]`. El `[skip ci]` no es por ahorrar: sin él, ese
   push cancelaría la propia ejecución por la regla de `concurrency`.

@@ -75,6 +75,19 @@ export interface PropheciesQuery {
   order?: 'asc' | 'desc';
 }
 
+/**
+ * La fila que se exporta (RFC 0009 §6.3).
+ *
+ * Lleva **el cuerpo entero** y no el `excerpt` de la fila: un fichero que se
+ * lleva el texto recortado sin avisar es el mismo error que editar desde el
+ * listado, y ese ya está anotado en `CLAUDE.md`.
+ */
+export interface ProphecyExportRow extends Omit<ProphecyListItem, 'excerpt'> {
+  body: string;
+  /** Cuándo se apuntó, que no es cuándo se recibió. */
+  createdAt: string;
+}
+
 /** Un mes del gráfico. Vienen los doce, con los vacíos a cero (§6.2). */
 export interface ProphecyMonth {
   /** `AAAA-MM`. */
