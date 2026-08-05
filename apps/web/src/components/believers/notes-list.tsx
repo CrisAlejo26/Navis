@@ -14,7 +14,7 @@ import {
 import { accentVars } from '@/lib/accents';
 import { NOTE_STYLES } from '@/lib/believers/note-kinds';
 import { cn } from '@/lib/cn';
-import { formatDate } from '@/lib/format';
+import { formatDay } from '@/lib/format';
 
 /**
  * La bitácora como **lista densa**: una línea por nota.
@@ -68,7 +68,7 @@ export function NotesList({
                   }
                 >
                   <TableCell className="text-xs whitespace-nowrap text-muted-foreground tabular-nums">
-                    {formatDate(note.occurredAt, 'short')}
+                    {formatDay(note.occurredAt)}
                   </TableCell>
 
                   <TableCell className="whitespace-nowrap">
@@ -87,7 +87,7 @@ export function NotesList({
                       {note.audios.length > 0 && (
                         <Mic
                           size={12}
-                          aria-label={t('notes.audio.title')}
+                          aria-label={t('common.audio.title')}
                           className="shrink-0 text-muted-foreground"
                         />
                       )}

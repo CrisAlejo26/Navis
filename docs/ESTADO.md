@@ -75,6 +75,28 @@ comprobado que empaqueta correctamente).
   con filtros en la URL, tabla y fichas. El elemento que sostiene la pantalla es
   **la sonda**: cuánto margen queda con cada persona antes de que haga falta
   escribir algo de ella. La app móvil se queda con su pantalla puente (§7.9).
+- **Profecías personales** (RFC 0004): el cuaderno de cada usuario, con su
+  texto entero, la fecha en que se recibió y —cuando llega— la de cumplimiento,
+  más los **cumplimientos parciales** que se van anotando por el camino. La
+  portada lleva las estadísticas —tasa, espera típica, reparto por estado y el
+  gráfico mes a mes— en tarjetas que **abren el listado ya filtrado**, y el
+  listado se ve de cuatro formas. El elemento que sostiene la pantalla es **la
+  travesía**: cada palabra como un trayecto en el tiempo, con una marca por cada
+  parte cumplida, que se cierra al cumplirse o se desvanece hacia hoy si sigue
+  esperando. Es el **único módulo que no cuelga de una iglesia** (D1): es de
+  cada usuario y solo lo ve su dueño. La app móvil se queda con su pantalla
+  puente (§7.10).
+- **Sueños personales** (RFC 0005): el segundo módulo que es de una persona y no
+  de una iglesia. Cada sueño lleva su noche, su texto, **varias emociones**, la
+  posible interpretación y —cuando pasa— la fecha en que se cumplió y lo que
+  significó. Las emociones son un vocabulario propio: doce de serie que salen en
+  los seis idiomas porque se guardan por `slug` y no por texto (D4), más las que
+  cada cual añada con su color. Se pueden grabar o adjuntar audios, con el mismo
+  almacén que la bitácora de creyentes, ahora compartido (D13). El elemento que
+  sostiene la pantalla es **la franja de noches**: doce semanas de celdas
+  teñidas según cuánto se soñó, con el total de cada semana debajo, y cada celda
+  abriendo el listado de esa noche. La app móvil se queda fuera, como en las
+  anteriores.
 - **Documentación**: ocho RFC y seis ADR en [`docs/`](./).
 
 ## Producción
@@ -99,10 +121,13 @@ código 503 en vez de un 502 en blanco.
 
 ## Siguiente paso — por dónde continuar
 
-El **calendario ([RFC 0002](./rfcs/0002-calendario-de-programaciones.md))** y
-los **creyentes con su bitácora ([RFC 0003](./rfcs/0003-creyentes-y-notas.md))**
-ya están implementados en API y web. Con ellos hay por fin datos de verdad:
-personas, reuniones y notas fechadas.
+El **calendario ([RFC 0002](./rfcs/0002-calendario-de-programaciones.md))**, los
+**creyentes con su bitácora ([RFC 0003](./rfcs/0003-creyentes-y-notas.md))**, las
+**profecías personales ([RFC 0004](./rfcs/0004-profecias-personales.md))** y los
+**sueños personales ([RFC 0005](./rfcs/0005-suenos-personales.md))** ya están
+implementados en API y web. Con ellos hay por fin datos de verdad: personas,
+reuniones, notas fechadas, palabras con su cumplimiento y noches con lo que se
+soñó en ellas.
 
 Lo que sigue:
 
@@ -112,10 +137,10 @@ Lo que sigue:
 2. **[RFC 0006](./rfcs/0006-comunicaciones.md) — comunicaciones**, la primera
    que añade WebSocket. Es también donde entra notificar el aviso de
    inactividad fuera de la pantalla (RFC 0003, Alcance).
-3. **[RFC 0004](./rfcs/0004-profecias-personales.md)** y
-   **[RFC 0005](./rfcs/0005-suenos-personales.md)**, que comparten el patrón de
-   privacidad y son los mejores candidatos para el servicio de IA local. La
-   0004 es además donde se decide si las notas pasan a ser privadas (D10).
+3. **Llevar el color de sueños a la portada de profecías**: sus seis tarjetas
+   siguen siendo `bg-card` con degradados al 8 %, que sobre fondo claro es
+   blanco. El lenguaje ya está escrito (RFC 0005 §7.1) y `StatCard` ya tiene los
+   tonos; falta elegir cuál lleva cada una.
 4. **La pestaña de creyentes en la app móvil**, que se dejó fuera a propósito:
    el tipo, el esquema y los hooks ya se escribieron compartidos, así que solo
    falta el JSX (§7.9).

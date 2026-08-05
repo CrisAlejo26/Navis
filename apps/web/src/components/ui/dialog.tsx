@@ -48,10 +48,16 @@ export function Dialog({
       onClose={onClose}
       onCancel={onClose}
       style={{ width }}
-      className="p-0 shadow-lg backdrop:bg-black/45 m-auto max-w-none rounded-xl border bg-card text-card-foreground"
+      // `max-h-[90dvh]` con scroll dentro: un formulario alto —un área de texto
+      // de doce filas, por ejemplo— desbordaba la ventana en un teléfono y el
+      // botón de guardar quedaba fuera de alcance. `dvh` y no `vh`, que con la
+      // barra del navegador móvil miente (Regla 5 §3).
+      className="p-0 shadow-lg backdrop:bg-black/45 m-auto max-h-[90dvh] max-w-none overflow-y-auto rounded-xl border bg-card text-card-foreground"
     >
       {open && (
-        <div className="p-5 animate-page-in">
+        // `min-w-0`: un hijo ancho dentro de un `flex-col` ensancha al padre
+        // y sacaría el diálogo de la pantalla (CLAUDE.md).
+        <div className="p-5 min-w-0 animate-page-in">
           <div className="gap-4 mb-4 flex items-start justify-between">
             <div>
               <h2 id="dialog-title" className="text-base font-semibold">

@@ -22,6 +22,25 @@
   --animate-slide-in-right: slide-in-right 240ms cubic-bezier(0.22, 1, 0.36, 1) both;
   --animate-sonda: sonda 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
   --animate-latido: latido 2400ms ease-in-out infinite;
+  --animate-track-in: track-in 480ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-ring-in: ring-in 600ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* El trayecto de la travesía se dibuja de izquierda a derecha al entrar (RFC
+   0004 §7.8). `scaleX` y no `width`: el compositor sabe resolver el primero y
+   no el segundo. */
+@keyframes track-in {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+/* El anillo de la tasa se llena de cero a su valor. Se anima
+   `stroke-dashoffset`, que es lo que dibuja el arco. */
+@keyframes ring-in {
+  from {
+    stroke-dashoffset: var(--ring-length);
+  }
 }
 
 /* La sonda se llena de cero a su valor al entrar (RFC 0003 §7.8). Solo en la

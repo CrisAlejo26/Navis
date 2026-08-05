@@ -9,18 +9,6 @@ import type { NavKey } from '@/routes/placeholder';
  */
 export const PUENTES = [
   {
-    path: 'prophecies',
-    titleKey: 'nav.prophecies',
-    rfc: '0004-profecias-personales.md',
-    permission: 'prophecies.view',
-  },
-  {
-    path: 'dreams',
-    titleKey: 'nav.dreams',
-    rfc: '0005-suenos-personales.md',
-    permission: 'dreams.view',
-  },
-  {
     path: 'communications',
     titleKey: 'nav.communications',
     rfc: '0006-comunicaciones.md',

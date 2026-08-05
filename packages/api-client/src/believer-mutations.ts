@@ -1,4 +1,9 @@
-import type { BelieverListItem, CreateBelieverInput, UpdateBelieverInput } from '@navis/shared';
+import type {
+  Believer,
+  BelieverListItem,
+  CreateBelieverInput,
+  UpdateBelieverInput,
+} from '@navis/shared';
 import { useMutation, useQueryClient, type QueryClient } from '@tanstack/react-query';
 
 import type { ApiClient } from './client';
@@ -57,6 +62,36 @@ export function useSetCongregation(api: ApiClient) {
   return useMutation({
     mutationFn: (input: { believerIds: string[]; congregationId: string | null }) =>
       api.patch<{ updated: number }>('/believers/congregation', { ...input }),
+    onSuccess: () => refreshBelievers(client),
+  });
+}
+
+/**
+ * La fotografía de un creyente: subirla o reemplazarla.
+ *
+ * Va por `FormData` y **sin** `content-type` puesto a mano: el navegador tiene
+ * que escribirlo él para incluir el `boundary` del multipart. Por eso no usa
+ * `api.post` con cuerpo, que serializa JSON.
+ */
+export function useUploadBelieverPhoto(api: ApiClient) {
+  const client = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, file }: { id: string; file: Blob }) => {
+      const form = new FormData();
+      form.append('file', file, 'foto');
+
+      return api.post<Believer>(`/believers/${id}/photo`, undefined, { body: form });
+    },
+    onSuccess: () => refreshBelievers(client),
+  });
+}
+
+export function useDeleteBelieverPhoto(api: ApiClient) {
+  const client = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: string) => api.delete<Believer>(`/believers/${id}/photo`),
     onSuccess: () => refreshBelievers(client),
   });
 }

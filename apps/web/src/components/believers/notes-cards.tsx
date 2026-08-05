@@ -7,7 +7,7 @@ import { NoteReminder } from '@/components/believers/note-reminder';
 import { Button } from '@/components/ui/button';
 import { accentVars } from '@/lib/accents';
 import { NOTE_STYLES } from '@/lib/believers/note-kinds';
-import { formatDate } from '@/lib/format';
+import { formatDay } from '@/lib/format';
 
 /**
  * La bitácora como **fichas**: cada nota en su tarjeta, en rejilla.
@@ -52,12 +52,12 @@ export function NotesCards({
                   {t(labelKey)}
                 </span>
                 <span className="text-[11px] text-muted-foreground tabular-nums">
-                  {formatDate(note.occurredAt, 'short')}
+                  {formatDay(note.occurredAt)}
                 </span>
                 {note.audios.length > 0 && (
                   <Mic
                     size={12}
-                    aria-label={t('notes.audio.title')}
+                    aria-label={t('common.audio.title')}
                     className="text-muted-foreground"
                   />
                 )}

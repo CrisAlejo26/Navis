@@ -1,5 +1,14 @@
 import { ACCENT_PALETTE, NOTE_KINDS, type NoteKind } from '@navis/shared';
-import { Eye, Flame, MessageCircle, Moon, Quote, Sprout, type LucideIcon } from 'lucide-react';
+import {
+  Eye,
+  Flame,
+  MessageCircle,
+  Moon,
+  Quote,
+  Sprout,
+  TriangleAlert,
+  type LucideIcon,
+} from 'lucide-react';
 
 interface KindStyle {
   Icon: LucideIcon;
@@ -31,6 +40,13 @@ export const NOTE_STYLES: Record<NoteKind, KindStyle> = {
   vision: { Icon: Eye, accent: ACCENT_PALETTE[3], labelKey: 'notes.kinds.vision' },
   experiencia: { Icon: Flame, accent: ACCENT_PALETTE[7], labelKey: 'notes.kinds.experiencia' },
   don: { Icon: Sprout, accent: ACCENT_PALETTE[4], labelKey: 'notes.kinds.don' },
+  // El rojo de la paleta, que aquí no es una alarma: es lo que hace que una
+  // corrección se distinga sin leer entre diez años de seguimientos.
+  correccion: {
+    Icon: TriangleAlert,
+    accent: ACCENT_PALETTE[8],
+    labelKey: 'notes.kinds.correccion',
+  },
 };
 
 /** En el orden en que se proponen: lo más frecuente primero. */

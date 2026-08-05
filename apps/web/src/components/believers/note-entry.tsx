@@ -1,13 +1,13 @@
-import { daysBetween, type BelieverNote, type IsoDate } from '@navis/shared';
+import { daysBetween, noteAudioPath, type BelieverNote, type IsoDate } from '@navis/shared';
 import { Pencil, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-import { NoteAudioPlayer } from '@/components/believers/note-audio-player';
+import { AudioPlayer } from '@/components/audio/audio-player';
 import { NoteReminder } from '@/components/believers/note-reminder';
 import { Button } from '@/components/ui/button';
 import { accentVars } from '@/lib/accents';
 import { NOTE_STYLES } from '@/lib/believers/note-kinds';
-import { formatAgo, formatDate } from '@/lib/format';
+import { formatAgo, formatDay } from '@/lib/format';
 
 export interface NoteHandlers {
   canManage: boolean;
@@ -52,7 +52,7 @@ export function NoteEntry({
             ·
           </span>
           <span className="text-[11px] text-muted-foreground tabular-nums">
-            {formatDate(note.occurredAt, 'short')}
+            {formatDay(note.occurredAt)}
           </span>
           {note.giftName && (
             <span className="px-2 py-0.5 rounded-full bg-muted text-[11px] text-muted-foreground">
@@ -61,10 +61,12 @@ export function NoteEntry({
           )}
         </p>
 
-        <p className="mt-1 text-sm leading-relaxed whitespace-pre-line">{note.told}</p>
+        {/* El ancho de lectura va aquí, en el texto: la tarjeta llena la
+            pantalla, pero una línea que la cruza entera no se lee (Regla 5 §3). */}
+        <p className="mt-1 max-w-prose text-sm leading-relaxed whitespace-pre-line">{note.told}</p>
 
         {note.advice && (
-          <p className="mt-2 pl-3 text-sm leading-relaxed border-l-2 border-border whitespace-pre-line text-muted-foreground">
+          <p className="mt-2 pl-3 max-w-prose text-sm leading-relaxed border-l-2 border-border whitespace-pre-line text-muted-foreground">
             <span className="font-medium text-foreground/70">{t('notes.advice')}: </span>
             {note.advice}
           </p>
@@ -76,7 +78,7 @@ export function NoteEntry({
           <ul className="gap-1.5 mt-2 flex flex-col">
             {note.audios.map((audio) => (
               <li key={audio.id}>
-                <NoteAudioPlayer audio={audio} />
+                <AudioPlayer audio={audio} path={noteAudioPath} />
               </li>
             ))}
           </ul>

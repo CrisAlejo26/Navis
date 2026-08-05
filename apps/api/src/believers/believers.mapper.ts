@@ -6,12 +6,14 @@ import {
   type BelieverListItem,
   type Gift as GiftView,
   type IsoDate,
+  type MinistryCatalog as MinistryView,
 } from '@navis/shared';
 
 import { toIsoDay } from '../database/iso-day';
 import type { BelieverGift } from './believer-gift.entity';
 import type { Believer } from './believer.entity';
 import type { Gift } from './gift.entity';
+import type { Ministry } from './ministry.entity';
 
 /**
  * De la entidad a lo que viaja: las labores como lista de textos, que es como
@@ -30,6 +32,9 @@ export function toBelieverView(believer: Believer, ministries?: readonly string[
     lastNoteAt: believer.lastNoteAt === null ? null : toIsoDay(believer.lastNoteAt),
     createdAt: believer.createdAt.toISOString(),
     ministries: [...(ministries ?? (believer.ministries ?? []).map((one) => one.ministry))],
+    // Un booleano y no la clave del fichero: cómo se llama en disco es asunto
+    // del servidor, y de fuera solo hace falta saber si hay foto que pedir.
+    hasPhoto: believer.photoKey !== null,
   };
 }
 
@@ -42,6 +47,20 @@ export function toGiftView(gift: Gift): GiftView {
     position: gift.position,
     isSystem: gift.isSystem,
     isActive: gift.isActive,
+  };
+}
+
+/** La labor del catálogo. Lleva el `slug`, que es lo que guarda la persona. */
+export function toMinistryView(ministry: Ministry): MinistryView {
+  return {
+    id: ministry.id,
+    churchId: ministry.churchId,
+    slug: ministry.slug,
+    name: ministry.name,
+    accent: ministry.accent,
+    position: ministry.position,
+    isSystem: ministry.isSystem,
+    isActive: ministry.isActive,
   };
 }
 

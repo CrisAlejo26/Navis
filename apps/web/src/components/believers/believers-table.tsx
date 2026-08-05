@@ -46,13 +46,17 @@ export function BelieversTable({
     </TableHeader>
   );
 
+  // La columna de fotografía solo existe si alguien de esta página tiene una:
+  // una columna vacía para diecinueve de veinte roba ancho a lo que sí se lee.
+  const showPhoto = (screen.page?.items ?? []).some((believer) => believer.hasPhoto);
+
   return (
     <DataTable
       items={screen.page?.items}
       isLoading={screen.isLoading}
       isError={screen.isError}
       onRetry={screen.refetch}
-      columnCount={screen.canManage ? 7 : 6}
+      columnCount={(screen.canManage ? 8 : 7) + (showPhoto ? 1 : 0)}
       getKey={(believer) => believer.id}
       emptyIcon={UserSearch}
       emptyTitle={screen.filters.count > 0 ? t('believers.noResults') : t('believers.empty')}
@@ -73,17 +77,25 @@ export function BelieversTable({
               />
             </TableHeader>
           )}
+          {showPhoto && (
+            <TableHeader className="w-11 pr-0">
+              <span className="sr-only">{t('believers.photo')}</span>
+            </TableHeader>
+          )}
           {sortable('name', t('believers.columnName'))}
           <TableHeader>{t('believers.columnCongregation')}</TableHeader>
           {sortable('status', t('believers.columnStatus'))}
           <TableHeader className="lg:table-cell hidden">{t('believers.columnGifts')}</TableHeader>
+          <TableHeader className="xl:table-cell hidden">{t('ministries.title')}</TableHeader>
           {sortable('lastNote', t('believers.columnAlert'))}
           <TableHeader className="text-right">
             <span className="sr-only">{t('common.actions')}</span>
           </TableHeader>
         </>
       }
-      renderRow={(believer, index) => <BelieverRow {...cells(believer, index)} />}
+      renderRow={(believer, index) => (
+        <BelieverRow {...cells(believer, index)} showPhoto={showPhoto} />
+      )}
       renderCard={(believer, index) => <BelieverCard {...cells(believer, index)} />}
       footer={
         screen.page && (

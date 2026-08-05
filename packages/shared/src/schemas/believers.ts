@@ -59,6 +59,12 @@ export const believerSchema = z.object({
   /** Instante del alta: sin ninguna nota, el margen se cuenta desde aquí (§5.4). */
   createdAt: z.string(),
   ministries: z.array(z.string()),
+  /**
+   * Si tiene fotografía. **Un booleano y no la imagen ni su ruta**: el fichero
+   * se pide aparte a `believerPhotoPath(id)`, que va con la cookie de sesión, y
+   * así una lista de veinte personas no arrastra veinte imágenes en el JSON.
+   */
+  hasPhoto: z.boolean(),
 });
 
 export type Believer = z.infer<typeof believerSchema>;
