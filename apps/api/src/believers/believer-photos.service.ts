@@ -4,16 +4,12 @@ import { Repository } from 'typeorm';
 import type { ReadStream } from 'node:fs';
 
 import { churchScope } from '../media/file-storage.service';
-import { ImageStorageService } from '../media/image-storage.service';
+import { ImageStorageService, type UploadedImage } from '../media/image-storage.service';
 import { Believer } from './believer.entity';
 import { BelieversService } from './believers.service';
 
-/** Lo que llega de multer, reducido a lo que de verdad se usa (Regla 10). */
-export interface UploadedImage {
-  buffer: Buffer;
-  mimetype: string;
-  size: number;
-}
+/** El tipo de lo que llega de multer vive con el almacén, que es quien lo valida. */
+export type { UploadedImage };
 
 /** El tipo que se sirve, a partir de la extensión con la que se guardó. */
 const MIME_BY_EXTENSION: Record<string, string> = {

@@ -10,6 +10,7 @@ import { GiftTags } from '@/components/believers/gift-tags';
 import { MinistryTags } from '@/components/believers/ministry-tags';
 import { Sonda } from '@/components/believers/sonda';
 import { StatusBadge } from '@/components/believers/status-badge';
+import { ListDots } from '@/components/lists/list-dots';
 import { accentVars } from '@/lib/accents';
 import { cn } from '@/lib/cn';
 
@@ -24,6 +25,8 @@ export function BelieverCard({
   believer,
   congregation,
   ministries,
+  lists,
+  listIds,
   today,
   canManage,
   index,
@@ -61,12 +64,15 @@ export function BelieverCard({
           <BelieverPhoto believer={believer} size="md" />
 
           <div className="min-w-0">
-            <Link
-              to={`/believers/${believer.id}`}
-              className="font-medium rounded-sm text-[15px] hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-            >
-              {name}
-            </Link>
+            <span className="gap-1.5 flex items-center">
+              <Link
+                to={`/believers/${believer.id}`}
+                className="font-medium rounded-sm text-[15px] hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+              >
+                {name}
+              </Link>
+              <ListDots lists={lists} listIds={listIds} />
+            </span>
 
             <div className="gap-x-3 gap-y-1 mt-1 text-xs flex flex-wrap items-center text-muted-foreground">
               {congregation && (

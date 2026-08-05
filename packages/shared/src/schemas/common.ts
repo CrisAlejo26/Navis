@@ -25,6 +25,17 @@ export const apiErrorSchema = z.object({
   message: z.string(),
   error: z.string().optional(),
   details: z.array(z.string()).optional(),
+  /**
+   * Lo poco que el cliente necesita para pintar la pantalla del error.
+   *
+   * Existe por **la puerta de una lista restringida** (RFC 0010 §7.3): el 401
+   * lleva el nombre de la iglesia, el de la lista y su color, y con eso se pinta
+   * el cartel con los nombres tapados. Sin esto habría que devolver 200 con una
+   * unión discriminada y el estado dejaría de estar en el código HTTP.
+   *
+   * Va sin forma: cada endpoint que la use la valida con **su** esquema.
+   */
+  data: z.unknown().optional(),
   path: z.string().optional(),
   timestamp: z.string().optional(),
 });

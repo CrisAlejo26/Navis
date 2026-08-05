@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate, useParams } from 'react-router';
 
+import { BelieverAccess } from '@/components/believers/believer-access';
 import { BelieverForm } from '@/components/believers/believer-form';
 import { BelieverIdentity } from '@/components/believers/believer-identity';
 import { BelieverLog } from '@/components/believers/believer-log';
@@ -74,6 +75,10 @@ export function BelieverPage() {
             setDeleting(true);
           }}
         />
+
+        {/* Antes de la bitácora: en qué listas está y qué puede ver son datos
+            de identidad —y uno de ellos puede estar hoy en internet— (§8.7). */}
+        <BelieverAccess believer={believer} />
 
         <BelieverLog
           believerId={believer.id}

@@ -5,10 +5,20 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { MODULE_LABEL_KEY } from '@/lib/permission-labels';
 
 /** La acción que hay detrás de cada permiso, para poner la columna en su sitio. */
-const ACTION_LABEL_KEY = { view: 'permissions.view', manage: 'permissions.manage' } as const;
+const ACTION_LABEL_KEY = {
+  view: 'permissions.view',
+  manage: 'permissions.manage',
+  // Publicar una lista es una acción aparte de editarla (RFC 0010 D8), así que
+  // tiene su propia casilla y no se esconde dentro de «gestionar».
+  share: 'permissions.share',
+} as const;
 
-const actionOf = (permission: Permission): 'view' | 'manage' =>
-  permission.endsWith('.manage') ? 'manage' : 'view';
+type PermissionAction = keyof typeof ACTION_LABEL_KEY;
+
+const actionOf = (permission: Permission): PermissionAction => {
+  if (permission.endsWith('.share')) return 'share';
+  return permission.endsWith('.manage') ? 'manage' : 'view';
+};
 
 /**
  * Qué puede hacer un rol, módulo a módulo.

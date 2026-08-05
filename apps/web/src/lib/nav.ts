@@ -1,6 +1,7 @@
 import type { Permission } from '@navis/shared';
 import {
   CalendarDays,
+  ClipboardList,
   LayoutDashboard,
   MessageSquare,
   Moon,
@@ -29,6 +30,15 @@ export const NAV_GROUPS = [
 
 export type NavGroup = (typeof NAV_GROUPS)[number]['id'];
 
+/**
+ * Qué cuelga de esta entrada, cuando cuelga algo.
+ *
+ * Es una **propiedad del propio elemento** y no un `item.to === '/calendar'`
+ * escrito en `AppNav` (RFC 0010 D3): con dos casos, aquello dejaba de ser una
+ * excepción y pasaba a ser una lista disfrazada de condicional.
+ */
+export type NavChildren = 'calendars' | 'lists';
+
 export interface NavItem {
   to: string;
   labelKey: string;
@@ -38,6 +48,8 @@ export interface NavItem {
   group?: NavGroup;
   /** Permiso para verlo. Sin él, lo ve todo el mundo con sesión. */
   permission?: Permission;
+  /** De dónde salen sus subentradas. Sin esto, es una entrada normal. */
+  children?: NavChildren;
 }
 
 /**
@@ -81,6 +93,19 @@ export const NAV_ITEMS: readonly NavItem[] = [
     end: false,
     group: 'church',
     permission: 'calendar.view',
+    children: 'calendars',
+  },
+  {
+    // «Listas» y no «Listas compartidas»: en alemán es *Geteilte Listen* y a
+    // 240 px de barra se corta a media palabra (RFC 0010, «Cómo se llama»). El
+    // nombre entero se queda como título de la pantalla.
+    to: '/lists',
+    labelKey: 'nav.lists',
+    Icon: ClipboardList,
+    end: false,
+    group: 'church',
+    permission: 'lists.view',
+    children: 'lists',
   },
   {
     to: '/believers',

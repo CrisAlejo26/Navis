@@ -67,6 +67,26 @@ export const queryKeys = {
     ministries: ['believers', 'ministries'] as const,
   },
   /**
+   * Las listas de la iglesia (RFC 0010).
+   *
+   * Todo cuelga de la misma raíz porque casi todo se toca a la vez: meter a una
+   * persona cambia el panel del tablón, la ficha, el solapamiento y los puntos
+   * de creyentes. Las concesiones también: quitarle una lista a un acceso cambia
+   * su fila del directorio **y** la pestaña de compartir de esa lista.
+   *
+   * `public` va aparte y **sin sesión**: es la única consulta del proyecto que
+   * hace alguien que no ha entrado, y no debe invalidarse al cambiar de iglesia.
+   */
+  lists: {
+    all: ['lists'] as const,
+    one: (id: string) => [...queryKeys.lists.all, 'one', id] as const,
+    stats: (id: string) => [...queryKeys.lists.all, 'stats', id] as const,
+    accessLog: (id: string) => [...queryKeys.lists.all, 'accessLog', id] as const,
+    memberships: ['lists', 'memberships'] as const,
+    viewers: ['lists', 'viewers'] as const,
+    public: (token: string) => ['public-list', token] as const,
+  },
+  /**
    * Las profecías de quien ha entrado (RFC 0004).
    *
    * Todo cuelga de la misma raíz porque casi todo se toca a la vez: anotar un

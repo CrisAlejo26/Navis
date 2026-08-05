@@ -82,6 +82,8 @@ import { NotesViewService } from './notes-view.service';
     MinistriesService,
     BelieverPhotosService,
   ],
-  exports: [BelieversService, BelieversRosterService],
+  // `BelieverPhotosService` sale porque la página pública de una lista sirve la
+  // foto por su propia puerta, con sus cinco cierres (RFC 0010 D17).
+  exports: [BelieversService, BelieversRosterService, BelieverPhotosService],
 })
 export class BelieversModule {}

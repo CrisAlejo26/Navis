@@ -15,6 +15,7 @@ export const MODULE_LABEL_KEY = {
   dashboard: 'nav.dashboard',
   calendar: 'nav.calendar',
   believers: 'nav.believers',
+  lists: 'nav.lists',
   communications: 'nav.communications',
   // Ni las profecías ni los sueños salen aquí: no tienen permiso de rol
   // (RFC 0004 D2 y RFC 0005 D2).
