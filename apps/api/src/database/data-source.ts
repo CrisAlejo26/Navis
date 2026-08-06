@@ -18,6 +18,7 @@ import { Meeting } from '../calendar/meeting.entity';
 import { PatternPhase } from '../calendar/pattern-phase.entity';
 import { ChurchMember } from '../churches/church-member.entity';
 import { Church } from '../churches/church.entity';
+import { HolidayCache } from '../holidays/holiday-cache.entity';
 import { DreamAudio } from '../dreams/dream-audio.entity';
 import { DreamEmotion } from '../dreams/dream-emotion.entity';
 import { Dream } from '../dreams/dream.entity';
@@ -75,6 +76,7 @@ const entities = [
   ListGrant,
   ListView,
   ListAccessLog,
+  HolidayCache,
 ];
 
 /**

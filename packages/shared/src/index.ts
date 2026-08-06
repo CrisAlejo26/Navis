@@ -21,6 +21,7 @@ export * from './schemas/dreams';
 export * from './schemas/emotions';
 export * from './schemas/export';
 export * from './schemas/gifts';
+export * from './schemas/holidays';
 export * from './schemas/list-members';
 export * from './schemas/list-password';
 export * from './schemas/list-queries';

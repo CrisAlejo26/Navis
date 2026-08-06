@@ -264,6 +264,16 @@ Padre)` parece perezoso, pero `emitDecoratorMetadata` escribe la clase en los
   puerta** y quien la abre no tiene cuenta. Por eso hay un segundo cliente sin
   `onUnauthorized` (`lib/lists/public-api.ts`), y es la única razón de que
   exista.
+- **Un stub de e2e que se queda desfasado no lo canta nadie.** El de
+  `apps/web/e2e/servidor.ts` mandaba `activeChurchId` donde el contrato dice
+  `activeId`, así que en los tests **no había iglesia activa** y las piezas que
+  dependen de ella —el selector de la barra lateral, ahora la ficha de
+  ajustes— simplemente no se pintaban. Nada falla: se deja de comprobar. Al
+  añadir un campo a un esquema de `shared`, se mira si el stub lo trae.
+- **Los e2e levantan la app entera, con su `fetch` de verdad.** Los festivos
+  salían a la calle en cada tramo de calendario que pedía un test. Se apaga con
+  `HOLIDAYS_API_URL=''` en `vitest.e2e.setup.ts`; si mañana entra otra
+  dependencia externa, ese es el sitio.
 - **El bloque `location /l/` de nginx se instala a mano en el servidor**, y no
   lo despliega Actions. Cuando falta, `/l/<token>` lo contesta el contenedor de
   la web: la tarjeta de WhatsApp sale con el título y la descripción genéricos

@@ -53,6 +53,16 @@ export const apiEnvSchema = z
      */
     UPLOADS_PATH: z.string().default('./data/uploads'),
 
+    /**
+     * De dónde salen los festivos del calendario (RFC 0011).
+     *
+     * **Cadena vacía lo apaga**: sin esto la API no sale a la calle y sirve lo
+     * que tenga guardado, que es justo lo que hace falta en un entorno sin red
+     * o si algún día la fuente deja de existir. El calendario sigue funcionando
+     * igual; solo deja de marcar los días.
+     */
+    HOLIDAYS_API_URL: z.string().default('https://date.nager.at/api/v3'),
+
     POSTGRES_HOST: z.string().default('localhost'),
     POSTGRES_PORT: z.coerce.number().int().default(5432),
     POSTGRES_USER: z.string().optional(),

@@ -14,6 +14,10 @@ export const churchSchema = z.object({
   /** Nulo solo en las iglesias que vienen del traspaso de una instalación vieja. */
   city: z.string().nullable(),
   timezone: z.string(),
+  /** ISO 3166-1 alfa-2. De él salen los festivos del calendario. */
+  country: z.string(),
+  /** ISO 3166-2. Nulo ⇒ en el calendario solo salen los festivos nacionales. */
+  region: z.string().nullable(),
   /** Quién la creó. Nunca se queda sin dueño. */
   ownerId: z.string(),
   createdAt: z.coerce.date(),
@@ -37,6 +41,20 @@ export const updateChurchSchema = z.object({
   name: z.string().trim().min(2).max(120).optional(),
   city: z.string().trim().min(2).max(120).optional(),
   timezone: z.string().min(3).max(64).optional(),
+  /** Dos letras mayúsculas: es un código, no un nombre de país escrito a mano. */
+  country: z
+    .string()
+    .trim()
+    .regex(/^[A-Z]{2}$/, 'El país va en código de dos letras')
+    .optional(),
+  /** Cadena vacía ⇒ sin comunidad: un `select` no sabe mandar `null`. */
+  region: z
+    .string()
+    .trim()
+    .max(10)
+    .transform((value) => value || null)
+    .nullable()
+    .optional(),
 });
 
 export type UpdateChurchInput = z.infer<typeof updateChurchSchema>;

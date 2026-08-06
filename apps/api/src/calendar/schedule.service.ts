@@ -11,6 +11,8 @@ import {
 import { Between, In, Repository } from 'typeorm';
 
 import { BelieversRosterService } from '../believers/believers-roster.service';
+import { Church } from '../churches/church.entity';
+import { HolidaysService } from '../holidays/holidays.service';
 import { byTimeThenCongregation, meetingView, proposedMeeting } from './calendar-format';
 import { toIsoDay } from '../database/iso-day';
 import { CongregationsService } from './congregations.service';
@@ -36,9 +38,11 @@ export interface RangeQuery {
 export class ScheduleService {
   constructor(
     @InjectRepository(Meeting) private readonly meetings: Repository<Meeting>,
+    @InjectRepository(Church) private readonly churches: Repository<Church>,
     private readonly congregations: CongregationsService,
     private readonly patterns: PatternsService,
     private readonly believers: BelieversRosterService,
+    private readonly holidays: HolidaysService,
   ) {}
 
   async range(churchId: string, query: RangeQuery): Promise<CalendarRange> {
@@ -57,6 +61,16 @@ export class ScheduleService {
     const patterns = (await this.patterns.activeFor(churchId, query.calendarId)).filter(
       (pattern) =>
         active.has(pattern.congregationId) && (!only || only.has(pattern.congregationId)),
+    );
+
+    // El país y la comunidad son de la iglesia, no del calendario: los cuatro
+    // calendarios de una iglesia caen en los mismos días festivos.
+    const church = await this.churches.findOne({ where: { id: churchId } });
+    const holidays = await this.holidays.forRange(
+      church?.country ?? 'ES',
+      church?.region ?? null,
+      from,
+      to,
     );
 
     const byDay = new Map<string, Meeting[]>();
@@ -78,6 +92,7 @@ export class ScheduleService {
         meetings: [...real.map((meeting) => meetingView(meeting, names)), ...proposed].sort(
           byTimeThenCongregation(order),
         ),
+        holiday: holidays.get(date) ?? null,
       };
     });
 

@@ -12,6 +12,9 @@ export default defineConfig({
     globals: true,
     environment: 'node',
     include: ['test/**/*.e2e-spec.ts'],
+    // Corre antes de importar cada fichero: `config/env` valida el entorno al
+    // cargarse, y aquí además se apaga la fuente de festivos.
+    setupFiles: ['./vitest.e2e.setup.ts'],
     testTimeout: 30_000,
     hookTimeout: 30_000,
     fileParallelism: false,

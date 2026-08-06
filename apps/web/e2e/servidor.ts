@@ -86,8 +86,22 @@ export async function montarApi(
     if (path === '/roles/mine') return json(route, { slug: 'superadmin', permissions: ['*'] });
     if (path === '/churches') {
       return json(route, {
-        items: [{ id: CHURCH, name: 'Iglesia de prueba', slug: 'prueba', city: 'Elda' }],
-        activeChurchId: CHURCH,
+        items: [
+          {
+            id: CHURCH,
+            name: 'Iglesia de prueba',
+            slug: 'prueba',
+            city: 'Elda',
+            timezone: 'Europe/Madrid',
+            // De aquí salen los festivos del calendario: el stub tiene que
+            // traerlos o la ficha de la iglesia se queda sin de dónde es.
+            country: 'ES',
+            region: 'ES-VC',
+          },
+        ],
+        // `activeId`, que es como se llama en el contrato: con otro nombre no
+        // hay iglesia activa y las pantallas que dependen de ella no se pintan.
+        activeId: CHURCH,
       });
     }
     /*

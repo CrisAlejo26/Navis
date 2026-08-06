@@ -6,28 +6,22 @@ import { useTranslation } from 'react-i18next';
 import { ChurchFormFields } from '@/components/church/church-form-fields';
 import { FormError } from '@/components/auth/form-error';
 import { Button } from '@/components/ui/button';
-import { Dialog } from '@/components/ui/dialog';
+import { Card } from '@/components/ui/card';
 import { api } from '@/lib/api';
 import { readChurchForm } from '@/lib/church-form';
 import { toast } from '@/lib/toast';
 
 /**
- * La ficha de la iglesia activa, desde la barra lateral.
+ * La ficha de la iglesia en ajustes.
  *
- * Los campos y su validación son los de `ChurchFormFields` y `readChurchForm`,
- * compartidos con la página de ajustes: aquí solo está el envoltorio de
- * diálogo. Lo que cambia entre los dos sitios es cómo se confirma, no qué se
- * edita.
+ * Es el mismo formulario del diálogo de la barra lateral, pero aquí se lee sin
+ * prisa y al lado de los ajustes que dependen de él —la zona horaria manda en
+ * el calendario—, que es donde se busca cuando no se está cambiando el nombre a
+ * toda prisa.
+ *
+ * Solo escribe quien puede administrar iglesias; el resto lo ve y no lo toca.
  */
-export function EditChurchDialog({
-  church,
-  open,
-  onClose,
-}: {
-  church: Church;
-  open: boolean;
-  onClose: () => void;
-}) {
+export function ChurchSettings({ church, canEdit }: { church: Church; canEdit: boolean }) {
   const { t } = useTranslation();
   const updateChurch = useUpdateChurch(api);
   const [error, setError] = useState<string | null>(null);
@@ -46,7 +40,6 @@ export function EditChurchDialog({
       { id: church.id, ...leído.data },
       {
         onSuccess: () => {
-          onClose();
           toast.success(t('church.updated'));
         },
         onError: () => {
@@ -57,21 +50,22 @@ export function EditChurchDialog({
   };
 
   return (
-    <Dialog open={open} onClose={onClose} title={t('church.edit')} description={church.name}>
+    <Card>
       <form onSubmit={submit} className="gap-4 flex flex-col" noValidate>
-        <ChurchFormFields church={church} />
+        <fieldset disabled={!canEdit} className="gap-4 flex flex-col">
+          <ChurchFormFields church={church} />
+        </fieldset>
 
         <FormError message={error} />
 
-        <div className="mt-1 gap-2 flex justify-end">
-          <Button variant="ghost" onClick={onClose} disabled={updateChurch.isPending}>
-            {t('common.cancel')}
-          </Button>
-          <Button type="submit" isLoading={updateChurch.isPending}>
-            {t('common.save')}
-          </Button>
-        </div>
+        {canEdit && (
+          <div className="flex justify-end">
+            <Button type="submit" isLoading={updateChurch.isPending}>
+              {t('common.save')}
+            </Button>
+          </div>
+        )}
       </form>
-    </Dialog>
+    </Card>
   );
 }

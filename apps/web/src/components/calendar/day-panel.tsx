@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { MeetingRibbon } from '@/components/calendar/meeting-ribbon';
 import { Button } from '@/components/ui/button';
 import { Drawer } from '@/components/ui/drawer';
+import { holidayScopeLabel } from '@/lib/calendar/holiday';
 import { longDay } from '@/lib/calendar/labels';
 import { cn } from '@/lib/cn';
 
@@ -48,6 +49,23 @@ export function DayPanel({
       title={date ? longDay(date) : ''}
     >
       <div className="p-4 gap-5 flex flex-1 flex-col">
+        {/*
+         * El festivo, arriba del todo y antes que las sedes: es el dato con el
+         * que se decide si se adelanta la reunión, y para eso hay que verlo al
+         * abrir el día, no al final.
+         */}
+        {day?.holiday && (
+          <p className="gap-2 px-3 py-2 text-sm flex items-start rounded-lg bg-muted">
+            <span aria-hidden className="mt-1.5 size-1.5 shrink-0 rounded-full bg-destructive" />
+            <span className="min-w-0">
+              <span className="font-medium">{day.holiday.name}</span>
+              <span className="text-xs block text-muted-foreground">
+                {holidayScopeLabel(day.holiday, t)}
+              </span>
+            </span>
+          </p>
+        )}
+
         {congregations
           .filter((congregation) => withMeetings.has(congregation.id))
           .map((congregation) => (

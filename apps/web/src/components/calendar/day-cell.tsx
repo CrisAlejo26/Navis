@@ -1,5 +1,6 @@
 import type { CalendarDay, Meeting, MeetingSlot } from '@navis/shared';
 
+import { HolidayMark } from '@/components/calendar/holiday-mark';
 import { MeetingRibbon } from '@/components/calendar/meeting-ribbon';
 import { dayNumber, longDay } from '@/lib/calendar/labels';
 import type { DisplayFilters } from '@/lib/calendar/filter';
@@ -83,6 +84,8 @@ export function DayCell({
           {dayNumber(day.date)}
         </span>
       </button>
+
+      {day.holiday && <HolidayMark holiday={day.holiday} compact={compact} />}
 
       <div className={cn('gap-2 flex flex-col', compact && 'gap-1')}>
         {day.meetings.map((meeting, index) => (

@@ -8,9 +8,10 @@ const tramo: CalendarRange = {
   to: '2026-08-15',
   congregations: [],
   days: [
-    { date: '2026-08-14', meetings: [] },
+    { date: '2026-08-14', meetings: [], holiday: null },
     {
       date: '2026-08-15',
+      holiday: null,
       meetings: [
         {
           id: null,
