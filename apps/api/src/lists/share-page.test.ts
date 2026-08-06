@@ -85,10 +85,17 @@ describe('el documento con las og:', () => {
     expect(html).toContain('Hace falta un acceso');
   });
 
+  it('la descripción habla de esta lista, no del producto', () => {
+    const html = renderSharePage({ ...base, list: LISTA });
+    expect(html).toContain(
+      '<meta property="og:description" content="Lista de 2 personas, compartida con Navis. Actualizada el 3 de agosto.">',
+    );
+  });
+
   it('la descripción de una restringida no se genera del contenido (D18)', () => {
     const html = renderSharePage({ ...base, list: null });
     expect(html).toContain(
-      '<meta property="og:description" content="Lista de Iglesia El Faro. Hace falta un acceso para verla.">',
+      '<meta property="og:description" content="Lista compartida con Navis. Hace falta un acceso para verla.">',
     );
   });
 

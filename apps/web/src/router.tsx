@@ -1,7 +1,8 @@
 /* eslint-disable react-refresh/only-export-components -- este fichero es la
    tabla de rutas, no un módulo de componentes: exporta `router`. */
 import { lazy, Suspense } from 'react';
-import { createBrowserRouter } from 'react-router';
+import { createBrowserRouter, Navigate, useParams } from 'react-router';
+import { listPublicPath } from '@navis/shared';
 
 import { SetupGate } from '@/components/auth/setup-gate';
 import { ChurchGate } from '@/components/church-gate';
@@ -94,6 +95,26 @@ function Lazy({ children }: { children: React.ReactNode }) {
   return <Suspense fallback={null}>{children}</Suspense>;
 }
 
+/**
+ * **La red de seguridad de `/l/<token>`**, que en producción no debería llegar
+ * aquí nunca: ese prefijo lo atiende la API, que es quien escribe las etiquetas
+ * `og:` de la tarjeta de WhatsApp (RFC 0010 D14).
+ *
+ * Está porque el bloque `location /l/` del proxy se instala **a mano** en el
+ * servidor, y mientras no esté, el enlace cae en la SPA y muere en un 404 con
+ * los nombres de media iglesia detrás. Que lleve a la lista es infinitamente
+ * mejor que eso.
+ *
+ * Ojo con lo que **no** arregla: si esto se ejecuta, la vista previa del chat
+ * sigue siendo la genérica de Navis, porque el rastreador no ejecuta
+ * JavaScript. Ver la tarjeta bien es la señal de que el proxy está al día.
+ */
+function ShareLinkFallback() {
+  const { token } = useParams<{ token: string }>();
+
+  return <Navigate to={token ? listPublicPath(token) : '/'} replace />;
+}
+
 export const router = createBrowserRouter([
   /*
    * **La página pública de una lista** (RFC 0010 §8.1, D40).
@@ -112,6 +133,7 @@ export const router = createBrowserRouter([
       </Lazy>
     ),
   },
+  { path: '/l/:token', element: <ShareLinkFallback /> },
   // Mientras la instalación no tenga ninguna cuenta, acceder y darse de alta
   // llevan a crear la de administrador: un login que nadie podría pasar no
   // sirve de nada (ver SetupGate).

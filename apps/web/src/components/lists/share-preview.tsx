@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { KeyRound } from 'lucide-react';
 
 import { accentVars } from '@/lib/accents';
+import { shareCardDescription } from '@/lib/lists/share-card';
 
 /**
  * **La tarjeta tal y como la va a enseñar WhatsApp** (RFC 0010 §8.5).
@@ -50,8 +51,7 @@ export function SharePreview({
             {list.name} · {churchName}
           </p>
           <p className="mt-0.5 text-xs line-clamp-2 text-muted-foreground">
-            {list.description ??
-              (cerrada ? t('lists.lockedDescription') : t('lists.openDescription'))}
+            {shareCardDescription(list, t)}
           </p>
           <p className="mt-1 truncate text-[11px] text-muted-foreground">{url}</p>
         </div>

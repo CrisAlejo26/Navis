@@ -62,6 +62,8 @@ export const listSchema = z.object({
   allowDownload: z.boolean(),
   hasCover: z.boolean(),
   memberCount: z.number().int(),
+  /** El mismo que sale en la página pública: con él se compone la tarjeta. */
+  updatedAt: z.string(),
 });
 
 export type List = z.infer<typeof listSchema>;

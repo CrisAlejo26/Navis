@@ -107,6 +107,22 @@ test.describe('La página pública de una lista', () => {
     await expect(page.getByRole('button', { name: /iniciar sesión|sign in/i })).toHaveCount(0);
   });
 
+  /*
+   * Regresión: el bloque `location /l/` del proxy se instala a mano en el
+   * servidor y, cuando falta, el enlace repartido cae en la SPA. Antes moría en
+   * el 404 de React Router con los nombres de media iglesia detrás.
+   */
+  test('si `/l/` llega a la SPA, lleva a la lista en vez de morir en un 404', async ({ page }) => {
+    await page.route(`**/api/v1/public/lists/${TOKEN}`, (route) =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(LISTA) }),
+    );
+
+    await page.goto(`/l/${TOKEN}`);
+
+    await expect(page).toHaveURL(new RegExp(`${RUTA}$`));
+    await expect(page.getByRole('heading', { name: 'Púlpito' })).toBeVisible();
+  });
+
   test('es un pase de lista: los nombres en su orden, con su ordinal', async ({ page }) => {
     await page.route(`**/api/v1/public/lists/${TOKEN}`, (route) =>
       route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(LISTA) }),
