@@ -1,5 +1,6 @@
 import type { CalendarDay, Meeting, MeetingSlot } from '@navis/shared';
 
+import { HolidayBurst } from '@/components/calendar/holiday-burst';
 import { HolidayMark } from '@/components/calendar/holiday-mark';
 import { MeetingRibbon } from '@/components/calendar/meeting-ribbon';
 import { dayNumber, longDay } from '@/lib/calendar/labels';
@@ -68,10 +69,14 @@ export function DayCell({
           onOpen(day.date);
         }}
         className={cn(
-          'px-1 -mx-1 cursor-pointer self-start rounded-md text-left',
+          // `relative` y `isolate`: el chispazo se sitúa respecto al número y
+          // su `-z-10` se queda dentro de este botón, no detrás de la celda.
+          'px-1 -mx-1 relative isolate cursor-pointer self-start rounded-md text-left',
           'focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none',
         )}
       >
+        {day.holiday && <HolidayBurst day={Number(day.date.slice(8, 10))} />}
+
         <span
           className={cn(
             'font-light tabular-nums',
@@ -79,6 +84,13 @@ export function DayCell({
             // El número, en negrita y del color del texto: sobre el ámbar, el
             // propio ámbar no tendría contraste, y la celda ya dice cuál es.
             isToday && 'font-semibold',
+            /*
+             * Y en rojo si es festivo: es la convención del calendario de
+             * pared, y es **lo que queda cuando la animación termina** —o
+             * cuando no llega a salir, con `prefers-reduced-motion`—. El color
+             * no informa solo: debajo van el punto y el nombre del festivo.
+             */
+            day.holiday && 'text-destructive',
           )}
         >
           {dayNumber(day.date)}

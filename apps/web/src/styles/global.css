@@ -24,6 +24,50 @@
   --animate-latido: latido 2400ms ease-in-out infinite;
   --animate-track-in: track-in 480ms cubic-bezier(0.22, 1, 0.36, 1) both;
   --animate-ring-in: ring-in 600ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-chispa: chispa 900ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-destello: destello 900ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/*
+ * El día festivo del calendario (RFC 0011).
+ *
+ * Una **sola vez al entrar** y no en bucle: un mes tiene dos o tres festivos y
+ * tres cosas chispeando sin parar en la misma pantalla dejan de ser un aviso
+ * para ser una avería. Lo que queda cuando la animación termina es el número
+ * en rojo, que es la convención del calendario de pared y no se mueve.
+ *
+ * Cada chispa sale por su ángulo, que le llega en `--chispa-x` y `--chispa-y`,
+ * y con su propio retardo: un elemento solo admite **una** `animation` y **un**
+ * `animation-delay` (ver CLAUDE.md), así que son cinco elementos y no cinco
+ * capas de uno.
+ */
+@keyframes chispa {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 0, 0) scale(0.3);
+  }
+  30% {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+    transform: translate3d(var(--chispa-x), var(--chispa-y), 0) scale(1);
+  }
+}
+
+/* El fogonazo de debajo: se abre y se apaga mientras salen las chispas. */
+@keyframes destello {
+  from {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  45% {
+    opacity: 0.5;
+  }
+  to {
+    opacity: 0;
+    transform: scale(1.8);
+  }
 }
 
 /* El trayecto de la travesía se dibuja de izquierda a derecha al entrar (RFC
