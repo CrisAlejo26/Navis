@@ -1,5 +1,7 @@
 import { listPublicPath, listSharePath, type PublicList } from '@navis/shared';
 
+import { shareDescription } from './share-description';
+
 /**
  * El documento que sirve **la API** en `/l/<token>` (RFC 0010 D14).
  *
@@ -39,16 +41,7 @@ export function renderSharePage(input: SharePageInput): string {
   const destino = listPublicPath(input.token);
   const title = `${input.name} · ${input.churchName}`;
 
-  /*
-   * La descripción es la que escribió su dueño o una genérica, **nunca una
-   * generada a partir del contenido** (D18): en una restringida contaría
-   * justamente lo que la puerta esconde.
-   */
-  const description =
-    input.description?.trim() ||
-    (input.list
-      ? `Lista de ${input.churchName}`
-      : `Lista de ${input.churchName}. Hace falta un acceso para verla.`);
+  const description = shareDescription({ description: input.description, list: input.list });
 
   const image = input.hasCover ? `${url}/card.png` : `${origin}/og-image.png`;
 

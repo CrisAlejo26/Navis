@@ -264,6 +264,14 @@ Padre)` parece perezoso, pero `emitDecoratorMetadata` escribe la clase en los
   puerta** y quien la abre no tiene cuenta. Por eso hay un segundo cliente sin
   `onUnauthorized` (`lib/lists/public-api.ts`), y es la única razón de que
   exista.
+- **El bloque `location /l/` de nginx se instala a mano en el servidor**, y no
+  lo despliega Actions. Cuando falta, `/l/<token>` lo contesta el contenedor de
+  la web: la tarjeta de WhatsApp sale con el título y la descripción genéricos
+  de Navis para las cinco listas y el enlace muere en el 404 de React Router. El
+  404 lo tapa una ruta de respaldo en la SPA (`ShareLinkFallback`), pero **la
+  tarjeta no**, porque el rastreador no ejecuta JavaScript: una vista previa
+  genérica significa siempre que el proxy está viejo. Se ve con
+  `curl -sI …/l/<token>`, que solo trae `x-robots-tag` si contesta la API.
 - **El service worker se come cualquier navegación que no esté en la
   denylist.** Con `navigateFallback: '/index.html'` y sin
   `navigateFallbackDenylist`, `/l/<token>` lo contesta él y la petición no llega

@@ -28,6 +28,7 @@ export function toListView(list: List, memberCount: number): ListView {
     allowDownload: list.allowDownload,
     hasCover: Boolean(list.coverKey),
     memberCount,
+    updatedAt: list.updatedAt.toISOString(),
   };
 }
 

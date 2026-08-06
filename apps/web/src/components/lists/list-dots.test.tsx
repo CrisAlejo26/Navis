@@ -28,6 +28,7 @@ const lista = (name: string, index: number): ListSummary => ({
   allowDownload: true,
   hasCover: false,
   memberCount: 0,
+  updatedAt: '2026-08-03T10:00:00.000Z',
   initials: [],
   recentViews: [],
 });
