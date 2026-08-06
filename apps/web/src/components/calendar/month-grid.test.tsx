@@ -14,6 +14,7 @@ const rango: CalendarRange = {
   congregations: [],
   days: eachDay('2026-07-27', '2026-09-06').map((date) => ({
     date,
+    holiday: null,
     meetings:
       date === '2026-08-07'
         ? [
@@ -58,6 +59,42 @@ describe('la rejilla del mes', () => {
     expect(document.querySelectorAll('[data-day-button]')).toHaveLength(42);
     expect(screen.getByText('Luis Fernando')).toBeInTheDocument();
     expect(screen.getByText('Elda')).toBeInTheDocument();
+  });
+
+  /*
+   * El festivo es contexto para decidir si se adelanta la reunión, así que
+   * tiene que verse en la rejilla sin abrir el día. Y el color no informa
+   * solo: al punto rojo le acompaña el nombre (Regla 9 §5).
+   */
+  it('marca el día festivo con su nombre y dice de qué alcance es', () => {
+    const conFestivo: CalendarRange = {
+      ...rango,
+      days: rango.days.map((day) =>
+        day.date === '2026-08-15'
+          ? {
+              ...day,
+              holiday: {
+                date: '2026-08-15',
+                name: 'Asunción de la Virgen',
+                scope: 'national' as const,
+                regions: [],
+              },
+            }
+          : day,
+      ),
+    };
+
+    render(
+      <MonthGrid
+        range={conFestivo}
+        anchorMonth="2026-08-15"
+        congregationName={() => 'Elda'}
+        onOpenDay={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByText('Asunción de la Virgen')).toBeInTheDocument();
+    expect(screen.getByLabelText(/Asunción de la Virgen/)).toBeInTheDocument();
   });
 
   it('abre el día al pulsar su número', async () => {

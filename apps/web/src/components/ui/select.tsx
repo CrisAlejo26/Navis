@@ -15,6 +15,8 @@ const sizes: Record<Size, string> = {
 interface SelectProps extends Omit<SelectHTMLAttributes<HTMLSelectElement>, 'size'> {
   /** Etiqueta visible. Sin ella hace falta `aria-label`. */
   label?: string;
+  /** Ayuda permanente bajo el campo, como en `Input`. */
+  hint?: string;
   size?: Size;
   children: ReactNode;
 }
@@ -24,7 +26,15 @@ interface SelectProps extends Omit<SelectHTMLAttributes<HTMLSelectElement>, 'siz
  * en el teléfono abre el selector del sistema, que se maneja mejor que
  * cualquier lista que pintemos nosotros.
  */
-export function Select({ label, size = 'md', className, id, children, ...props }: SelectProps) {
+export function Select({
+  label,
+  hint,
+  size = 'md',
+  className,
+  id,
+  children,
+  ...props
+}: SelectProps) {
   const selectId = id ?? props.name;
 
   return (
@@ -38,6 +48,7 @@ export function Select({ label, size = 'md', className, id, children, ...props }
       <div className="relative">
         <select
           id={selectId}
+          aria-describedby={hint ? `${String(selectId)}-hint` : undefined}
           className={cn(
             'w-full appearance-none rounded-lg border bg-card text-foreground',
             'cursor-pointer transition-[border-color,box-shadow] duration-200 outline-none',
@@ -58,6 +69,12 @@ export function Select({ label, size = 'md', className, id, children, ...props }
           )}
         />
       </div>
+
+      {hint && (
+        <p id={`${String(selectId)}-hint`} className="text-xs leading-snug text-muted-foreground">
+          {hint}
+        </p>
+      )}
     </div>
   );
 }

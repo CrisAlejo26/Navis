@@ -77,6 +77,8 @@ export class ChurchesService {
     if (input.name !== undefined) church.name = input.name;
     if (input.city !== undefined) church.city = input.city;
     if (input.timezone !== undefined) church.timezone = input.timezone;
+    if (input.country !== undefined) church.country = input.country;
+    if (input.region !== undefined) church.region = input.region;
 
     return this.churches.save(church);
   }

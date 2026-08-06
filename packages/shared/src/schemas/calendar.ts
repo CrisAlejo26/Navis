@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { believerSchema } from './believers';
 import { isoDateSchema, timeSchema } from './common';
 import { congregationSchema } from './congregations';
+import { holidaySchema } from './holidays';
 import { MAX_PHASES } from './patterns';
 
 /**
@@ -54,6 +55,14 @@ export type Meeting = z.infer<typeof meetingSchema>;
 export const calendarDaySchema = z.object({
   date: isoDateSchema,
   meetings: z.array(meetingSchema),
+  /**
+   * El festivo de ese día, si lo hay y le toca a esta iglesia.
+   *
+   * Viaja **dentro del día** y no en una consulta aparte: así lo tienen la
+   * rejilla del mes, la agenda y el cartel sin pedirlo cada uno por su lado, y
+   * no hay forma de pintar un mes cuyos festivos vengan de otro tramo.
+   */
+  holiday: holidaySchema.nullable(),
 });
 
 export type CalendarDay = z.infer<typeof calendarDaySchema>;

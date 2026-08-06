@@ -1,8 +1,11 @@
 import { BadRequestException } from '@nestjs/common';
+import type { Holiday } from '@navis/shared';
 import type { Repository } from 'typeorm';
 import { describe, expect, it, vi } from 'vitest';
 
 import type { BelieversRosterService } from '../believers/believers-roster.service';
+import type { Church } from '../churches/church.entity';
+import type { HolidaysService } from '../holidays/holidays.service';
 import { ScheduleService } from './schedule.service';
 import type { Congregation } from './congregation.entity';
 import type { CongregationsService } from './congregations.service';
@@ -47,7 +50,17 @@ function build({ patterns = [patron()], meetings = [] as Meeting[] } = {}) {
     find: vi.fn(() => Promise.resolve(meetings)),
   } as unknown as Repository<Meeting>;
 
-  return new ScheduleService(repo, congregations, patternsService, believers);
+  // La iglesia solo se consulta para saber de dónde son sus festivos; aquí no
+  // hay ninguno, así que el tramo vuelve con todos los días a `holiday: null`.
+  const churches = {
+    findOne: vi.fn(() => Promise.resolve(null)),
+  } as unknown as Repository<Church>;
+
+  const holidays = {
+    forRange: vi.fn(() => Promise.resolve(new Map<string, Holiday>())),
+  } as unknown as HolidaysService;
+
+  return new ScheduleService(repo, churches, congregations, patternsService, believers, holidays);
 }
 
 describe('el calendario de un tramo', () => {

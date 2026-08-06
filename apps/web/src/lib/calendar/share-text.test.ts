@@ -28,7 +28,7 @@ const tramo: CalendarRange = {
   from: '2026-08-15',
   to: '2026-08-15',
   congregations: [],
-  days: [{ date: '2026-08-15', meetings: [reunion('Culto', 'elda', '20:00')] }],
+  days: [{ date: '2026-08-15', holiday: null, meetings: [reunion('Culto', 'elda', '20:00')] }],
 };
 
 const opciones = {
@@ -59,9 +59,10 @@ describe('el tramo como texto para pegar en el grupo', () => {
     const conCancelada: CalendarRange = {
       ...tramo,
       days: [
-        { date: '2026-08-14', meetings: [] },
+        { date: '2026-08-14', holiday: null, meetings: [] },
         {
           date: '2026-08-15',
+          holiday: null,
           meetings: [{ ...reunion('Culto', 'elda', '20:00'), status: 'cancelada' as const }],
         },
       ],

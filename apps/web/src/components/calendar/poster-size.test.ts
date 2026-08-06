@@ -31,10 +31,11 @@ const tramo: CalendarRange = {
   days: [
     {
       date: '2026-08-03',
+      holiday: null,
       meetings: [reunion('elda', true), reunion('alicante', true), reunion('benidorm', true)],
     },
-    { date: '2026-08-04', meetings: [reunion('elda', false)] },
-    { date: '2026-08-10', meetings: [reunion('elda', true)] },
+    { date: '2026-08-04', holiday: null, meetings: [reunion('elda', false)] },
+    { date: '2026-08-10', holiday: null, meetings: [reunion('elda', true)] },
   ],
 };
 

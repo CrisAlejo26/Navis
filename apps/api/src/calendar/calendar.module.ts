@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { BelieversModule } from '../believers/believers.module';
 import { Church } from '../churches/church.entity';
 import { ChurchesModule } from '../churches/churches.module';
+import { HolidaysModule } from '../holidays/holidays.module';
 import { AssignmentsService } from './assignments.service';
 import { Calendar } from './calendar.entity';
 import { CalendarsController } from './calendars.controller';
@@ -41,6 +42,7 @@ import { WeekSeederService } from './week-seeder.service';
     ]),
     ChurchesModule,
     BelieversModule,
+    HolidaysModule,
   ],
   controllers: [
     ScheduleController,
