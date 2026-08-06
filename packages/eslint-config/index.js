@@ -88,6 +88,13 @@ export function baseConfig({ tsconfigRootDir }) {
       extends: [tseslint.configs.disableTypeChecked],
       rules: { 'no-console': 'off' },
     },
+    // Herramientas de línea de órdenes: lo que escriben en la salida **es** su
+    // interfaz, igual que en los scripts de la raíz. Un `console.log` ahí no es
+    // un rastro olvidado de depuración.
+    {
+      files: ['**/src/scripts/**/*.ts'],
+      rules: { 'no-console': 'off' },
+    },
     // oxlint corre antes en pre-commit: apagamos aquí sus reglas duplicadas.
     ...oxlint.configs['flat/recommended'],
     // Prettier manda en todo lo que sea formato. Debe ir el último.

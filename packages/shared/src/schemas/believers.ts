@@ -40,6 +40,27 @@ export const believerStatusSchema = z.enum(BELIEVER_STATUSES);
 export const alertAfterDaysSchema = z.number().int().min(1).max(MAX_ALERT_AFTER_DAYS).nullable();
 
 /**
+ * **Cuándo** empezó cada labor y **cuándo** se recibió cada don (RFC 0012).
+ *
+ * Un mapa aparte, y no un objeto por labor, a propósito: `ministries` y
+ * `giftIds` siguen respondiendo **qué** tiene esa persona, que es lo que
+ * consultan el calendario, las listas y la tabla del listado. Meterles la fecha
+ * dentro obligaría a tocar quince sitios para que la ficha enseñe un dato que
+ * solo se mira en la ficha.
+ *
+ * Lo que no está en el mapa no tiene fecha, y eso es lo normal: casi todo el
+ * mundo sabe qué hace y no cuándo empezó.
+ */
+export const dateByKeySchema = z.record(z.string(), isoDateSchema.nullable());
+
+export type DateByKey = z.infer<typeof dateByKeySchema>;
+
+/** Tope de las tres cuentas: leerse la Biblia mil veces no es un dato, es un dedo. */
+export const MAX_READ_COUNT = 500;
+
+export const readCountSchema = z.number().int().min(0).max(MAX_READ_COUNT).nullable();
+
+/**
  * Una persona de la iglesia, con su ficha completa (RFC 0003 §5.1). Continúa
  * la tabla del núcleo mínimo de la RFC 0002 §6; no crea otra (D1).
  */
@@ -59,6 +80,28 @@ export const believerSchema = z.object({
   /** Instante del alta: sin ninguna nota, el margen se cuenta desde aquí (§5.4). */
   createdAt: z.string(),
   ministries: z.array(z.string()),
+
+  /*
+   * La trayectoria en la iglesia (RFC 0012). Todo opcional: son datos que se
+   * van completando con los años, y una ficha a medias es lo normal, no un
+   * error.
+   */
+
+  /** Mes y año en que llegó. Se guarda el día 1: el mes es lo que se sabe. */
+  arrivedAt: isoDateSchema.nullable(),
+  /** La sede donde llegó, escrita como la escribió: «Iglesia la 40 Tuluá». */
+  arrivalSite: z.string().nullable(),
+  /** Cuántas veces ha leído la Biblia entera. */
+  bibleReadings: z.number().int().nullable(),
+  /** Cuántas veces ha leído el libro de vivencias. */
+  vivenciasReadings: z.number().int().nullable(),
+  /** En cuántos institutos bíblicos ha participado. */
+  bibleInstituteTimes: z.number().int().nullable(),
+
+  /** Cuándo empezó cada labor, por `slug`. Lo que no está, no tiene fecha. */
+  ministryDates: dateByKeySchema,
+  /** Cuándo recibió cada don, por identificador del catálogo. */
+  giftDates: dateByKeySchema,
   /**
    * Si tiene fotografía. **Un booleano y no la imagen ni su ruta**: el fichero
    * se pide aparte a `believerPhotoPath(id)`, que va con la cookie de sesión, y
@@ -79,6 +122,20 @@ export const createBelieverSchema = z.object({
   ministries: z.array(ministrySchema).optional(),
   /** Los dones que ya se le conocen, por identificador del catálogo (D5). */
   giftIds: z.array(z.uuid()).optional(),
+
+  arrivedAt: isoDateSchema.nullable().optional(),
+  arrivalSite: z.string().trim().max(120).nullable().optional(),
+  bibleReadings: readCountSchema.optional(),
+  vivenciasReadings: readCountSchema.optional(),
+  bibleInstituteTimes: readCountSchema.optional(),
+
+  /**
+   * Las fechas viajan **con** su lista, en la misma petición: una clave que no
+   * esté en `ministries` o en `giftIds` se ignora, así que no puede quedar la
+   * fecha de una labor que ya no tiene.
+   */
+  ministryDates: dateByKeySchema.optional(),
+  giftDates: dateByKeySchema.optional(),
 });
 
 export type CreateBelieverInput = z.infer<typeof createBelieverSchema>;

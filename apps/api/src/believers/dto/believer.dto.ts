@@ -3,6 +3,7 @@ import {
   BELIEVER_STATUSES,
   MAX_ALERT_AFTER_DAYS,
   MAX_PAGE_SIZE,
+  MAX_READ_COUNT,
   type BelieverStatus,
   type Ministry,
 } from '@navis/shared';
@@ -12,6 +13,7 @@ import {
   IsArray,
   IsIn,
   IsInt,
+  IsObject,
   IsOptional,
   IsString,
   IsUUID,
@@ -24,6 +26,9 @@ import {
 
 const trimmed = ({ value }: { value: unknown }): unknown =>
   typeof value === 'string' ? value.trim() : value;
+
+/** Un día de calendario, no un instante: `AAAA-MM-DD` y nada más. */
+const ISO_DAY = /^\d{4}-\d{2}-\d{2}$/;
 
 /** El alta de una persona: su ficha completa (RFC 0003 §7.6). */
 export class CreateBelieverDto {
@@ -79,6 +84,61 @@ export class CreateBelieverDto {
   @IsArray()
   @IsUUID('all', { each: true })
   giftIds?: string[];
+
+  /* --- La trayectoria en la iglesia (RFC 0012) ----------------------------- */
+
+  @ApiPropertyOptional({ description: 'Mes y año en que llegó, como AAAA-MM-DD' })
+  @IsOptional()
+  @ValidateIf((_object, value) => value !== null)
+  @Matches(ISO_DAY, { message: 'La fecha va como AAAA-MM-DD' })
+  arrivedAt?: string | null;
+
+  @ApiPropertyOptional({ example: 'Iglesia la 40, Tuluá' })
+  @IsOptional()
+  @ValidateIf((_object, value) => value !== null)
+  @IsString()
+  @Length(0, 120)
+  @Transform(trimmed)
+  arrivalSite?: string | null;
+
+  @ApiPropertyOptional({ description: 'Cuántas veces ha leído la Biblia entera' })
+  @IsOptional()
+  @ValidateIf((_object, value) => value !== null)
+  @IsInt()
+  @Min(0)
+  @Max(MAX_READ_COUNT)
+  bibleReadings?: number | null;
+
+  @ApiPropertyOptional({ description: 'Cuántas veces ha leído el libro de vivencias' })
+  @IsOptional()
+  @ValidateIf((_object, value) => value !== null)
+  @IsInt()
+  @Min(0)
+  @Max(MAX_READ_COUNT)
+  vivenciasReadings?: number | null;
+
+  @ApiPropertyOptional({ description: 'En cuántos institutos bíblicos ha participado' })
+  @IsOptional()
+  @ValidateIf((_object, value) => value !== null)
+  @IsInt()
+  @Min(0)
+  @Max(MAX_READ_COUNT)
+  bibleInstituteTimes?: number | null;
+
+  /**
+   * Cuándo empezó cada labor, por `slug`. Una clave que no esté en
+   * `ministries` se ignora al guardar: no puede quedar la fecha de una labor
+   * que ya no tiene.
+   */
+  @ApiPropertyOptional({ description: '{ "sonido": "2019-05-01" }' })
+  @IsOptional()
+  @IsObject()
+  ministryDates?: Record<string, string | null>;
+
+  @ApiPropertyOptional({ description: 'Cuándo recibió cada don, por identificador' })
+  @IsOptional()
+  @IsObject()
+  giftDates?: Record<string, string | null>;
 }
 
 export class UpdateBelieverDto extends PartialType(CreateBelieverDto) {}

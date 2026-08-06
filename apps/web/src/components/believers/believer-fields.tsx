@@ -11,16 +11,21 @@ import { useTranslation } from 'react-i18next';
 
 import { AlertField } from '@/components/believers/alert-field';
 import { GiftPicker } from '@/components/believers/gift-picker';
+import { JourneyFields, type JourneyDraft } from '@/components/believers/journey-fields';
 import { MinistryPicker } from '@/components/believers/ministry-picker';
+import { MonthRows } from '@/components/believers/month-rows';
 import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
 
-export interface BelieverDraft {
+export interface BelieverDraft extends JourneyDraft {
   status: BelieverStatus;
   alertAfterDays: number | null;
   giftIds: string[];
   /** Las labores, por **slug**: es lo que guarda la persona y mira el calendario. */
   ministries: string[];
+  /** Cuándo empezó cada labor y cuándo recibió cada don (RFC 0012). */
+  ministryDates: Record<string, string | null>;
+  giftDates: Record<string, string | null>;
 }
 
 /**
@@ -138,6 +143,39 @@ export function BelieverFields({
               ? draft.ministries.filter((one) => one !== slug)
               : [...draft.ministries, slug],
           });
+        }}
+      />
+
+      {/* Las fechas van **después** de los dos selectores y solo de lo elegido:
+          primero se dice qué tiene, y solo entonces se pregunta desde cuándo. */}
+      <MonthRows
+        legend={t('believers.journey.giftDates')}
+        rows={draft.giftIds.map((id) => ({
+          key: id,
+          label: gifts.find((one) => one.id === id)?.name ?? id,
+        }))}
+        values={draft.giftDates}
+        onChange={(key, date) => {
+          onChange({ ...draft, giftDates: { ...draft.giftDates, [key]: date } });
+        }}
+      />
+
+      <MonthRows
+        legend={t('believers.journey.ministryDates')}
+        rows={draft.ministries.map((slug) => ({
+          key: slug,
+          label: ministries.find((one) => one.slug === slug)?.name ?? slug,
+        }))}
+        values={draft.ministryDates}
+        onChange={(key, date) => {
+          onChange({ ...draft, ministryDates: { ...draft.ministryDates, [key]: date } });
+        }}
+      />
+
+      <JourneyFields
+        draft={draft}
+        onChange={(journey) => {
+          onChange({ ...draft, ...journey });
         }}
       />
 

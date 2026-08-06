@@ -62,6 +62,31 @@ export class Believer extends BaseEntity {
   @Column({ name: 'last_note_at', type: 'date', nullable: true })
   lastNoteAt: string | null;
 
+  /*
+   * La trayectoria en la iglesia (RFC 0012). Todo nulable: son datos que se
+   * completan con los años y una ficha a medias es lo normal.
+   */
+
+  @ApiPropertyOptional({ description: 'Mes y año en que llegó; se guarda el día 1' })
+  @Column({ name: 'arrived_at', type: 'date', nullable: true })
+  arrivedAt: string | null;
+
+  @ApiPropertyOptional({ description: 'La sede donde llegó, tal y como se escribió' })
+  @Column({ name: 'arrival_site', type: 'text', nullable: true })
+  arrivalSite: string | null;
+
+  @ApiPropertyOptional({ description: 'Cuántas veces ha leído la Biblia entera' })
+  @Column({ name: 'bible_readings', type: 'int', nullable: true })
+  bibleReadings: number | null;
+
+  @ApiPropertyOptional({ description: 'Cuántas veces ha leído el libro de vivencias' })
+  @Column({ name: 'vivencias_readings', type: 'int', nullable: true })
+  vivenciasReadings: number | null;
+
+  @ApiPropertyOptional({ description: 'En cuántos institutos bíblicos ha participado' })
+  @Column({ name: 'bible_institute_times', type: 'int', nullable: true })
+  bibleInstituteTimes: number | null;
+
   @ApiPropertyOptional({ description: 'Su cuenta, si la tiene. Reservado (RFC 0002 §6.3)' })
   @Column({ name: 'user_id', type: 'text', nullable: true })
   userId: string | null;

@@ -20,6 +20,8 @@ import type { Ministry } from './ministry.entity';
  * las consume la interfaz, y no como filas de una tabla intermedia.
  */
 export function toBelieverView(believer: Believer, ministries?: readonly string[]): BelieverView {
+  const links = believer.ministries ?? [];
+
   return {
     id: believer.id,
     churchId: believer.churchId,
@@ -31,11 +33,50 @@ export function toBelieverView(believer: Believer, ministries?: readonly string[
     alertAfterDays: believer.alertAfterDays,
     lastNoteAt: believer.lastNoteAt === null ? null : toIsoDay(believer.lastNoteAt),
     createdAt: believer.createdAt.toISOString(),
-    ministries: [...(ministries ?? (believer.ministries ?? []).map((one) => one.ministry))],
+    ministries: [...(ministries ?? links.map((one) => one.ministry))],
     // Un booleano y no la clave del fichero: cómo se llama en disco es asunto
     // del servidor, y de fuera solo hace falta saber si hay foto que pedir.
     hasPhoto: believer.photoKey !== null,
+
+    arrivedAt: believer.arrivedAt === null ? null : toIsoDay(believer.arrivedAt),
+    arrivalSite: believer.arrivalSite,
+    bibleReadings: believer.bibleReadings,
+    vivenciasReadings: believer.vivenciasReadings,
+    bibleInstituteTimes: believer.bibleInstituteTimes,
+
+    /*
+     * Solo salen las que **tienen** fecha: un mapa con veinte nulos ocupa lo
+     * mismo que el dato y no dice nada. Y solo se pueblan cuando la consulta
+     * trajo las relaciones —en el listado no vienen—, que es justo cuando la
+     * ficha las va a pintar.
+     */
+    ministryDates: datesFrom(
+      links,
+      (one) => one.ministry,
+      (one) => one.startedAt,
+    ),
+    giftDates: datesFrom(
+      believer.gifts ?? [],
+      (one) => one.giftId,
+      (one) => one.receivedAt,
+    ),
   };
+}
+
+/** `{ sonido: '2019-05-01' }` a partir de las filas puente que traigan fecha. */
+function datesFrom<T>(
+  rows: readonly T[],
+  key: (row: T) => string,
+  date: (row: T) => string | null,
+): Record<string, IsoDate> {
+  const dates: Record<string, IsoDate> = {};
+
+  for (const row of rows) {
+    const value = date(row);
+    if (value !== null) dates[key(row)] = toIsoDay(value);
+  }
+
+  return dates;
 }
 
 export function toGiftView(gift: Gift): GiftView {

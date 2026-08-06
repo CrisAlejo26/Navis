@@ -17,6 +17,7 @@
     "test:e2e": "vitest run --config vitest.e2e.config.mts",
     "typeorm": "node --import tsx ./scripts/typeorm.mjs -d ./src/database/data-source.ts",
     "migration:run": "pnpm typeorm migration:run",
+    "believers:import": "node dist/scripts/importar-creyentes.js",
     "migration:revert": "pnpm typeorm migration:revert",
     "migration:show": "pnpm typeorm migration:show",
     "migration:generate": "pnpm typeorm migration:generate ./src/database/migrations/Auto",
