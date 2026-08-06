@@ -21,23 +21,43 @@ export class BelieverLinksService {
     private readonly catalog: GiftsService,
   ) {}
 
-  async setMinistries(believerId: string, ministries: readonly string[]): Promise<void> {
+  /**
+   * `dates` es un mapa por `slug`, y **manda la lista, no el mapa**: una fecha
+   * de una labor que no está en `ministries` se cae aquí, que es lo que impide
+   * que quede la fecha de algo que esa persona ya no hace (RFC 0012).
+   */
+  async setMinistries(
+    believerId: string,
+    ministries: readonly string[],
+    dates: Readonly<Record<string, string | null>> = {},
+  ): Promise<void> {
     await this.ministries.delete({ believerId });
     if (ministries.length === 0) return;
 
     await this.ministries.save(
-      ministries.map((ministry) => this.ministries.create({ believerId, ministry })),
+      ministries.map((ministry) =>
+        this.ministries.create({ believerId, ministry, startedAt: dates[ministry] ?? null }),
+      ),
     );
   }
 
   /** Los dones se comprueban antes: tienen que ser del catálogo de su iglesia. */
-  async setGifts(churchId: string, believerId: string, giftIds: readonly string[]): Promise<void> {
+  async setGifts(
+    churchId: string,
+    believerId: string,
+    giftIds: readonly string[],
+    dates: Readonly<Record<string, string | null>> = {},
+  ): Promise<void> {
     const gifts = await this.catalog.requireMany(churchId, giftIds);
 
     await this.gifts.delete({ believerId });
     if (gifts.length === 0) return;
 
-    await this.gifts.save(gifts.map((gift) => this.gifts.create({ believerId, giftId: gift.id })));
+    await this.gifts.save(
+      gifts.map((gift) =>
+        this.gifts.create({ believerId, giftId: gift.id, receivedAt: dates[gift.id] ?? null }),
+      ),
+    );
   }
 
   /**

@@ -50,11 +50,16 @@ export class BelieversService {
         alertAfterDays:
           input.alertAfterDays === undefined ? DEFAULT_ALERT_AFTER_DAYS : input.alertAfterDays,
         lastNoteAt: null,
+        arrivedAt: input.arrivedAt ?? null,
+        arrivalSite: input.arrivalSite ?? null,
+        bibleReadings: input.bibleReadings ?? null,
+        vivenciasReadings: input.vivenciasReadings ?? null,
+        bibleInstituteTimes: input.bibleInstituteTimes ?? null,
       }),
     );
 
-    await this.links.setMinistries(believer.id, input.ministries ?? []);
-    await this.links.setGifts(churchId, believer.id, input.giftIds ?? []);
+    await this.links.setMinistries(believer.id, input.ministries ?? [], input.ministryDates ?? {});
+    await this.links.setGifts(churchId, believer.id, input.giftIds ?? [], input.giftDates ?? {});
 
     return this.require(churchId, believer.id);
   }
@@ -68,13 +73,24 @@ export class BelieversService {
     if (input.congregationId !== undefined) believer.congregationId = input.congregationId;
     if (input.status !== undefined) believer.status = input.status;
     if (input.alertAfterDays !== undefined) believer.alertAfterDays = input.alertAfterDays;
+    if (input.arrivedAt !== undefined) believer.arrivedAt = input.arrivedAt;
+    if (input.arrivalSite !== undefined) believer.arrivalSite = input.arrivalSite;
+    if (input.bibleReadings !== undefined) believer.bibleReadings = input.bibleReadings;
+    if (input.vivenciasReadings !== undefined) believer.vivenciasReadings = input.vivenciasReadings;
+    if (input.bibleInstituteTimes !== undefined) {
+      believer.bibleInstituteTimes = input.bibleInstituteTimes;
+    }
     // Se recalcula siempre, aunque el nombre no venga en el cambio: es lo que
     // garantiza que lo guardado y lo buscado no divergen (D14).
     believer.searchName = toSearchName(believerName(believer));
 
     await this.believers.save(believer);
-    if (input.ministries) await this.links.setMinistries(believer.id, input.ministries);
-    if (input.giftIds) await this.links.setGifts(churchId, believer.id, input.giftIds);
+    if (input.ministries) {
+      await this.links.setMinistries(believer.id, input.ministries, input.ministryDates ?? {});
+    }
+    if (input.giftIds) {
+      await this.links.setGifts(churchId, believer.id, input.giftIds, input.giftDates ?? {});
+    }
 
     return this.require(churchId, id);
   }

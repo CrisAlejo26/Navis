@@ -28,7 +28,12 @@ export function formatDateTime(value: string): string {
   }).format(date);
 }
 
-/** «agosto de 2026». Encabeza cada tramo de la bitácora (RFC 0003 §7.5). */
+/**
+ * «agosto de 2026». Encabeza cada tramo de la bitácora (RFC 0003 §7.5), y es
+ * también lo que pinta la trayectoria de un creyente: ahí se guarda el día 1
+ * del mes, y escribir «1 de mayo de 2012» sería inventarse una precisión que el
+ * dato no tiene (RFC 0012).
+ */
 export function formatMonth(iso: string): string {
   const date = new Date(`${iso.slice(0, 7)}-01T00:00:00Z`);
   if (Number.isNaN(date.getTime())) return iso;

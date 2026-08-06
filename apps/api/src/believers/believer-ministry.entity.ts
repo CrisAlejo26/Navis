@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Column, Entity, Index, JoinColumn, ManyToOne, type Relation } from 'typeorm';
 
 import { BaseEntity } from '../common/entities/base.entity';
@@ -27,4 +27,12 @@ export class BelieverMinistry extends BaseEntity {
   @ApiProperty({ example: 'pulpito' })
   @Column({ type: 'text' })
   ministry: string;
+
+  /**
+   * Mes y año en que empezó con ella, con el día 1 (RFC 0012). Nulo es lo
+   * normal: la labor se hace igual sin saber desde cuándo.
+   */
+  @ApiPropertyOptional({ description: 'Cuándo empezó; se guarda el día 1 del mes' })
+  @Column({ name: 'started_at', type: 'date', nullable: true })
+  startedAt: string | null;
 }

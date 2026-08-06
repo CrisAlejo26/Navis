@@ -44,6 +44,8 @@ describe('Creyentes y notas (e2e)', () => {
   const post = (path: string, payload: object) =>
     request(app.getHttpServer()).post(path).set('Cookie', cookie).send(payload);
   const get = (path: string) => request(app.getHttpServer()).get(path).set('Cookie', cookie);
+  const patch = (path: string, payload: object) =>
+    request(app.getHttpServer()).patch(path).set('Cookie', cookie).send(payload);
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({ imports: [AppModule] }).compile();
@@ -129,6 +131,55 @@ describe('Creyentes y notas (e2e)', () => {
       lastName: 'Fernández',
       alertAfterDays: null,
     }).expect(201);
+  });
+
+  /*
+   * La trayectoria (RFC 0012): las cinco columnas y, sobre todo, que la fecha
+   * de una labor viaje **con** la labor. El cierre que se prueba al final es el
+   * que sostiene el diseño: una fecha de algo que no está en la lista se cae, y
+   * no puede quedar la fecha de una labor que esa persona ya no hace.
+   */
+  it('guarda la trayectoria, y una fecha sin su labor no se queda', async () => {
+    const catálogo = body<{ id: string; name: string }[]>(await get('/api/v1/gifts').expect(200));
+    const profecía = catálogo.find((one) => one.name === 'Profecía')?.id ?? '';
+
+    const creado = body<BelieverListItem>(
+      await post('/api/v1/believers', {
+        firstName: 'Yolanda',
+        lastName: 'Zapata Duque',
+        arrivedAt: '2004-11-01',
+        arrivalSite: 'Manizales, Caldas',
+        bibleReadings: 5,
+        vivenciasReadings: 3,
+        bibleInstituteTimes: 1,
+        ministries: ['ofrenda'],
+        ministryDates: { ofrenda: '2012-02-01', sonido: '1999-01-01' },
+        giftIds: [profecía],
+        giftDates: { [profecía]: '2017-09-01' },
+      }).expect(201),
+    );
+
+    expect(creado.arrivedAt).toBe('2004-11-01');
+    expect(creado.arrivalSite).toBe('Manizales, Caldas');
+    expect(creado.bibleReadings).toBe(5);
+    expect(creado.vivenciasReadings).toBe(3);
+    expect(creado.bibleInstituteTimes).toBe(1);
+    expect(creado.ministryDates).toEqual({ ofrenda: '2012-02-01' });
+    expect(creado.giftDates).toEqual({ [profecía]: '2017-09-01' });
+
+    // Quitarle la labor se lleva su fecha por delante, sin dejar rastro.
+    const editado = body<BelieverListItem>(
+      await patch(`/api/v1/believers/${creado.id}`, { ministries: [] }).expect(200),
+    );
+
+    expect(editado.ministries).toEqual([]);
+    expect(editado.ministryDates).toEqual({});
+
+    // Y se va: los tests de aquí abajo cuentan con que la iglesia tiene tres.
+    await request(app.getHttpServer())
+      .delete(`/api/v1/believers/${creado.id}`)
+      .set('Cookie', cookie)
+      .expect(200);
   });
 
   it('«jesus» encuentra «Jesús», sin acentos y sin mayúsculas', async () => {

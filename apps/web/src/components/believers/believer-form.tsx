@@ -58,6 +58,13 @@ export function BelieverForm({ open, onClose, believer, congregations, gifts }: 
     alertAfterDays: believer ? believer.alertAfterDays : DEFAULT_ALERT_AFTER_DAYS,
     giftIds: believer?.gifts.map((one) => one.id) ?? [],
     ministries: believer?.ministries ?? [],
+    giftDates: { ...(believer?.giftDates ?? {}) },
+    ministryDates: { ...(believer?.ministryDates ?? {}) },
+    arrivedAt: believer?.arrivedAt ?? null,
+    arrivalSite: believer?.arrivalSite ?? null,
+    bibleReadings: believer?.bibleReadings ?? null,
+    vivenciasReadings: believer?.vivenciasReadings ?? null,
+    bibleInstituteTimes: believer?.bibleInstituteTimes ?? null,
   });
   const [photo, setPhoto] = useState<PhotoDraft>({ kind: 'keep' });
   const [error, setError] = useState<string | null>(null);

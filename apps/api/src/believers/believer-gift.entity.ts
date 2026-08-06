@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Column, Entity, Index, JoinColumn, ManyToOne, type Relation } from 'typeorm';
 
 import { BaseEntity } from '../common/entities/base.entity';
@@ -29,4 +29,12 @@ export class BelieverGift extends BaseEntity {
   @Index()
   @Column({ name: 'gift_id', type: UUID })
   giftId: string;
+
+  /**
+   * Mes y año en que lo recibió, con el día 1 (RFC 0012). Nulo es lo normal:
+   * casi nadie apunta la fecha, y el don se tiene igual.
+   */
+  @ApiPropertyOptional({ description: 'Cuándo lo recibió; se guarda el día 1 del mes' })
+  @Column({ name: 'received_at', type: 'date', nullable: true })
+  receivedAt: string | null;
 }

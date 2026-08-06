@@ -8,6 +8,7 @@ import { Link, useNavigate, useParams } from 'react-router';
 import { BelieverAccess } from '@/components/believers/believer-access';
 import { BelieverForm } from '@/components/believers/believer-form';
 import { BelieverIdentity } from '@/components/believers/believer-identity';
+import { BelieverJourney } from '@/components/believers/believer-journey';
 import { BelieverLog } from '@/components/believers/believer-log';
 import { DeleteBelieverDialog } from '@/components/believers/delete-believer-dialog';
 import { BackLink } from '@/components/ui/back-link';
@@ -75,6 +76,10 @@ export function BelieverPage() {
             setDeleting(true);
           }}
         />
+
+        {/* Por dónde ha pasado, antes de lo que se ha escrito de ella: la
+            bitácora cuenta los últimos meses y esto los últimos veinte años. */}
+        <BelieverJourney believer={believer} gifts={gifts} />
 
         {/* Antes de la bitácora: en qué listas está y qué puede ver son datos
             de identidad —y uno de ellos puede estar hoy en internet— (§8.7). */}

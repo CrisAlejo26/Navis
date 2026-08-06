@@ -264,6 +264,12 @@ Padre)` parece perezoso, pero `emitDecoratorMetadata` escribe la clase en los
   puerta** y quien la abre no tiene cuenta. Por eso hay un segundo cliente sin
   `onUnauthorized` (`lib/lists/public-api.ts`), y es la única razón de que
   exista.
+- **Un script de `src/scripts/` no se puede lanzar con `tsx`.** Si levanta la
+  aplicación (`NestFactory.createApplicationContext`), esbuild no emite
+  `emitDecoratorMetadata` y la inyección muere con «The dependency at index [0]
+  appears to be undefined at runtime», que suena a un `import type` mal puesto y
+  no lo es. Se compila y se corre desde `dist/`, que es además como se ejecuta
+  en el servidor: `pnpm --filter @navis/api build` y después el `node dist/…`.
 - **Un stub de e2e que se queda desfasado no lo canta nadie.** El de
   `apps/web/e2e/servidor.ts` mandaba `activeChurchId` donde el contrato dice
   `activeId`, así que en los tests **no había iglesia activa** y las piezas que
