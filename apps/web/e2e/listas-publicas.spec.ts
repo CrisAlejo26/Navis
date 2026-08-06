@@ -123,6 +123,36 @@ test.describe('La página pública de una lista', () => {
     await expect(page.getByRole('heading', { name: 'Púlpito' })).toBeVisible();
   });
 
+  /*
+   * Las descargas se deciden al publicar y nacen apagadas: sin ellas la lista
+   * se mira en la página y ahí se queda. Que el pie no las ofrezca es la mitad
+   * visible de esa decisión —la otra es el valor por defecto de la columna—.
+   */
+  test('sin descargas activadas, la lista solo se mira', async ({ page }) => {
+    await page.route(`**/api/v1/public/lists/${TOKEN}`, (route) =>
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ ...LISTA, allowDownload: false }),
+      }),
+    );
+
+    await page.goto(RUTA);
+
+    await expect(page.getByRole('heading', { name: 'Púlpito' })).toBeVisible();
+    await expect(page.getByRole('button', { name: /descargar|download/i })).toHaveCount(0);
+  });
+
+  test('con las descargas activadas, el pie ofrece el PDF y la imagen', async ({ page }) => {
+    await page.route(`**/api/v1/public/lists/${TOKEN}`, (route) =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(LISTA) }),
+    );
+
+    await page.goto(RUTA);
+
+    await expect(page.getByRole('button', { name: /descargar|download/i })).toHaveCount(2);
+  });
+
   test('es un pase de lista: los nombres en su orden, con su ordinal', async ({ page }) => {
     await page.route(`**/api/v1/public/lists/${TOKEN}`, (route) =>
       route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(LISTA) }),

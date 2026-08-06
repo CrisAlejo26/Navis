@@ -909,6 +909,11 @@ export const pt = {
     updatedAt: 'atualizada a {{date}}',
     downloadPdf: 'Transferir em PDF',
     downloadImage: 'Transferir a imagem',
+    downloads: 'Transferências',
+    allowDownload: 'Permitir transferir a lista',
+    allowDownloadOn:
+      'Quem abrir a ligação pode levar um PDF ou uma imagem com os nomes. Esse ficheiro já não caduca nem deixa de estar publicado.',
+    allowDownloadOff: 'A lista vê-se na página e fica por aí.',
     downloadFailed: 'Não foi possível criar o ficheiro',
     madeWith: 'Feito com Navis',
     accessTitle: 'Acessos às listas',

@@ -52,4 +52,9 @@ export class ShareListDto {
   @ValidateNested()
   @Type(() => ListPublicFieldsDto)
   publicFields?: ListPublicFieldsDto;
+
+  @ApiPropertyOptional({ description: 'Apagado a propósito: llevarse los nombres se decide' })
+  @IsOptional()
+  @IsBoolean()
+  allowDownload?: boolean;
 }

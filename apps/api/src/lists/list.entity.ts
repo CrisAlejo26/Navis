@@ -71,8 +71,13 @@ export class List extends BaseEntity {
   @Column({ name: 'public_fields', type: 'text', default: '{}' })
   publicFields: string;
 
+  /**
+   * Apagado de serie, como la foto (D16): que se vea la lista en una página es
+   * una cosa, y que se guarde y se reenvíe un fichero con los nombres de la
+   * congregación es otra. Se enciende a mano al publicar.
+   */
   @ApiProperty({ description: 'Si la página pública deja descargar el cartel' })
-  @Column({ name: 'allow_download', type: 'boolean', default: true })
+  @Column({ name: 'allow_download', type: 'boolean', default: false })
   allowDownload: boolean;
 
   @ApiPropertyOptional({ description: 'La portada de la tarjeta, en disco (D18)' })

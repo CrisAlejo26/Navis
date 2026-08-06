@@ -7,6 +7,7 @@ import {
   CoverUploader,
   type CoverUploader as CoverUploaderHandle,
 } from '@/components/lists/cover-uploader';
+import { DownloadToggle } from '@/components/lists/download-toggle';
 import { PublicFieldsPicker } from '@/components/lists/public-fields-picker';
 import { ShareLinkBlock } from '@/components/lists/share-link-block';
 import { ShareViewersBlock } from '@/components/lists/share-viewers-block';
@@ -47,6 +48,7 @@ export function SharePanel({
   const [mode, setMode] = useState<ListVisibility>(list.visibility);
   const [fields, setFields] = useState<ListPublicFields>(list.publicFields);
   const [expiresAt, setExpiresAt] = useState(list.shareExpiresAt?.slice(0, 10) ?? '');
+  const [allowDownload, setAllowDownload] = useState(list.allowDownload);
   const [confirmando, setConfirmando] = useState(false);
   const [cerrando, setCerrando] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -63,6 +65,7 @@ export function SharePanel({
         visibility: mode,
         expiresAt: expiresAt ? new Date(`${expiresAt}T23:59:59`).toISOString() : null,
         publicFields: fields,
+        allowDownload,
       },
       {
         onSuccess: (estado) => {
@@ -91,6 +94,8 @@ export function SharePanel({
       {mode === 'restricted' && <ShareViewersBlock list={list} url={url} />}
 
       <PublicFieldsPicker fields={fields} onChange={setFields} />
+
+      <DownloadToggle value={allowDownload} onChange={setAllowDownload} />
 
       <Input
         type="date"
