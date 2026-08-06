@@ -911,6 +911,11 @@ export const fr = {
     updatedAt: 'mise à jour le {{date}}',
     downloadPdf: 'Télécharger en PDF',
     downloadImage: 'Télécharger l’image',
+    downloads: 'Téléchargements',
+    allowDownload: 'Autoriser le téléchargement de la liste',
+    allowDownloadOn:
+      'Qui ouvre le lien peut emporter un PDF ou une image avec les noms. Ce fichier n’expire plus et ne se dépublie plus.',
+    allowDownloadOff: 'La liste se consulte sur la page et y reste.',
     downloadFailed: 'Le fichier n’a pas pu être créé',
     madeWith: 'Fait avec Navis',
     accessTitle: 'Accès aux listes',

@@ -913,6 +913,11 @@ export const de = {
     updatedAt: 'aktualisiert am {{date}}',
     downloadPdf: 'Als PDF herunterladen',
     downloadImage: 'Bild herunterladen',
+    downloads: 'Downloads',
+    allowDownload: 'Herunterladen der Liste erlauben',
+    allowDownloadOn:
+      'Wer den Link öffnet, kann ein PDF oder ein Bild mit den Namen mitnehmen. Diese Datei läuft nicht mehr ab und wird nicht mehr zurückgezogen.',
+    allowDownloadOff: 'Die Liste wird auf der Seite angesehen und bleibt dort.',
     downloadFailed: 'Die Datei konnte nicht erstellt werden',
     madeWith: 'Gemacht mit Navis',
     accessTitle: 'Zugänge zu den Listen',

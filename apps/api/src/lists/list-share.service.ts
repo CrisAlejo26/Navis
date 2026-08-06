@@ -59,6 +59,7 @@ export class ListShareService {
     if (input.expiresAt !== undefined) {
       list.shareExpiresAt = input.expiresAt ? new Date(input.expiresAt) : null;
     }
+    if (input.allowDownload !== undefined) list.allowDownload = input.allowDownload;
     if (input.publicFields) {
       list.publicFields = serializePublicFields({
         ...DEFAULT_PUBLIC_FIELDS,

@@ -3,14 +3,23 @@ import { z } from 'zod';
 import { listPublicFieldsSchema, listVisibilitySchema } from './lists';
 
 /**
- * Publicar (§7.1). Lleva el modo, la caducidad y qué campos salen, porque las
- * tres cosas se deciden en el mismo gesto y en la misma transacción (D9).
+ * Publicar (§7.1). Lleva el modo, la caducidad, qué campos salen y si la lista
+ * se puede descargar, porque las cuatro cosas se deciden en el mismo gesto y en
+ * la misma transacción (D9).
  */
 export const shareListSchema = z.object({
   visibility: listVisibilitySchema,
   /** Nulo ⇒ sin caducidad. La del acceso va aparte y manda la primera (D13). */
   expiresAt: z.string().nullable().optional(),
   publicFields: listPublicFieldsSchema.partial().optional(),
+  /**
+   * Si la página pública ofrece llevarse la lista en PDF o en imagen.
+   *
+   * Nace **apagado**, como la foto: ver una lista en una página es una cosa y
+   * dejar que se guarde y se reenvíe un fichero con los nombres de la
+   * congregación es otra, y se decide a conciencia.
+   */
+  allowDownload: z.boolean().optional(),
 });
 
 export type ShareListInput = z.infer<typeof shareListSchema>;

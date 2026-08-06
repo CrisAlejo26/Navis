@@ -212,6 +212,33 @@ describe('Listas compartidas (e2e)', () => {
     await anon().get(`/api/v1/l/${token}`).expect(404);
   });
 
+  /*
+   * Las descargas nacen apagadas, como la foto: que la lista se vea en una
+   * página es una cosa y que se lleve un fichero con los nombres es otra. Se
+   * encienden en el mismo gesto de publicar, no en otro sitio.
+   */
+  it('nace sin descargas, y se encienden al publicar', async () => {
+    const recien = body<PublicList>(await anon().get(`/api/v1/public/lists/${token}`).expect(200));
+    expect(recien.allowDownload).toBe(false);
+
+    await post(`/api/v1/lists/${pulpito.id}/share`, {
+      visibility: 'link',
+      allowDownload: true,
+    }).expect(201);
+
+    const abierta = body<PublicList>(await anon().get(`/api/v1/public/lists/${token}`).expect(200));
+    expect(abierta.allowDownload).toBe(true);
+
+    // Y se vuelven a apagar por el mismo camino.
+    await post(`/api/v1/lists/${pulpito.id}/share`, {
+      visibility: 'link',
+      allowDownload: false,
+    }).expect(201);
+
+    const cerrada = body<PublicList>(await anon().get(`/api/v1/public/lists/${token}`).expect(200));
+    expect(cerrada.allowDownload).toBe(false);
+  });
+
   it('sirve el JSON sin sesión, con solo el nombre y la posición (D16)', async () => {
     const publica = body<PublicList>(await anon().get(`/api/v1/public/lists/${token}`).expect(200));
 
