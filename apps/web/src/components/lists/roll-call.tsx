@@ -1,6 +1,8 @@
 import { listPhotoPath, type PublicListMember } from '@navis/shared';
+import { useTranslation } from 'react-i18next';
 
 import { publicApi } from '@/lib/lists/public-api';
+import { formatMonth } from '@/lib/format';
 import { publicAssetOrigin } from '@/lib/lists/share-link';
 
 /** 40 ms entre nombres, como quien lee una lista en voz alta (§8.6). */
@@ -24,6 +26,8 @@ export function RollCall({
   members: readonly PublicListMember[];
   token: string;
 }) {
+  const { t } = useTranslation();
+
   return (
     <ol className="gap-1 flex flex-col">
       {members.map((member, index) => (
@@ -56,6 +60,27 @@ export function RollCall({
             <p className="gap-2 text-xs flex flex-wrap text-muted-foreground">
               {member.congregation && <span>{member.congregation}</span>}
               {member.ministry && <span>{member.ministry}</span>}
+              {member.arrivedAt && (
+                <span>
+                  {t('believers.journey.arrived')} · {formatMonth(member.arrivedAt)}
+                  {member.arrivalSite && ` · ${member.arrivalSite}`}
+                </span>
+              )}
+              {member.bibleReadings !== null && (
+                <span>
+                  {t('lists.bibleReadings')}: {member.bibleReadings}
+                </span>
+              )}
+              {member.vivenciasReadings !== null && (
+                <span>
+                  {t('lists.vivenciasReadings')}: {member.vivenciasReadings}
+                </span>
+              )}
+              {member.bibleInstituteTimes !== null && (
+                <span>
+                  {t('lists.bibleInstituteTimes')}: {member.bibleInstituteTimes}
+                </span>
+              )}
               {member.note && <span className="italic">«{member.note}»</span>}
             </p>
           </div>

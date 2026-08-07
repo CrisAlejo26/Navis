@@ -14,6 +14,11 @@ function conPersonas(total: number, updatedAt = '2026-08-03T10:00:00.000Z'): Lis
       note: null,
       congregation: null,
       ministry: null,
+      arrivedAt: null,
+      arrivalSite: null,
+      bibleReadings: null,
+      vivenciasReadings: null,
+      bibleInstituteTimes: null,
       photoId: null,
     })),
   };

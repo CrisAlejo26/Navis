@@ -925,6 +925,10 @@ export const pt = {
     nameStyle: 'Como aparece o nome',
     nameFull: 'Nome e apelidos',
     nameInitial: 'Nome e a inicial',
+    arrival: 'Chegada',
+    bibleReadings: 'Leituras da Bíblia',
+    vivenciasReadings: 'Leituras de Vivências',
+    bibleInstituteTimes: 'Instituto bíblico',
     photos: 'Fotografias',
     photosWarning:
       'A cara dessas pessoas ficará num endereço público. Pensa bem se houver menores.',

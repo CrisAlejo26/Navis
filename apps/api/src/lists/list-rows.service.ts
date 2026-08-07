@@ -74,6 +74,11 @@ export class ListRowsService {
           ministries: person.ministries.map((one) => one.ministry),
           hasPhoto: Boolean(person.photoKey),
           hasAccess: conLlave.has(person.id),
+          arrivedAt: person.arrivedAt,
+          arrivalSite: person.arrivalSite,
+          bibleReadings: person.bibleReadings,
+          vivenciasReadings: person.vivenciasReadings,
+          bibleInstituteTimes: person.bibleInstituteTimes,
         },
       ];
     });

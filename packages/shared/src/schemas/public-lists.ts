@@ -20,6 +20,12 @@ export const publicListMemberSchema = z.object({
   note: z.string().nullable(),
   congregation: z.string().nullable(),
   ministry: z.string().nullable(),
+  /** La trayectoria (RFC 0012): `AAAA-MM-01`, se formatea en el cliente. */
+  arrivedAt: z.string().nullable(),
+  arrivalSite: z.string().nullable(),
+  bibleReadings: z.number().int().nullable(),
+  vivenciasReadings: z.number().int().nullable(),
+  bibleInstituteTimes: z.number().int().nullable(),
   /**
    * El **único** identificador que sale, y solo con la foto activada: sin él no
    * habría forma de pedir la imagen a `/l/:token/photos/:id` (D17). Con la foto
@@ -94,6 +100,11 @@ export function toPublicListMember(member: ListMember, fields: ListPublicFields)
     note: fields.note ? member.note : null,
     congregation: fields.congregation ? member.congregationName : null,
     ministry: fields.ministry ? (member.ministries[0] ?? null) : null,
+    arrivedAt: fields.arrival ? member.arrivedAt : null,
+    arrivalSite: fields.arrival ? member.arrivalSite : null,
+    bibleReadings: fields.bibleReadings ? member.bibleReadings : null,
+    vivenciasReadings: fields.vivenciasReadings ? member.vivenciasReadings : null,
+    bibleInstituteTimes: fields.bibleInstituteTimes ? member.bibleInstituteTimes : null,
     /*
      * El único identificador que sale, y solo con la foto activada: sin él no
      * habría forma de pedir la imagen a `/l/:token/photos/:id` (D17). Con la

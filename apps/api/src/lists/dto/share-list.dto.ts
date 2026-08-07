@@ -34,6 +34,31 @@ export class ListPublicFieldsDto {
   @IsOptional()
   @IsBoolean()
   note?: boolean;
+
+  /*
+   * La trayectoria (RFC 0012), añadida después de que se cerrara esta lista
+   * blanca. Teléfono y correo no llevan su campo aquí y no lo van a llevar
+   * (D16): son datos de contacto, esto es historia de la persona.
+   */
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsBoolean()
+  arrival?: boolean;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsBoolean()
+  bibleReadings?: boolean;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsBoolean()
+  vivenciasReadings?: boolean;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsBoolean()
+  bibleInstituteTimes?: boolean;
 }
 
 export class ShareListDto {
