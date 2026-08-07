@@ -15,9 +15,13 @@ import type { BelieversScreen } from '@/lib/believers/use-believers-screen';
  * arriba y lista de fichas abajo (Regla 5 §2)—.
  *
  * Las cabeceras se escriben a mano y no con `SortableColumns` porque aquí se
- * alternan columnas ordenables y columnas que no lo son: la sede y los dones no
- * se ordenan, y la sonda sí —es la que más se ordena, porque «quién lleva más
- * sin que le escriban» es la pregunta de la pantalla (§6.1)—.
+ * alternan columnas ordenables y columnas que no lo son: los dones no se
+ * ordenan, y la sonda sí —es la que más se ordena, porque «quién lleva más sin
+ * que le escriban» es la pregunta de la pantalla (§6.1)—.
+ *
+ * La sede no sale como columna (a petición): con una sola congregación en la
+ * iglesia, la columna era la misma celda repetida en cada fila. Sigue siendo
+ * un filtro («Todas las sedes») y se ve en la ficha de cada persona.
  */
 export function BelieversTable({
   screen,
@@ -56,7 +60,7 @@ export function BelieversTable({
       isLoading={screen.isLoading}
       isError={screen.isError}
       onRetry={screen.refetch}
-      columnCount={(screen.canManage ? 8 : 7) + (showPhoto ? 1 : 0)}
+      columnCount={(screen.canManage ? 7 : 6) + (showPhoto ? 1 : 0)}
       getKey={(believer) => believer.id}
       emptyIcon={UserSearch}
       emptyTitle={screen.filters.count > 0 ? t('believers.noResults') : t('believers.empty')}
@@ -83,7 +87,6 @@ export function BelieversTable({
             </TableHeader>
           )}
           {sortable('name', t('believers.columnName'))}
-          <TableHeader>{t('believers.columnCongregation')}</TableHeader>
           {sortable('status', t('believers.columnStatus'))}
           <TableHeader className="lg:table-cell hidden">{t('believers.columnGifts')}</TableHeader>
           <TableHeader className="xl:table-cell hidden">{t('ministries.title')}</TableHeader>

@@ -11,7 +11,6 @@ import { MinistryTags } from '@/components/believers/ministry-tags';
 import { Sonda } from '@/components/believers/sonda';
 import { StatusBadge } from '@/components/believers/status-badge';
 import { ListDots } from '@/components/lists/list-dots';
-import { accentVars } from '@/lib/accents';
 import { cn } from '@/lib/cn';
 
 /**
@@ -23,7 +22,6 @@ import { cn } from '@/lib/cn';
  */
 export function BelieverCard({
   believer,
-  congregation,
   ministries,
   lists,
   listIds,
@@ -75,17 +73,6 @@ export function BelieverCard({
             </span>
 
             <div className="gap-x-3 gap-y-1 mt-1 text-xs flex flex-wrap items-center text-muted-foreground">
-              {congregation && (
-                <span className="gap-1.5 inline-flex items-center">
-                  <span
-                    aria-hidden
-                    style={accentVars(congregation.accent)}
-                    className="h-1.5 w-1.5 rounded-full bg-[var(--acento)]"
-                  />
-                  {congregation.name}
-                </span>
-              )}
-
               {believer.phone && (
                 <a
                   href={`tel:${believer.phone}`}

@@ -21,8 +21,6 @@ import {
   type Paginated,
   type BelieversSummary,
 } from '@navis/shared';
-import { useMemo } from 'react';
-
 import { api } from '@/lib/api';
 import { useBelieverFilters, type BelieverFilters } from '@/lib/believers/filters';
 import { usePermissions } from '@/lib/permissions';
@@ -46,8 +44,6 @@ export interface BelieversScreen {
    */
   lists: ListSummary[];
   memberships: ListMemberships;
-  /** La sede de cada persona, resuelta una vez y no en cada fila. */
-  congregationOf: (id: string | null) => Congregation | undefined;
   today: IsoDate;
   canManage: boolean;
   /** Meter a alguien en una lista es otro permiso: es de listas, no de fichas. */
@@ -97,8 +93,6 @@ export function useBelieversScreen(): BelieversScreen {
   const { data: lists = [] } = useLists(api, puedeVerListas);
   const { data: memberships = {} } = useListMemberships(api, puedeVerListas);
 
-  const byId = useMemo(() => new Map(congregations.map((one) => [one.id, one])), [congregations]);
-
   return {
     query,
     filters,
@@ -109,7 +103,6 @@ export function useBelieversScreen(): BelieversScreen {
     ministries,
     lists,
     memberships,
-    congregationOf: (id) => (id === null ? undefined : byId.get(id)),
     // El día de quien mira: la sonda del cliente y la del servidor pueden
     // discrepar en el cambio de día, y la del cliente es la que se está viendo.
     today: todayIn(Intl.DateTimeFormat().resolvedOptions().timeZone),

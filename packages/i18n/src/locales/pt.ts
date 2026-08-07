@@ -406,7 +406,6 @@ export const pt = {
     viewCards: 'Fichas',
     viewLabel: 'Como ver',
     columnName: 'Nome',
-    columnCongregation: 'Local',
     columnStatus: 'Estado',
     columnGifts: 'Dons',
     columnAlert: 'Última nota',

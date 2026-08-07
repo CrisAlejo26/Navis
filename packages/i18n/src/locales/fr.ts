@@ -407,7 +407,6 @@ export const fr = {
     viewCards: 'Fiches',
     viewLabel: 'Affichage',
     columnName: 'Nom',
-    columnCongregation: 'Lieu',
     columnStatus: 'Statut',
     columnGifts: 'Dons',
     columnAlert: 'Dernière note',

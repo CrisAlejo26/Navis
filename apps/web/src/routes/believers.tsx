@@ -45,7 +45,6 @@ export function BelieversPage() {
   /** Lo mismo alimenta la fila de la tabla y la ficha (§7.4). */
   const cells = (believer: BelieverListItem, index: number): BelieverCells => ({
     believer,
-    congregation: screen.congregationOf(believer.congregationId),
     ministries: screen.ministries,
     lists: screen.lists,
     listIds: screen.memberships[believer.id],

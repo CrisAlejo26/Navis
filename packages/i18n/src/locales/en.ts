@@ -405,7 +405,6 @@ export const en = {
     viewCards: 'Cards',
     viewLabel: 'How to view',
     columnName: 'Name',
-    columnCongregation: 'Venue',
     columnStatus: 'Status',
     columnGifts: 'Gifts',
     columnAlert: 'Last note',
