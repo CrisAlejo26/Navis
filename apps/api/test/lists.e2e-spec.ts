@@ -206,9 +206,20 @@ describe('Listas compartidas (e2e)', () => {
     expect(respuesta.headers['content-type']).toContain('text/html');
     expect(respuesta.text).toContain('property="og:title"');
     expect(respuesta.text).toContain('<meta name="robots" content="noindex, nofollow">');
-    expect(respuesta.text).toContain(
-      `<meta http-equiv="refresh" content="0; url=/lists/s/${token}">`,
-    );
+    // Con un script, no con un `meta refresh`: WhatsApp sigue el segundo y
+    // aterriza en la SPA sin sus propias etiquetas og:, que es el bug que
+    // esto evita (D14).
+    expect(respuesta.text).toContain(`<script>location.replace("/lists/s/${token}");</script>`);
+    expect(respuesta.text).not.toContain('meta http-equiv="refresh"');
+
+    // El CSP de esta respuesta deja pasar justo ese script, con su hash — y
+    // `script-src` no se afloja con `'unsafe-inline'` para conseguirlo
+    // (`style-src` sí lo lleva por defecto, y eso no es lo que se comprueba
+    // aquí; ver share-page-csp.ts).
+    const csp = String(respuesta.headers['content-security-policy'] ?? '');
+    const scriptSrc = /script-src ([^;]+)/.exec(csp)?.[1] ?? '';
+    expect(scriptSrc).toMatch(/^'self' 'sha256-[A-Za-z0-9+/]+=*'$/);
+    expect(scriptSrc).not.toContain('unsafe-inline');
 
     // Y **no** existe bajo el prefijo: si existiera, habría dos enlaces.
     await anon().get(`/api/v1/l/${token}`).expect(404);

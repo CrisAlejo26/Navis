@@ -74,14 +74,17 @@ describe('el documento con las og:', () => {
     );
   });
 
-  it('redirige a la ruta bonita de la SPA sin script en línea (el CSP de la API lo bloquea)', () => {
+  it('redirige a la ruta bonita de la SPA con un script, no con meta refresh', () => {
     const html = renderSharePage({ ...base, list: LISTA });
 
-    expect(html).toContain(`<meta http-equiv="refresh" content="0; url=/lists/s/${TOKEN}">`);
-    expect(html).not.toContain('<script>');
+    // No un `meta refresh`: a diferencia de un `<script>`, que ningún
+    // rastreador ejecuta, WhatsApp sí lo sigue y aterriza en la SPA sin
+    // etiquetas og: propias — la tarjeta vuelve a salir genérica.
+    expect(html).toContain(`<script>location.replace("/lists/s/${TOKEN}");</script>`);
+    expect(html).not.toContain('meta http-equiv="refresh"');
   });
 
-  it('en una abierta, el cuerpo del documento trae los nombres', () => {
+  it('en una abierta, el noscript trae los nombres', () => {
     const html = renderSharePage({ ...base, list: LISTA });
     expect(html).toContain('<li>Juan Pérez</li>');
     expect(html).toContain('<li>Ana Ruiz</li>');
@@ -126,7 +129,7 @@ describe('el documento con las og:', () => {
     expect(html).toContain('&lt;script&gt;');
   });
 
-  it('escapa también los nombres de las personas del cuerpo del documento', () => {
+  it('escapa también los nombres de las personas del noscript', () => {
     const html = renderSharePage({
       ...base,
       list: {

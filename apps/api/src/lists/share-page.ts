@@ -35,6 +35,21 @@ export function escapeHtml(value: string): string {
     .replace(/'/g, '&#39;');
 }
 
+/**
+ * El cuerpo exacto del script de redirección, en un sitio propio y no escrito
+ * dos veces: `PublicShareController` necesita este mismo texto, carácter a
+ * carácter, para calcular su hash y dejarlo pasar por el CSP sin aflojarlo
+ * para el resto de la API (`share-page-csp.ts`). Un `<meta refresh>` **no**
+ * vale aquí, aunque parezca la salida más simple: a diferencia de un
+ * `<script>`, que ningún rastreador ejecuta, WhatsApp sí que **sigue** un
+ * `meta refresh` y aterriza en la ruta de la SPA, que no lleva ni una
+ * etiqueta `og:` propia — la tarjeta vuelve a salir genérica, que es
+ * exactamente el problema que esta página existe para resolver (D14).
+ */
+export function redirectScript(destino: string): string {
+  return `location.replace(${JSON.stringify(destino)});`;
+}
+
 export function renderSharePage(input: SharePageInput): string {
   const origin = input.origin.replace(/\/+$/, '');
   const url = `${origin}${listSharePath(input.token)}`;
@@ -60,24 +75,15 @@ export function renderSharePage(input: SharePageInput): string {
 <meta property="og:image" content="${escapeHtml(image)}">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="canonical" href="${escapeHtml(url)}">
-<!-- La redirección va por meta refresh y no por un script en línea: el CSP
-     de la API (helmet, script-src 'self') bloquea el inline sin nonce ni
-     hash, y no vale la pena aflojarlo para toda la API por esta única
-     página. El meta refresh no necesita JavaScript —redirige igual a quien
-     lo tiene apagado— y a un rastreador que no ejecuta nada le da igual:
-     sigue leyendo las etiquetas og: de aquí arriba y no llega a seguirlo
-     (D31). -->
-<meta http-equiv="refresh" content="0; url=${escapeHtml(destino)}">
-${fallbackBody(input, destino, title)}`;
+<script>${redirectScript(destino)}</script>
+<noscript>${noscriptBody(input, destino, title)}</noscript>`;
 }
 
 /**
- * El cuerpo del documento: lo que se ve el instante antes de que el
- * `meta refresh` redirija, y lo único que llega a leer un rastreador que no
- * ejecuta nada. En modo restringido, el aviso de que hace falta entrar: el
- * formulario, no la lista (D18).
+ * Lo que lee quien no tiene JavaScript, y el rastreador. En modo restringido, el
+ * aviso de que hace falta entrar: el formulario, no la lista (D18).
  */
-function fallbackBody(input: SharePageInput, destino: string, title: string): string {
+function noscriptBody(input: SharePageInput, destino: string, title: string): string {
   const cabecera = `<h1>${escapeHtml(title)}</h1>`;
 
   if (!input.list) {

@@ -11,6 +11,8 @@ import {
 import { ApiExcludeController } from '@nestjs/swagger';
 import type { Request, Response } from 'express';
 
+import { listPublicPath } from '@navis/shared';
+
 import { BelieverPhotosService } from '../believers/believer-photos.service';
 import { Public } from '../common/decorators/public.decorator';
 import { ImageStorageService } from '../media/image-storage.service';
@@ -19,7 +21,8 @@ import { listCookieFrom } from './list-access.cookie';
 import { PublicListsService } from './public-lists.service';
 import { parsePublicFields } from './public-fields';
 import { originOf } from './request-origin';
-import { renderSharePage } from './share-page';
+import { applySharePageCsp } from './share-page-csp';
+import { redirectScript, renderSharePage } from './share-page';
 
 /**
  * `/l/<token>`: **lo que sirve la API fuera del prefijo** (RFC 0010 D14).
@@ -51,6 +54,9 @@ export class PublicShareController {
     response.setHeader('content-type', 'text/html; charset=utf-8');
     response.setHeader('cache-control', 'no-store');
     response.setHeader('x-robots-tag', 'noindex, nofollow');
+    // Antes de escribir el cuerpo: el script de redirección necesita su hash
+    // en el CSP, o el navegador lo bloquea (share-page-csp.ts).
+    applySharePageCsp(request, response, redirectScript(listPublicPath(token)));
 
     return renderSharePage({
       origin: originOf(request),
