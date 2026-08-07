@@ -74,13 +74,14 @@ describe('el documento con las og:', () => {
     );
   });
 
-  it('redirige a la ruta bonita de la SPA', () => {
-    expect(renderSharePage({ ...base, list: LISTA })).toContain(
-      `location.replace("/lists/s/${TOKEN}")`,
-    );
+  it('redirige a la ruta bonita de la SPA sin script en línea (el CSP de la API lo bloquea)', () => {
+    const html = renderSharePage({ ...base, list: LISTA });
+
+    expect(html).toContain(`<meta http-equiv="refresh" content="0; url=/lists/s/${TOKEN}">`);
+    expect(html).not.toContain('<script>');
   });
 
-  it('en una abierta, el noscript trae los nombres', () => {
+  it('en una abierta, el cuerpo del documento trae los nombres', () => {
     const html = renderSharePage({ ...base, list: LISTA });
     expect(html).toContain('<li>Juan Pérez</li>');
     expect(html).toContain('<li>Ana Ruiz</li>');
@@ -125,7 +126,7 @@ describe('el documento con las og:', () => {
     expect(html).toContain('&lt;script&gt;');
   });
 
-  it('escapa también los nombres de las personas del noscript', () => {
+  it('escapa también los nombres de las personas del cuerpo del documento', () => {
     const html = renderSharePage({
       ...base,
       list: {

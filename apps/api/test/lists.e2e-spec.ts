@@ -206,7 +206,9 @@ describe('Listas compartidas (e2e)', () => {
     expect(respuesta.headers['content-type']).toContain('text/html');
     expect(respuesta.text).toContain('property="og:title"');
     expect(respuesta.text).toContain('<meta name="robots" content="noindex, nofollow">');
-    expect(respuesta.text).toContain(`location.replace("/lists/s/${token}")`);
+    expect(respuesta.text).toContain(
+      `<meta http-equiv="refresh" content="0; url=/lists/s/${token}">`,
+    );
 
     // Y **no** existe bajo el prefijo: si existiera, habría dos enlaces.
     await anon().get(`/api/v1/l/${token}`).expect(404);

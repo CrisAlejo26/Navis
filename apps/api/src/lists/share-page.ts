@@ -60,15 +60,24 @@ export function renderSharePage(input: SharePageInput): string {
 <meta property="og:image" content="${escapeHtml(image)}">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="canonical" href="${escapeHtml(url)}">
-<script>location.replace(${JSON.stringify(destino)});</script>
-<noscript>${noscript(input, destino, title)}</noscript>`;
+<!-- La redirección va por meta refresh y no por un script en línea: el CSP
+     de la API (helmet, script-src 'self') bloquea el inline sin nonce ni
+     hash, y no vale la pena aflojarlo para toda la API por esta única
+     página. El meta refresh no necesita JavaScript —redirige igual a quien
+     lo tiene apagado— y a un rastreador que no ejecuta nada le da igual:
+     sigue leyendo las etiquetas og: de aquí arriba y no llega a seguirlo
+     (D31). -->
+<meta http-equiv="refresh" content="0; url=${escapeHtml(destino)}">
+${fallbackBody(input, destino, title)}`;
 }
 
 /**
- * Lo que lee quien no tiene JavaScript, y el rastreador. En modo restringido, el
- * aviso de que hace falta entrar: el formulario, no la lista (D18).
+ * El cuerpo del documento: lo que se ve el instante antes de que el
+ * `meta refresh` redirija, y lo único que llega a leer un rastreador que no
+ * ejecuta nada. En modo restringido, el aviso de que hace falta entrar: el
+ * formulario, no la lista (D18).
  */
-function noscript(input: SharePageInput, destino: string, title: string): string {
+function fallbackBody(input: SharePageInput, destino: string, title: string): string {
   const cabecera = `<h1>${escapeHtml(title)}</h1>`;
 
   if (!input.list) {
