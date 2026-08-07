@@ -16,6 +16,11 @@ const MIEMBRO: ListMember = {
   ministries: ['pulpito', 'sonido'],
   hasPhoto: true,
   hasAccess: true,
+  arrivedAt: '2020-01-01',
+  arrivalSite: 'Elda',
+  bibleReadings: 3,
+  vivenciasReadings: 1,
+  bibleInstituteTimes: 2,
 };
 
 const todo: ListPublicFields = {
@@ -24,6 +29,10 @@ const todo: ListPublicFields = {
   ministry: true,
   photo: true,
   note: true,
+  arrival: true,
+  bibleReadings: true,
+  vivenciasReadings: true,
+  bibleInstituteTimes: true,
 };
 
 describe('lo que sale a la calle', () => {
@@ -35,6 +44,11 @@ describe('lo que sale a la calle', () => {
       congregation: null,
       ministry: null,
       photoId: null,
+      arrivedAt: null,
+      arrivalSite: null,
+      bibleReadings: null,
+      vivenciasReadings: null,
+      bibleInstituteTimes: null,
     });
   });
 
@@ -42,12 +56,17 @@ describe('lo que sale a la calle', () => {
     const publico = toPublicListMember(MIEMBRO, todo);
 
     expect(Object.keys(publico).sort()).toEqual([
+      'arrivalSite',
+      'arrivedAt',
+      'bibleInstituteTimes',
+      'bibleReadings',
       'congregation',
       'ministry',
       'name',
       'note',
       'photoId',
       'position',
+      'vivenciasReadings',
     ]);
     expect(JSON.stringify(publico)).not.toContain(MIEMBRO.congregationId);
     expect(JSON.stringify(publico)).not.toContain('hasAccess');
@@ -85,5 +104,27 @@ describe('lo que sale a la calle', () => {
 
   it('saca la primera labor y no todas: en un cartel una basta', () => {
     expect(toPublicListMember(MIEMBRO, todo).ministry).toBe('pulpito');
+  });
+
+  it('la trayectoria (RFC 0012) no sale hasta que se activa, campo a campo', () => {
+    const soloLlegada = toPublicListMember(MIEMBRO, { ...DEFAULT_PUBLIC_FIELDS, arrival: true });
+
+    expect(soloLlegada.arrivedAt).toBe('2020-01-01');
+    expect(soloLlegada.arrivalSite).toBe('Elda');
+    expect(soloLlegada.bibleReadings).toBeNull();
+    expect(soloLlegada.vivenciasReadings).toBeNull();
+    expect(soloLlegada.bibleInstituteTimes).toBeNull();
+
+    const conLecturas = toPublicListMember(MIEMBRO, {
+      ...DEFAULT_PUBLIC_FIELDS,
+      bibleReadings: true,
+      vivenciasReadings: true,
+      bibleInstituteTimes: true,
+    });
+
+    expect(conLecturas.arrivedAt).toBeNull();
+    expect(conLecturas.bibleReadings).toBe(3);
+    expect(conLecturas.vivenciasReadings).toBe(1);
+    expect(conLecturas.bibleInstituteTimes).toBe(2);
   });
 });

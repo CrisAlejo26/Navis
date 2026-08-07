@@ -930,6 +930,10 @@ export const de = {
     nameStyle: 'Wie der Name erscheint',
     nameFull: 'Vor- und Nachname',
     nameInitial: 'Vorname und Initiale',
+    arrival: 'Ankunft',
+    bibleReadings: 'Bibellesungen',
+    vivenciasReadings: 'Vivencias-Lesungen',
+    bibleInstituteTimes: 'Bibelinstitut',
     photos: 'Fotos',
     photosWarning:
       'Ihre Gesichter liegen dann unter einer öffentlichen Adresse. Denk nach, wenn Minderjährige dabei sind.',

@@ -1,4 +1,4 @@
-import type { ListSummary } from '@navis/shared';
+import { DEFAULT_PUBLIC_FIELDS, type ListSummary } from '@navis/shared';
 import { screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
@@ -18,13 +18,7 @@ const lista = (name: string, index: number): ListSummary => ({
   shareToken: null,
   sharedAt: null,
   shareExpiresAt: null,
-  publicFields: {
-    nameStyle: 'full',
-    congregation: false,
-    ministry: false,
-    photo: false,
-    note: false,
-  },
+  publicFields: DEFAULT_PUBLIC_FIELDS,
   allowDownload: true,
   hasCover: false,
   memberCount: 0,

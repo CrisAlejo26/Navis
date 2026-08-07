@@ -30,6 +30,16 @@ export const listPublicFieldsSchema = z.object({
   ministry: z.boolean().default(false),
   photo: z.boolean().default(false),
   note: z.boolean().default(false),
+  /*
+   * La trayectoria (RFC 0012), añadida después de que se escribiera esta
+   * lista blanca. Teléfono y correo siguen sin entrar aquí y sin poder
+   * hacerlo nunca (D16): son datos de contacto, esto es historia de la
+   * persona en la iglesia.
+   */
+  arrival: z.boolean().default(false),
+  bibleReadings: z.boolean().default(false),
+  vivenciasReadings: z.boolean().default(false),
+  bibleInstituteTimes: z.boolean().default(false),
 });
 
 export type ListPublicFields = z.infer<typeof listPublicFieldsSchema>;
@@ -40,6 +50,10 @@ export const DEFAULT_PUBLIC_FIELDS: ListPublicFields = {
   ministry: false,
   photo: false,
   note: false,
+  arrival: false,
+  bibleReadings: false,
+  vivenciasReadings: false,
+  bibleInstituteTimes: false,
 };
 
 /** Una **lista**: un conjunto ordenado de creyentes de la iglesia (D1, D2). */

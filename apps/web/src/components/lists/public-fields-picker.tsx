@@ -67,6 +67,39 @@ export function PublicFieldsPicker({
           set({ note: event.target.checked });
         }}
       />
+
+      {/* La trayectoria (RFC 0012): añadida después de que se cerrara esta
+          lista blanca (D16). Teléfono y correo no están aquí ni lo van a
+          estar — son datos de contacto, esto es historia de la persona. */}
+      <Checkbox
+        checked={fields.arrival}
+        label={t('lists.arrival')}
+        onChange={(event) => {
+          set({ arrival: event.target.checked });
+        }}
+      />
+      <Checkbox
+        checked={fields.bibleReadings}
+        label={t('lists.bibleReadings')}
+        onChange={(event) => {
+          set({ bibleReadings: event.target.checked });
+        }}
+      />
+      <Checkbox
+        checked={fields.vivenciasReadings}
+        label={t('lists.vivenciasReadings')}
+        onChange={(event) => {
+          set({ vivenciasReadings: event.target.checked });
+        }}
+      />
+      <Checkbox
+        checked={fields.bibleInstituteTimes}
+        label={t('lists.bibleInstituteTimes')}
+        onChange={(event) => {
+          set({ bibleInstituteTimes: event.target.checked });
+        }}
+      />
+
       <Checkbox
         checked={fields.photo}
         label={t('lists.photos')}

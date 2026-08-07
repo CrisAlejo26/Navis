@@ -23,6 +23,12 @@ export const listMemberSchema = z.object({
   hasPhoto: z.boolean(),
   /** Si esa persona tiene además un acceso que abre **esta** lista (D21). */
   hasAccess: z.boolean(),
+  /** La trayectoria (RFC 0012), para quien la active al publicar. */
+  arrivedAt: z.string().nullable(),
+  arrivalSite: z.string().nullable(),
+  bibleReadings: z.number().int().nullable(),
+  vivenciasReadings: z.number().int().nullable(),
+  bibleInstituteTimes: z.number().int().nullable(),
 });
 
 export type ListMember = z.infer<typeof listMemberSchema>;
