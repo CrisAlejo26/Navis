@@ -152,6 +152,7 @@ describe('Creyentes y notas (e2e)', () => {
         bibleReadings: 5,
         vivenciasReadings: 3,
         bibleInstituteTimes: 1,
+        email: 'Yolanda.Zapata@Gmail.COM',
         ministries: ['ofrenda'],
         ministryDates: { ofrenda: '2012-02-01', sonido: '1999-01-01' },
         giftIds: [profecía],
@@ -164,6 +165,8 @@ describe('Creyentes y notas (e2e)', () => {
     expect(creado.bibleReadings).toBe(5);
     expect(creado.vivenciasReadings).toBe(3);
     expect(creado.bibleInstituteTimes).toBe(1);
+    // Se normaliza a minúsculas, como el correo de acceso (D11).
+    expect(creado.email).toBe('yolanda.zapata@gmail.com');
     expect(creado.ministryDates).toEqual({ ofrenda: '2012-02-01' });
     expect(creado.giftDates).toEqual({ [profecía]: '2017-09-01' });
 
@@ -180,6 +183,14 @@ describe('Creyentes y notas (e2e)', () => {
       .delete(`/api/v1/believers/${creado.id}`)
       .set('Cookie', cookie)
       .expect(200);
+  });
+
+  it('un correo con formato inválido no se guarda', async () => {
+    await post('/api/v1/believers', {
+      firstName: 'Sin',
+      lastName: 'Correo',
+      email: 'no-es-un-correo',
+    }).expect(400);
   });
 
   it('«jesus» encuentra «Jesús», sin acentos y sin mayúsculas', async () => {

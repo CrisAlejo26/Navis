@@ -74,13 +74,22 @@ export function BelieverFields({
         />
       </div>
 
-      <Input
-        name="phone"
-        type="tel"
-        label={t('believers.phone')}
-        autoComplete="tel"
-        defaultValue={believer?.phone ?? ''}
-      />
+      <div className="gap-3 sm:grid-cols-2 grid">
+        <Input
+          name="phone"
+          type="tel"
+          label={t('believers.phone')}
+          autoComplete="tel"
+          defaultValue={believer?.phone ?? ''}
+        />
+        <Input
+          name="email"
+          type="email"
+          label={t('believers.email')}
+          autoComplete="email"
+          defaultValue={believer?.email ?? ''}
+        />
+      </div>
 
       <div className="gap-3 sm:grid-cols-2 grid">
         {/* Al **crear**, la sede que se propone es la principal de la iglesia

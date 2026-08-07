@@ -45,6 +45,7 @@ export class BelieversService {
         firstName: input.firstName,
         lastName: input.lastName ?? '',
         phone: input.phone ?? null,
+        email: input.email ?? null,
         status: input.status ?? DEFAULT_BELIEVER_STATUS,
         searchName: toSearchName(`${input.firstName} ${input.lastName ?? ''}`),
         alertAfterDays:
@@ -70,6 +71,7 @@ export class BelieversService {
     if (input.firstName !== undefined) believer.firstName = input.firstName;
     if (input.lastName !== undefined) believer.lastName = input.lastName;
     if (input.phone !== undefined) believer.phone = input.phone;
+    if (input.email !== undefined) believer.email = input.email;
     if (input.congregationId !== undefined) believer.congregationId = input.congregationId;
     if (input.status !== undefined) believer.status = input.status;
     if (input.alertAfterDays !== undefined) believer.alertAfterDays = input.alertAfterDays;

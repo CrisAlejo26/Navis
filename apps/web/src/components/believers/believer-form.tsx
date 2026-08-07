@@ -77,6 +77,7 @@ export function BelieverForm({ open, onClose, believer, congregations, gifts }: 
       firstName: formText(form.get('firstName')),
       lastName: optionalText(form.get('lastName')),
       phone: optionalText(form.get('phone')),
+      email: optionalText(form.get('email')),
       congregationId: formText(form.get('congregationId')) || null,
       ...draft,
     });

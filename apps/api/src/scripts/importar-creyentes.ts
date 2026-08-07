@@ -45,7 +45,7 @@ async function main(): Promise<void> {
   console.log(`${String(people.length)} personas en el fichero`);
   if (unmatched.length > 0) {
     console.warn(
-      `sin teléfono en la otra hoja (${String(unmatched.length)}): ${unmatched.join(', ')}`,
+      `sin contacto en la otra hoja (${String(unmatched.length)}): ${unmatched.join(', ')}`,
     );
   }
 
@@ -132,9 +132,10 @@ function toInput(
   return {
     firstName,
     lastName,
-    // Sin teléfono no se manda el campo: mandar `undefined` deja el que hubiera,
-    // y mandar `null` lo borraría (ver `BelieversService.update`).
+    // Sin dato no se manda el campo: mandar `undefined` deja el que hubiera, y
+    // mandar `null` lo borraría (ver `BelieversService.update`).
     ...(person.phone ? { phone: person.phone } : {}),
+    ...(person.email ? { email: person.email } : {}),
     ministries: labores,
     ministryDates: Object.fromEntries(labores.map((slug) => [slug, person.ministries[slug]])),
     giftIds,
