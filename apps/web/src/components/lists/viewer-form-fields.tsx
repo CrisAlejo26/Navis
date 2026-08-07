@@ -77,6 +77,7 @@ export function ViewerFormFields({
           const label = event.target.value;
           set(draft.deCreyente ? { label } : { label, username: proposeListUsername(label) });
         }}
+        required
       />
 
       <Input
@@ -89,6 +90,7 @@ export function ViewerFormFields({
         onChange={(event) => {
           set({ username: event.target.value });
         }}
+        required
       />
 
       <PasswordField

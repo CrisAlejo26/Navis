@@ -86,7 +86,7 @@ export function ListForm({
   return (
     <Dialog open={open} onClose={onClose} title={list ? t('lists.edit') : t('lists.add')}>
       <form onSubmit={submit} className="gap-4 flex flex-col" noValidate>
-        <Input name="name" label={t('lists.name')} defaultValue={list?.name} />
+        <Input name="name" label={t('lists.name')} defaultValue={list?.name} required />
 
         <Textarea
           name="description"

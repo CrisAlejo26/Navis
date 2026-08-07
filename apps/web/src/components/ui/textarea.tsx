@@ -17,13 +17,26 @@ interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
  * como una cadena de clases copiada en cada formulario era lo que había antes
  * (Regla 1 §5). `resize-y` a propósito: quien escribe mucho lo agranda, y a lo
  * ancho no, que rompería el ancho de lectura.
+ *
+ * El asterisco de obligatorio sigue el mismo criterio que en `Input`: sale
+ * solo de la prop nativa `required`, es `aria-hidden` porque el atributo ya
+ * se lo dice al lector de pantalla, y va del mismo `text-destructive`.
  */
 export function Textarea({ label, hint, className, id, ref, ...props }: TextareaProps) {
   const fieldId = id ?? props.name;
 
   return (
     <label htmlFor={fieldId} className="gap-2 flex flex-col">
-      {label && <span className="text-sm font-medium text-foreground">{label}</span>}
+      {label && (
+        <span className="text-sm font-medium text-foreground">
+          {label}
+          {props.required && (
+            <span aria-hidden className="ml-0.5 text-destructive">
+              *
+            </span>
+          )}
+        </span>
+      )}
 
       <textarea
         ref={ref}

@@ -35,12 +35,14 @@ export function RoleFields({ role }: { role: RoleRow | null }) {
             label={t('roles.roleName')}
             defaultValue={role?.name ?? ''}
             autoComplete="off"
+            required
           />
           <div>
             <Select
               name="level"
               label={t('roles.roleLevel')}
               defaultValue={String(role?.level ?? 0)}
+              required
             >
               {LEVELS.map((level) => (
                 <option key={level} value={level}>

@@ -65,6 +65,7 @@ export function BelieverFields({
           label={t('believers.firstName')}
           autoComplete="given-name"
           defaultValue={believer?.firstName}
+          required
         />
         <Input
           name="lastName"

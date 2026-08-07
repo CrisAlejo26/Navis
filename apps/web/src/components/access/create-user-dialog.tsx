@@ -65,8 +65,8 @@ export function CreateUserDialog({ open, onClose }: { open: boolean; onClose: ()
   return (
     <Dialog open={open} onClose={close} title={t('roles.newUser')}>
       <form onSubmit={submit} className="gap-4 flex flex-col" noValidate>
-        <Input name="name" label={t('auth.name')} autoComplete="off" />
-        <Input name="email" type="email" label={t('auth.email')} autoComplete="off" />
+        <Input name="name" label={t('auth.name')} autoComplete="off" required />
+        <Input name="email" type="email" label={t('auth.email')} autoComplete="off" required />
 
         <div className="gap-2 flex flex-col">
           <PasswordInput
@@ -78,6 +78,7 @@ export function CreateUserDialog({ open, onClose }: { open: boolean; onClose: ()
             onChange={(event) => {
               setPassword(event.target.value);
             }}
+            required
           />
           <PasswordMeter value={password} />
         </div>

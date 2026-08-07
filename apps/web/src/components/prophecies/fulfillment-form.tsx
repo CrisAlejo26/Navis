@@ -88,6 +88,7 @@ export function FulfillmentForm({
           label={t('prophecies.fulfillmentText')}
           placeholder={t('prophecies.fulfillmentTextPlaceholder')}
           defaultValue={fulfillment?.text}
+          required
         />
 
         <div className="sm:max-w-56">
@@ -96,6 +97,7 @@ export function FulfillmentForm({
             type="date"
             label={t('prophecies.fulfillmentDate')}
             defaultValue={fulfillment?.occurredAt ?? toIsoDate(new Date())}
+            required
           />
         </div>
 

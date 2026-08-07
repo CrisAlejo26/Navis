@@ -78,7 +78,7 @@ export function GiftForm({
   return (
     <Dialog open={open} onClose={onClose} title={gift ? t('gifts.edit') : t('gifts.add')}>
       <form onSubmit={submit} className="gap-4 flex flex-col" noValidate>
-        <Input name="name" label={t('gifts.name')} defaultValue={gift?.name} />
+        <Input name="name" label={t('gifts.name')} defaultValue={gift?.name} required />
         <ColorPicker value={accent} onChange={setAccent} label={t('calendar.congregationColor')} />
 
         <FormError message={error} />

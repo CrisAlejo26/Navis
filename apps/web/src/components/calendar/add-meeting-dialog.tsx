@@ -79,6 +79,7 @@ export function AddMeetingDialog({
             name="congregationId"
             label={t('calendar.congregation')}
             defaultValue={congregationId}
+            required
           >
             {congregations.map((congregation) => (
               <option key={congregation.id} value={congregation.id}>
@@ -92,12 +93,13 @@ export function AddMeetingDialog({
         )}
 
         <div className="gap-3 grid grid-cols-2">
-          <Input name="name" label={t('calendar.meetingName')} />
+          <Input name="name" label={t('calendar.meetingName')} required />
           <Input
             name="startTime"
             type="time"
             label={t('calendar.startTime')}
             defaultValue="20:00"
+            required
           />
         </div>
 

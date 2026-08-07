@@ -76,6 +76,7 @@ export function PatternForm({
           name="congregationId"
           label={t('calendar.congregation')}
           defaultValue={pattern?.congregationId ?? congregations[0]?.id}
+          required
         >
           {congregations.map((congregation) => (
             <option key={congregation.id} value={congregation.id}>
@@ -84,13 +85,19 @@ export function PatternForm({
           ))}
         </Select>
 
-        <Input name="name" label={t('calendar.meetingName')} defaultValue={pattern?.name} />
+        <Input
+          name="name"
+          label={t('calendar.meetingName')}
+          defaultValue={pattern?.name}
+          required
+        />
 
         <div className="gap-3 grid grid-cols-2">
           <Select
             name="weekday"
             label={t('calendar.patternWeekday')}
             defaultValue={String(pattern?.weekday ?? 0)}
+            required
           >
             {weekdayHeadings().map((heading, index) => (
               <option key={heading.key} value={String((index + 1) % 7)}>
@@ -104,6 +111,7 @@ export function PatternForm({
             type="time"
             label={t('calendar.startTime')}
             defaultValue={pattern?.startTime ?? '20:00'}
+            required
           />
         </div>
 

@@ -20,6 +20,14 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   ref?: Ref<HTMLInputElement>;
 }
 
+/**
+ * El asterisco de obligatorio sale de la propia prop nativa `required`: no
+ * hay una prop paralela que haya que recordar poner a la vez. Es
+ * `aria-hidden` a propósito —el `required` del `<input>` ya se lo dice al
+ * lector de pantalla— y del mismo `text-destructive` en los tres campos de
+ * formulario (`Input`, `Textarea`, `Select`), para que sea un solo lenguaje
+ * visual y no tres.
+ */
 export function Input({ label, hint, error, trailing, className, id, ref, ...props }: InputProps) {
   const inputId = id ?? props.name;
   const describedBy = error
@@ -33,6 +41,11 @@ export function Input({ label, hint, error, trailing, className, id, ref, ...pro
       {label && (
         <label htmlFor={inputId} className="text-sm font-medium text-foreground">
           {label}
+          {props.required && (
+            <span aria-hidden className="ml-0.5 text-destructive">
+              *
+            </span>
+          )}
         </label>
       )}
 

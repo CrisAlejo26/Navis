@@ -100,7 +100,12 @@ export function CalendarForm({
       title={calendar ? t('calendar.renameCalendar') : t('calendar.addCalendar')}
     >
       <form onSubmit={submit} className="gap-4 flex flex-col" noValidate>
-        <Input name="name" label={t('calendar.calendarName')} defaultValue={calendar?.name} />
+        <Input
+          name="name"
+          label={t('calendar.calendarName')}
+          defaultValue={calendar?.name}
+          required
+        />
 
         <div className="gap-1.5 flex flex-col">
           <Select

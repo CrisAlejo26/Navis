@@ -30,6 +30,7 @@ export function ProphecyFields({
         label={t('prophecies.titleField')}
         placeholder={t('prophecies.titlePlaceholder')}
         defaultValue={prophecy?.title}
+        required
       />
 
       {/* La fecha no necesita todo el ancho del diálogo: un campo de día
@@ -40,6 +41,7 @@ export function ProphecyFields({
           type="date"
           label={t('prophecies.receivedAt')}
           defaultValue={prophecy?.receivedAt ?? toIsoDate(new Date())}
+          required
         />
       </div>
 
@@ -52,6 +54,7 @@ export function ProphecyFields({
         label={t('prophecies.bodyField')}
         placeholder={t('prophecies.bodyPlaceholder')}
         defaultValue={prophecy?.body}
+        required
       />
     </>
   );

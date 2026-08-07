@@ -79,6 +79,7 @@ export function FulfillDialog({
             label={t('dreams.fulfilledAt')}
             min={dream.dreamedAt}
             defaultValue={dream.fulfilledAt ?? today}
+            required
           />
         </div>
 

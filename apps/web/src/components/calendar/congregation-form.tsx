@@ -97,6 +97,7 @@ export function CongregationForm({
           name="name"
           label={t('calendar.congregationName')}
           defaultValue={congregation?.name}
+          required
         />
         <Input
           name="city"

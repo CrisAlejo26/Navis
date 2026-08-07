@@ -77,6 +77,7 @@ export function SetPasswordDialog({ user, onClose }: SetPasswordDialogProps) {
             onChange={(event) => {
               setPasswordValue(event.target.value);
             }}
+            required
           />
           <PasswordMeter value={password} />
         </div>

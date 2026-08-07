@@ -82,7 +82,7 @@ export function MinistryForm({
       title={ministry ? t('ministries.edit') : t('ministries.add')}
     >
       <form onSubmit={submit} className="gap-4 flex flex-col" noValidate>
-        <Input name="name" label={t('ministries.name')} defaultValue={ministry?.name} />
+        <Input name="name" label={t('ministries.name')} defaultValue={ministry?.name} required />
         <ColorPicker value={accent} onChange={setAccent} label={t('calendar.congregationColor')} />
 
         <FormError message={error} />

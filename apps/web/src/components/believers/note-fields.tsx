@@ -5,11 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { NoteKindPicker } from '@/components/believers/note-kind-picker';
 import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
-
-/** Las dos áreas de texto comparten estilo: el mismo campo, distinto alto. */
-const AREA =
-  'px-3.5 py-3 leading-relaxed w-full resize-y rounded-lg border bg-card text-[15px] ' +
-  'text-foreground outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/35';
+import { Textarea } from '@/components/ui/textarea';
 
 interface FieldsProps {
   note?: BelieverNote;
@@ -52,6 +48,7 @@ export function NoteFields({
           type="date"
           label={t('notes.date')}
           defaultValue={note?.occurredAt ?? toIsoDate(new Date())}
+          required
         />
 
         {kind === 'don' && (
@@ -62,6 +59,7 @@ export function NoteFields({
             onChange={(event) => {
               onGiftChange(event.target.value);
             }}
+            required
           >
             <option value="">{t('gifts.none')}</option>
             {available.map((gift) => (
@@ -77,16 +75,22 @@ export function NoteFields({
         <p className="-mt-2 text-xs text-muted-foreground">{t('notes.giftHint')}</p>
       )}
 
-      <label className="gap-2 flex flex-col">
-        <span className="text-sm font-medium">{t('notes.told')}</span>
-        <textarea ref={toldRef} name="told" rows={5} defaultValue={note?.told} className={AREA} />
-      </label>
+      <Textarea
+        ref={toldRef}
+        name="told"
+        rows={5}
+        label={t('notes.told')}
+        defaultValue={note?.told}
+        required
+      />
 
-      <label className="gap-2 flex flex-col">
-        <span className="text-sm font-medium">{t('notes.advice')}</span>
-        <textarea name="advice" rows={3} defaultValue={note?.advice ?? ''} className={AREA} />
-        <span className="text-xs text-muted-foreground">{t('notes.adviceHint')}</span>
-      </label>
+      <Textarea
+        name="advice"
+        rows={3}
+        label={t('notes.advice')}
+        defaultValue={note?.advice ?? ''}
+        hint={t('notes.adviceHint')}
+      />
     </>
   );
 }

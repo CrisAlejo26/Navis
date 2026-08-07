@@ -25,6 +25,10 @@ interface SelectProps extends Omit<SelectHTMLAttributes<HTMLSelectElement>, 'siz
  * Desplegable nativo con el aspecto del resto de campos. Nativo a propósito:
  * en el teléfono abre el selector del sistema, que se maneja mejor que
  * cualquier lista que pintemos nosotros.
+ *
+ * El asterisco de obligatorio sigue el mismo criterio que en `Input`: sale
+ * solo de la prop nativa `required`, es `aria-hidden` porque el atributo ya
+ * se lo dice al lector de pantalla, y va del mismo `text-destructive`.
  */
 export function Select({
   label,
@@ -42,6 +46,11 @@ export function Select({
       {label && (
         <label htmlFor={selectId} className="text-sm font-medium text-foreground">
           {label}
+          {props.required && (
+            <span aria-hidden className="ml-0.5 text-destructive">
+              *
+            </span>
+          )}
         </label>
       )}
 

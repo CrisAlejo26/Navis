@@ -64,6 +64,7 @@ export function EmotionForm() {
         name="name"
         label={t('dreams.emotionName')}
         placeholder={t('dreams.emotionNamePlaceholder')}
+        required
       />
 
       <ColorPicker value={accent} onChange={setAccent} label={t('dreams.emotionColor')} />

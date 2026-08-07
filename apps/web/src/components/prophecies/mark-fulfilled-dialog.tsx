@@ -70,6 +70,7 @@ export function MarkFulfilledDialog({
           label={t('prophecies.fulfilledAt')}
           defaultValue={toIsoDate(new Date())}
           min={prophecy?.receivedAt}
+          required
         />
 
         <FormError message={error} />

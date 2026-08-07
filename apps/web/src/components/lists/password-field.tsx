@@ -44,6 +44,7 @@ export function PasswordField({
         onChange={(event) => {
           onChange(event.target.value);
         }}
+        required
       />
 
       <div className="gap-2 flex flex-wrap items-center">

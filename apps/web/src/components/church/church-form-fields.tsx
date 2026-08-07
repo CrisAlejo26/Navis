@@ -20,12 +20,23 @@ export function ChurchFormFields({ church }: { church: Church }) {
 
   return (
     <>
-      <Input name="name" label={t('church.name')} defaultValue={church.name} autoComplete="off" />
+      {/* `updateChurchSchema` marca los dos como opcionales porque se puede
+          editar sin tocarlos, pero una vez que el campo llega no admite una
+          cadena vacía (`min(2)`): en la práctica no se pueden dejar en
+          blanco, y el asterisco lo dice tal y como se comporta el formulario. */}
+      <Input
+        name="name"
+        label={t('church.name')}
+        defaultValue={church.name}
+        autoComplete="off"
+        required
+      />
       <Input
         name="city"
         label={t('church.city')}
         defaultValue={church.city ?? ''}
         autoComplete="off"
+        required
       />
       <TimezoneSelect
         name="timezone"

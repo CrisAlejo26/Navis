@@ -56,8 +56,8 @@ export function ChurchForm({
 
   return (
     <form onSubmit={submit} className="gap-4 flex flex-col" noValidate>
-      <Input name="name" label={t('church.name')} autoComplete="organization" />
-      <Input name="city" label={t('church.city')} autoComplete="address-level2" />
+      <Input name="name" label={t('church.name')} autoComplete="organization" required />
+      <Input name="city" label={t('church.city')} autoComplete="address-level2" required />
 
       <FormError message={error} />
 
