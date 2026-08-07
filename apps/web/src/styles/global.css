@@ -24,9 +24,8 @@
   --animate-latido: latido 2400ms ease-in-out infinite;
   --animate-track-in: track-in 480ms cubic-bezier(0.22, 1, 0.36, 1) both;
   --animate-ring-in: ring-in 600ms cubic-bezier(0.22, 1, 0.36, 1) both;
-  /* 4800ms: ~38% de chispazo y el resto de calma. Ver los keyframes de abajo. */
+  /* 4800ms: ~38% de chispazo y el resto de calma. Ver el keyframe de abajo. */
   --animate-chispa: chispa 4800ms cubic-bezier(0.16, 1, 0.3, 1) infinite both;
-  --animate-destello: destello 4800ms cubic-bezier(0.16, 1, 0.3, 1) infinite both;
 }
 
 /*
@@ -64,28 +63,6 @@
   100% {
     opacity: 0;
     transform: translate3d(var(--chispa-x), var(--chispa-y), 0) scale(0.4);
-  }
-}
-
-/*
- * El núcleo del fogonazo: un halo pequeño que se abre y se disuelve —nunca un
- * disco de color plano— y por eso su fondo es un `radial-gradient` que ya
- * llega a transparente antes del borde de la caja (`holiday-burst.tsx`). Con
- * un color sólido detrás, agrandarlo se leía como una pegatina encima de la
- * celda en vez de como luz que se abre.
- */
-@keyframes destello {
-  0% {
-    opacity: 0;
-    transform: scale(0.5);
-  }
-  20% {
-    opacity: 0.85;
-  }
-  46%,
-  100% {
-    opacity: 0;
-    transform: scale(3.4);
   }
 }
 
