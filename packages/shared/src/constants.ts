@@ -77,11 +77,12 @@ export function toRoleSlug(name: string): string {
   return toSlug(name, 40);
 }
 
-export const DEFAULT_PAGE_SIZE = 20;
+/** Cinco por defecto: es la que menos scroll pide al abrir cualquier tabla. */
+export const DEFAULT_PAGE_SIZE = 5;
 export const MAX_PAGE_SIZE = 100;
 
 /** Tamaños de página que ofrece la interfaz. El último no pasa de MAX_PAGE_SIZE. */
-export const PAGE_SIZES = [10, 20, 25, 50, 100] as const;
+export const PAGE_SIZES = [5, 10, 20, 25, 50, 100] as const;
 
 export type PageSize = (typeof PAGE_SIZES)[number];
 
