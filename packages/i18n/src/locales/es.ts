@@ -415,7 +415,6 @@ export const es = {
     viewCards: 'Fichas',
     viewLabel: 'Cómo verlo',
     columnName: 'Nombre',
-    columnCongregation: 'Sede',
     columnStatus: 'Estado',
     columnGifts: 'Dones',
     columnAlert: 'Última nota',

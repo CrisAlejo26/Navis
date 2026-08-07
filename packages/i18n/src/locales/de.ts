@@ -409,7 +409,6 @@ export const de = {
     viewCards: 'Karten',
     viewLabel: 'Ansicht',
     columnName: 'Name',
-    columnCongregation: 'Standort',
     columnStatus: 'Status',
     columnGifts: 'Gaben',
     columnAlert: 'Letzte Notiz',

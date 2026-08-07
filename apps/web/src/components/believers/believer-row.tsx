@@ -1,7 +1,6 @@
 import {
   believerName,
   type BelieverListItem,
-  type Congregation,
   type ListSummary,
   type MinistryCatalog,
   type IsoDate,
@@ -20,12 +19,10 @@ import { Sonda } from '@/components/believers/sonda';
 import { StatusBadge } from '@/components/believers/status-badge';
 import { ListDots } from '@/components/lists/list-dots';
 import { TableCell } from '@/components/ui/table';
-import { accentVars } from '@/lib/accents';
 import { cn } from '@/lib/cn';
 
 export interface BelieverCells extends BelieverActionHandlers {
   believer: BelieverListItem;
-  congregation: Congregation | undefined;
   /** El catálogo de labores: la fila guarda slugs, el nombre y el color están aquí. */
   ministries: readonly MinistryCatalog[];
   /** Las listas de la iglesia y en cuáles está esta persona (RFC 0010 §8.7). */
@@ -50,7 +47,6 @@ export interface BelieverCells extends BelieverActionHandlers {
  */
 export function BelieverRow({
   believer,
-  congregation,
   ministries,
   lists,
   listIds,
@@ -115,19 +111,6 @@ export function BelieverRow({
         </span>
         {believer.phone && (
           <span className="text-xs block text-muted-foreground tabular-nums">{believer.phone}</span>
-        )}
-      </TableCell>
-
-      <TableCell>
-        {congregation && (
-          <span className="gap-2 text-xs inline-flex items-center text-muted-foreground">
-            <span
-              aria-hidden
-              style={accentVars(congregation.accent)}
-              className="h-1.5 w-1.5 rounded-full bg-[var(--acento)]"
-            />
-            {congregation.name}
-          </span>
         )}
       </TableCell>
 

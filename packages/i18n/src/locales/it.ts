@@ -407,7 +407,6 @@ export const it = {
     viewCards: 'Schede',
     viewLabel: 'Come vederlo',
     columnName: 'Nome',
-    columnCongregation: 'Sede',
     columnStatus: 'Stato',
     columnGifts: 'Doni',
     columnAlert: 'Ultima nota',
