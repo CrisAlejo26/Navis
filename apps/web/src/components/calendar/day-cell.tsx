@@ -44,7 +44,9 @@ export function DayCell({
   return (
     <div
       className={cn(
-        'p-1.5 gap-1 relative flex flex-col border-t border-l bg-card',
+        // `relative isolate`: el festivo se sitúa respecto a la celda entera
+        // y su `-z-10` se queda dentro de ella, no detrás de la cuadrícula.
+        'p-1.5 gap-1 relative isolate flex flex-col border-t border-l bg-card',
         outside && 'bg-muted/25 text-muted-foreground',
         /*
          * Hoy se tiñe **la celda entera**, no una raya en el borde: entre
@@ -60,6 +62,8 @@ export function DayCell({
         selected && 'ring-2 ring-ring ring-inset',
       )}
     >
+      {day.holiday && <HolidayBurst day={Number(day.date.slice(8, 10))} />}
+
       <button
         type="button"
         data-day-button
@@ -69,14 +73,10 @@ export function DayCell({
           onOpen(day.date);
         }}
         className={cn(
-          // `relative` y `isolate`: el chispazo se sitúa respecto al número y
-          // su `-z-10` se queda dentro de este botón, no detrás de la celda.
-          'px-1 -mx-1 relative isolate cursor-pointer self-start rounded-md text-left',
+          'px-1 -mx-1 cursor-pointer self-start rounded-md text-left',
           'focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none',
         )}
       >
-        {day.holiday && <HolidayBurst day={Number(day.date.slice(8, 10))} />}
-
         <span
           className={cn(
             'font-light tabular-nums',
