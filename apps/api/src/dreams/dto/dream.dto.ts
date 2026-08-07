@@ -22,8 +22,10 @@ const trimmed = ({ value }: { value: unknown }): unknown =>
 /**
  * Apuntar un sueño (RFC 0005 §6.3).
  *
- * **Solo el cuerpo y la noche son obligatorios** (D17): la interpretación y el
- * cumplimiento no están aquí, se escriben desde la ficha cuando se sabe algo.
+ * **Solo el cuerpo y la noche son obligatorios** (D17): el cumplimiento no
+ * está aquí —solo tiene sentido cuando el sueño ya existe—. La interpretación
+ * sí puede llegar desde el alta: es opcional, como el título, para quien la
+ * trae ya pensada y no quiere volver después solo por eso.
  */
 export class CreateDreamDto {
   @ApiPropertyOptional({ description: 'Opcional: a las cuatro de la mañana nadie titula' })
@@ -44,6 +46,14 @@ export class CreateDreamDto {
   @Length(10, 10)
   dreamedAt: string;
 
+  @ApiPropertyOptional({ description: 'La posible interpretación, si ya se tiene', nullable: true })
+  @IsOptional()
+  @ValidateIf((_object, value) => value !== null)
+  @IsString()
+  @Length(0, 20000)
+  @Transform(trimmed)
+  interpretation?: string | null;
+
   @ApiPropertyOptional({ type: [String], description: 'Las emociones que lleva' })
   @IsOptional()
   @IsArray()
@@ -53,20 +63,13 @@ export class CreateDreamDto {
 }
 
 /**
- * Al editar aparecen la interpretación y el cumplimiento.
+ * Al editar aparece además el cumplimiento; la interpretación ya viene
+ * heredada de `CreateDreamDto` con la misma forma, así que no se repite aquí.
  *
  * `fulfilledAt` acepta además `null`, que **sí** significa algo: quitar la
  * fecha vuelve a abrir el sueño y se lleva por delante lo que significó (D10).
  */
 export class UpdateDreamDto extends PartialType(CreateDreamDto) {
-  @ApiPropertyOptional({ description: 'La posible interpretación', nullable: true })
-  @IsOptional()
-  @ValidateIf((_object, value) => value !== null)
-  @IsString()
-  @Length(0, 20000)
-  @Transform(trimmed)
-  interpretation?: string | null;
-
   @ApiPropertyOptional({ description: '`null` lo vuelve a abrir (D10)', nullable: true })
   @IsOptional()
   @ValidateIf((_object, value) => value !== null)

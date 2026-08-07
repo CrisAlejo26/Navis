@@ -708,6 +708,8 @@ export const it = {
     untitled: 'Senza titolo',
     interpretation: 'Possibile interpretazione',
     interpretationPlaceholder: 'Cosa credi che voglia dire. Puoi cambiarlo quando vuoi.',
+    interpretationHint:
+      'Di solito si scopre più avanti: puoi scriverla anche dopo, dalla scheda del sogno.',
     interpretationEmpty: 'Non hai ancora scritto cosa credi che significhi.',
     interpretationAdd: 'Scrivere l’interpretazione',
     markFulfilled: 'Si è avverato',

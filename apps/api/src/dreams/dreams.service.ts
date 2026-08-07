@@ -32,13 +32,14 @@ export class DreamsService {
   // síncrona al llamar al método en vez de rechazando la promesa (CLAUDE.md).
   async create(ownerId: string, input: CreateDreamInput): Promise<DreamView> {
     const title = blankToNull(input.title);
+    const interpretation = blankToNull(input.interpretation);
     const dream = await this.dreams.save(
       this.dreams.create(ownerId, {
         title,
         body: input.body,
-        searchText: toSearchText(title, input.body, null),
+        searchText: toSearchText(title, input.body, interpretation),
         dreamedAt: input.dreamedAt,
-        interpretation: null,
+        interpretation,
         fulfilledAt: null,
         fulfillmentMeaning: null,
       }),

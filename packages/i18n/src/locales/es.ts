@@ -716,6 +716,8 @@ export const es = {
     untitled: 'Sin título',
     interpretation: 'Posible interpretación',
     interpretationPlaceholder: 'Qué crees que quiere decir. Puedes cambiarlo cuando quieras.',
+    interpretationHint:
+      'Casi siempre se sabe más tarde: también se puede escribir después, desde la ficha del sueño.',
     interpretationEmpty: 'Todavía no has escrito qué crees que significa.',
     interpretationAdd: 'Escribir la interpretación',
     markFulfilled: 'Ya se cumplió',

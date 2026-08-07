@@ -707,6 +707,8 @@ export const pt = {
     untitled: 'Sem título',
     interpretation: 'Possível interpretação',
     interpretationPlaceholder: 'O que achas que quer dizer. Podes mudá-lo quando quiseres.',
+    interpretationHint:
+      'Costuma saber-se mais tarde: também podes escrevê-la depois, na ficha do sonho.',
     interpretationEmpty: 'Ainda não escreveste o que achas que significa.',
     interpretationAdd: 'Escrever a interpretação',
     markFulfilled: 'Já se cumpriu',

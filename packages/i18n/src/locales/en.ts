@@ -706,6 +706,8 @@ export const en = {
     untitled: 'Untitled',
     interpretation: 'Possible meaning',
     interpretationPlaceholder: 'What you think it says. You can change it whenever you want.',
+    interpretationHint:
+      'It usually becomes clear later: you can also write it afterwards, from the dream’s page.',
     interpretationEmpty: 'You have not written what you think it means yet.',
     interpretationAdd: 'Write the meaning',
     markFulfilled: 'It came true',

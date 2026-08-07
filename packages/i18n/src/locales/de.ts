@@ -712,6 +712,8 @@ export const de = {
     untitled: 'Ohne Titel',
     interpretation: 'Mögliche Deutung',
     interpretationPlaceholder: 'Was er deiner Meinung nach sagt. Du kannst es jederzeit ändern.',
+    interpretationHint:
+      'Das weiß man meist erst später: du kannst es auch danach eintragen, auf der Seite des Traums.',
     interpretationEmpty: 'Du hast noch nicht aufgeschrieben, was er bedeuten könnte.',
     interpretationAdd: 'Deutung schreiben',
     markFulfilled: 'Ist eingetroffen',

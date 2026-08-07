@@ -12,10 +12,12 @@ import { toast } from '@/lib/toast';
 /**
  * La posible interpretación (RFC 0005 §7.6).
  *
- * Se escribe **desde la ficha y no desde el formulario de apuntar** (D17): al
- * apuntar el sueño todavía no se sabe qué significa, y un campo grande vacío en
- * ese momento solo estorba. Aquí se edita en el sitio, sin abrir un diálogo:
- * es un texto que se retoca muchas veces.
+ * También se puede escribir desde el formulario de apuntar o de editar
+ * (`DreamFields`), pero es opcional ahí a propósito (D17): la mayoría de las
+ * veces todavía no se sabe qué significa un sueño recién apuntado. Este es el
+ * sitio pensado para volver más tarde: se edita **en el sitio, sin abrir un
+ * diálogo**, porque es un texto que se retoca muchas veces según pasan los
+ * días.
  *
  * Vacía no deja un hueco: invita a escribirla (Regla 9 §6).
  */

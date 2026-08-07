@@ -53,14 +53,19 @@ const longTextSchema = z.string().trim().max(20000);
 const emotionIdsSchema = z.array(z.uuid()).max(20);
 
 /**
- * Al crear, **solo el cuerpo es obligatorio** (D17). La interpretación y el
- * cumplimiento no están aquí: se escriben desde la ficha, que es cuando se sabe
- * algo.
+ * Al crear, **solo el cuerpo es obligatorio** (D17). El cumplimiento sigue sin
+ * estar aquí: solo tiene sentido cuando el sueño ya existe.
+ *
+ * La interpretación **sí** se puede escribir desde el primer momento —opcional,
+ * como el título—: D17 la dejaba fuera del alta pensando en que a las cuatro de
+ * la mañana nadie la tiene todavía, pero quien sí la trae en el momento no
+ * debería tener que abrir la ficha después solo para guardarla.
  */
 export const createDreamSchema = z.object({
   title: titleSchema.optional(),
   body: bodySchema,
   dreamedAt: isoDateSchema,
+  interpretation: longTextSchema.nullable().optional(),
   emotionIds: emotionIdsSchema.optional(),
 });
 

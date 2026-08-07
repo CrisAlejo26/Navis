@@ -710,6 +710,8 @@ export const fr = {
     untitled: 'Sans titre',
     interpretation: 'Interprétation possible',
     interpretationPlaceholder: 'Ce que tu crois qu’il veut dire. Tu peux le changer quand tu veux.',
+    interpretationHint:
+      'On le sait souvent plus tard : tu peux aussi l’écrire après, depuis la fiche du rêve.',
     interpretationEmpty: 'Tu n’as pas encore écrit ce que tu crois qu’il signifie.',
     interpretationAdd: 'Écrire l’interprétation',
     markFulfilled: 'C’est arrivé',

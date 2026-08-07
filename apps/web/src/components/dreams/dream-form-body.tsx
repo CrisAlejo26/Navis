@@ -66,6 +66,7 @@ export function DreamFormBody({ dream, onSaved }: { dream?: Dream; onSaved: () =
       title: optionalText(form.get('title')),
       body: formText(form.get('body')),
       dreamedAt: formText(form.get('dreamedAt')),
+      interpretation: optionalText(form.get('interpretation')),
       emotionIds,
     });
 
