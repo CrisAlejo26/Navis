@@ -24,47 +24,53 @@
   --animate-latido: latido 2400ms ease-in-out infinite;
   --animate-track-in: track-in 480ms cubic-bezier(0.22, 1, 0.36, 1) both;
   --animate-ring-in: ring-in 600ms cubic-bezier(0.22, 1, 0.36, 1) both;
-  --animate-chispa: chispa 900ms cubic-bezier(0.16, 1, 0.3, 1) both;
-  --animate-destello: destello 900ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  /* 4800ms: ~38% de chispazo y el resto de calma. Ver los keyframes de abajo. */
+  --animate-chispa: chispa 4800ms cubic-bezier(0.16, 1, 0.3, 1) infinite both;
+  --animate-destello: destello 4800ms cubic-bezier(0.16, 1, 0.3, 1) infinite both;
 }
 
 /*
  * El día festivo del calendario (RFC 0011).
  *
- * Una **sola vez al entrar** y no en bucle: un mes tiene dos o tres festivos y
- * tres cosas chispeando sin parar en la misma pantalla dejan de ser un aviso
- * para ser una avería. Lo que queda cuando la animación termina es el número
- * en rojo, que es la convención del calendario de pared y no se mueve.
+ * Una constelación despacio y en bucle, no un solo chispazo que hay que cazar
+ * al vuelo: el primer diseño duraba 900ms y terminaba antes de que el ojo
+ * llegara a esa celda. Ahora cada chispa tiene su tramo de vuelo —del 0% al
+ * 38%— y **se queda quieta e invisible el resto del ciclo**, que es la calma;
+ * con varios fogonazos repartidos por `holiday-burst.tsx` a distinto retardo,
+ * nunca laten dos a la vez y el conjunto se lee como un cielo con estrellas.
  *
  * Cada chispa sale por su ángulo, que le llega en `--chispa-x` y `--chispa-y`,
  * y con su propio retardo: un elemento solo admite **una** `animation` y **un**
- * `animation-delay` (ver CLAUDE.md), así que son cinco elementos y no cinco
- * capas de uno.
+ * `animation-delay` (ver CLAUDE.md), así que cada chispa y cada fogonazo son
+ * su propio elemento.
  */
 @keyframes chispa {
-  from {
+  0% {
     opacity: 0;
     transform: translate3d(0, 0, 0) scale(0.3);
   }
-  30% {
+  16% {
     opacity: 1;
   }
-  to {
+  38%,
+  100% {
     opacity: 0;
     transform: translate3d(var(--chispa-x), var(--chispa-y), 0) scale(1);
   }
 }
 
-/* El fogonazo de debajo: se abre y se apaga mientras salen las chispas. */
+/* El fogonazo de debajo: se abre y se apaga mientras salen las chispas, y
+   luego queda invisible y quieto —sin gasto— hasta el siguiente ciclo. */
 @keyframes destello {
-  from {
+  0% {
     opacity: 0;
     transform: scale(0.4);
   }
-  45% {
+  22% {
     opacity: 0.5;
   }
-  to {
+  42%,
+  100% {
     opacity: 0;
     transform: scale(1.8);
   }
