@@ -248,12 +248,17 @@ describe('Listas compartidas (e2e)', () => {
 
     for (const miembro of publica.members) {
       expect(Object.keys(miembro).sort()).toEqual([
+        'arrivalSite',
+        'arrivedAt',
+        'bibleInstituteTimes',
+        'bibleReadings',
         'congregation',
         'ministry',
         'name',
         'note',
         'photoId',
         'position',
+        'vivenciasReadings',
       ]);
       expect(miembro.photoId).toBeNull();
       expect(miembro.note).toBeNull();
