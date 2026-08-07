@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+import { emailSchema } from './auth';
 import { isoDateSchema } from './common';
 import { ministrySchema } from './ministries';
 
@@ -72,6 +73,7 @@ export const believerSchema = z.object({
   firstName: z.string(),
   lastName: z.string(),
   phone: z.string().nullable(),
+  email: z.string().nullable(),
   status: believerStatusSchema,
   /** Días que pueden pasar sin nota antes de que salte el aviso. `null` lo apaga. */
   alertAfterDays: z.number().int().nullable(),
@@ -116,6 +118,9 @@ export const createBelieverSchema = z.object({
   firstName: z.string().trim().min(2, 'El nombre es obligatorio').max(80),
   lastName: z.string().trim().max(80).optional(),
   phone: z.string().trim().max(40).optional(),
+  /** Se reutiliza `emailSchema` (normaliza a minúsculas y valida el formato),
+   *  pero aquí es opcional y nulable: no todo el mundo lo ha anotado. */
+  email: emailSchema.nullable().optional(),
   congregationId: z.uuid().nullable().optional(),
   status: believerStatusSchema.optional(),
   alertAfterDays: alertAfterDaysSchema.optional(),

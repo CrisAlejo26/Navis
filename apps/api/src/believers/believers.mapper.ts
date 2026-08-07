@@ -29,6 +29,7 @@ export function toBelieverView(believer: Believer, ministries?: readonly string[
     firstName: believer.firstName,
     lastName: believer.lastName,
     phone: believer.phone,
+    email: believer.email,
     status: believer.status,
     alertAfterDays: believer.alertAfterDays,
     lastNoteAt: believer.lastNoteAt === null ? null : toIsoDay(believer.lastNoteAt),

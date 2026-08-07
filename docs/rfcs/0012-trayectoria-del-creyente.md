@@ -25,6 +25,7 @@ Entra, todo **opcional**:
 - Tres cuentas: **Biblias leídas**, **vivencias leídas** e **institutos
   bíblicos**.
 - Dos labores que faltaban en el catálogo: **vigilancia** y **micrófono**.
+- **El correo electrónico** (D11), a la par que el teléfono.
 - Un comando para **importar el listado** desde el `.xlsx`.
 
 No entra:
@@ -106,6 +107,14 @@ apellidos. Es una heurística y falla con quien tiene uno solo —«Magda Alejan
 Osorio» sale como «Magda» + «Alejandra Osorio»—; se acepta porque la ficha se
 corrige a mano en un segundo y la alternativa, dejarlo todo en el nombre, rompe
 el orden alfabético del listado.
+
+**D11. El correo (añadido el 2026-08-07).** Vive en `believers.email`, igual
+que `phone`: nulable, sin validar más que el formato, y se guarda en
+minúsculas reutilizando `emailSchema` de la autenticación. Es de FASE 1,
+columna E, y se cruza con la misma pareja de nombre que ya resuelve el
+teléfono (D9) — no hace falta un segundo cruce. Se enseña en la ficha junto al
+teléfono, con su propio `mailto:`, y en la exportación; **no** en la tabla del
+listado, por lo mismo que dice el alcance de arriba.
 
 ## Dónde vive
 

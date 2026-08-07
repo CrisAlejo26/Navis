@@ -39,6 +39,10 @@ export class Believer extends BaseEntity {
   @Column({ type: 'text', nullable: true })
   phone: string | null;
 
+  @ApiPropertyOptional({ description: 'Para escribirle. Se guarda en minúsculas' })
+  @Column({ type: 'text', nullable: true })
+  email: string | null;
+
   @ApiProperty({ description: 'Dónde está hoy: activo, nuevo, inactivo o trasladado (D2)' })
   @Column({ type: 'text', default: 'activo' })
   status: BelieverStatus;

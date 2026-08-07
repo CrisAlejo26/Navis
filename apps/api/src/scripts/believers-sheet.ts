@@ -3,9 +3,9 @@ import { serialToDay, type Sheet } from './xlsx-read';
 /**
  * Lo que sale del formulario de altas de la iglesia, ya cruzado.
  *
- * El libro trae **dos hojas y la misma gente en las dos**: en «FASE 1» está el
- * teléfono y en «FASE 2» la trayectoria. Cruzarlas cuesta, y esto es lo que se
- * probó contra el fichero de verdad:
+ * El libro trae **dos hojas y la misma gente en las dos**: en «FASE 1» están el
+ * teléfono y el correo, y en «FASE 2» la trayectoria. Cruzarlas cuesta, y esto
+ * es lo que se probó contra el fichero de verdad:
  *
  * - **Por nombre exacto**: falla en doce de treinta y nueve. Están escritos
  *   distinto en cada hoja: «Luis Eduardo Bedoya urrea» y «Luis Eduardo Urrea
@@ -15,8 +15,8 @@ import { serialToDay, type Sheet } from './xlsx-read';
  *   dos números distintos.
  * - **Por palabras del nombre**, que es lo que hace esto: casan treinta y ocho.
  *   Se comparan los tokens sin acentos ni orden, hacen falta **dos en común** y
- *   **no puede haber empate**; si lo hay, no se casa nadie, porque colgarle el
- *   teléfono de otro a alguien es peor que dejarlo vacío.
+ *   **no puede haber empate**; si lo hay, no se casa nadie con nadie, porque
+ *   colgarle el contacto de otro a alguien es peor que dejarlo vacío.
  *
  * Quien se quede sin pareja sale en `unmatched` para que el importador lo diga.
  */
@@ -24,6 +24,7 @@ export interface SheetPerson {
   row: number;
   fullName: string;
   phone: string | null;
+  email: string | null;
   arrivedAt: string | null;
   arrivalSite: string | null;
   bibleReadings: number | null;
@@ -99,10 +100,13 @@ export function readPeople(sheets: Map<string, Sheet>): SheetReading {
   const fase1 = pick(sheets, 'FASE 1');
   const fase2 = pick(sheets, 'FASE 2');
 
-  const contacts: { tokens: Set<string>; phone: string }[] = [];
+  const contacts: Contact[] = [];
   for (const [line, row] of fase1) {
-    if (line === 1 || !row.A || !row.D) continue;
-    contacts.push({ tokens: tokensOf(row.A), phone: row.D.trim() });
+    if (line === 1 || !row.A) continue;
+    const phone = row.D?.trim() || null;
+    const email = row.E?.trim().toLowerCase() || null;
+    if (!phone && !email) continue;
+    contacts.push({ tokens: tokensOf(row.A), phone, email });
   }
 
   const people: SheetPerson[] = [];
@@ -112,13 +116,14 @@ export function readPeople(sheets: Map<string, Sheet>): SheetReading {
     if (line === 1 || !row.B) continue;
 
     const fullName = row.B.replace(/\s+/g, ' ').trim();
-    const phone = phoneFor(fullName, contacts);
-    if (!phone) unmatched.push(fullName);
+    const contact = contactFor(fullName, contacts);
+    if (!contact) unmatched.push(fullName);
 
     people.push({
       row: line,
       fullName,
-      phone,
+      phone: contact?.phone ?? null,
+      email: contact?.email ?? null,
       arrivedAt: serialToDay(row.H),
       arrivalSite: row.I?.trim() || null,
       bibleReadings: count(row.O),
@@ -132,14 +137,18 @@ export function readPeople(sheets: Map<string, Sheet>): SheetReading {
   return { people, unmatched };
 }
 
-/** El teléfono de quien más palabras del nombre comparta, si gana con claridad. */
-function phoneFor(
-  fullName: string,
-  contacts: readonly { tokens: Set<string>; phone: string }[],
-): string | null {
+/** Una fila de FASE 1: sus palabras y lo que trae, si trae algo. */
+interface Contact {
+  tokens: Set<string>;
+  phone: string | null;
+  email: string | null;
+}
+
+/** El contacto de quien más palabras del nombre comparta, si gana con claridad. */
+function contactFor(fullName: string, contacts: readonly Contact[]): Contact | null {
   const mine = tokensOf(fullName);
 
-  let best: { phone: string; common: number } | null = null;
+  let best: { contact: Contact; common: number } | null = null;
   let tied = false;
 
   for (const contact of contacts) {
@@ -148,14 +157,14 @@ function phoneFor(
     if (common < 2) continue;
 
     if (!best || common > best.common) {
-      best = { phone: contact.phone, common };
+      best = { contact, common };
       tied = false;
     } else if (common === best.common) {
       tied = true;
     }
   }
 
-  return best && !tied ? best.phone : null;
+  return best && !tied ? best.contact : null;
 }
 
 function pick(sheets: Map<string, Sheet>, name: string): Sheet {

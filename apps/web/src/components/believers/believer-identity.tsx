@@ -5,7 +5,7 @@ import {
   type Congregation,
   type IsoDate,
 } from '@navis/shared';
-import { NotebookPen, Pencil, Phone, Trash2 } from 'lucide-react';
+import { Mail, NotebookPen, Pencil, Phone, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import { BelieverPhoto } from '@/components/believers/believer-photo';
@@ -106,6 +106,17 @@ export function BelieverIdentity({
           >
             <Phone size={12} aria-hidden />
             {believer.phone}
+          </a>
+        )}
+
+        {believer.email && (
+          <a
+            href={`mailto:${believer.email}`}
+            aria-label={t('believers.emailPerson', { name })}
+            className="gap-1 text-xs inline-flex items-center rounded-sm text-muted-foreground hover:text-foreground"
+          >
+            <Mail size={12} aria-hidden />
+            {believer.email}
           </a>
         )}
       </div>

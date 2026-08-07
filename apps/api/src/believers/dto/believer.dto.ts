@@ -11,6 +11,7 @@ import { Transform } from 'class-transformer';
 import {
   ArrayMaxSize,
   IsArray,
+  IsEmail,
   IsIn,
   IsInt,
   IsObject,
@@ -26,6 +27,9 @@ import {
 
 const trimmed = ({ value }: { value: unknown }): unknown =>
   typeof value === 'string' ? value.trim() : value;
+
+const trimmedLower = ({ value }: { value: unknown }): unknown =>
+  typeof value === 'string' ? value.trim().toLowerCase() : value;
 
 /** Un día de calendario, no un instante: `AAAA-MM-DD` y nada más. */
 const ISO_DAY = /^\d{4}-\d{2}-\d{2}$/;
@@ -51,6 +55,14 @@ export class CreateBelieverDto {
   @Length(0, 40)
   @Transform(trimmed)
   phone?: string;
+
+  @ApiPropertyOptional({ example: 'ana@iglesia.es', description: 'Se guarda en minúsculas' })
+  @IsOptional()
+  @ValidateIf((_object, value) => value !== null)
+  @Transform(trimmedLower)
+  @IsEmail({}, { message: 'Email no válido' })
+  @Length(0, 255)
+  email?: string | null;
 
   @ApiPropertyOptional({ description: 'Su sede habitual. No acota nada: solo ordena y etiqueta' })
   @IsOptional()
