@@ -19,19 +19,44 @@ const USER: ManagedUser = {
 /** Quien administra. El alcance —qué cuentas puede tocar— llega aparte. */
 const ADMIN = { id: 'admin1', role: SUPERADMIN_ROLE };
 
-function build(user: ManagedUser | null = USER, superadminsTotal = 2, comparteIglesia = true) {
+/** Nivel de cada rol de serie, para los dobles de `RolesService.levelOf`. */
+const LEVEL: Record<string, number> = {
+  creyente: 0,
+  recepcion: 1,
+  pastor: 2,
+  superadmin: 3,
+};
+
+function build(
+  user: ManagedUser | null = USER,
+  superadminsTotal = 2,
+  comparteIglesia = true,
+  churchesPermission = false,
+) {
   const findById = vi.fn().mockResolvedValue(user);
   const findPage = vi.fn().mockResolvedValue({ items: [], total: superadminsTotal });
   const ensureExists = vi.fn().mockResolvedValue(undefined);
+  const levelOf = vi.fn((slug: string) => Promise.resolve(LEVEL[slug] ?? null));
+  const permissionsOf = vi.fn().mockResolvedValue(churchesPermission ? ['churches.manage'] : []);
   const sharesChurchWith = vi.fn().mockResolvedValue(comparteIglesia);
+  const addToActive = vi.fn();
 
   const service = new UserAdminService(
     { findById, findPage } as unknown as UsersService,
-    { ensureExists } as unknown as RolesService,
-    { sharesChurchWith, addToActive: vi.fn() } as unknown as ChurchesService,
+    { ensureExists, levelOf, permissionsOf } as unknown as RolesService,
+    { sharesChurchWith, addToActive } as unknown as ChurchesService,
   );
 
-  return { service, findById, findPage, ensureExists, sharesChurchWith };
+  return {
+    service,
+    findById,
+    findPage,
+    ensureExists,
+    levelOf,
+    permissionsOf,
+    sharesChurchWith,
+    addToActive,
+  };
 }
 
 describe('UserAdminService', () => {
@@ -81,5 +106,36 @@ describe('UserAdminService', () => {
     const { service } = build(USER, 2, false);
 
     await expect(service.setRole('u1', 'pastor', ADMIN)).rejects.toBeInstanceOf(ForbiddenException);
+  });
+
+  // El tope de rol (RFC 0014 D1-D2): nadie asigna un rol igual o por encima
+  // del suyo, salvo el superadministrador.
+  describe('tope de rol', () => {
+    it('un pastor no puede subir a nadie a su propio rol', async () => {
+      const { service } = build();
+      const pastor = { id: 'p1', role: 'pastor' };
+
+      await expect(service.setRole('u1', 'pastor', pastor)).rejects.toBeInstanceOf(
+        ForbiddenException,
+      );
+    });
+
+    it('un pastor no puede asignar el rol de superadministrador', async () => {
+      const { service } = build();
+      const pastor = { id: 'p1', role: 'pastor' };
+
+      await expect(service.setRole('u1', 'superadmin', pastor)).rejects.toBeInstanceOf(
+        ForbiddenException,
+      );
+    });
+
+    it('un rol desconocido para quien pregunta no deja asignar nada', async () => {
+      const { service } = build();
+      const inventado = { id: 'p1', role: 'inventado' };
+
+      await expect(service.setRole('u1', 'recepcion', inventado)).rejects.toBeInstanceOf(
+        ForbiddenException,
+      );
+    });
   });
 });

@@ -106,7 +106,10 @@ export class ChurchesService {
 
   /**
    * El alcance de quien pregunta: los ids de las iglesias cuyas cosas puede
-   * ver. `null` es «todas», y solo lo tiene el superadministrador.
+   * ver. `null` es «todas», y solo lo tiene el superadministrador **sin
+   * restringir** (RFC 0014 D5-D6): con la preferencia activada —el valor de
+   * serie—, un superadministrador pasa por la misma cuenta de iglesias que
+   * cualquier otra cuenta.
    *
    * `only` acota todavía más, para el filtro de la interfaz: se queda con las
    * que además estén en esa lista. Si pide una iglesia a la que no llega, esa
@@ -116,7 +119,9 @@ export class ChurchesService {
   async scopeFor(asker: Asker, only?: readonly string[]): Promise<string[] | null> {
     const pedidas = only?.length ? only : undefined;
 
-    if (asker.role === SUPERADMIN_ROLE) return pedidas ? [...pedidas] : null;
+    if (asker.role === SUPERADMIN_ROLE && !(await this.isRestricted(asker.id))) {
+      return pedidas ? [...pedidas] : null;
+    }
 
     const ids = (await this.accessible(asker)).map((church) => church.id);
     return pedidas ? ids.filter((id) => pedidas.includes(id)) : ids;
@@ -142,10 +147,19 @@ export class ChurchesService {
     }
   }
 
+  /**
+   * Las iglesias a las que llega, sin resolver todavía cuál es la activa.
+   *
+   * Un superadministrador **sin restringir** llega a todas; uno restringido
+   * —el valor de serie— pasa por la misma rama que el resto: por pertenencia
+   * (RFC 0014 D8).
+   */
   private async accessible(asker: Asker): Promise<Church[]> {
     const order = { name: 'ASC' } as const;
 
-    if (asker.role === SUPERADMIN_ROLE) return this.churches.find({ order });
+    if (asker.role === SUPERADMIN_ROLE && !(await this.isRestricted(asker.id))) {
+      return this.churches.find({ order });
+    }
 
     const memberships = await this.members.find({ where: { userId: asker.id } });
     if (memberships.length === 0) return [];
@@ -154,6 +168,12 @@ export class ChurchesService {
       where: { id: In(memberships.map((member) => member.churchId)) },
       order,
     });
+  }
+
+  /** Si esta cuenta prefiere ver solo lo suyo. Sin efecto fuera del superadministrador. */
+  private async isRestricted(userId: string): Promise<boolean> {
+    const profile = await this.profiles.findOrCreate(userId);
+    return profile.restrictOwnScope;
   }
 
   /**

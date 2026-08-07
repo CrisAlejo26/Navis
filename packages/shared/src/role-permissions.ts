@@ -80,6 +80,26 @@ export const ROLE_PERMISSIONS: Record<Role, readonly string[]> = {
   ] satisfies Permission[],
 
   /**
+   * El día a día del pastor —calendario, creyentes, listas, comunicaciones—
+   * sin la parte que lo hace pastor: no administra usuarios y no lleva
+   * `churches.manage`, así que nunca crea ni entra en más de una iglesia
+   * (RFC 0014).
+   */
+  'predicador-apoyo': [
+    'dashboard.view',
+    'calendar.view',
+    'calendar.manage',
+    'believers.view',
+    'believers.manage',
+    'lists.view',
+    'lists.manage',
+    'lists.share',
+    'communications.view',
+    'communications.manage',
+    'churches.view',
+  ] satisfies Permission[],
+
+  /**
    * Sin acceso al panel. Su cuenta existe para quedar enlazada a su ficha de
    * creyente; sus ajustes y su perfil no llevan permiso, los tiene cualquiera
    * con sesión.

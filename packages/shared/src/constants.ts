@@ -4,6 +4,13 @@
  * Los cuatro del medio son ministerios, no escalones: recepción, biblias,
  * sonido y púlpito están al mismo nivel y se distinguen por sus permisos
  * (ver `role-permissions.ts`), no por su posición.
+ *
+ * **`predicador-apoyo`** se añadió después (RFC 0014), en ese mismo nivel:
+ * gestiona calendario, creyentes, listas y comunicaciones como el pastor,
+ * pero no administra usuarios ni `churches.manage` — así que nunca crea otra
+ * iglesia ni entra en más de una: nace en la del pastor que lo da de alta y
+ * se queda ahí. Al no tener nivel de pastor, es este quien puede darlo de
+ * alta (RFC 0014 D2: nadie asigna un rol de su mismo nivel o superior).
  */
 export const ROLES = [
   'creyente',
@@ -11,6 +18,7 @@ export const ROLES = [
   'biblias',
   'sonido',
   'pulpito',
+  'predicador-apoyo',
   'pastor',
   'superadmin',
 ] as const;
@@ -42,6 +50,7 @@ export const ROLE_HIERARCHY: Record<Role, number> = {
   biblias: 1,
   sonido: 1,
   pulpito: 1,
+  'predicador-apoyo': 1,
   pastor: 2,
   superadmin: 3,
 };
@@ -59,6 +68,15 @@ export const MAX_CUSTOM_ROLE_LEVEL = ROLE_HIERARCHY.superadmin - 1;
 
 export function isSystemRole(slug: RoleSlug): slug is Role {
   return (ROLES as readonly string[]).includes(slug);
+}
+
+/**
+ * Si quien tiene el nivel `askerLevel` puede asignarle a alguien un rol de
+ * nivel `targetLevel`: nunca el suyo propio ni uno por encima (RFC 0014 D2).
+ * El superadministrador no pasa por aquí — es quien reparte los roles altos.
+ */
+export function canAssignRoleLevel(askerLevel: number, targetLevel: number): boolean {
+  return targetLevel < askerLevel;
 }
 
 /** `Iglesia Central` → `iglesia-central`. Sin acentos, sin símbolos y sin espacios. */

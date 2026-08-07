@@ -52,4 +52,14 @@ export class Profile extends BaseEntity {
   @ApiProperty({ required: false, nullable: true, description: 'Iglesia activa' })
   @Column({ name: 'active_church_id', type: UUID, nullable: true })
   activeChurchId: string | null;
+
+  /**
+   * Solo tiene efecto para el rol `superadmin` (RFC 0014 D5-D6): con `true`
+   * —el valor de serie—, ve únicamente sus propias iglesias y las cuentas de
+   * sus miembros, igual que un pastor. En cualquier otra cuenta se guarda y no
+   * se lee nunca: no vale la pena bifurcar el esquema por rol para una columna.
+   */
+  @ApiProperty({ description: 'Si el superadministrador ve solo lo suyo por defecto' })
+  @Column({ name: 'restrict_own_scope', type: 'boolean', default: true })
+  restrictOwnScope: boolean;
 }

@@ -13,6 +13,12 @@ interface RoleSelectProps {
   onChange?: (slug: RoleSlug | undefined) => void;
   /** Texto de la opción «todos», cuando el desplegable se usa como filtro. */
   allLabel?: string;
+  /**
+   * Si se pasa, solo se listan los roles con `level` estrictamente por debajo
+   * de este. Es cortesía de interfaz (RFC 0014 D2): la barrera real la pone el
+   * servidor, esto solo evita ofrecer una opción que va a acabar en un 403.
+   */
+  belowLevel?: number;
   size?: 'sm' | 'md';
   className?: string;
 }
@@ -31,13 +37,16 @@ export function RoleSelect({
   defaultValue,
   onChange,
   allLabel,
+  belowLevel,
   size = 'md',
   className,
 }: RoleSelectProps) {
   const { t } = useTranslation();
   const catalog = useRoleCatalog();
   const roleLabel = useRoleLabel();
-  const roles = [...catalog.values()].sort((a, b) => a.level - b.level);
+  const roles = [...catalog.values()]
+    .filter((role) => belowLevel === undefined || role.level < belowLevel)
+    .sort((a, b) => a.level - b.level);
 
   return (
     <Select

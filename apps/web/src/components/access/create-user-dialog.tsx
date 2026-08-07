@@ -12,7 +12,9 @@ import { Input } from '@/components/ui/input';
 import { PasswordInput } from '@/components/ui/password-input';
 import { api } from '@/lib/api';
 import { formText } from '@/lib/form';
+import { useAssignableRoleBelowLevel } from '@/lib/roles';
 import { toast } from '@/lib/toast';
+import { errorFor } from '@/lib/user-errors';
 
 /**
  * Alta de una cuenta desde la administración. Se valida con el mismo esquema
@@ -21,6 +23,7 @@ import { toast } from '@/lib/toast';
 export function CreateUserDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { t } = useTranslation();
   const createUser = useCreateUser(api);
+  const belowLevel = useAssignableRoleBelowLevel();
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
 
@@ -53,11 +56,7 @@ export function CreateUserDialog({ open, onClose }: { open: boolean; onClose: ()
         toast.success(t('auth.accountCreated'));
       },
       onError: (cause) => {
-        setError(
-          cause instanceof ApiError && cause.status === 409
-            ? t('auth.emailTaken')
-            : t('errors.generic'),
-        );
+        setError(cause instanceof ApiError ? errorFor(cause.status, t) : t('errors.generic'));
       },
     });
   };
@@ -83,7 +82,12 @@ export function CreateUserDialog({ open, onClose }: { open: boolean; onClose: ()
           <PasswordMeter value={password} />
         </div>
 
-        <RoleSelect name="role" label={t('roles.role')} defaultValue="member" />
+        <RoleSelect
+          name="role"
+          label={t('roles.role')}
+          defaultValue="member"
+          belowLevel={belowLevel}
+        />
 
         <FormError message={error} />
 

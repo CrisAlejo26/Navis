@@ -21,6 +21,7 @@ function build({
   churches = [CENTRAL, NORTE],
   memberships = [{ churchId: CENTRAL.id, userId: 'u1' }],
   activeChurchId = null as string | null,
+  restrictOwnScope = true,
 }) {
   // Con filtro por id devuelve las de la pertenencia; sin él, el catálogo
   // entero. No se mira por dentro del `In()` de TypeORM: eso ataría el test a
@@ -48,7 +49,9 @@ function build({
 
   const setActiveChurch = vi.fn(() => Promise.resolve());
   const profiles = {
-    findOrCreate: vi.fn(() => Promise.resolve({ activeChurchId, timezone: 'Europe/Madrid' })),
+    findOrCreate: vi.fn(() =>
+      Promise.resolve({ activeChurchId, timezone: 'Europe/Madrid', restrictOwnScope }),
+    ),
     setActiveChurch,
   };
 
@@ -64,14 +67,35 @@ function build({
 }
 
 describe('ChurchesService', () => {
-  it('el superadministrador llega a todas las iglesias', async () => {
-    const { service, find } = build({ memberships: [] });
+  it('el superadministrador sin restringir llega a todas las iglesias', async () => {
+    const { service, find } = build({ memberships: [], restrictOwnScope: false });
 
     const { items } = await service.listFor({ id: 'u9', role: SUPERADMIN_ROLE });
 
     expect(items).toHaveLength(2);
     // Sin filtro por pertenencia: pide el catálogo entero.
     expect(find).toHaveBeenCalledWith({ order: { name: 'ASC' } });
+  });
+
+  // RFC 0014 D7-D8: restringido es el valor de serie, incluso para el
+  // superadministrador. Pasa por la misma rama que un pastor.
+  it('el superadministrador restringido (el valor de serie) solo llega a lo suyo', async () => {
+    const { service, find } = build({});
+
+    const { items } = await service.listFor({ id: 'u1', role: SUPERADMIN_ROLE });
+
+    expect(items.map((church) => church.id)).toEqual([CENTRAL.id]);
+    // Pide por pertenencia, como cualquier otra cuenta: no el catálogo entero.
+    expect(find).not.toHaveBeenCalledWith({ order: { name: 'ASC' } });
+  });
+
+  it('un superadministrador restringido sin iglesias no ve ninguna', async () => {
+    const { service } = build({ memberships: [] });
+
+    const { items, activeId } = await service.listFor({ id: 'u9', role: SUPERADMIN_ROLE });
+
+    expect(items).toEqual([]);
+    expect(activeId).toBeNull();
   });
 
   it('el resto solo llega a aquellas en las que tiene fila', async () => {
@@ -103,14 +127,24 @@ describe('ChurchesService', () => {
     expect(setActiveChurch).toHaveBeenCalledWith('u1', CENTRAL.id);
   });
 
-  it('el superadministrador sin filtro no acota, y con filtro se queda con lo pedido', async () => {
-    const { service } = build({ memberships: [] });
+  it('el superadministrador sin restringir y sin filtro no acota, y con filtro se queda con lo pedido', async () => {
+    const { service } = build({ memberships: [], restrictOwnScope: false });
     const superadmin = { id: 'u9', role: SUPERADMIN_ROLE };
 
     await expect(service.scopeFor(superadmin)).resolves.toBeNull();
     await expect(service.scopeFor(superadmin, [CENTRAL.id, NORTE.id])).resolves.toEqual([
       CENTRAL.id,
       NORTE.id,
+    ]);
+  });
+
+  it('el superadministrador restringido queda acotado a lo suyo, como el filtro de un pastor', async () => {
+    const { service } = build({});
+    const superadmin = { id: 'u1', role: SUPERADMIN_ROLE };
+
+    await expect(service.scopeFor(superadmin)).resolves.toEqual([CENTRAL.id]);
+    await expect(service.scopeFor(superadmin, [CENTRAL.id, NORTE.id])).resolves.toEqual([
+      CENTRAL.id,
     ]);
   });
 

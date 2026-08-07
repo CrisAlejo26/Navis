@@ -132,6 +132,18 @@ export class RolesService {
     }
   }
 
+  /**
+   * El nivel de ese rol, o `null` si no está en el catálogo.
+   *
+   * Es lo que compara el tope de asignación (RFC 0014 D1): sale de la tabla y
+   * no de `ROLE_HIERARCHY`, que solo cubre los siete roles de serie y no un rol
+   * propio de la instalación.
+   */
+  async levelOf(slug: RoleSlug): Promise<number | null> {
+    const role = await this.roles.findOne({ where: { slug } });
+    return role ? role.level : null;
+  }
+
   /** Cuántas cuentas tienen ese rol ahora mismo. */
   async countUsers(slug: RoleSlug): Promise<number> {
     const rows = await this.dataSource.query<{ total: number | string }[]>(

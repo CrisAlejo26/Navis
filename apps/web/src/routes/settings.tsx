@@ -1,14 +1,17 @@
 import { useProfile, useUpdateProfile } from '@navis/api-client';
+import { SUPERADMIN_ROLE } from '@navis/shared';
 import { useTranslation } from 'react-i18next';
 
 import { LanguageSelect } from '@/components/language-select';
 import { ProfileForm } from '@/components/profile-form';
 import { ChurchSettings } from '@/components/settings/church-settings';
+import { ScopeToggle } from '@/components/settings/scope-toggle';
 import { SettingsSection } from '@/components/settings/settings-section';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { Card } from '@/components/ui/card';
 import { FormSkeleton } from '@/components/ui/form-skeleton';
 import { api } from '@/lib/api';
+import { useSession } from '@/lib/auth-client';
 import { useChurches } from '@/lib/churches';
 import { usePermissions } from '@/lib/permissions';
 
@@ -23,6 +26,7 @@ import { usePermissions } from '@/lib/permissions';
  */
 export function SettingsPage() {
   const { t } = useTranslation();
+  const { data: session } = useSession();
   const { data: profile, isLoading } = useProfile(api);
   const updateProfile = useUpdateProfile(api);
   const { active, isLoading: cargandoIglesia } = useChurches();
@@ -36,6 +40,26 @@ export function SettingsPage() {
           {t('settings.subtitle')}
         </p>
       </header>
+
+      {/*
+       * Solo para el superadministrador, y primera: decide qué significa todo
+       * lo que viene después (RFC 0014).
+       */}
+      {session?.user.role === SUPERADMIN_ROLE && profile && (
+        <>
+          <SettingsSection
+            eyebrow={t('settings.scopeGlobal')}
+            title={t('settings.superadminScope')}
+            description={t('settings.superadminScopeHint')}
+          >
+            <Card>
+              <ScopeToggle profile={profile} />
+            </Card>
+          </SettingsSection>
+
+          <hr className="border-border/60" />
+        </>
+      )}
 
       {/*
        * Sin iglesia activa la sección **no sale**, en vez de quedarse en un

@@ -1,5 +1,5 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsString, IsUrl, Length, Matches } from 'class-validator';
+import { IsBoolean, IsOptional, IsString, IsUrl, Length, Matches } from 'class-validator';
 
 export class UpdateProfileDto {
   @ApiPropertyOptional({ example: '+34 600 000 000' })
@@ -36,4 +36,9 @@ export class UpdateProfileDto {
   @IsString()
   @Length(3, 64)
   timezone?: string;
+
+  @ApiPropertyOptional({ description: 'Solo tiene efecto para el rol superadmin (RFC 0014)' })
+  @IsOptional()
+  @IsBoolean()
+  restrictOwnScope?: boolean;
 }

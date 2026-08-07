@@ -1,9 +1,17 @@
 import { useRoles } from '@navis/api-client';
-import { isSystemRole, type Role, type RoleRow, type RoleSlug } from '@navis/shared';
+import {
+  DEFAULT_ROLE,
+  isSystemRole,
+  SUPERADMIN_ROLE,
+  type Role,
+  type RoleRow,
+  type RoleSlug,
+} from '@navis/shared';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { api } from './api';
+import { useSession } from './auth-client';
 
 /**
  * Nombre y descripción de los roles **de serie**, como claves de traducción.
@@ -19,6 +27,7 @@ export const ROLE_LABEL_KEY = {
   biblias: 'roles.biblias',
   sonido: 'roles.sonido',
   pulpito: 'roles.pulpito',
+  'predicador-apoyo': 'roles.predicadorApoyo',
   pastor: 'roles.pastor',
   superadmin: 'roles.superadmin',
 } as const satisfies Record<Role, string>;
@@ -29,6 +38,7 @@ export const ROLE_HINT_KEY = {
   biblias: 'roles.bibliasHint',
   sonido: 'roles.sonidoHint',
   pulpito: 'roles.pulpitoHint',
+  'predicador-apoyo': 'roles.predicadorApoyoHint',
   pastor: 'roles.pastorHint',
   superadmin: 'roles.superadminHint',
 } as const satisfies Record<Role, string>;
@@ -70,4 +80,17 @@ export function useRoleCatalog(enabled = true): Map<RoleSlug, RoleRow> {
     () => new Map((data?.items ?? []).map((role) => [role.slug, role])),
     [data?.items],
   );
+}
+
+/**
+ * El tope de nivel que puede asignar quien ha entrado, para `RoleSelect` en
+ * los formularios de alta y edición de cuentas (RFC 0014 D2). El
+ * superadministrador no tiene tope, así que no se acota su desplegable.
+ */
+export function useAssignableRoleBelowLevel(): number | undefined {
+  const { data: session } = useSession();
+  const catalog = useRoleCatalog();
+  const ownRole = session?.user.role ?? DEFAULT_ROLE;
+
+  return ownRole === SUPERADMIN_ROLE ? undefined : catalog.get(ownRole)?.level;
 }

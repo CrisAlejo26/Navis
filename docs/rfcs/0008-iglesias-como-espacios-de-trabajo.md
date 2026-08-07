@@ -225,6 +225,14 @@ consulta (§7.3). Confundirlas es la forma habitual de abrir un agujero.
 | `churches.manage`       | ✅         | ✅         | —            | —       | —      | —       | —        |
 | `level` (jerarquía)     | 3          | 2          | 1            | 1       | 1      | 1       | 0        |
 
+> **Nota (RFC 0014)**: esta tabla es la semilla original; no incluye `lists.*`
+> (RFC 0010, posterior) ni el octavo rol, **predicador de apoyo** —añadido
+> después, en el nivel 1—, que lleva los mismos permisos que el pastor sobre
+> calendario, creyentes, listas y comunicaciones, pero sin `users.*` ni
+> `churches.manage`: no administra cuentas y no puede crear ni entrar en más
+> de una iglesia. Ver `packages/shared/src/role-permissions.ts` para la
+> semilla vigente de cada rol.
+
 Lecturas de la tabla que conviene no perder:
 
 - **El superadministrador lo ve todo**, y es el único que toca el catálogo de

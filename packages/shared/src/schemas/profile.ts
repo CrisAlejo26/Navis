@@ -11,6 +11,8 @@ export const profileSchema = z.object({
   avatarUrl: z.string().nullable(),
   bio: z.string().nullable(),
   timezone: z.string(),
+  /** Solo tiene efecto para el rol `superadmin` (RFC 0014). */
+  restrictOwnScope: z.boolean(),
   createdAt: z.coerce.date(),
   updatedAt: z.coerce.date(),
 });
@@ -25,6 +27,7 @@ export const updateProfileSchema = z.object({
   avatarUrl: z.url().optional(),
   bio: z.string().max(500).optional(),
   timezone: z.string().min(3).max(64).optional(),
+  restrictOwnScope: z.boolean().optional(),
 });
 
 export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;

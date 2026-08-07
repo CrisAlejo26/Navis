@@ -10,7 +10,9 @@ import { Dialog } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { api } from '@/lib/api';
 import { formText } from '@/lib/form';
+import { useAssignableRoleBelowLevel } from '@/lib/roles';
 import { toast } from '@/lib/toast';
+import { errorFor } from '@/lib/user-errors';
 
 interface EditUserDialogProps {
   user: ManagedUser | null;
@@ -21,6 +23,7 @@ interface EditUserDialogProps {
 export function EditUserDialog({ user, onClose }: EditUserDialogProps) {
   const { t } = useTranslation();
   const updateUser = useUpdateUser(api);
+  const belowLevel = useAssignableRoleBelowLevel();
   const [error, setError] = useState<string | null>(null);
 
   const submit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -45,11 +48,7 @@ export function EditUserDialog({ user, onClose }: EditUserDialogProps) {
           toast.success(t('roles.saved'));
         },
         onError: (cause) => {
-          setError(
-            cause instanceof ApiError && cause.status === 409
-              ? t('auth.emailTaken')
-              : t('errors.generic'),
-          );
+          setError(cause instanceof ApiError ? errorFor(cause.status, t) : t('errors.generic'));
         },
       },
     );
@@ -72,7 +71,12 @@ export function EditUserDialog({ user, onClose }: EditUserDialogProps) {
             defaultValue={user.email}
             required
           />
-          <RoleSelect name="role" label={t('roles.role')} defaultValue={user.role} />
+          <RoleSelect
+            name="role"
+            label={t('roles.role')}
+            defaultValue={user.role}
+            belowLevel={belowLevel}
+          />
 
           <FormError message={error} />
 
