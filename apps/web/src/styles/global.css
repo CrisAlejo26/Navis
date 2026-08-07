@@ -44,35 +44,48 @@
  * `animation-delay` (ver CLAUDE.md), así que cada chispa y cada fogonazo son
  * su propio elemento.
  */
+/*
+ * La chispa **nace grande y brillante en el centro y se apaga encogiéndose**
+ * mientras viaja hacia fuera —como una brasa que se enfría—, no al revés: una
+ * chispa que crece según se aleja se lee como una mancha que se expande, no
+ * como una partícula que sale despedida. El brillo (`box-shadow`, en
+ * `holiday-burst.tsx`) es fijo y no entra en la animación (Regla 9 §5): solo
+ * `opacity` y `transform` se mueven en cada fotograma.
+ */
 @keyframes chispa {
   0% {
     opacity: 0;
-    transform: translate3d(0, 0, 0) scale(0.3);
+    transform: translate3d(0, 0, 0) scale(1.6);
   }
-  16% {
+  14% {
     opacity: 1;
   }
-  38%,
+  40%,
   100% {
     opacity: 0;
-    transform: translate3d(var(--chispa-x), var(--chispa-y), 0) scale(1);
+    transform: translate3d(var(--chispa-x), var(--chispa-y), 0) scale(0.4);
   }
 }
 
-/* El fogonazo de debajo: se abre y se apaga mientras salen las chispas, y
-   luego queda invisible y quieto —sin gasto— hasta el siguiente ciclo. */
+/*
+ * El núcleo del fogonazo: un halo pequeño que se abre y se disuelve —nunca un
+ * disco de color plano— y por eso su fondo es un `radial-gradient` que ya
+ * llega a transparente antes del borde de la caja (`holiday-burst.tsx`). Con
+ * un color sólido detrás, agrandarlo se leía como una pegatina encima de la
+ * celda en vez de como luz que se abre.
+ */
 @keyframes destello {
   0% {
     opacity: 0;
-    transform: scale(0.4);
+    transform: scale(0.5);
   }
-  22% {
-    opacity: 0.5;
+  20% {
+    opacity: 0.85;
   }
-  42%,
+  46%,
   100% {
     opacity: 0;
-    transform: scale(1.8);
+    transform: scale(3.4);
   }
 }
 

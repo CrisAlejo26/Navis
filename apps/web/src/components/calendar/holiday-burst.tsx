@@ -29,7 +29,21 @@
  * chispa es su propio elemento con su vector `--chispa-x`/`--chispa-y`, en
  * vez de una sola imagen de fondo que se ensancha.
  *
- * Solo mueve `opacity` y `transform` (Regla 9 §5), va detrás de todo con
+ * Dos detalles que la primera versión no tenía y que son los que de verdad
+ * distinguen «una partícula de luz» de «un punto de color»:
+ *
+ * - **El núcleo es un `radial-gradient`, no un color plano.** Un círculo
+ *   sólido agrandándose se lee como una pegatina encima de la celda; un
+ *   degradado que ya llega a transparente antes de tocar el borde de su caja
+ *   se lee como luz que se abre y se apaga, sea cual sea el tamaño al que
+ *   crezca.
+ * - **Cada chispa lleva su `box-shadow` fijo**, del mismo color que su
+ *   núcleo. No entra en la animación —es la misma sombra en los tres
+ *   fotogramas—, así que sigue siendo compositor puro (Regla 9 §5): el
+ *   navegador pinta la chispa y su halo una sola vez y de ahí en adelante
+ *   solo mueve y desvanece esa imagen ya hecha.
+ *
+ * Solo se anima `opacity` y `transform` (Regla 9 §5), va detrás de todo con
  * `-z-10` sobre la celda entera —no ya sobre el botón del número— y
  * desaparece con `prefers-reduced-motion` (regla global de
  * `styles/global.css`): el festivo se sigue reconociendo por el número en
@@ -80,29 +94,39 @@ export function HolidayBurst({ day }: { day: number }) {
           className="size-0 absolute"
         >
           <span
-            style={
-              {
-                '--destello-color': fogonazo.paleta[0],
-                animationDelay: `${String(desfase + fogonazo.delay)}ms`,
-              } as React.CSSProperties
-            }
-            className="animate-destello -inset-5 absolute rounded-full bg-[var(--destello-color)] opacity-40"
+            style={{
+              // `72%` y no `100%`: el degradado ya está en transparente unos
+              // puntos antes del borde de la caja, así que crecer nunca
+              // enseña una arista dura.
+              background: `radial-gradient(circle, ${fogonazo.paleta[0]} 0%, ${fogonazo.paleta[0]}00 72%)`,
+              animationDelay: `${String(desfase + fogonazo.delay)}ms`,
+            }}
+            className="animate-destello -m-1.5 size-3 absolute rounded-full"
           />
 
-          {CHISPAS.map((chispa, index) => (
-            <span
-              key={chispa.x + chispa.y}
-              style={
-                {
-                  '--chispa-x': chispa.x,
-                  '--chispa-y': chispa.y,
-                  '--chispa-color': fogonazo.paleta[index % fogonazo.paleta.length],
-                  animationDelay: `${String(desfase + fogonazo.delay + 90)}ms`,
-                } as React.CSSProperties
-              }
-              className="animate-chispa size-1 absolute rounded-full bg-[var(--chispa-color)]"
-            />
-          ))}
+          {CHISPAS.map((chispa, index) => {
+            const color = fogonazo.paleta[index % fogonazo.paleta.length];
+            // Un jitter pequeño (hasta 70ms) por chispa: sin él, las doce
+            // saltan en el mismo instante y se leen como un solo parpadeo en
+            // vez de una explosión con volumen.
+            const jitter = (index * 37) % 70;
+
+            return (
+              <span
+                key={chispa.x + chispa.y}
+                style={
+                  {
+                    '--chispa-x': chispa.x,
+                    '--chispa-y': chispa.y,
+                    background: color,
+                    boxShadow: `0 0 5px ${color}`,
+                    animationDelay: `${String(desfase + fogonazo.delay + 80 + jitter)}ms`,
+                  } as React.CSSProperties
+                }
+                className="animate-chispa size-1 absolute rounded-full"
+              />
+            );
+          })}
         </span>
       ))}
     </span>
