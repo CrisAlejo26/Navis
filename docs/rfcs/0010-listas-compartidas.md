@@ -69,6 +69,8 @@ Entra:
   ver**, y filtrar por lista.
 - Estadísticas de cada lista: cómo está compuesta y quién la mira.
 - Exportarla en los cinco formatos del RFC 0009, sin escribir un escritor más.
+- En la propia página pública, **buscar por nombre y filtrar** por lo que esa
+  lista haya compartido de verdad —sede, labor— (D42).
 - Los textos, en los seis idiomas.
 
 ### Fuera de alcance
@@ -690,6 +692,19 @@ entero.
   la prueba de que aquel juego estaba bien puesto: si esto hubiera necesitado un
   sexto escritor, el de allí estaba mal. La página pública lleva además su propio
   botón de descarga —PDF e imagen—, y en una restringida solo después de entrar.
+
+- **D42 — Búsqueda y filtros de la página pública, sin pedir nada al
+  servidor.** La lista ya llega entera en el JSON (no hay paginación aquí;
+  D33 cuenta visitas, no filas), así que buscar y filtrar es cosa del cliente:
+  ni una petición nueva por cada letra, ni una visita de más por cada filtro
+  que se toca (D31 sigue midiendo solo la carga inicial).
+
+  Los filtros **no son una lista fija de campos**: se calculan mirando lo que
+  esta lista en concreto ha compartido de verdad —si nadie tiene sede pública,
+  no hay filtro de sede—, y solo aparecen cuando distinguen a alguien (con una
+  única sede compartida, filtrar por ella no cambiaría nada, así que ni se
+  enseña). Es la misma lista blanca de D16 vista desde el otro lado: lo que
+  esa lista no publica, tampoco se puede usar para filtrarla.
 
 ### Preguntas abiertas
 

@@ -7,11 +7,13 @@ import { AccessGate } from '@/components/lists/access-gate';
 import { ListPoster } from '@/components/lists/list-poster';
 import { PublicBand } from '@/components/lists/public-band';
 import { PublicFooter } from '@/components/lists/public-footer';
+import { PublicSearchFilters } from '@/components/lists/public-search-filters';
 import { RollCall } from '@/components/lists/roll-call';
 import { PageSkeleton } from '@/components/ui/page-skeleton';
 import { accentVars } from '@/lib/accents';
 import { formatDate } from '@/lib/format';
 import { publicApi } from '@/lib/lists/public-api';
+import { usePublicFilter } from '@/lib/lists/use-public-filter';
 
 /**
  * **La página pública de una lista** (RFC 0010 §8.6, D40).
@@ -27,6 +29,10 @@ export function PublicListPage() {
   const { t } = useTranslation();
   const { token = '' } = useParams();
   const { data: list, error, isLoading } = usePublicList(publicApi, token);
+  // Antes de los `return` de abajo: un hook no puede depender de si la lista
+  // ya ha llegado. Con el array vacío de respaldo, filtra sobre nada mientras
+  // carga y se resuelve solo en cuanto `list` está.
+  const filter = usePublicFilter(list?.members ?? []);
   const poster = useRef<HTMLDivElement>(null);
 
   if (isLoading) return <PageSkeleton />;
@@ -56,7 +62,20 @@ export function PublicListPage() {
         {list.members.length === 0 ? (
           <p className="text-sm text-muted-foreground">{t('lists.emptyList')}</p>
         ) : (
-          <RollCall members={list.members} token={token} />
+          <>
+            <PublicSearchFilters state={filter} />
+
+            {filter.filtered.length === 0 ? (
+              <div className="py-10 text-center">
+                <p className="text-sm text-muted-foreground">{t('lists.noPublicResults')}</p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  {t('lists.noPublicResultsHint')}
+                </p>
+              </div>
+            ) : (
+              <RollCall members={filter.filtered} token={token} />
+            )}
+          </>
         )}
 
         <PublicFooter list={list} token={token} poster={poster} />
