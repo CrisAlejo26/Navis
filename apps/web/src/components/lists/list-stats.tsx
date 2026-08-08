@@ -3,10 +3,10 @@ import type { List } from '@navis/shared';
 import { useTranslation } from 'react-i18next';
 
 import { AccessLogRows } from '@/components/lists/access-log-rows';
-import { BucketBars } from '@/components/lists/bucket-bars';
 import { OverlapRows } from '@/components/lists/overlap-rows';
 import { ViewerRowsStats } from '@/components/lists/viewer-rows-stats';
 import { Wake } from '@/components/lists/wake';
+import { BucketBars } from '@/components/ui/bucket-bars';
 import { Skeleton } from '@/components/ui/skeleton';
 import { api } from '@/lib/api';
 import { formatNumber } from '@/lib/format';

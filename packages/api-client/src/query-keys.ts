@@ -12,6 +12,9 @@ export const queryKeys = {
     status: ['ai', 'status'] as const,
   },
   weather: ['weather'] as const,
+  dashboard: {
+    summary: ['dashboard', 'summary'] as const,
+  },
   setup: {
     status: ['setup', 'status'] as const,
   },

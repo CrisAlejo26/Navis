@@ -61,6 +61,19 @@ export function note(index: number, overrides: Record<string, unknown> = {}) {
 const json = (route: Route, body: unknown) =>
   route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(body) });
 
+/** El panel de inicio (RFC 0001), vacío salvo que el spec ponga algo. */
+export function dashboardSummary(overrides: Record<string, unknown> = {}) {
+  return {
+    believers: { total: 0, newThisMonth: 0 },
+    attention: { count: 0, people: [] },
+    upcomingEvents: [],
+    recentNotes: [],
+    composition: { byCongregation: [], byMinistry: [], byGift: [] },
+    weeklyActivity: [],
+    ...overrides,
+  };
+}
+
 /**
  * Deja la aplicación con sesión, una iglesia y las personas que se le pasen.
  * Lo que no se declara se responde vacío, que es lo que evita que un endpoint
@@ -68,9 +81,16 @@ const json = (route: Route, body: unknown) =>
  */
 export async function montarApi(
   page: Page,
-  data: { believers: ReturnType<typeof believer>[]; notes?: ReturnType<typeof note>[] },
+  data: {
+    believers: ReturnType<typeof believer>[];
+    notes?: ReturnType<typeof note>[];
+    dashboard?: ReturnType<typeof dashboardSummary>;
+    /** Por si un spec necesita simular un tiempo real o una respuesta rara. */
+    weather?: unknown;
+  },
 ): Promise<void> {
   const notes = data.notes ?? [];
+  const dashboard = data.dashboard ?? dashboardSummary();
 
   await page.route('**/api/auth/get-session', (route) =>
     json(route, {
@@ -119,6 +139,12 @@ export async function montarApi(
     ) {
       return json(route, []);
     }
+
+    if (path === '/dashboard/summary') return json(route, dashboard);
+    // `null` por defecto y no el `{}` del comodín de abajo: la iglesia de
+    // prueba no tiene ciudad puesta, que es un caso real y no lo mismo que «no
+    // ha llegado nada» (ver el arreglo de `WeatherChip`, RFC 0001).
+    if (path === '/weather') return json(route, data.weather ?? null);
 
     if (path === '/believers/summary') {
       return json(route, {

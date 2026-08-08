@@ -9,6 +9,7 @@ export * from './calendar-mutations';
 export * from './calendar-setup-mutations';
 export * from './church-hooks';
 export * from './client';
+export * from './dashboard-hooks';
 export * from './dream-hooks';
 export * from './dream-mutations';
 export * from './export-hooks';

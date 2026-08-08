@@ -8,11 +8,13 @@ export interface Bucket {
 }
 
 /**
- * Un reparto en barra apilada, **con el color de cada cosa** (RFC 0010 §8.3).
+ * Un reparto en barra apilada, **con el color de cada cosa**.
  *
  * La sede, la labor y el don ya tienen color propio en toda la aplicación, así
  * que aquí se usa el suyo: el color dice de qué se está hablando y no hace falta
- * mirar la leyenda dos veces (D37).
+ * mirar la leyenda dos veces (RFC 0010 §8.3, D37). Lo usan las estadísticas de
+ * una lista y la composición del panel de inicio (RFC 0001): es el mismo dato
+ * —cómo está repartida la gente— visto desde dos sitios distintos.
  *
  * La leyenda va debajo con **texto y cifra**, no solo color: el color es
  * refuerzo (Regla 3 §7).

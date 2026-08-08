@@ -15,6 +15,7 @@ export * from './schemas/calendars';
 export * from './schemas/churches';
 export * from './schemas/common';
 export * from './schemas/congregations';
+export * from './schemas/dashboard';
 export * from './schemas/default-week';
 export * from './schemas/dream-queries';
 export * from './schemas/dreams';

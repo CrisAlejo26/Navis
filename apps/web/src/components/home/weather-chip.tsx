@@ -65,6 +65,11 @@ export function WeatherChip() {
   }
 
   const Icon = ICON[data.kind];
+  // Un `kind` que no está en el mapa —proveedor caído, caché a medias— no es
+  // motivo para tumbar todo el panel: mejor nada que un icono `undefined`
+  // reventando el árbol entero (lo destapó el primer e2e que abre el panel
+  // de verdad, RFC 0001).
+  if (!Icon) return null;
 
   return (
     <p className="gap-2 text-sm flex items-center text-muted-foreground">

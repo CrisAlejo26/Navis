@@ -84,6 +84,15 @@ import { NotesViewService } from './notes-view.service';
   ],
   // `BelieverPhotosService` sale porque la página pública de una lista sirve la
   // foto por su propia puerta, con sus cinco cierres (RFC 0010 D17).
-  exports: [BelieversService, BelieversRosterService, BelieverPhotosService],
+  // `BelieversPageService` y `BelieversSummaryService` salen para el panel de
+  // inicio (RFC 0001): la vista previa de «quién pide atención» es la misma
+  // consulta que el listado, y no hay motivo para volver a escribirla.
+  exports: [
+    BelieversService,
+    BelieversRosterService,
+    BelieverPhotosService,
+    BelieversPageService,
+    BelieversSummaryService,
+  ],
 })
 export class BelieversModule {}
