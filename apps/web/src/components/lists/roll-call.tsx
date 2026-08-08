@@ -30,62 +30,66 @@ export function RollCall({
 
   return (
     <ol className="gap-1 flex flex-col">
-      {members.map((member, index) => (
-        <li
-          key={`${String(member.position)}-${member.name}`}
-          style={{ animationDelay: `${String(index * CASCADA_MS)}ms` }}
-          className="gap-4 py-2.5 animate-page-in flex items-baseline border-b border-border/60 last:border-b-0"
-        >
-          <span
-            aria-hidden
-            className="w-12 text-3xl font-semibold shrink-0 text-right text-[var(--acento)]/35 tabular-nums"
+      {members.map((member, index) => {
+        // Los datos, unidos con «·» en **una sola línea de texto** en vez de
+        // media docena de `<span>` sueltos: sin un separador entre ellos, en
+        // un teléfono el `flex-wrap` los partía en cualquier punto y quedaban
+        // amontonados sin que se distinguiera un dato del siguiente.
+        const facts = [
+          member.congregation,
+          member.ministry,
+          member.arrivedAt &&
+            `${t('believers.journey.arrived')} · ${formatMonth(member.arrivedAt)}${
+              member.arrivalSite ? ` · ${member.arrivalSite}` : ''
+            }`,
+          member.bibleReadings !== null && `${t('lists.bibleReadings')}: ${member.bibleReadings}`,
+          member.vivenciasReadings !== null &&
+            `${t('lists.vivenciasReadings')}: ${member.vivenciasReadings}`,
+          member.bibleInstituteTimes !== null &&
+            `${t('lists.bibleInstituteTimes')}: ${member.bibleInstituteTimes}`,
+        ].filter((one): one is string => Boolean(one));
+
+        return (
+          <li
+            key={`${String(member.position)}-${member.name}`}
+            style={{ animationDelay: `${String(index * CASCADA_MS)}ms` }}
+            className="gap-3 sm:gap-4 py-3 animate-page-in flex items-baseline border-b border-border/60 last:border-b-0"
           >
-            {member.position + 1}
-          </span>
+            <span
+              aria-hidden
+              className="w-9 sm:w-12 text-2xl sm:text-3xl font-semibold shrink-0 text-right text-[var(--acento)]/35 tabular-nums"
+            >
+              {member.position + 1}
+            </span>
 
-          {member.photoId && (
-            <img
-              alt=""
-              loading="lazy"
-              // En una restringida la foto va detrás de la cookie del acceso;
-              // sin esto el navegador la pide **sin cookie** y recibe un 404.
-              crossOrigin="use-credentials"
-              src={`${publicAssetOrigin(publicApi.baseUrl)}${listPhotoPath(token, member.photoId)}`}
-              className="size-9 max-w-none shrink-0 self-center rounded-full border object-cover"
-            />
-          )}
+            {member.photoId && (
+              <img
+                alt=""
+                loading="lazy"
+                // En una restringida la foto va detrás de la cookie del acceso;
+                // sin esto el navegador la pide **sin cookie** y recibe un 404.
+                crossOrigin="use-credentials"
+                src={`${publicAssetOrigin(publicApi.baseUrl)}${listPhotoPath(token, member.photoId)}`}
+                className="size-9 max-w-none shrink-0 self-center rounded-full border object-cover"
+              />
+            )}
 
-          <div className="min-w-0 flex-1">
-            <p className="text-lg leading-snug">{member.name}</p>
-            <p className="gap-2 text-xs flex flex-wrap text-muted-foreground">
-              {member.congregation && <span>{member.congregation}</span>}
-              {member.ministry && <span>{member.ministry}</span>}
-              {member.arrivedAt && (
-                <span>
-                  {t('believers.journey.arrived')} · {formatMonth(member.arrivedAt)}
-                  {member.arrivalSite && ` · ${member.arrivalSite}`}
-                </span>
+            <div className="min-w-0 flex-1">
+              <p className="text-lg leading-snug">{member.name}</p>
+              {(facts.length > 0 || member.note) && (
+                <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">
+                  {facts.join(' · ')}
+                  {member.note && (
+                    <span className="italic">
+                      {facts.length > 0 && ' · '}«{member.note}»
+                    </span>
+                  )}
+                </p>
               )}
-              {member.bibleReadings !== null && (
-                <span>
-                  {t('lists.bibleReadings')}: {member.bibleReadings}
-                </span>
-              )}
-              {member.vivenciasReadings !== null && (
-                <span>
-                  {t('lists.vivenciasReadings')}: {member.vivenciasReadings}
-                </span>
-              )}
-              {member.bibleInstituteTimes !== null && (
-                <span>
-                  {t('lists.bibleInstituteTimes')}: {member.bibleInstituteTimes}
-                </span>
-              )}
-              {member.note && <span className="italic">«{member.note}»</span>}
-            </p>
-          </div>
-        </li>
-      ))}
+            </div>
+          </li>
+        );
+      })}
     </ol>
   );
 }

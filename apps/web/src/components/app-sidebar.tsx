@@ -37,7 +37,7 @@ export function AppSidebar({
   return (
     <aside
       className={cn(
-        'ease-out md:flex relative hidden shrink-0 flex-col border-r bg-card transition-[width] duration-300',
+        'ease-out md:sticky md:top-0 md:flex relative hidden h-dvh shrink-0 flex-col border-r bg-card transition-[width] duration-300',
         collapsed ? 'w-16' : 'w-64',
       )}
     >

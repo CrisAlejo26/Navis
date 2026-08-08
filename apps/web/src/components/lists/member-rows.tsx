@@ -49,7 +49,7 @@ export function MemberRows({
 
   return (
     <>
-      <ol className="rounded-xl border bg-card">
+      <ol className="gap-2 md:gap-0 md:rounded-xl md:border md:bg-card flex flex-col">
         {members.map((member, index) => (
           <MemberRow
             key={member.believerId}
