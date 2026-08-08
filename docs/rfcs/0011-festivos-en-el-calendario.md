@@ -111,3 +111,36 @@ Andalucía».
 
 Festivos locales y municipales, fiestas propias de la iglesia, la app móvil, y
 cualquier automatismo que mueva una reunión: eso lo decide una persona.
+
+## Ampliación: selector geográfico en cascada
+
+**D7 y D9 quedan revisadas.** D7 seguía siendo correcta —la comunidad nace sin
+elegir—, pero D9 («la comunidad solo se despliega para España; para cualquier
+otro país se escribe el código a mano») era una limitación de partida, no una
+decisión definitiva: dejaba a cualquier iglesia fuera de España sin festivos
+regionales y con un campo de texto que había que rellenar sabiendo el código
+ISO 3166-2 de memoria. País, comunidad y ciudad pasan a ser un único selector
+en cascada, y funciona igual para cualquier país. El detalle de la
+implementación está en `docs/selector-geografico-plan.md`; aquí solo lo que
+cambia del contrato de esta RFC:
+
+- El país deja de ser un campo de texto de dos letras: es un buscador sobre la
+  lista ISO 3166-1, con el nombre resuelto por `Intl.DisplayNames` —ya
+  traducido a los seis idiomas sin fichero que mantener—.
+- La comunidad se busca igual, y ahora con nombre para **cualquier país**, no
+  solo España: los datos son un dataset ISO 3166-2 vendido con la licencia ISC
+  de su origen, partido en un fichero por país y cargado solo cuando se elige
+  ese país (D13 del plan). Sin ellos, sigue funcionando como hasta ahora: el
+  código a mano.
+- `regionLabel` (`packages/shared`) pasa a resolverse de forma perezosa
+  también al pintar «Festivo en X»: la primera vez que aparece un festivo de un
+  país sin comunidades ya cargadas, se ve el código un instante y el nombre en
+  cuanto llega el fichero de ese país —el mismo país no se vuelve a pedir—.
+- **Nada de esto toca la fuente de festivos ni el servidor de festivos**: sigue
+  siendo `date.nager.at`, y ya daba nacionales y regionales para unos ciento
+  diez países (D2). El problema nunca fue la fuente: era que la interfaz solo
+  sabía poner nombre a las comunidades de España.
+- **Ninguna migración de base de datos.** El país y la comunidad de la iglesia
+  ya eran columnas de texto sin restricción de tamaño; lo que cambia es de
+  dónde salen las opciones del formulario, y esos datos son estáticos y no de
+  la instalación de nadie.

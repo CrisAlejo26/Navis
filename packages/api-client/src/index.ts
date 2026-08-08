@@ -13,6 +13,7 @@ export * from './dashboard-hooks';
 export * from './dream-hooks';
 export * from './dream-mutations';
 export * from './export-hooks';
+export * from './geocode-hooks';
 export * from './gift-hooks';
 export * from './hooks';
 export * from './list-hooks';

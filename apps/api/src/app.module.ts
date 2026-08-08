@@ -17,6 +17,7 @@ import { env, isProduction } from './config/env';
 import { dataSourceOptions } from './database/data-source';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { DreamsModule } from './dreams/dreams.module';
+import { GeocodeModule } from './geocode/geocode.module';
 import { HealthModule } from './health/health.module';
 import { ListsModule } from './lists/lists.module';
 import { ProfilesModule } from './profiles/profiles.module';
@@ -61,6 +62,7 @@ import { WeatherModule } from './weather/weather.module';
     HealthModule,
     AiModule,
     WeatherModule,
+    GeocodeModule,
   ],
   providers: [
     // El orden importa: primero se resuelve la sesión, después los permisos.

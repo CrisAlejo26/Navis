@@ -1,9 +1,11 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import { Select } from '@/components/ui/select';
+import { Combobox } from '@/components/ui/combobox';
+import { matchesQuery } from '@/lib/geo/match';
 
 /**
- * Todas las zonas horarias IANA, agrupadas por continente.
+ * Todas las zonas horarias IANA, buscables (RFC 0011, ampliación).
  *
  * La lista la da el navegador (`Intl.supportedValuesOf`), así que está siempre
  * al día y no ocupa nada en el paquete. Donde no exista —navegadores viejos y
@@ -17,10 +19,9 @@ function supportedTimeZones(): string[] {
   return [Intl.DateTimeFormat().resolvedOptions().timeZone];
 }
 
-/** `Europe/Madrid` → `Madrid`, y `America/Argentina/Salta` → `Argentina · Salta`. */
-function cityOf(zone: string): string {
-  const parts = zone.split('/').slice(1);
-  return parts.length ? parts.join(' · ').replaceAll('_', ' ') : zone;
+/** `Europe/Madrid` → `Europe · Madrid`, para que se lea y se busque por región. */
+function labelOf(zone: string): string {
+  return zone.replaceAll('_', ' ').replaceAll('/', ' · ');
 }
 
 export function TimezoneSelect({
@@ -32,31 +33,34 @@ export function TimezoneSelect({
   label: string;
   defaultValue: string;
 }) {
-  const groups = useMemo(() => {
+  const { t } = useTranslation();
+  const [value, setValue] = useState(defaultValue);
+  const [query, setQuery] = useState('');
+
+  const options = useMemo(() => {
     const zones = supportedTimeZones();
     // La zona guardada puede no estar en la lista del navegador; se añade para
-    // que el desplegable no la pierda al abrirlo.
+    // que el combobox no la pierda al abrirlo.
     if (defaultValue && !zones.includes(defaultValue)) zones.push(defaultValue);
 
-    const byRegion = new Map<string, string[]>();
-    for (const zone of zones.sort((a, b) => a.localeCompare(b))) {
-      const region = zone.split('/')[0] ?? zone;
-      byRegion.set(region, [...(byRegion.get(region) ?? []), zone]);
-    }
-    return [...byRegion.entries()];
+    return zones
+      .sort((a, b) => a.localeCompare(b))
+      .map((zone) => ({ value: zone, label: labelOf(zone) }));
   }, [defaultValue]);
 
+  const filtered = options.filter((option) => matchesQuery(option.label, option.value, query));
+
   return (
-    <Select name={name} label={label} defaultValue={defaultValue}>
-      {groups.map(([region, zones]) => (
-        <optgroup key={region} label={region.replaceAll('_', ' ')}>
-          {zones.map((zone) => (
-            <option key={zone} value={zone}>
-              {cityOf(zone)}
-            </option>
-          ))}
-        </optgroup>
-      ))}
-    </Select>
+    <Combobox
+      name={name}
+      label={label}
+      placeholder={t('church.searchPlaceholder')}
+      value={value}
+      options={filtered}
+      query={query}
+      onQueryChange={setQuery}
+      onSelect={setValue}
+      emptyLabel={t('church.timezoneNoResults')}
+    />
   );
 }

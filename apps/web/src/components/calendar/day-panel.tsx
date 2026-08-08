@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { MeetingRibbon } from '@/components/calendar/meeting-ribbon';
 import { Button } from '@/components/ui/button';
 import { Drawer } from '@/components/ui/drawer';
-import { holidayScopeLabel } from '@/lib/calendar/holiday';
+import { useHolidayScopeLabel } from '@/lib/calendar/holiday';
 import { longDay } from '@/lib/calendar/labels';
 import { cn } from '@/lib/cn';
 
@@ -39,6 +39,7 @@ export function DayPanel({
   const meetings = day?.meetings ?? [];
   const withMeetings = new Set(meetings.map((meeting) => meeting.congregationId));
   const varias = congregations.length > 1;
+  const alcance = useHolidayScopeLabel(day?.holiday);
 
   return (
     <Drawer
@@ -59,9 +60,7 @@ export function DayPanel({
             <span aria-hidden className="mt-1.5 size-1.5 shrink-0 rounded-full bg-destructive" />
             <span className="min-w-0">
               <span className="font-medium">{day.holiday.name}</span>
-              <span className="text-xs block text-muted-foreground">
-                {holidayScopeLabel(day.holiday, t)}
-              </span>
+              <span className="text-xs block text-muted-foreground">{alcance}</span>
             </span>
           </p>
         )}

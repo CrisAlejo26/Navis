@@ -21,6 +21,7 @@ export * from './schemas/dream-queries';
 export * from './schemas/dreams';
 export * from './schemas/emotions';
 export * from './schemas/export';
+export * from './schemas/geocode';
 export * from './schemas/gifts';
 export * from './schemas/holidays';
 export * from './schemas/list-members';

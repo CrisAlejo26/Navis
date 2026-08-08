@@ -1,7 +1,6 @@
 import type { Holiday } from '@navis/shared';
-import { useTranslation } from 'react-i18next';
 
-import { holidayScopeLabel } from '@/lib/calendar/holiday';
+import { useHolidayScopeLabel } from '@/lib/calendar/holiday';
 import { cn } from '@/lib/cn';
 
 /**
@@ -19,8 +18,7 @@ import { cn } from '@/lib/cn';
  * `aria-label`.
  */
 export function HolidayMark({ holiday, compact = false }: { holiday: Holiday; compact?: boolean }) {
-  const { t } = useTranslation();
-  const alcance = holidayScopeLabel(holiday, t);
+  const alcance = useHolidayScopeLabel(holiday);
 
   return (
     <p

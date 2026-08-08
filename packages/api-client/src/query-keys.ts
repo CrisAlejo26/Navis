@@ -112,4 +112,8 @@ export const queryKeys = {
     emotions: ['dreams', 'emotions'] as const,
   },
   health: ['health'] as const,
+  /** La búsqueda de ciudades del selector geográfico (RFC 0011, ampliación). */
+  geocode: {
+    cities: (query: object) => ['geocode', 'cities', query] as const,
+  },
 } as const;

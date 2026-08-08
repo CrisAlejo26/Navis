@@ -1,7 +1,10 @@
 import type { Church } from '@navis/shared';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { HolidayFields } from '@/components/church/holiday-fields';
+import { CityField } from '@/components/church/city-field';
+import { CountryField } from '@/components/church/country-field';
+import { RegionField } from '@/components/church/region-field';
 import { Input } from '@/components/ui/input';
 import { TimezoneSelect } from '@/components/ui/timezone-select';
 
@@ -14,9 +17,18 @@ import { TimezoneSelect } from '@/components/ui/timezone-select';
  *
  * El identificador no está a propósito: se derivó del nombre al crearla y no
  * cambia, porque va en las URL (ver `ChurchesService.update`).
+ *
+ * País, comunidad, ciudad y zona horaria van en ese orden y en cascada (RFC
+ * 0011, ampliación): el país decide qué comunidades tiene sentido enseñar
+ * (`RegionField` se remonta con `key={country}`, que es más simple que un
+ * efecto que resetee a mano), y elegir una ciudad puede sugerir su zona
+ * horaria (`TimezoneSelect` se remonta con `key={timezoneHint}` cuando eso
+ * pasa, y solo entonces).
  */
 export function ChurchFormFields({ church }: { church: Church }) {
   const { t } = useTranslation();
+  const [country, setCountry] = useState(church.country);
+  const [timezoneHint, setTimezoneHint] = useState<string | null>(null);
 
   return (
     <>
@@ -31,19 +43,34 @@ export function ChurchFormFields({ church }: { church: Church }) {
         autoComplete="off"
         required
       />
-      <Input
-        name="city"
-        label={t('church.city')}
-        defaultValue={church.city ?? ''}
-        autoComplete="off"
-        required
+
+      <CountryField
+        defaultValue={church.country}
+        onChange={(next) => {
+          setCountry(next);
+        }}
       />
+
+      <RegionField
+        key={country}
+        country={country}
+        defaultValue={country === church.country ? church.region : null}
+      />
+
+      <CityField
+        country={country}
+        defaultValue={church.city ?? ''}
+        onCitySelected={(timezone) => {
+          setTimezoneHint(timezone);
+        }}
+      />
+
       <TimezoneSelect
+        key={timezoneHint ?? 'initial'}
         name="timezone"
         label={t('profile.timezone')}
-        defaultValue={church.timezone}
+        defaultValue={timezoneHint ?? church.timezone}
       />
-      <HolidayFields church={church} />
     </>
   );
 }
