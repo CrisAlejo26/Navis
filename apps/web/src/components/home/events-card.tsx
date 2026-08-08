@@ -3,20 +3,28 @@ import { CalendarClock } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 
+import { TileHeader } from '@/components/home/tile-header';
 import { Card } from '@/components/ui/card';
 import { EmptyState } from '@/components/ui/empty-state';
 import { accentVars } from '@/lib/accents';
+import { cn } from '@/lib/cn';
 import { formatDay } from '@/lib/format';
+import { ACCENT_TONE } from '@/lib/stat-tones';
 
-/** Los próximos eventos del calendario de púlpito (RFC 0001). */
+/**
+ * Los próximos eventos del calendario de púlpito (RFC 0001).
+ *
+ * Mismo tratamiento de cabecera y filo que `MetricCard`, con el acento
+ * `primary` del propio calendario: es la tercera cara del instrumento de la
+ * primera fila, no una tarjeta de lista aparte.
+ */
 export function EventsCard({ events }: { events: readonly DashboardEvent[] }) {
   const { t } = useTranslation();
 
   return (
-    <Card className="p-0 gap-0 flex flex-col overflow-hidden">
-      <div className="p-5 pb-3 gap-2 flex items-center text-muted-foreground">
-        <CalendarClock size={16} aria-hidden />
-        <p className="text-sm font-medium">{t('home.upcomingEvents')}</p>
+    <Card className={cn('p-0 gap-0 flex flex-col overflow-hidden', ACCENT_TONE.primary.edge)}>
+      <div className="p-5 pb-3">
+        <TileHeader icon={CalendarClock} label={t('home.upcomingEvents')} tone="primary" />
       </div>
 
       {events.length === 0 ? (

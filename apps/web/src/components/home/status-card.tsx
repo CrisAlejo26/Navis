@@ -14,6 +14,11 @@ import { formatAgo } from '@/lib/format';
  * abrir el panel —cuántos somos, a quién se le está yendo el tiempo—, así que
  * comparten un cuadro con una sola línea partiéndolo, en vez de ser dos fichas
  * idénticas sueltas en una rejilla (Regla 9 §2: nada de plantilla de SaaS).
+ *
+ * Creyentes es el ancla de toda la primera fila del panel —cuántos somos— y
+ * lleva el único tono `filled` de la fila; atención va en `warning`, que es
+ * el mismo acento que ya usa `TriangleAlert` en el resto de la aplicación
+ * para «esto pide que lo mires».
  */
 export function StatusCard({
   believers,
@@ -33,6 +38,7 @@ export function StatusCard({
         sub={t('home.newThisMonth', { count: believers.newThisMonth })}
         to="/believers"
         linkLabel={t('home.believersLink')}
+        tone="filled"
       />
 
       <MetricCard
@@ -41,6 +47,7 @@ export function StatusCard({
         value={attention.count}
         to="/believers?attention=true"
         linkLabel={t('home.attentionLink')}
+        tone="warning"
       >
         {attention.people.length > 0 && (
           <ul className="gap-2 flex flex-col">
