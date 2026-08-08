@@ -27,9 +27,11 @@ export function DashboardPage() {
       <WelcomeHeader />
 
       <div className="gap-4 sm:grid-cols-2 lg:grid-cols-4 grid">
-        <div className="sm:col-span-2 lg:col-span-2">
-          <StatusCard believers={data.believers} attention={data.attention} />
-        </div>
+        <StatusCard
+          believers={data.believers}
+          attention={data.attention}
+          className="sm:col-span-2 lg:col-span-2"
+        />
         <EventsCard events={data.upcomingEvents} />
         <NotesCard notes={data.recentNotes} />
       </div>

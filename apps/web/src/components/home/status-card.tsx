@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { BelieverPhoto } from '@/components/believers/believer-photo';
 import { MetricCard } from '@/components/home/metric-card';
 import { Card } from '@/components/ui/card';
+import { cn } from '@/lib/cn';
 import { formatAgo } from '@/lib/format';
 
 /**
@@ -19,18 +20,32 @@ import { formatAgo } from '@/lib/format';
  * lleva el único tono `filled` de la fila; atención va en `warning`, que es
  * el mismo acento que ya usa `TriangleAlert` en el resto de la aplicación
  * para «esto pide que lo mires».
+ *
+ * `className` recibe el `col-span` de la rejilla del panel y se aplica **al
+ * propio `Card`**, no a un `<div>` que lo envuelva: si el `Card` no es él
+ * mismo el hijo directo de la rejilla, el estiramiento por defecto de CSS
+ * Grid (`align-items: stretch`) se queda en el envoltorio y no llega a la
+ * tarjeta, que se queda con su alto de contenido y dejaba un hueco en blanco
+ * debajo mientras `EventsCard`/`NotesCard` sí llenaban la fila.
  */
 export function StatusCard({
   believers,
   attention,
+  className,
 }: {
   believers: { total: number; newThisMonth: number };
   attention: { count: number; people: readonly DashboardAttentionPerson[] };
+  className?: string;
 }) {
   const { t } = useTranslation();
 
   return (
-    <Card className="p-0 gap-0 sm:grid-cols-2 sm:divide-x sm:divide-y-0 grid grid-cols-1 divide-y overflow-hidden">
+    <Card
+      className={cn(
+        'p-0 gap-0 sm:grid-cols-2 sm:divide-x sm:divide-y-0 grid grid-cols-1 divide-y overflow-hidden',
+        className,
+      )}
+    >
       <MetricCard
         icon={Users}
         label={t('home.believers')}
