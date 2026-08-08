@@ -3,7 +3,9 @@ import type { Repository } from 'typeorm';
 import { describe, expect, it, vi } from 'vitest';
 
 import type { Calendar } from './calendar.entity';
+import type { CalendarsService } from './calendars.service';
 import type { Congregation } from './congregation.entity';
+import type { CongregationsService } from './congregations.service';
 import type { MeetingPattern } from './meeting-pattern.entity';
 import type { PatternPhase } from './pattern-phase.entity';
 import { WeekSeederService } from './week-seeder.service';
@@ -49,10 +51,27 @@ function build({
     findOne: vi.fn(() => Promise.resolve({ id: 'cal', ministry })),
   } as unknown as Repository<Calendar>;
 
+  const ensureForCalendars = vi.fn(() => Promise.resolve([{ id: 'cal', ministry }]));
+  const calendarsService = { ensureFor: ensureForCalendars } as unknown as CalendarsService;
+
+  const ensureForCongregations = vi.fn(() => Promise.resolve(sedes));
+  const congregationsService = {
+    ensureFor: ensureForCongregations,
+  } as unknown as CongregationsService;
+
   return {
-    service: new WeekSeederService(patterns, phases, congregations, calendars),
+    service: new WeekSeederService(
+      patterns,
+      phases,
+      congregations,
+      calendars,
+      calendarsService,
+      congregationsService,
+    ),
     guardados,
     fases,
+    ensureForCalendars,
+    ensureForCongregations,
   };
 }
 
@@ -136,5 +155,32 @@ describe('la semana de serie', () => {
     expect(new Set(guardados.map((one) => one.congregationId))).toEqual(
       new Set(['elda', 'alicante']),
     );
+  });
+
+  // El fallo real que arregla esto: el panel de inicio de una iglesia recién
+  // creada llamaba a `calendars.ensureFor` a secas, y los calendarios nacían
+  // sin la semana de serie porque nadie llamaba a `seedCalendar` después.
+  describe('ensureScaffold', () => {
+    it('garantiza calendarios, sede y la semana de cada pareja, en un solo paso', async () => {
+      const { service, guardados, ensureForCalendars, ensureForCongregations } = build();
+
+      const scaffold = await service.ensureScaffold('c1');
+
+      expect(ensureForCalendars).toHaveBeenCalledWith('c1');
+      expect(ensureForCongregations).toHaveBeenCalledWith('c1');
+      expect(scaffold).toEqual({
+        calendars: [{ id: 'cal', ministry: 'pulpito' }],
+        congregations: [{ id: 'elda', accent: 'success' }],
+      });
+      expect(guardados).toHaveLength(DEFAULT_WEEK.length);
+    });
+
+    it('no repite la siembra donde ya hay una semana', async () => {
+      const { service, guardados } = build({ yaTiene: true });
+
+      await service.ensureScaffold('c1');
+
+      expect(guardados).toEqual([]);
+    });
   });
 });

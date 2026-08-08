@@ -1,6 +1,6 @@
 import type { Calendar } from '../calendar/calendar.entity';
-import type { CalendarsService } from '../calendar/calendars.service';
 import type { ScheduleService } from '../calendar/schedule.service';
+import type { WeekSeederService } from '../calendar/week-seeder.service';
 import { describe, expect, it, vi } from 'vitest';
 
 import { DashboardEventsService } from './dashboard-events.service';
@@ -10,13 +10,13 @@ const calendario = (slug: string): Calendar => ({ id: `id-${slug}`, slug }) as C
 function build(calendars: Calendar[], result: unknown) {
   const range = vi.fn(() => Promise.resolve(result));
 
-  const calendarsService = {
-    ensureFor: vi.fn(() => Promise.resolve(calendars)),
-  } as unknown as CalendarsService;
+  const weekSeeder = {
+    ensureScaffold: vi.fn(() => Promise.resolve({ calendars, congregations: [] })),
+  } as unknown as WeekSeederService;
 
   const scheduleService = { range } as unknown as ScheduleService;
 
-  return { service: new DashboardEventsService(calendarsService, scheduleService), range };
+  return { service: new DashboardEventsService(weekSeeder, scheduleService), range };
 }
 
 describe('los próximos eventos de la portada', () => {

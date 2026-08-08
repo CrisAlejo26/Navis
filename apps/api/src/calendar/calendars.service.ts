@@ -8,6 +8,7 @@ import {
 } from '@navis/shared';
 import { Repository } from 'typeorm';
 
+import { isUniqueViolation } from '../database/unique-violation';
 import { Calendar } from './calendar.entity';
 
 /**
@@ -30,22 +31,31 @@ export class CalendarsService {
    * Los calendarios, sembrando los cuatro de serie si la iglesia no tiene
    * ninguno. Igual que con las sedes, una iglesia creada después de la
    * migración nacería vacía y no habría dónde programar.
+   *
+   * La primera carga de una iglesia recién creada dispara varias pantallas a
+   * la vez, y más de una puede llegar aquí viendo «ninguno» antes de que la
+   * otra termine de sembrar: la segunda choca contra `UQ_calendars_slug` y eso
+   * no es un fallo, es haber llegado tarde a un trabajo ya hecho.
    */
   async ensureFor(churchId: string): Promise<Calendar[]> {
     const all = await this.list(churchId);
     if (all.length > 0) return all;
 
-    await this.calendars.save(
-      SEEDED_CALENDARS.map((one, position) =>
-        this.calendars.create({
-          churchId,
-          name: one.name,
-          slug: one.slug,
-          ministry: one.ministry,
-          position,
-        }),
-      ),
-    );
+    try {
+      await this.calendars.save(
+        SEEDED_CALENDARS.map((one, position) =>
+          this.calendars.create({
+            churchId,
+            name: one.name,
+            slug: one.slug,
+            ministry: one.ministry,
+            position,
+          }),
+        ),
+      );
+    } catch (cause) {
+      if (!isUniqueViolation(cause)) throw cause;
+    }
 
     return this.list(churchId);
   }

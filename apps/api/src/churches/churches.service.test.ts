@@ -8,10 +8,11 @@ import type { ChurchMember } from './church-member.entity';
 import type { Church } from './church.entity';
 import { ChurchesService } from './churches.service';
 
-const iglesia = (id: string, name: string): Church => ({ id, name }) as Church;
+const iglesia = (id: string, name: string, ownerId = 'u1'): Church =>
+  ({ id, name, ownerId }) as Church;
 
-const CENTRAL = iglesia('c1', 'Iglesia Central');
-const NORTE = iglesia('c2', 'Iglesia Norte');
+const CENTRAL = iglesia('c1', 'Iglesia Central', 'u1');
+const NORTE = iglesia('c2', 'Iglesia Norte', 'u9');
 
 /**
  * Dobles de los repositorios: solo implementan lo que el servicio usa, que es
@@ -45,6 +46,7 @@ function build({
     find: vi.fn(() => Promise.resolve(memberships)),
     create: (data: Partial<ChurchMember>) => data,
     save: vi.fn((data: Partial<ChurchMember>) => Promise.resolve(data)),
+    remove: vi.fn((rows: Partial<ChurchMember>[]) => Promise.resolve(rows)),
   };
 
   const setActiveChurch = vi.fn(() => Promise.resolve());
@@ -177,5 +179,39 @@ describe('ChurchesService', () => {
     expect(creada.slug).toBe('iglesia-del-sur');
     expect(memberRepo.save).toHaveBeenCalled();
     expect(setActiveChurch).toHaveBeenCalledWith('u1', 'nueva');
+  });
+
+  // RFC 0014 D4: un rol que pasa a autoprovisionarse su propio espacio no se
+  // queda arrastrando la membresía de una iglesia a la que entró con un rol
+  // más bajo. Es el arreglo del caso real de un pastor viendo la iglesia de
+  // quien lo dio de alta.
+  describe('leaveNonOwnedChurches', () => {
+    it('saca a la cuenta de una iglesia que no es suya', async () => {
+      const { service, memberRepo } = build({
+        memberships: [{ churchId: NORTE.id, userId: 'u5' }],
+      });
+
+      await service.leaveNonOwnedChurches('u5');
+
+      expect(memberRepo.remove).toHaveBeenCalledWith([{ churchId: NORTE.id, userId: 'u5' }]);
+    });
+
+    it('no toca la fila de la iglesia que sí es suya', async () => {
+      const { service, memberRepo } = build({
+        memberships: [{ churchId: CENTRAL.id, userId: 'u1' }],
+      });
+
+      await service.leaveNonOwnedChurches('u1');
+
+      expect(memberRepo.remove).not.toHaveBeenCalled();
+    });
+
+    it('sin ninguna membresía no hace nada', async () => {
+      const { service, memberRepo } = build({ memberships: [] });
+
+      await service.leaveNonOwnedChurches('u9');
+
+      expect(memberRepo.remove).not.toHaveBeenCalled();
+    });
   });
 });

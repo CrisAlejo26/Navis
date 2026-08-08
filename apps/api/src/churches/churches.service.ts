@@ -148,6 +148,29 @@ export class ChurchesService {
   }
 
   /**
+   * Saca a esta cuenta de las iglesias de las que no es dueña. Se llama
+   * cuando un rol pasa a tener `churches.manage` (`UserAdminService.update`):
+   * a partir de ahí se autoprovisiona su propio espacio, y no debe seguir
+   * arrastrando la membresía de una iglesia a la que entró con un rol más
+   * bajo. La suya propia, si la tiene, no se toca — `ownerId` también trae su
+   * fila de miembro (ver `ChurchMember`).
+   */
+  async leaveNonOwnedChurches(userId: string): Promise<void> {
+    const memberships = await this.members.find({ where: { userId } });
+    if (memberships.length === 0) return;
+
+    const churches = await this.churches.find({
+      where: { id: In(memberships.map((member) => member.churchId)) },
+    });
+    const ownedIds = new Set(
+      churches.filter((church) => church.ownerId === userId).map((church) => church.id),
+    );
+
+    const ajenas = memberships.filter((member) => !ownedIds.has(member.churchId));
+    if (ajenas.length > 0) await this.members.remove(ajenas);
+  }
+
+  /**
    * Las iglesias a las que llega, sin resolver todavía cuál es la activa.
    *
    * Un superadministrador **sin restringir** llega a todas; uno restringido

@@ -9,6 +9,7 @@ import {
 import { Repository } from 'typeorm';
 
 import { Church } from '../churches/church.entity';
+import { isUniqueViolation } from '../database/unique-violation';
 import { Congregation } from './congregation.entity';
 
 /**
@@ -39,13 +40,34 @@ export class CongregationsService {
    * creada después nacería sin ninguna, y sin sede no se puede programar nada.
    * Se resuelve aquí y no en `ChurchesService` para no invertir la dependencia
    * entre módulos: el calendario conoce a las iglesias, no al revés.
+   *
+   * No pasa por `create()`: su comprobación de nombre repetido es para quien
+   * añade una sede a mano, y aquí competiría con la propia carrera que este
+   * método tiene que absorber (dos peticiones a la vez pueden ver «ninguna» e
+   * intentar sembrar la de serie). Sembrar directo deja un único desenlace que
+   * vigilar: el choque contra `UQ_congregations_name`, que no es un fallo
+   * real, solo haber llegado tarde a un trabajo ya hecho.
    */
   async ensureFor(churchId: string): Promise<Congregation[]> {
     const all = await this.list(churchId);
     if (all.length > 0) return all;
 
     const church = await this.churches.findOne({ where: { id: churchId } });
-    await this.create(churchId, { name: church?.name ?? 'Sede principal' }, true);
+    try {
+      await this.congregations.save(
+        this.congregations.create({
+          churchId,
+          name: church?.name ?? 'Sede principal',
+          city: null,
+          accent: DEFAULT_CONGREGATION_ACCENT,
+          position: 0,
+          isDefault: true,
+          isActive: true,
+        }),
+      );
+    } catch (cause) {
+      if (!isUniqueViolation(cause)) throw cause;
+    }
 
     return this.list(churchId);
   }

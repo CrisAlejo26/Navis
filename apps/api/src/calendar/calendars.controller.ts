@@ -31,14 +31,12 @@ export class CalendarsController {
     if (existentes.length > 0) return existentes;
 
     /*
-     * Primera vez en esta iglesia: nacen los cuatro de serie y, con ellos, su
-     * semana en cada sede. La comprobación va antes a propósito —este endpoint
-     * se llama en cada carga de la aplicación— para no repasar la siembra
-     * entera cada vez.
+     * Primera vez en esta iglesia: nacen los cuatro de serie, la sede de serie
+     * si tampoco la había, y la semana en cada pareja. La comprobación va
+     * antes a propósito —este endpoint se llama en cada carga de la
+     * aplicación— para no repasar la siembra entera cada vez.
      */
-    const calendars = await this.calendars.ensureFor(churchId);
-    for (const calendar of calendars) await this.week.seedCalendar(churchId, calendar.id);
-
+    const { calendars } = await this.week.ensureScaffold(churchId);
     return calendars;
   }
 

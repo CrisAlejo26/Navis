@@ -7,8 +7,8 @@ import {
   type IsoDate,
 } from '@navis/shared';
 
-import { CalendarsService } from '../calendar/calendars.service';
 import { ScheduleService } from '../calendar/schedule.service';
+import { WeekSeederService } from '../calendar/week-seeder.service';
 
 /**
  * Los próximos eventos de la portada: los cinco siguientes del calendario de
@@ -22,12 +22,15 @@ import { ScheduleService } from '../calendar/schedule.service';
 @Injectable()
 export class DashboardEventsService {
   constructor(
-    private readonly calendars: CalendarsService,
+    private readonly week: WeekSeederService,
     private readonly schedule: ScheduleService,
   ) {}
 
   async upcoming(churchId: string, today: IsoDate): Promise<DashboardEvent[]> {
-    const all = await this.calendars.ensureFor(churchId);
+    // Con `ensureScaffold` y no `calendars.ensureFor` a secas: el panel de
+    // inicio puede ser la primera pantalla que ve una iglesia recién creada,
+    // y sin la semana de serie sembrada aquí no habría nada que proponer.
+    const { calendars: all } = await this.week.ensureScaffold(churchId);
     const calendar = all.find((one) => one.slug === 'pulpito') ?? all[0];
     if (!calendar) return [];
 

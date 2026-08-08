@@ -7,6 +7,12 @@ import type { RolesService } from '../roles/roles.service';
 import { UserAdminService } from './user-admin.service';
 import type { UsersService } from './users.service';
 
+// `update()` pasa por Better Auth para el cambio de verdad; aquí solo importa
+// que se llame, no cómo cifra ni guarda: el resto lo cubren los e2e (Regla 4).
+vi.mock('../auth/auth', () => ({
+  auth: { $context: Promise.resolve({ internalAdapter: { updateUser: vi.fn() } }) },
+}));
+
 const USER: ManagedUser = {
   id: 'u1',
   name: 'Ana',
@@ -40,11 +46,12 @@ function build(
   const permissionsOf = vi.fn().mockResolvedValue(churchesPermission ? ['churches.manage'] : []);
   const sharesChurchWith = vi.fn().mockResolvedValue(comparteIglesia);
   const addToActive = vi.fn();
+  const leaveNonOwnedChurches = vi.fn();
 
   const service = new UserAdminService(
     { findById, findPage } as unknown as UsersService,
     { ensureExists, levelOf, permissionsOf } as unknown as RolesService,
-    { sharesChurchWith, addToActive } as unknown as ChurchesService,
+    { sharesChurchWith, addToActive, leaveNonOwnedChurches } as unknown as ChurchesService,
   );
 
   return {
@@ -56,6 +63,7 @@ function build(
     permissionsOf,
     sharesChurchWith,
     addToActive,
+    leaveNonOwnedChurches,
   };
 }
 
@@ -136,6 +144,26 @@ describe('UserAdminService', () => {
       await expect(service.setRole('u1', 'recepcion', inventado)).rejects.toBeInstanceOf(
         ForbiddenException,
       );
+    });
+  });
+
+  // Un rol que se autoprovisiona su espacio no debe seguir arrastrando la
+  // membresía de una iglesia a la que entró con el rol anterior (RFC 0014 D4).
+  describe('al cambiar el rol', () => {
+    it('si el rol nuevo se autoprovisiona su espacio, saca la cuenta de las iglesias ajenas', async () => {
+      const { service, leaveNonOwnedChurches } = build(USER, 2, true, true);
+
+      await service.setRole('u1', 'pastor', ADMIN);
+
+      expect(leaveNonOwnedChurches).toHaveBeenCalledWith('u1');
+    });
+
+    it('si el rol nuevo no se autoprovisiona nada, no toca sus iglesias', async () => {
+      const { service, leaveNonOwnedChurches } = build(USER, 2, true, false);
+
+      await service.setRole('u1', 'recepcion', ADMIN);
+
+      expect(leaveNonOwnedChurches).not.toHaveBeenCalled();
     });
   });
 });

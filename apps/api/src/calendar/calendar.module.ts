@@ -61,6 +61,6 @@ import { WeekSeederService } from './week-seeder.service';
     SummaryService,
     WeekSeederService,
   ],
-  exports: [CalendarsService, CongregationsService, ScheduleService],
+  exports: [CalendarsService, CongregationsService, ScheduleService, WeekSeederService],
 })
 export class CalendarModule {}

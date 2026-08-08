@@ -81,16 +81,20 @@ export class UserAdminService {
   }
 
   /**
-   * Si una cuenta con ese rol debe entrar en la iglesia de quien la crea.
-   *
-   * La regla no mira el slug (`pastor`, `superadmin`): mira si el rol tiene
-   * `churches.manage` (RFC 0014 D4). Ese rol se autoprovisiona su propio
-   * espacio —nace sin iglesia y pasa por `/welcome`—, así que meterlo en la de
-   * quien lo dio de alta sería justo lo que no hay que hacer.
+   * Si un rol se autoprovisiona su propio espacio: tiene `churches.manage`
+   * (RFC 0014 D4). La regla no mira el slug (`pastor`, `superadmin`), sino el
+   * permiso. Ese rol nace sin iglesia y pasa por `/welcome`, así que ni entra
+   * en la de quien lo da de alta (`entraEnLaActiva`) ni se queda arrastrando
+   * la de una ajena si ya estaba dentro cuando lo recibe (`update`).
    */
-  private async entraEnLaActiva(role: RoleSlug): Promise<boolean> {
+  private async autoprovisiona(role: RoleSlug): Promise<boolean> {
     const permissions = await this.roles.permissionsOf(role);
-    return !hasPermission(permissions ?? [], 'churches.manage');
+    return hasPermission(permissions ?? [], 'churches.manage');
+  }
+
+  /** Si una cuenta con ese rol debe entrar en la iglesia de quien la crea. */
+  private async entraEnLaActiva(role: RoleSlug): Promise<boolean> {
+    return !(await this.autoprovisiona(role));
   }
 
   /**
@@ -138,6 +142,13 @@ export class UserAdminService {
 
     const ctx = await auth.$context;
     await ctx.internalAdapter.updateUser(id, input);
+
+    // Si el rol nuevo se autoprovisiona su propio espacio, no se queda
+    // arrastrando la membresía de una iglesia a la que entró con el rol
+    // anterior (RFC 0014 D4): la suya, si ya la tiene, no se toca.
+    if (input.role && (await this.autoprovisiona(input.role))) {
+      await this.churches.leaveNonOwnedChurches(id);
+    }
 
     const updated = await this.users.findById(id);
     if (!updated) throw new NotFoundException('Ese usuario no existe');

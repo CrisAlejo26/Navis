@@ -29,8 +29,14 @@ export class CongregationsController {
   @RequirePermissions('calendar.view')
   @ApiOperation({ summary: 'Las sedes, en su orden' })
   @ApiOkResponse({ description: 'Listado de sedes' })
-  list(@CurrentChurch() churchId: string): Promise<Congregation[]> {
-    return this.congregations.ensureFor(churchId);
+  async list(@CurrentChurch() churchId: string): Promise<Congregation[]> {
+    const existentes = await this.congregations.list(churchId);
+    if (existentes.length > 0) return existentes;
+
+    // Primera vez en esta iglesia: misma siembra completa que en `/calendars`,
+    // por si esta pantalla se pide antes que aquella.
+    const { congregations } = await this.week.ensureScaffold(churchId);
+    return congregations;
   }
 
   @Post()
