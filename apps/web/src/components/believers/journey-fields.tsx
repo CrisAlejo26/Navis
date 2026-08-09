@@ -59,7 +59,12 @@ export function JourneyFields({
         />
       </div>
 
-      <div className="gap-3 sm:grid-cols-3 grid">
+      {/* En columna y en su propia tarjeta: en fila (`sm:grid-cols-3`), el
+          breakpoint mira el ancho de la ventana y no el de los ~480 px del
+          modal, así que la etiqueta más larga se partía en varias líneas
+          torcidas dentro de una columna de 140 px. La tarjeta (`bg-muted/40`,
+          como `AlertField`) agrupa las tres cifras como lo que son. */}
+      <div className="gap-3 p-3.5 flex flex-col rounded-lg border bg-muted/40">
         <Input
           type="number"
           min={0}
