@@ -30,8 +30,14 @@ export function Tabs<TValue extends string>({ items, value, onChange, label }: T
   // él, tres pestañas con icono y contador empujaban la página entera a un
   // lado en un teléfono. Si de verdad no caben, la que se desplaza es la
   // propia tira —`overflow-x-auto`—, no la pantalla.
+  //
+  // `overflow-y-hidden` es obligatorio junto al anterior: la spec de CSS
+  // Overflow computa el eje que se deja en `visible` como `auto` en cuanto el
+  // otro eje no lo es, así que sin esto el desbordamiento vertical de un
+  // par de píxeles (el `-mb-px` de la pestaña activa) sacaba una barra de
+  // scroll vertical que no tenía nada que desplazar.
   return (
-    <div className="min-w-0 overflow-x-auto border-b">
+    <div className="min-w-0 overflow-x-auto overflow-y-hidden border-b">
       <div role="tablist" aria-label={label} className="gap-1 flex w-max">
         {items.map((item) => {
           const active = item.value === value;
