@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { loginSchema, type LoginInput } from '@navis/shared';
+import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -12,11 +13,15 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { PasswordInput } from '@/components/ui/password-input';
-import { signIn } from '@/lib/auth-client';
+import { signIn, useSession } from '@/lib/auth-client';
 
 export function LoginPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  // `refetch` fuerza la sesión del cliente de Better Auth a ponerse al día; ver
+  // el porqué justo donde se usa, más abajo.
+  const { refetch: refetchSession } = useSession();
   const [serverError, setServerError] = useState<string | null>(null);
 
   const {
@@ -41,6 +46,20 @@ export function LoginPage() {
       return;
     }
 
+    // El store de sesión de Better Auth (nanostores) solo se refresca
+    // mientras algo sigue suscrito a `useSession()`; en `/login` no hay nada
+    // suscrito, así que tras iniciar sesión se queda con el valor de antes
+    // (sin sesión) hasta un `setTimeout(0)` que llega tarde. Sin este
+    // `refetchSession()`, `ProtectedRoute` se pintaba una vez con esa sesión
+    // vieja, mandaba de vuelta a `/login` y había que volver a escribir las
+    // credenciales — intermitente, según lo rápido que se volviera a entrar.
+    await refetchSession();
+
+    // Sin esto, quien entra aquí tras cerrar sesión de otra cuenta en el
+    // mismo navegador arrastraría en caché sus iglesias, su perfil y sus
+    // listados (ninguna clave de `queryKeys` lleva el id de usuario), y
+    // `ChurchGate` no se enteraría de que la cuenta nueva no tiene iglesia.
+    queryClient.clear();
     await navigate('/', { replace: true });
   });
 

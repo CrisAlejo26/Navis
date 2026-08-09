@@ -1,21 +1,16 @@
 import { LogOut } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router';
 
 import { Button } from '@/components/ui/button';
-import { signOut, useSession } from '@/lib/auth-client';
+import { useSession } from '@/lib/auth-client';
 import { cn } from '@/lib/cn';
+import { useSignOut } from '@/lib/use-sign-out';
 
 /** Quién ha entrado y el botón de salir. Va al pie de la navegación, en los dos tamaños. */
 export function SessionFooter({ collapsed = false }: { collapsed?: boolean }) {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const { data: session } = useSession();
-
-  const handleSignOut = async () => {
-    await signOut();
-    await navigate('/login', { replace: true });
-  };
+  const handleSignOut = useSignOut();
 
   return (
     <div className="pt-3 border-t">

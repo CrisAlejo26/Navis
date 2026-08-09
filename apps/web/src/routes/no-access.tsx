@@ -1,10 +1,10 @@
 import { LogOut } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router';
 
 import { Logo } from '@/components/logo';
 import { Button } from '@/components/ui/button';
-import { signOut, useSession } from '@/lib/auth-client';
+import { useSession } from '@/lib/auth-client';
+import { useSignOut } from '@/lib/use-sign-out';
 
 /**
  * Para quien tiene cuenta pero su rol todavía no abre ninguna pantalla —el
@@ -16,13 +16,8 @@ import { signOut, useSession } from '@/lib/auth-client';
  */
 export function NoAccessPage() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const { data: session } = useSession();
-
-  const handleSignOut = async () => {
-    await signOut();
-    await navigate('/login', { replace: true });
-  };
+  const handleSignOut = useSignOut();
 
   return (
     <main className="p-6 flex min-h-dvh items-center justify-center">
