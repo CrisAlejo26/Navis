@@ -45,16 +45,28 @@ export function createApiClient(options: ApiClientOptions): ApiClient {
       ...Object.fromEntries(new Headers(init?.headers).entries()),
     });
 
+    const url = `${baseUrl}${path.startsWith('/') ? path : `/${path}`}`;
+    const fetchInit: RequestInit = {
+      ...init,
+      method,
+      headers,
+      // Imprescindible para que viaje la cookie de sesión de Better Auth.
+      credentials: 'include',
+      body: body ? JSON.stringify(body) : init?.body,
+    };
+
     let response: Response;
     try {
-      response = await doFetch(`${baseUrl}${path.startsWith('/') ? path : `/${path}`}`, {
-        ...init,
-        method,
-        headers,
-        // Imprescindible para que viaje la cookie de sesión de Better Auth.
-        credentials: 'include',
-        body: body ? JSON.stringify(body) : init?.body,
-      });
+      response = await doFetch(url, fetchInit);
+
+      // El primer 401 tras un login recién hecho no siempre significa sesión
+      // caducada: la petición autenticada puede salir antes de que el
+      // servidor termine de validar la cookie que él mismo acaba de emitir.
+      // `retry` de TanStack Query descarta los 4xx a propósito (Regla 1), así
+      // que un 401 no tiene ninguna otra red de seguridad antes de que
+      // `onUnauthorized` recargue la página entera: se le da una segunda
+      // oportunidad aquí, y solo se manda a login si vuelve a fallar.
+      if (response.status === 401) response = await doFetch(url, fetchInit);
     } catch (cause) {
       throw ApiError.network(cause);
     }

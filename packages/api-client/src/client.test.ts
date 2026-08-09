@@ -47,6 +47,39 @@ describe('createApiClient', () => {
     expect(onUnauthorized).toHaveBeenCalledOnce();
   });
 
+  it('reintenta un 401 antes de avisar: la sesión recién iniciada no siempre está lista a la primera', async () => {
+    const fetchImpl = vi
+      .fn()
+      .mockResolvedValueOnce(jsonResponse({ statusCode: 401, message: 'Sesión no válida' }, 401))
+      .mockResolvedValueOnce(jsonResponse({ ok: true }));
+    const onUnauthorized = vi.fn();
+    const api = createApiClient({
+      baseUrl: 'http://localhost:3000/api/v1',
+      fetchImpl,
+      onUnauthorized,
+    });
+
+    await expect(api.get('/churches')).resolves.toEqual({ ok: true });
+    expect(fetchImpl).toHaveBeenCalledTimes(2);
+    expect(onUnauthorized).not.toHaveBeenCalled();
+  });
+
+  it('avisa si el 401 se repite en el reintento', async () => {
+    const fetchImpl = vi
+      .fn()
+      .mockResolvedValue(jsonResponse({ statusCode: 401, message: 'Sesión no válida' }, 401));
+    const onUnauthorized = vi.fn();
+    const api = createApiClient({
+      baseUrl: 'http://localhost:3000/api/v1',
+      fetchImpl,
+      onUnauthorized,
+    });
+
+    await expect(api.get('/churches')).rejects.toMatchObject({ status: 401 });
+    expect(fetchImpl).toHaveBeenCalledTimes(2);
+    expect(onUnauthorized).toHaveBeenCalledOnce();
+  });
+
   it('convierte un fallo de red en ApiError.network', async () => {
     const fetchImpl = vi.fn().mockRejectedValue(new TypeError('Failed to fetch'));
     const api = createApiClient({
