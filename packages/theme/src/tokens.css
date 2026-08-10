@@ -56,6 +56,24 @@
   --light-input: oklch(0.91 0.008 264);
   --light-ring: oklch(0.457 0.221 266.66);
 
+  /* Los seis tintes de las iglesias (Regla 9): el id de cada una elige uno,
+     así que dos iglesias se distinguen de un vistazo en el selector sin que
+     nadie tenga que ponerles un color a mano. Misma receta que --accent —
+     pastel de fondo, texto oscuro encima— con seis matices que no pisan los
+     de --destructive/--warning/--accent/--success/--primary. */
+  --light-church-1: oklch(0.85 0.13 20);
+  --light-church-1-foreground: oklch(0.28 0.06 20);
+  --light-church-2: oklch(0.85 0.13 55);
+  --light-church-2-foreground: oklch(0.28 0.06 55);
+  --light-church-3: oklch(0.83 0.11 180);
+  --light-church-3-foreground: oklch(0.26 0.05 180);
+  --light-church-4: oklch(0.82 0.1 215);
+  --light-church-4-foreground: oklch(0.26 0.05 215);
+  --light-church-5: oklch(0.83 0.12 300);
+  --light-church-5-foreground: oklch(0.28 0.06 300);
+  --light-church-6: oklch(0.85 0.13 335);
+  --light-church-6-foreground: oklch(0.28 0.06 335);
+
   /* ------------------------------- Paleta oscura ------------------------ */
   --dark-background: oklch(0.17 0.012 265);
   --dark-foreground: oklch(0.96 0.005 264);
@@ -85,6 +103,21 @@
   --dark-input: oklch(0.31 0.02 265);
   --dark-ring: oklch(0.54 0.221 266.66);
 
+  /* Los mismos seis tintes, un punto menos luminosos para no deslumbrar
+     sobre el fondo oscuro — igual que --accent entre claro y oscuro. */
+  --dark-church-1: oklch(0.62 0.15 20);
+  --dark-church-1-foreground: oklch(0.14 0.03 20);
+  --dark-church-2: oklch(0.62 0.15 55);
+  --dark-church-2-foreground: oklch(0.14 0.03 55);
+  --dark-church-3: oklch(0.6 0.12 180);
+  --dark-church-3-foreground: oklch(0.14 0.03 180);
+  --dark-church-4: oklch(0.58 0.11 215);
+  --dark-church-4-foreground: oklch(0.14 0.03 215);
+  --dark-church-5: oklch(0.6 0.14 300);
+  --dark-church-5-foreground: oklch(0.14 0.03 300);
+  --dark-church-6: oklch(0.62 0.15 335);
+  --dark-church-6-foreground: oklch(0.14 0.03 335);
+
   /* -------------------- Tema activo: claro por defecto ------------------ */
   --background: var(--light-background);
   --foreground: var(--light-foreground);
@@ -109,6 +142,19 @@
   --border: var(--light-border);
   --input: var(--light-input);
   --ring: var(--light-ring);
+
+  --church-1: var(--light-church-1);
+  --church-1-foreground: var(--light-church-1-foreground);
+  --church-2: var(--light-church-2);
+  --church-2-foreground: var(--light-church-2-foreground);
+  --church-3: var(--light-church-3);
+  --church-3-foreground: var(--light-church-3-foreground);
+  --church-4: var(--light-church-4);
+  --church-4-foreground: var(--light-church-4-foreground);
+  --church-5: var(--light-church-5);
+  --church-5-foreground: var(--light-church-5-foreground);
+  --church-6: var(--light-church-6);
+  --church-6-foreground: var(--light-church-6-foreground);
 }
 
 .dark,
@@ -136,6 +182,19 @@
   --border: var(--dark-border);
   --input: var(--dark-input);
   --ring: var(--dark-ring);
+
+  --church-1: var(--dark-church-1);
+  --church-1-foreground: var(--dark-church-1-foreground);
+  --church-2: var(--dark-church-2);
+  --church-2-foreground: var(--dark-church-2-foreground);
+  --church-3: var(--dark-church-3);
+  --church-3-foreground: var(--dark-church-3-foreground);
+  --church-4: var(--dark-church-4);
+  --church-4-foreground: var(--dark-church-4-foreground);
+  --church-5: var(--dark-church-5);
+  --church-5-foreground: var(--dark-church-5-foreground);
+  --church-6: var(--dark-church-6);
+  --church-6-foreground: var(--dark-church-6-foreground);
 }
 
 @theme inline {
@@ -165,6 +224,19 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+
+  --color-church-1: var(--church-1);
+  --color-church-1-foreground: var(--church-1-foreground);
+  --color-church-2: var(--church-2);
+  --color-church-2-foreground: var(--church-2-foreground);
+  --color-church-3: var(--church-3);
+  --color-church-3-foreground: var(--church-3-foreground);
+  --color-church-4: var(--church-4);
+  --color-church-4-foreground: var(--church-4-foreground);
+  --color-church-5: var(--church-5);
+  --color-church-5-foreground: var(--church-5-foreground);
+  --color-church-6: var(--church-6);
+  --color-church-6-foreground: var(--church-6-foreground);
 
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);

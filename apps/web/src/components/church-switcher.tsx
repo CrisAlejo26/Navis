@@ -60,7 +60,7 @@ export function ChurchSwitcher({ collapsed = false }: { collapsed?: boolean }) {
 
   const plate = (
     <span className="min-w-0 gap-2 flex items-center">
-      <ChurchBadge name={active.name} />
+      <ChurchBadge id={active.id} name={active.name} />
       {!collapsed && <span className="font-medium truncate">{active.name}</span>}
     </span>
   );

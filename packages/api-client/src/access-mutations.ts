@@ -1,4 +1,5 @@
 import type {
+  ChurchDecision,
   CreateManagedUserInput,
   CreateRoleInput,
   ManagedUser,
@@ -64,6 +65,18 @@ export function useSetUserPassword(api: ApiClient) {
   );
 }
 
+/**
+ * Aparte de `useAccessMutation`: cuando la cuenta era dueña de una iglesia y
+ * se trasladó (RFC 0015), la baja mueve creyentes, listas y calendario a la
+ * vez, no solo cuentas y roles. Sin clave invalida todo, como ya hace
+ * `useSetActiveChurch` por el mismo motivo.
+ */
 export function useDeleteUser(api: ApiClient) {
-  return useAccessMutation(({ id }: { id: string }) => api.delete<void>(`/admin/users/${id}`));
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, churchDecisions }: { id: string; churchDecisions?: ChurchDecision[] }) =>
+      api.delete<void>(`/admin/users/${id}`, churchDecisions ? { churchDecisions } : undefined),
+    onSuccess: () => queryClient.invalidateQueries(),
+  });
 }

@@ -58,6 +58,10 @@ describe('Tope de roles, onboarding y alcance (e2e)', () => {
     get: (path: string) => request(app.getHttpServer()).get(path).set('Cookie', cookie),
     patch: (path: string, payload: object) =>
       request(app.getHttpServer()).patch(path).set('Cookie', cookie).send(payload),
+    put: (path: string, payload: object) =>
+      request(app.getHttpServer()).put(path).set('Cookie', cookie).send(payload),
+    delete: (path: string, payload: object = {}) =>
+      request(app.getHttpServer()).delete(path).set('Cookie', cookie).send(payload),
   });
 
   let superadminCookie = '';
@@ -162,5 +166,99 @@ describe('Tope de roles, onboarding y alcance (e2e)', () => {
 
     // Se deja como estaba, por si algún otro test corriera después con esta cookie.
     await as(superadminCookie).patch('/api/v1/me/profile', { restrictOwnScope: true }).expect(200);
+  });
+
+  // RFC 0015: dar de baja a quien dirige una iglesia exige antes decidir qué
+  // pasa con cada una — de punta a punta contra Postgres, porque es la única
+  // forma de probar el choque real de los únicos por iglesia y que la
+  // transacción no deja medio traslado hecho.
+  describe('baja de una cuenta dueña de iglesias', () => {
+    const email = `dueno-${String(stamp)}@navis.test`;
+    let duenoId = '';
+    let iglesiaC = '';
+    let iglesiaD = '';
+
+    beforeAll(async () => {
+      // El dueño no comparte ninguna iglesia con el superadministrador
+      // —autoprovisiona la suya y no entra en la de quien lo crea (RFC 0014
+      // D4)—, así que restringido a "lo suyo" ni lo encontraría en el listado
+      // ni pasaría el `sharesChurchWith` de `target()`. Se amplía el alcance
+      // para este bloque y se deja como estaba al terminar.
+      await as(superadminCookie)
+        .patch('/api/v1/me/profile', { restrictOwnScope: false })
+        .expect(200);
+
+      await as(superadminCookie)
+        .post('/api/v1/admin/users', { name: 'Dueño', email, password, role: 'pastor' })
+        .expect(201);
+      const duenoCookie = await signIn(email);
+
+      const listado = await as(superadminCookie)
+        .get(`/api/v1/admin/users?search=${email}`)
+        .expect(200);
+      duenoId = body<Paginated<ManagedUser>>(listado).items[0]?.id ?? '';
+
+      const creadaC = await as(duenoCookie)
+        .post('/api/v1/churches', { name: `Iglesia C ${String(stamp)}`, city: 'Elda' })
+        .expect(201);
+      iglesiaC = body<Church>(creadaC).id;
+
+      const creadaD = await as(duenoCookie)
+        .post('/api/v1/churches', { name: `Iglesia D ${String(stamp)}`, city: 'Alicante' })
+        .expect(201);
+      iglesiaD = body<Church>(creadaD).id;
+
+      // Iglesia C activa: la creación deja activa la última, así que hay que
+      // volver a marcarla para poder crear un creyente dentro de ella.
+      await as(duenoCookie).put('/api/v1/churches/active', { churchId: iglesiaC }).expect(200);
+      await as(duenoCookie).post('/api/v1/believers', { firstName: 'Juan' }).expect(201);
+    });
+
+    afterAll(async () => {
+      await as(superadminCookie)
+        .patch('/api/v1/me/profile', { restrictOwnScope: true })
+        .expect(200);
+    });
+
+    it('sin decisiones, responde 409 con el impacto de las dos iglesias', async () => {
+      const respuesta = await as(superadminCookie)
+        .delete(`/api/v1/admin/users/${duenoId}`)
+        .expect(409);
+
+      const churches = (respuesta.body as { data: { ownedChurches: { id: string }[] } }).data
+        .ownedChurches;
+      expect(churches.map((church) => church.id).sort()).toEqual([iglesiaC, iglesiaD].sort());
+    });
+
+    it('con decisiones, traslada una iglesia y elimina la otra, y borra la cuenta', async () => {
+      await as(superadminCookie)
+        .delete(`/api/v1/admin/users/${duenoId}`, {
+          churchDecisions: [
+            { churchId: iglesiaC, action: 'transfer', targetChurchId: iglesiaA },
+            { churchId: iglesiaD, action: 'delete' },
+          ],
+        })
+        .expect(204);
+
+      // El creyente de la iglesia C ahora está en la iglesia A.
+      const [creyente] = await dataSource.query<{ church_id: string }[]>(
+        `SELECT church_id FROM believers WHERE first_name = 'Juan' ORDER BY created_at DESC LIMIT 1`,
+      );
+      expect(creyente?.church_id).toBe(iglesiaA);
+
+      // La iglesia D quedó en borrado lógico.
+      const [iglesia] = await dataSource.query<{ deleted_at: string | null }[]>(
+        `SELECT deleted_at FROM churches WHERE id = ${dataSource.options.type === 'postgres' ? '$1' : '?'}`,
+        [iglesiaD],
+      );
+      expect(iglesia?.deleted_at).not.toBeNull();
+
+      // La cuenta ya no existe.
+      await as(superadminCookie).get(`/api/v1/admin/users?search=${email}`).expect(200);
+      const listado = await as(superadminCookie)
+        .get(`/api/v1/admin/users?search=${email}`)
+        .expect(200);
+      expect(body<Paginated<ManagedUser>>(listado).items).toEqual([]);
+    });
   });
 });

@@ -171,6 +171,15 @@ export class ChurchesService {
   }
 
   /**
+   * Las iglesias de las que esta cuenta es dueña (`ownerId`), sin resolver
+   * (RFC 0015): es lo que decide si dar de baja la cuenta exige antes elegir
+   * qué pasa con cada una.
+   */
+  async ownedBy(userId: string): Promise<Church[]> {
+    return this.churches.find({ where: { ownerId: userId }, order: { name: 'ASC' } });
+  }
+
+  /**
    * Las iglesias a las que llega, sin resolver todavía cuál es la activa.
    *
    * Un superadministrador **sin restringir** llega a todas; uno restringido

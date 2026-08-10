@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Button } from '@/components/ui/button';
@@ -16,6 +17,14 @@ interface ConfirmDialogProps {
   destructive?: boolean;
   isPending?: boolean;
   error?: string | null;
+  /**
+   * Un paso intermedio entre la descripción y los botones —el reparto de
+   * iglesias de la RFC 0015, por ejemplo—. Sin esto, cada confirmación con
+   * algo que decidir tendría que dejar de usar `ConfirmDialog` entero.
+   */
+  children?: ReactNode;
+  /** El paso intermedio puede dejar la decisión a medias; el botón lo refleja. */
+  confirmDisabled?: boolean;
 }
 
 /**
@@ -34,12 +43,15 @@ export function ConfirmDialog({
   destructive = false,
   isPending = false,
   error,
+  children,
+  confirmDisabled = false,
 }: ConfirmDialogProps) {
   const { t } = useTranslation();
 
   return (
     <Dialog open={open} onClose={onClose} title={title} description={description}>
       <div className="gap-3 flex flex-col">
+        {children}
         <FormError message={error} />
         <div className="gap-2 flex justify-end">
           <Button variant="ghost" onClick={onClose} disabled={isPending}>
@@ -49,6 +61,7 @@ export function ConfirmDialog({
             variant={destructive ? 'destructive' : 'primary'}
             onClick={onConfirm}
             isLoading={isPending}
+            disabled={confirmDisabled || isPending}
           >
             {confirmLabel}
           </Button>

@@ -14,6 +14,7 @@ import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { RequirePermissions } from '../common/decorators/permissions.decorator';
 import { CreateManagedUserDto } from './dto/create-managed-user.dto';
 import { ManagedUsersQueryDto } from './dto/managed-users-query.dto';
+import { RemoveUserDto } from './dto/remove-user.dto';
 import { SetUserPasswordDto } from './dto/set-user-password.dto';
 import { UpdateManagedUserDto } from './dto/update-managed-user.dto';
 import { UpdateUserRoleDto } from './dto/update-user-role.dto';
@@ -95,10 +96,19 @@ export class UsersController {
   @Delete(':id')
   @RequirePermissions('users.manage')
   @HttpCode(204)
-  @ApiOperation({ summary: 'Da de baja la cuenta con todo lo suyo' })
+  @ApiOperation({
+    summary: 'Da de baja la cuenta con todo lo suyo',
+    description:
+      'Si es dueña de alguna iglesia, exige `churchDecisions` con una entrada por cada una ' +
+      '(RFC 0015); si falta alguna, responde 409 con el impacto en `data.ownedChurches`.',
+  })
   @ApiNoContentResponse()
-  remove(@Param('id') id: string, @CurrentUser() actor: AuthUser): Promise<void> {
-    return this.admin.remove(id, asker(actor));
+  remove(
+    @Param('id') id: string,
+    @Body() dto: RemoveUserDto,
+    @CurrentUser() actor: AuthUser,
+  ): Promise<void> {
+    return this.admin.remove(id, asker(actor), dto.churchDecisions ?? []);
   }
 }
 

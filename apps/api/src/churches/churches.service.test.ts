@@ -27,13 +27,18 @@ function build({
   // Con filtro por id devuelve las de la pertenencia; sin él, el catálogo
   // entero. No se mira por dentro del `In()` de TypeORM: eso ataría el test a
   // cómo lo construye la librería.
-  const find = vi.fn((options?: { where?: { id?: unknown } }) =>
-    Promise.resolve(
+  const find = vi.fn((options?: { where?: { id?: unknown; ownerId?: string } }) => {
+    if (options?.where?.ownerId !== undefined) {
+      return Promise.resolve(
+        churches.filter((church) => church.ownerId === options.where?.ownerId),
+      );
+    }
+    return Promise.resolve(
       options?.where?.id
         ? churches.filter((church) => memberships.some((row) => row.churchId === church.id))
         : churches,
-    ),
-  );
+    );
+  });
 
   const churchRepo = {
     find,
@@ -212,6 +217,22 @@ describe('ChurchesService', () => {
       await service.leaveNonOwnedChurches('u9');
 
       expect(memberRepo.remove).not.toHaveBeenCalled();
+    });
+  });
+
+  // RFC 0015: es lo que decide si dar de baja a esta cuenta exige antes
+  // resolver qué pasa con cada iglesia.
+  describe('ownedBy', () => {
+    it('devuelve solo las iglesias de las que esta cuenta es dueña', async () => {
+      const { service } = build({});
+
+      await expect(service.ownedBy('u1')).resolves.toEqual([CENTRAL]);
+    });
+
+    it('vacío para quien no es dueño de ninguna', async () => {
+      const { service } = build({});
+
+      await expect(service.ownedBy('u5')).resolves.toEqual([]);
     });
   });
 });

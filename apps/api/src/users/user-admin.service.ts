@@ -9,6 +9,7 @@ import {
   canAssignRoleLevel,
   hasPermission,
   SUPERADMIN_ROLE,
+  type ChurchDecision,
   type CreateManagedUserInput,
   type ManagedUser,
   type RoleSlug,
@@ -17,6 +18,7 @@ import {
 
 import { auth } from '../auth/auth';
 import { ChurchesService, type Asker } from '../churches/churches.service';
+import { ChurchTransferService } from '../churches/church-transfer.service';
 import { RolesService } from '../roles/roles.service';
 import { UsersService } from './users.service';
 
@@ -38,6 +40,7 @@ export class UserAdminService {
     private readonly users: UsersService,
     private readonly roles: RolesService,
     private readonly churches: ChurchesService,
+    private readonly transfers: ChurchTransferService,
   ) {}
 
   /**
@@ -179,8 +182,11 @@ export class UserAdminService {
   /**
    * Baja de la cuenta con todo lo suyo. No se puede borrar el último
    * superadministrador: la instalación se quedaría sin quien reparta accesos.
+   *
+   * Si además es dueña de una o más iglesias (RFC 0015), la baja se detiene
+   * hasta tener una decisión —eliminar o trasladar— por cada una (D2).
    */
-  async remove(id: string, asker: Asker): Promise<void> {
+  async remove(id: string, asker: Asker, decisions: ChurchDecision[] = []): Promise<void> {
     const user = await this.target(id, asker);
 
     if (user.role === SUPERADMIN_ROLE) {
@@ -196,7 +202,75 @@ export class UserAdminService {
       }
     }
 
+    await this.resolveOwnedChurches(id, decisions, asker);
+    // D6: no solo la dueña, cualquier iglesia de la que sea miembro. Es el
+    // mismo agujero de `update` cuando un rol pasa a autoprovisionarse.
+    await this.churches.leaveNonOwnedChurches(id);
+
     const ctx = await auth.$context;
     await ctx.internalAdapter.deleteUser(id);
+  }
+
+  /**
+   * Resuelve cada iglesia propia según lo decidido. Si falta alguna decisión,
+   * 409 con el impacto de todas —no solo de la que falta— para que el paso 2
+   * de la interfaz se pinte entero de una vez (D2). Todo se valida **antes**
+   * de tocar nada: una decisión inválida a mitad de la lista no puede dejar
+   * la mitad de las iglesias ya trasladadas.
+   */
+  private async resolveOwnedChurches(
+    userId: string,
+    decisions: ChurchDecision[],
+    asker: Asker,
+  ): Promise<void> {
+    const owned = await this.churches.ownedBy(userId);
+    if (owned.length === 0) return;
+
+    const byId = new Map(decisions.map((decision) => [decision.churchId, decision]));
+    const missing = owned.filter((church) => !byId.has(church.id));
+    if (missing.length > 0) {
+      const ownedChurches = await Promise.all(
+        owned.map((church) => this.transfers.impactOf(church.id)),
+      );
+      throw new ConflictException({
+        message: 'Antes de dar de baja esta cuenta, decide qué pasa con cada iglesia que dirige',
+        data: { ownedChurches },
+      });
+    }
+
+    const deletingIds = new Set(
+      decisions
+        .filter((decision) => decision.action === 'delete')
+        .map((decision) => decision.churchId),
+    );
+    const { items: alcanzables } = await this.churches.listFor(asker);
+    const alcanzablesIds = new Set(alcanzables.map((church) => church.id));
+
+    for (const church of owned) {
+      const decision = byId.get(church.id);
+      if (decision?.action !== 'transfer') continue;
+
+      const targetId = decision.targetChurchId;
+      if (!targetId) throw new BadRequestException('Elige a qué iglesia trasladar');
+      if (targetId === church.id) {
+        throw new BadRequestException('No puedes trasladarla a sí misma');
+      }
+      if (deletingIds.has(targetId)) {
+        throw new BadRequestException(
+          'El destino no puede ser una iglesia que también vas a eliminar',
+        );
+      }
+      if (!alcanzablesIds.has(targetId)) {
+        throw new BadRequestException('No llegas a esa iglesia');
+      }
+    }
+
+    for (const church of owned) {
+      const decision = byId.get(church.id);
+      if (!decision) continue;
+
+      if (decision.action === 'delete') await this.transfers.deleteAll(church.id);
+      else await this.transfers.transferAll(church.id, decision.targetChurchId as string);
+    }
   }
 }

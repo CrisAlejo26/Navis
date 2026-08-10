@@ -25,7 +25,7 @@ export interface ApiClient {
   post: <T>(path: string, body?: Body, init?: RequestInit) => Promise<T>;
   patch: <T>(path: string, body?: Body, init?: RequestInit) => Promise<T>;
   put: <T>(path: string, body?: Body, init?: RequestInit) => Promise<T>;
-  delete: <T>(path: string, init?: RequestInit) => Promise<T>;
+  delete: <T>(path: string, body?: Body, init?: RequestInit) => Promise<T>;
   readonly baseUrl: string;
 }
 
@@ -98,6 +98,7 @@ export function createApiClient(options: ApiClientOptions): ApiClient {
     patch: <T>(path: string, body?: Body, init?: RequestInit) =>
       request<T>('PATCH', path, body, init),
     put: <T>(path: string, body?: Body, init?: RequestInit) => request<T>('PUT', path, body, init),
-    delete: <T>(path: string, init?: RequestInit) => request<T>('DELETE', path, undefined, init),
+    delete: <T>(path: string, body?: Body, init?: RequestInit) =>
+      request<T>('DELETE', path, body, init),
   };
 }

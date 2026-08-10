@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { createReadStream, existsSync, type ReadStream } from 'node:fs';
-import { mkdir, unlink, writeFile } from 'node:fs/promises';
+import { mkdir, readdir, rename, rmdir, unlink, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 
 import { uploadsPath } from '../config/env';
@@ -68,6 +68,41 @@ export class FileStorageService {
   async remove(storageKey: string): Promise<void> {
     const path = this.pathOf(storageKey);
     if (existsSync(path)) await unlink(path);
+  }
+
+  /**
+   * Mueve todos los ficheros de un ámbito a otro (RFC 0015: trasladar una
+   * iglesia entera). Fichero a fichero, no renombrando la carpeta entera: el
+   * destino puede ya tener ficheros propios, y un `rename` de directorio sobre
+   * uno que no está vacío falla. Devuelve cuántos movió.
+   */
+  async moveScope(origen: FileScope, destino: FileScope): Promise<number> {
+    const origenPath = join(uploadsPath, scopePath(origen));
+    if (!existsSync(origenPath)) return 0;
+
+    const destinoPath = join(uploadsPath, scopePath(destino));
+    await mkdir(destinoPath, { recursive: true });
+
+    const nombres = await readdir(origenPath);
+    await Promise.all(
+      nombres.map((nombre) => rename(join(origenPath, nombre), join(destinoPath, nombre))),
+    );
+    await rmdir(origenPath).catch(() => {
+      // La carpeta de origen puede no quedar vacía si algo escribió a la vez;
+      // no es motivo para que el traslado falle, es basura menor.
+    });
+
+    return nombres.length;
+  }
+
+  /**
+   * Reescribe el prefijo de una clave tras `moveScope`, sin volver a tocar
+   * disco. Separado de `moveScope` porque una clave se reescribe una a una, en
+   * la transacción de base de datos, mientras que el disco se mueve una vez.
+   */
+  rekey(storageKey: string, origen: FileScope, destino: FileScope): string {
+    const prefijoOrigen = scopePath(origen);
+    return join(scopePath(destino), storageKey.slice(prefijoOrigen.length + 1));
   }
 
   /**

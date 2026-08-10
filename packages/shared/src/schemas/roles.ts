@@ -131,6 +131,30 @@ export const setUserPasswordSchema = z.object({ password: passwordSchema });
 
 export type SetUserPasswordInput = z.infer<typeof setUserPasswordSchema>;
 
+/**
+ * Qué hacer con una iglesia propia al dar de baja a quien la dirige (RFC 0015).
+ * `targetChurchId` solo tiene sentido con `action: 'transfer'`; el servidor lo
+ * exige entonces y lo rechaza si viene con `'delete'`.
+ */
+export const churchDecisionSchema = z.object({
+  churchId: z.uuid(),
+  action: z.enum(['delete', 'transfer']),
+  targetChurchId: z.uuid().optional(),
+});
+
+export type ChurchDecision = z.infer<typeof churchDecisionSchema>;
+
+/**
+ * Cuerpo del `DELETE` de una cuenta. Vacío para quien no es dueño de ninguna
+ * iglesia; con una decisión por cada una para quien sí lo es, o el servidor
+ * responde 409 (`OwnedChurchImpact[]` en `data`) en vez de borrar nada.
+ */
+export const removeUserSchema = z.object({
+  churchDecisions: z.array(churchDecisionSchema).optional(),
+});
+
+export type RemoveUserInput = z.infer<typeof removeUserSchema>;
+
 /** Sentido de la ordenación, común a todos los listados. */
 export const sortOrderSchema = z.enum(['asc', 'desc']);
 

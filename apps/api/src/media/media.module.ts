@@ -16,6 +16,6 @@ import { ImageStorageService } from './image-storage.service';
  */
 @Module({
   providers: [FileStorageService, AudioStorageService, ImageStorageService],
-  exports: [AudioStorageService, ImageStorageService],
+  exports: [FileStorageService, AudioStorageService, ImageStorageService],
 })
 export class MediaModule {}

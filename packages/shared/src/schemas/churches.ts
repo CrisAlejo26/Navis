@@ -77,3 +77,21 @@ export type MyChurches = z.infer<typeof myChurchesSchema>;
 export const setActiveChurchSchema = z.object({ churchId: z.uuid() });
 
 export type SetActiveChurchInput = z.infer<typeof setActiveChurchSchema>;
+
+/**
+ * Cuánto se lleva por delante eliminar o trasladar una iglesia (RFC 0015).
+ * Es lo que enseña el paso 2 de la baja de una cuenta dueña: sin esto, elegir
+ * "eliminar" es un salto a ciegas.
+ */
+export const ownedChurchImpactSchema = z.object({
+  id: z.uuid(),
+  name: z.string(),
+  believers: z.number().int(),
+  notes: z.number().int(),
+  lists: z.number().int(),
+  calendars: z.number().int(),
+  congregations: z.number().int(),
+  members: z.number().int(),
+});
+
+export type OwnedChurchImpact = z.infer<typeof ownedChurchImpactSchema>;
