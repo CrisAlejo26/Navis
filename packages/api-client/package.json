@@ -26,7 +26,8 @@
     "clean": "rimraf dist .turbo *.tsbuildinfo"
   },
   "dependencies": {
-    "@navis/shared": "workspace:*"
+    "@navis/shared": "workspace:*",
+    "socket.io-client": "4.8.3"
   },
   "peerDependencies": {
     "@tanstack/react-query": ">=5",

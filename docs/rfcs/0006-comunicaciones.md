@@ -1,9 +1,24 @@
 # RFC 0006: Comunicaciones (chat y avisos)
 
-- **Estado**: Borrador
+- **Estado**: Implementado en api y web (escritorio hereda de web). Móvil,
+  pendiente — ver nota abajo.
 - **Fecha**: 2026-08-03
 - **Apps afectadas**: api / web / mobile / desktop
-- **Depende de**: 0003 (creyentes)
+- **Depende de**: 0003 (creyentes), 0008 (iglesias como espacio de trabajo)
+
+> El modelo de datos, la API y las decisiones de esta página son las que fijó
+> [RFC 0016](./0016-chat-comunicaciones-plan.md) al implementarla: `kind`
+> renombrado a `individual`/`grupo`/`aviso`, `churchId` en `Channel`, los
+> cursores `archivedAt`/`clearedAt` por miembro y los adjuntos. Este documento
+> queda actualizado con ese resultado; el detalle de por qué se decidió así
+> vive en el plan.
+>
+> **Móvil se dejó fuera de esta entrega** a petición expresa: la pantalla
+> puente de `app/communications.tsx` sigue en pie hasta que se implemente
+> `app/communications/index.tsx` y `[channelId].tsx` con el mismo reparto que
+> ya usa `believers` (§6 del plan). El `useChatSocket` de `packages/api-client`
+> ya acepta `getCookie` para ese caso, así que móvil no necesita ningún cambio
+> de arquitectura, solo escribir las pantallas.
 
 ## Problema
 
@@ -26,10 +41,13 @@ para mensajería comercial: merece su propio documento.
 ```
 Channel
 ├── id: uuid
-├── name: text
-├── kind: enum                  — canal | directo | anuncios
+├── churchId → Church(id)        — alcance: cada iglesia ve solo lo suyo
+├── kind: enum                  — individual | grupo | aviso
+├── name: text | null           — null en «individual»: se pinta con el
+│                                  nombre de la otra persona
 ├── description: text | null
-├── isArchived: boolean
+├── photoKey: text | null       — foto de grupo (FileStorageService)
+├── isArchived: boolean         — archivo GLOBAL, lo pone un moderador
 ├── createdBy → user(id)
 └── ← ChannelMember[]  ← Message[]
 
@@ -38,27 +56,43 @@ ChannelMember
 ├── userId → user(id)
 ├── role: enum                  — miembro | moderador
 ├── lastReadAt: timestamptz     — para el contador de no leídos
+├── archivedAt: timestamptz | null   — archivo PERSONAL
+├── clearedAt: timestamptz | null    — cursor de «limpiar», mismo patrón
+│                                       que lastReadAt
 └── mutedUntil: timestamptz | null
 
 Message
 ├── id: uuid
 ├── channelId → Channel(id)
 ├── authorId → user(id)
-├── body: text
+├── body: text | null           — null si el mensaje es solo adjunto(s)
 ├── replyToId → Message(id) | null   — hilos ligeros, sin subcanales
+├── forwardedFromId → Message(id) | null   — para la etiqueta «Reenviado»
 ├── editedAt / deletedAt: timestamptz | null
 └── ← MessageAttachment[]  ← MessageReaction[]
 
+MessageAttachment
+├── id: uuid
+├── messageId → Message(id)
+├── kind: enum                  — imagen | archivo
+├── storageKey: text
+├── originalName: text
+├── mimeType: text
+└── sizeBytes: int
+
 MessageReaction (messageId, userId, emoji)
+UNIQUE (messageId, userId, emoji) — varias reacciones por persona, nunca la
+                                     misma dos veces
 ```
 
-`kind: anuncios` es un canal donde solo escriben los moderadores. Es el caso más
+`kind: aviso` es un canal donde solo escriben los moderadores. Es el caso más
 frecuente —«el ensayo se mueve al jueves»— y en un grupo normal ese mensaje se
 entierra en dos minutos.
 
 `lastReadAt` por miembro, no un registro por mensaje leído: con mil mensajes y
 cincuenta personas, lo segundo son cincuenta mil filas para mostrar un punto
-rojo.
+rojo. `archivedAt` y `clearedAt` siguen el mismo patrón: archivar y limpiar son
+por persona, no cambian lo que ve el resto.
 
 ## API
 
@@ -91,8 +125,11 @@ falta, pero conviene no diseñar nada que lo impida.
 
 - **Web**: `/communications`, lista de canales a la izquierda y conversación a
   la derecha; en móvil, una vista cada vez.
-- **Móvil**: dentro de «Más» (`app/communications.tsx`), con notificaciones push
-  vía `expo-notifications`.
+- **Móvil**: dentro de «Más», con el mismo reparto que `believers`
+  (`app/communications/index.tsx` y `[channelId].tsx`) — pendiente, ver la
+  nota de estado arriba. Las notificaciones push quedan fuera de esta entrega
+  en cualquier caso (RFC 0016 §1): la app se apoya en el WebSocket mientras
+  está abierta y en el contador de no leídos al volver a abrirla.
 - Textos nuevos bajo `communications.*` en los seis idiomas.
 
 ## Consideraciones
@@ -103,7 +140,9 @@ falta, pero conviene no diseñar nada que lo impida.
 - **Offline**: se cachea el historial reciente. Los mensajes escritos sin
   conexión quedan en cola y se marcan como pendientes.
 - **Notificaciones**: silenciar por canal es obligatorio desde el primer día. Un
-  chat que no se puede silenciar se abandona.
+  chat que no se puede silenciar se abandona. Las push quedan para una
+  propuesta aparte (RFC 0016 §1); esta entrega solo tiene el WebSocket y el
+  contador de no leídos.
 - **IA**: resumir un canal muy activo. Más adelante y siempre bajo petición.
 
 ## Alternativas descartadas
@@ -115,9 +154,15 @@ falta, pero conviene no diseñar nada que lo impida.
 
 ## Criterios de aceptación
 
-- [ ] Un mensaje llega a otro cliente conectado en menos de un segundo.
+- [x] Un mensaje llega a otro cliente conectado en menos de un segundo.
+      Comprobado a mano con dos sesiones reales (RFC 0016 §11).
 - [ ] Si el WebSocket se cae, los mensajes siguen llegando por sondeo.
-- [ ] En un canal de anuncios, un miembro no puede escribir.
-- [ ] Los no leídos se calculan con una sola consulta por usuario.
-- [ ] Silenciar un canal deja de enviar notificaciones push.
-- [ ] Los textos están en los seis idiomas.
+      Implementado (`usePollFallback`, 30 s), sin comprobar a mano cortando la
+      conexión.
+- [x] En un canal de aviso, un miembro no puede escribir. Cubierto por
+      `chat.e2e-spec.ts` y comprobado a mano.
+- [x] Los no leídos se calculan con una sola consulta por usuario
+      (`ChannelStatsService.unreadCounts`).
+- [ ] Silenciar un canal deja de sonar en el propio dispositivo (las push no
+      entran en esta entrega, ver arriba). Implementado, sin comprobar a mano.
+- [x] Los textos están en los seis idiomas (`create-i18n.test.ts`).

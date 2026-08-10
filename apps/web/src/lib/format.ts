@@ -127,3 +127,48 @@ export function formatAgo(days: number): string {
 export function formatNumber(value: number): string {
   return new Intl.NumberFormat(getLocale()).format(value);
 }
+
+/** «2,4 MB». El tamaño de un adjunto (RFC 0016 §7), con el separador del idioma activo. */
+export function formatBytes(bytes: number): string {
+  if (bytes < 1024) return `${String(bytes)} B`;
+  const units = ['KB', 'MB', 'GB'];
+  let value = bytes / 1024;
+  let unitIndex = 0;
+  while (value >= 1024 && unitIndex < units.length - 1) {
+    value /= 1024;
+    unitIndex += 1;
+  }
+
+  return `${new Intl.NumberFormat(getLocale(), { maximumFractionDigits: 1 }).format(value)} ${units[unitIndex]}`;
+}
+
+/** «19:42». La hora de un mensaje, sin el día (RFC 0016 §5). */
+export function formatTime(value: string): string {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '—';
+
+  return new Intl.DateTimeFormat(getLocale(), { timeStyle: 'short' }).format(date);
+}
+
+/**
+ * «2 min», «1 h», «ayer», y una fecha corta pasada una semana: la hora de la
+ * fila de una conversación (RFC 0016 §5), donde «hace 2 minutos» no cabe.
+ */
+export function formatConversationTime(value: string): string {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '';
+
+  const minutes = Math.floor((Date.now() - date.getTime()) / 60_000);
+  const relative = new Intl.RelativeTimeFormat(getLocale(), { numeric: 'auto' });
+
+  if (minutes < 1) return relative.format(0, 'minute');
+  if (minutes < 60) return relative.format(-minutes, 'minute');
+
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return relative.format(-hours, 'hour');
+
+  const days = Math.floor(hours / 24);
+  if (days < 7) return relative.format(-days, 'day');
+
+  return formatDate(date, 'short');
+}

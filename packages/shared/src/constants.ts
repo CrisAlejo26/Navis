@@ -405,3 +405,19 @@ export type CountryCode = (typeof COUNTRY_CODES)[number];
 export function isCountryCode(value: string): value is CountryCode {
   return (COUNTRY_CODES as readonly string[]).includes(value);
 }
+
+/** Cuántos mensajes trae cada página del historial (RFC 0016 §4, cursor por `createdAt`). */
+export const MESSAGES_PAGE_SIZE = 30;
+
+/**
+ * Tope de un grupo de conversación. No hay límite técnico —el cursor por
+ * miembro escala—, es un límite de producto (RFC 0016 §13) para que a nadie
+ * se le ocurra meter a toda la iglesia en uno.
+ */
+export const MAX_GROUP_MEMBERS = 100;
+
+/**
+ * Cuánto dura el aviso de «escribiendo…» sin que llegue el siguiente evento
+ * (RFC 0016 §8): así un evento perdido no lo deja pegado en pantalla.
+ */
+export const TYPING_EXPIRES_MS = 5000;

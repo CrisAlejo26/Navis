@@ -2,8 +2,7 @@ import { useTranslation } from 'react-i18next';
 
 import { Card, CardDescription, CardTitle } from '@/components/ui/card';
 
-export type NavKey =
-  'nav.calendar' | 'nav.believers' | 'nav.prophecies' | 'nav.dreams' | 'nav.communications';
+export type NavKey = 'nav.calendar' | 'nav.believers' | 'nav.prophecies' | 'nav.dreams';
 
 /**
  * Página puente para las secciones que todavía son solo una RFC.

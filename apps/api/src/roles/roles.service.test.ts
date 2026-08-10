@@ -26,3 +26,33 @@ describe('RolesService.levelOf', () => {
     await expect(service.levelOf('inventado')).resolves.toBeNull();
   });
 });
+
+describe('RolesService.rolesWithPermission', () => {
+  /** Doble de `find`, para probar el filtrado sobre varios roles a la vez. */
+  function buildMany(roles: Partial<Role>[]) {
+    const find = vi.fn().mockResolvedValue(roles);
+    const repo = { find } as unknown as Repository<Role>;
+    return new RolesService({} as DataSource, repo);
+  }
+
+  it('el rol creyente no aparece: ROLE_PERMISSIONS.creyente no lleva communications.view', async () => {
+    const service = buildMany([
+      { slug: 'creyente', permissions: [] },
+      { slug: 'pastor', permissions: ['communications.view', 'communications.manage'] },
+      { slug: 'sonido', permissions: ['communications.view'] },
+    ]);
+
+    await expect(service.rolesWithPermission('communications.view')).resolves.toEqual([
+      'pastor',
+      'sonido',
+    ]);
+  });
+
+  it('el superadministrador entra siempre, por el comodín "*"', async () => {
+    const service = buildMany([{ slug: 'superadmin', permissions: ['*'] }]);
+
+    await expect(service.rolesWithPermission('communications.view')).resolves.toEqual([
+      'superadmin',
+    ]);
+  });
+});

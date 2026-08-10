@@ -42,6 +42,17 @@ const CalendarSettingsPage = lazy(() =>
 const BelieversPage = lazy(() =>
   import('@/routes/believers').then((module) => ({ default: module.BelieversPage })),
 );
+const CommunicationsPage = lazy(() =>
+  import('@/routes/communications').then((module) => ({ default: module.CommunicationsPage })),
+);
+const ConversationPage = lazy(() =>
+  import('@/routes/conversation').then((module) => ({ default: module.ConversationPage })),
+);
+const ConversationEmptyPage = lazy(() =>
+  import('@/routes/conversation-empty').then((module) => ({
+    default: module.ConversationEmptyPage,
+  })),
+);
 const BelieverPage = lazy(() =>
   import('@/routes/believer').then((module) => ({ default: module.BelieverPage })),
 );
@@ -208,6 +219,38 @@ export const router = createBrowserRouter([
             <DashboardPage />
           </RequirePermission>
         ),
+      },
+      // Maestro-detalle con rutas anidadas (RFC 0016 §5): `index` es el hueco
+      // vacío de escritorio cuando no hay ninguna conversación abierta, y
+      // `:channelId` es la conversación. En móvil, `CommunicationsPage`
+      // enseña una vista cada vez y `index` no se ve nunca (Regla 5).
+      {
+        path: 'communications',
+        element: (
+          <RequirePermission permission="communications.view">
+            <Lazy>
+              <CommunicationsPage />
+            </Lazy>
+          </RequirePermission>
+        ),
+        children: [
+          {
+            index: true,
+            element: (
+              <Lazy>
+                <ConversationEmptyPage />
+              </Lazy>
+            ),
+          },
+          {
+            path: ':channelId',
+            element: (
+              <Lazy>
+                <ConversationPage />
+              </Lazy>
+            ),
+          },
+        ],
       },
       ...PUENTES.map(({ path, titleKey, rfc, permission }) => ({
         path,

@@ -3,6 +3,7 @@ import 'reflect-metadata';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import type { NestExpressApplication } from '@nestjs/platform-express';
+import { IoAdapter } from '@nestjs/platform-socket.io';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { toNodeHandler } from 'better-auth/node';
 import express from 'express';
@@ -22,6 +23,10 @@ async function bootstrap(): Promise<void> {
   });
 
   app.useLogger(app.get(Logger));
+
+  // El chat (RFC 0016) va por Socket.IO: el adaptador es el que engancha el
+  // WebSocketGateway al mismo servidor HTTP, con su propio CORS por gateway.
+  app.useWebSocketAdapter(new IoAdapter(app));
 
   // Detrás de nginx o Traefik, la IP real viaja en X-Forwarded-For: sin esto,
   // el limitador de peticiones ve a todo el mundo como la misma IP.

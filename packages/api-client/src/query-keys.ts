@@ -111,6 +111,18 @@ export const queryKeys = {
     /** El vocabulario de emociones. Cuelga de sueños: sus cuentas cambian con ellos. */
     emotions: ['dreams', 'emotions'] as const,
   },
+  /**
+   * Comunicaciones (RFC 0016). Todo cuelga de la misma raíz porque casi todo
+   * se toca a la vez: enviar un mensaje mueve la fila del canal en la lista
+   * (no leídos, último mensaje) y su propio historial.
+   */
+  chat: {
+    all: ['chat'] as const,
+    channels: (query: object) => [...queryKeys.chat.all, 'channels', query] as const,
+    channel: (id: string) => [...queryKeys.chat.all, 'channel', id] as const,
+    contacts: (search: string) => [...queryKeys.chat.all, 'contacts', search] as const,
+    messages: (channelId: string) => [...queryKeys.chat.all, 'messages', channelId] as const,
+  },
   health: ['health'] as const,
   /** La búsqueda de ciudades del selector geográfico (RFC 0011, ampliación). */
   geocode: {

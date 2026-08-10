@@ -1,6 +1,14 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
-import type { MyRole, Paginated, RoleRow, RoleSlug, RolesQuery } from '@navis/shared';
+import {
+  hasPermission,
+  type MyRole,
+  type Paginated,
+  type Permission,
+  type RoleRow,
+  type RoleSlug,
+  type RolesQuery,
+} from '@navis/shared';
 import { DataSource, Repository } from 'typeorm';
 
 import { p } from '../database/sql-params';
@@ -142,6 +150,19 @@ export class RolesService {
   async levelOf(slug: RoleSlug): Promise<number | null> {
     const role = await this.roles.findOne({ where: { slug } });
     return role ? role.level : null;
+  }
+
+  /**
+   * Los slugs de rol que dan ese permiso, ahora mismo. Es lo que resuelve
+   * `ChatParticipantsService` para saber quién entra a Comunicaciones (RFC
+   * 0016 §2): se lee de la tabla y no de `ROLE_PERMISSIONS`, que es solo la
+   * semilla y no lo que hay tras editar los permisos desde la administración.
+   */
+  async rolesWithPermission(permission: Permission): Promise<RoleSlug[]> {
+    const roles = await this.roles.find();
+    return roles
+      .filter((role) => hasPermission(role.permissions, permission))
+      .map((role) => role.slug);
   }
 
   /** Cuántas cuentas tienen ese rol ahora mismo. */

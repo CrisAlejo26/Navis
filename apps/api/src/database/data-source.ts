@@ -16,6 +16,11 @@ import { MeetingPattern } from '../calendar/meeting-pattern.entity';
 import { MeetingSlot } from '../calendar/meeting-slot.entity';
 import { Meeting } from '../calendar/meeting.entity';
 import { PatternPhase } from '../calendar/pattern-phase.entity';
+import { ChannelMember } from '../chat/channel-member.entity';
+import { Channel } from '../chat/channel.entity';
+import { MessageAttachment } from '../chat/message-attachment.entity';
+import { MessageReaction } from '../chat/message-reaction.entity';
+import { Message } from '../chat/message.entity';
 import { ChurchMember } from '../churches/church-member.entity';
 import { Church } from '../churches/church.entity';
 import { HolidayCache } from '../holidays/holiday-cache.entity';
@@ -77,6 +82,11 @@ const entities = [
   ListView,
   ListAccessLog,
   HolidayCache,
+  Channel,
+  ChannelMember,
+  Message,
+  MessageAttachment,
+  MessageReaction,
 ];
 
 /**
