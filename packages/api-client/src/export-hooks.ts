@@ -5,6 +5,8 @@ import type {
   DreamsQuery,
   ExportResponse,
   ExportSelection,
+  JournalExportRow,
+  JournalQuery,
   PropheciesQuery,
   ProphecyExportRow,
 } from '@navis/shared';
@@ -13,6 +15,7 @@ import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 import { toBelieverSearch } from './believer-hooks';
 import type { ApiClient } from './client';
 import { toDreamSearch } from './dream-hooks';
+import { toJournalSearch } from './journal-hooks';
 import { toSearch as toProphecySearch } from './prophecy-hooks';
 import { queryKeys } from './query-keys';
 
@@ -66,6 +69,21 @@ export function useDreamsExport(
   return useQuery({
     queryKey: [...queryKeys.dreams.all, 'export', search],
     queryFn: () => api.get<ExportResponse<DreamExportRow>>(`/dreams/export?${search}`),
+    enabled,
+    staleTime: 30_000,
+  });
+}
+
+export function useJournalExport(
+  api: ApiClient,
+  query: JournalQuery & ExportSelection,
+  enabled = true,
+): UseQueryResult<ExportResponse<JournalExportRow>> {
+  const search = withIds(toJournalSearch(query), query.ids);
+
+  return useQuery({
+    queryKey: [...queryKeys.journal.all, 'export', search],
+    queryFn: () => api.get<ExportResponse<JournalExportRow>>(`/journal/export?${search}`),
     enabled,
     staleTime: 30_000,
   });

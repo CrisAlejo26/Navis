@@ -11,6 +11,10 @@ export const MonthlyChart = lazy(() =>
   import('./index').then((module) => ({ default: module.MonthlyChart })),
 );
 
+export const JournalMonthlyChart = lazy(() =>
+  import('./index').then((module) => ({ default: module.JournalMonthlyChart })),
+);
+
 export const RateRing = lazy(() =>
   import('./index').then((module) => ({ default: module.RateRing })),
 );

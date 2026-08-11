@@ -112,6 +112,19 @@ export const queryKeys = {
     emotions: ['dreams', 'emotions'] as const,
   },
   /**
+   * El cuaderno de la iglesia (RFC 0017). Todo cuelga de la misma raíz porque
+   * casi todo se toca a la vez: guardar una entrada mueve la fila del listado
+   * y las cuentas de la portada. Es de la iglesia activa (D1), así que un
+   * cambio de espacio de trabajo la invalida con el resto (`invalidateQueries()`
+   * sin clave, en `useSetActiveChurch`).
+   */
+  journal: {
+    all: ['journal'] as const,
+    list: (query: object) => [...queryKeys.journal.all, 'list', query] as const,
+    stats: ['journal', 'stats'] as const,
+    one: (id: string) => [...queryKeys.journal.all, 'one', id] as const,
+  },
+  /**
    * Comunicaciones (RFC 0016). Todo cuelga de la misma raíz porque casi todo
    * se toca a la vez: enviar un mensaje mueve la fila del canal en la lista
    * (no leídos, último mensaje) y su propio historial.

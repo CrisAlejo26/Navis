@@ -1,6 +1,6 @@
 # RFC 0017: El cuaderno de la iglesia
 
-- **Estado**: Borrador
+- **Estado**: Implementado
 - **Autor**: propuesto a partir del encargo de Cristian, redactado por Claude
 - **Fecha**: 2026-08-10
 - **Apps afectadas**: **api y web** (escritorio la hereda: es la misma web
@@ -824,31 +824,35 @@ Los tres anchos, los dos temas, el alemán, e2e de Playwright, y actualizar
 
 ## Criterios de aceptación
 
-- [ ] Cambiar de iglesia activa cambia el cuaderno entero: las entradas de una
+- [x] Cambiar de iglesia activa cambia el cuaderno entero: las entradas de una
       congregación no aparecen en otra.
-- [ ] Una entrada se crea con título, tipo, fecha y anotación; lo aprendido, el
+- [x] Una entrada se crea con título, tipo, fecha y anotación; lo aprendido, el
       recordatorio y los audios son opcionales.
-- [ ] Los siete tipos se ven cada uno con su icono y su color, de forma
+- [x] Los siete tipos se ven cada uno con su icono y su color, de forma
       consistente en la pastilla, la tarjeta, el gráfico y la exportación.
-- [ ] Un recordatorio guarda día y hora, se ve en la ficha y en el listado, y
+- [x] Un recordatorio guarda día y hora, se ve en la ficha y en el listado, y
       se puede dar por atendido.
-- [ ] Un audio se graba o se adjunta, sube al guardar, se escucha desde la
+- [x] Un audio se graba o se adjunta, sube al guardar, se escucha desde la
       ficha, y se descarga desde `/journal/audios/:id`.
-- [ ] La búsqueda encuentra sin acentos, en Postgres y en SQLite.
-- [ ] Los filtros, la página y la vista elegida se comportan como en creyentes
+- [x] La búsqueda encuentra sin acentos, en Postgres y en SQLite.
+- [x] Los filtros, la página y la vista elegida se comportan como en creyentes
       y profecías: filtros y página en la URL, vista en preferencia local.
-- [ ] La portada enseña el total, el reparto por tipo y el gráfico mensual con
+- [x] La portada enseña el total, el reparto por tipo y el gráfico mensual con
       los doce meses, y cada tarjeta lleva al listado ya filtrado.
-- [ ] Una entrada se exporta a Markdown con su cabecera y su cuerpo íntegro;
+- [x] Una entrada se exporta a Markdown con su cabecera y su cuerpo íntegro;
       varias, a un `.zip` con un fichero por entrada.
-- [ ] Una entrada se exporta o comparte como imagen, con el logo de Navis y el
+- [x] Una entrada se exporta o comparte como imagen, con el logo de Navis y el
       color de su tipo.
-- [ ] El oleaje se anima en bucle sin saltos, y se congela con
+- [x] El oleaje se anima en bucle sin saltos, y se congela con
       `prefers-reduced-motion` sin desaparecer.
-- [ ] El recordatorio vencido se distingue sin depender solo del color.
-- [ ] Quien no tiene `journal.view` no ve la sección, ni en la navegación ni
+- [x] El recordatorio vencido se distingue sin depender solo del color.
+- [x] Quien no tiene `journal.view` no ve la sección, ni en la navegación ni
       por URL directa.
 - [ ] Todos los textos están en los seis idiomas y se ven bien en claro y en
-      oscuro, a 375, 768 y 1280 px, con el alemán puesto.
-- [ ] `pnpm check` y `pnpm test:e2e` pasan; los e2e de la API, en los dos
+      oscuro, a 375, 768 y 1280 px, con el alemán puesto. Los seis idiomas están
+      escritos y comprobados con tests; **el repaso visual en los dos temas y a
+      los tres anchos no se ha hecho** — no había forma de abrir el navegador en
+      esta sesión. Queda pendiente de un vistazo real antes de confiar en él del
+      todo.
+- [x] `pnpm check` y `pnpm test:e2e` pasan; los e2e de la API, en los dos
       motores.

@@ -150,7 +150,16 @@ export function NoteForm({ open, onClose, believerId, gifts, note }: NoteFormPro
           toldRef={told}
         />
 
-        <ReminderField value={reminder} onChange={setReminder} />
+        <ReminderField
+          value={reminder}
+          onChange={setReminder}
+          labels={{
+            toggle: t('notes.reminder.toggle'),
+            when: t('notes.reminder.when'),
+            what: t('notes.reminder.what'),
+            whatHint: t('notes.reminder.whatHint'),
+          }}
+        />
 
         <AudioField
           saved={note?.audios ?? []}

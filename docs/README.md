@@ -34,6 +34,7 @@ Estructura estándar de la industria para separar **decisiones** de **propuestas
 | [0010](./rfcs/0010-listas-compartidas.md)                     | Listas compartidas, con enlace público y accesos              | Implementado |
 | [0014](./rfcs/0014-alcance-de-pastor-y-superadministrador.md) | Tope de roles, onboarding del pastor y alcance del superadmin | Implementado |
 | [0016](./rfcs/0016-chat-comunicaciones-plan.md)               | Chat de Comunicaciones: plan de implementación (amplía 0006)  | Implementado |
+| [0017](./rfcs/0017-notas-de-iglesia.md)                       | El cuaderno de la iglesia                                     | Implementado |
 
 Orden sugerido de implementación: **0008 → 0003 → 0002 → 0001 → 0006 → 0004 →
 0005**. El 0008 va primero porque decide de quién son los datos y quién los ve:

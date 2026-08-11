@@ -5,6 +5,7 @@ import {
   LayoutDashboard,
   MessageSquare,
   Moon,
+  NotebookPen,
   Settings,
   ShieldCheck,
   Sparkles,
@@ -114,6 +115,16 @@ export const NAV_ITEMS: readonly NavItem[] = [
     end: false,
     group: 'church',
     permission: 'believers.view',
+  },
+  {
+    // El cuaderno **sí** exige permiso (RFC 0017 D10), al revés que
+    // profecías y sueños: es de la iglesia y no de cada usuario.
+    to: '/journal',
+    labelKey: 'nav.journal',
+    Icon: NotebookPen,
+    end: false,
+    group: 'church',
+    permission: 'journal.view',
   },
   {
     to: '/communications',

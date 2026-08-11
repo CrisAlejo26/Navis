@@ -21,6 +21,11 @@ export const PERMISSIONS = [
   'calendar.manage',
   'believers.view',
   'believers.manage',
+  // El cuaderno de la iglesia no cuelga de `believers.*` (RFC 0017 D10): es
+  // información más sensible que la agenda de un creyente, y mezclarlas daría
+  // acceso a quien solo debería gestionar personas.
+  'journal.view',
+  'journal.manage',
   'lists.view',
   'lists.manage',
   // Editar una lista y **echarla a internet** no son la misma acción (RFC 0010
@@ -55,6 +60,7 @@ export const PERMISSION_MODULES = [
   'dashboard',
   'calendar',
   'believers',
+  'journal',
   'lists',
   'communications',
   'users',

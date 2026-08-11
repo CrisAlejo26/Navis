@@ -15,6 +15,7 @@ export const MODULE_LABEL_KEY = {
   dashboard: 'nav.dashboard',
   calendar: 'nav.calendar',
   believers: 'nav.believers',
+  journal: 'nav.journal',
   lists: 'nav.lists',
   communications: 'nav.communications',
   // Ni las profecías ni los sueños salen aquí: no tienen permiso de rol

@@ -1,5 +1,4 @@
 import { BellRing } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
 
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/cn';
@@ -8,6 +7,19 @@ export interface ReminderDraft {
   /** `AAAA-MM-DDTHH:MM`, tal cual lo da un `datetime-local`. Vacío es apagado. */
   at: string;
   text: string;
+}
+
+/**
+ * Los textos, ya traducidos: la bitácora de creyentes y el cuaderno de la
+ * iglesia (RFC 0017 D6) usan el mismo componente con su propio vocabulario, y
+ * eso se resuelve con props y no con una clave `notes.reminder.*` fija por
+ * dentro (Regla 1 §3, «mapa de variantes»).
+ */
+export interface ReminderLabels {
+  toggle: string;
+  when: string;
+  what: string;
+  whatHint?: string;
 }
 
 /** Por defecto, dentro de una semana a las siete de la tarde. */
@@ -32,11 +44,12 @@ function enUnaSemana(): string {
 export function ReminderField({
   value,
   onChange,
+  labels,
 }: {
   value: ReminderDraft;
   onChange: (value: ReminderDraft) => void;
+  labels: ReminderLabels;
 }) {
-  const { t } = useTranslation();
   const on = value.at !== '';
 
   return (
@@ -52,7 +65,7 @@ export function ReminderField({
         />
         <span className="gap-2 text-sm font-medium inline-flex items-center">
           <BellRing size={15} aria-hidden className="text-warning" />
-          {t('notes.reminder.toggle')}
+          {labels.toggle}
         </span>
       </label>
 
@@ -61,7 +74,7 @@ export function ReminderField({
           <Input
             name="remindAt"
             type="datetime-local"
-            label={t('notes.reminder.when')}
+            label={labels.when}
             value={value.at}
             onChange={(event) => {
               onChange({ ...value, at: event.target.value });
@@ -69,8 +82,8 @@ export function ReminderField({
           />
           <Input
             name="remindText"
-            label={t('notes.reminder.what')}
-            hint={t('notes.reminder.whatHint')}
+            label={labels.what}
+            hint={labels.whatHint}
             value={value.text}
             onChange={(event) => {
               onChange({ ...value, text: event.target.value });

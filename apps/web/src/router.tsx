@@ -94,6 +94,15 @@ const DreamsListPage = lazy(() =>
 const DreamPage = lazy(() =>
   import('@/routes/dream').then((module) => ({ default: module.DreamPage })),
 );
+const JournalPage = lazy(() =>
+  import('@/routes/journal').then((module) => ({ default: module.JournalPage })),
+);
+const JournalListPage = lazy(() =>
+  import('@/routes/journal-list').then((module) => ({ default: module.JournalListPage })),
+);
+const JournalEntryPage = lazy(() =>
+  import('@/routes/journal-entry').then((module) => ({ default: module.JournalEntryPage })),
+);
 const LabPage = lazy(() => import('@/routes/lab').then((module) => ({ default: module.LabPage })));
 const NoAccessPage = lazy(() =>
   import('@/routes/no-access').then((module) => ({ default: module.NoAccessPage })),
@@ -342,6 +351,40 @@ export const router = createBrowserRouter([
           <RequirePermission permission="believers.view">
             <Lazy>
               <BelieverPage />
+            </Lazy>
+          </RequirePermission>
+        ),
+      },
+      // El cuaderno de la iglesia (RFC 0017) **sí** lleva `RequirePermission`,
+      // al revés que profecías y sueños: es de la iglesia activa (D1, D10) y
+      // no de cada usuario. `/journal/list` va declarada **antes** que
+      // `/journal/:id`, por el mismo motivo que `/prophecies/list`.
+      {
+        path: 'journal',
+        element: (
+          <RequirePermission permission="journal.view">
+            <Lazy>
+              <JournalPage />
+            </Lazy>
+          </RequirePermission>
+        ),
+      },
+      {
+        path: 'journal/list',
+        element: (
+          <RequirePermission permission="journal.view">
+            <Lazy>
+              <JournalListPage />
+            </Lazy>
+          </RequirePermission>
+        ),
+      },
+      {
+        path: 'journal/:id',
+        element: (
+          <RequirePermission permission="journal.view">
+            <Lazy>
+              <JournalEntryPage />
             </Lazy>
           </RequirePermission>
         ),

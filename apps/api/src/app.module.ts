@@ -20,6 +20,7 @@ import { DashboardModule } from './dashboard/dashboard.module';
 import { DreamsModule } from './dreams/dreams.module';
 import { GeocodeModule } from './geocode/geocode.module';
 import { HealthModule } from './health/health.module';
+import { JournalModule } from './journal/journal.module';
 import { ListsModule } from './lists/lists.module';
 import { ProfilesModule } from './profiles/profiles.module';
 import { PropheciesModule } from './prophecies/prophecies.module';
@@ -52,6 +53,7 @@ import { WeatherModule } from './weather/weather.module';
     ProfilesModule,
     ChurchesModule,
     BelieversModule,
+    JournalModule,
     CalendarModule,
     DashboardModule,
     ListsModule,

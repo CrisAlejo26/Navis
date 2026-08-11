@@ -28,6 +28,8 @@ import { DreamAudio } from '../dreams/dream-audio.entity';
 import { DreamEmotion } from '../dreams/dream-emotion.entity';
 import { Dream } from '../dreams/dream.entity';
 import { Emotion } from '../dreams/emotion.entity';
+import { JournalEntryAudio } from '../journal/journal-entry-audio.entity';
+import { JournalEntry } from '../journal/journal-entry.entity';
 import { ListAccessLog } from '../lists/list-access-log.entity';
 import { ListGrant } from '../lists/list-grant.entity';
 import { ListMember } from '../lists/list-member.entity';
@@ -75,6 +77,8 @@ const entities = [
   Emotion,
   DreamEmotion,
   DreamAudio,
+  JournalEntry,
+  JournalEntryAudio,
   List,
   ListMember,
   ListViewer,

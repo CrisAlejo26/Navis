@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { isoDateSchema } from './common';
+import { isoDateSchema, reminderAtSchema } from './common';
 import { noteAudioSchema } from './note-audio';
 
 /**
@@ -71,11 +71,6 @@ export const believerNoteSchema = z.object({
 });
 
 export type BelieverNote = z.infer<typeof believerNoteSchema>;
-
-/** Instante completo, `AAAA-MM-DDTHH:MM`, tal y como lo da un `datetime-local`. */
-export const reminderAtSchema = z
-  .string()
-  .regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/, 'El recordatorio necesita día y hora');
 
 /**
  * `giftId` es obligatorio **si y solo si** el tipo es `don`: anotar que alguien

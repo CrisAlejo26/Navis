@@ -11,6 +11,7 @@
  *    de la librería **no entran en el bundle inicial** de una aplicación en la
  *    que casi ninguna pantalla tiene gráficos.
  */
+export { JournalMonthlyChart } from './journal-monthly-chart';
 export { MonthlyChart } from './monthly-chart';
 export { RateRing } from './rate-ring';
 export { Sparkline } from './sparkline';

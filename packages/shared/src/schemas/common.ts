@@ -60,3 +60,14 @@ export const isoDateSchema = z
 export const timeSchema = z
   .string()
   .regex(/^([01]\d|2[0-3]):[0-5]\d$/, 'La hora debe tener el formato HH:MM');
+
+/**
+ * Instante completo, `AAAA-MM-DDTHH:MM`, tal y como lo da un `datetime-local`.
+ *
+ * Vive aquí y no en `believer-notes.ts` porque la RFC 0017 D6 la reutiliza tal
+ * cual para el recordatorio del cuaderno: es exactamente la misma validación,
+ * no una parecida (Regla 1 §5).
+ */
+export const reminderAtSchema = z
+  .string()
+  .regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/, 'El recordatorio necesita día y hora');

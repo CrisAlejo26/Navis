@@ -22,6 +22,8 @@ export * from './export-hooks';
 export * from './geocode-hooks';
 export * from './gift-hooks';
 export * from './hooks';
+export * from './journal-hooks';
+export * from './journal-mutations';
 export * from './list-hooks';
 export * from './list-mutations';
 export * from './list-share-mutations';
