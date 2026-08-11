@@ -1,5 +1,7 @@
 import type { ChannelListItem } from '@navis/shared';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { I18nextProvider } from 'react-i18next';
 import { MemoryRouter } from 'react-router';
 import { describe, expect, it } from 'vitest';
@@ -24,12 +26,14 @@ const channel = (over: Partial<ChannelListItem> = {}): ChannelListItem => ({
   ...over,
 });
 
-function renderRow(item: ChannelListItem) {
+function renderRow(item: ChannelListItem, currentUserRole = 'pastor') {
   return render(
     <I18nextProvider i18n={i18n}>
-      <MemoryRouter>
-        <ChannelRow channel={item} />
-      </MemoryRouter>
+      <QueryClientProvider client={new QueryClient()}>
+        <MemoryRouter>
+          <ChannelRow channel={item} currentUserRole={currentUserRole} />
+        </MemoryRouter>
+      </QueryClientProvider>
     </I18nextProvider>,
   );
 }
@@ -71,5 +75,33 @@ describe('ChannelRow', () => {
   it('un grupo se pinta con su propio nombre, no con el de un miembro', () => {
     renderRow(channel({ kind: 'grupo', name: 'Alabanza', otherMember: null }));
     expect(screen.getByText('Alabanza')).toBeInTheDocument();
+  });
+
+  it('tiene un menú de opciones, sin abrir la conversación (RFC 0019 §1)', async () => {
+    const user = userEvent.setup();
+    renderRow(channel());
+
+    await user.click(screen.getByRole('button', { name: i18n.t('nav.more') }));
+
+    expect(
+      screen.getByRole('menuitem', { name: i18n.t('communications.exportChat') }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('menuitem', { name: i18n.t('communications.mute') }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('menuitem', { name: i18n.t('communications.archive') }),
+    ).toBeInTheDocument();
+  });
+
+  it('en un grupo, el menú también trae salir del grupo', async () => {
+    const user = userEvent.setup();
+    renderRow(channel({ kind: 'grupo', name: 'Alabanza', otherMember: null }));
+
+    await user.click(screen.getByRole('button', { name: i18n.t('nav.more') }));
+
+    expect(
+      screen.getByRole('menuitem', { name: i18n.t('communications.leaveGroup') }),
+    ).toBeInTheDocument();
   });
 });

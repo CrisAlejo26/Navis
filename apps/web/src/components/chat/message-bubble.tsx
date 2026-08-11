@@ -16,6 +16,7 @@ import { api } from '@/lib/api';
 import { cn } from '@/lib/cn';
 import { formatBytes, formatTime } from '@/lib/format';
 import { ChatAvatar } from './avatar';
+import { FormattedText } from './formatted-text';
 import { MessageMenu, type MessageMenuAction } from './message-menu';
 import { MessageStatus, type MessageStatusState } from './message-status';
 import { ReactionPicker } from './reaction-picker';
@@ -201,7 +202,7 @@ export function MessageBubble({
                 ))}
                 {message.body && (
                   <p className="leading-relaxed text-[15px] break-words whitespace-pre-wrap">
-                    {message.body}
+                    <FormattedText body={message.body} own={isOwn} />
                   </p>
                 )}
               </>

@@ -1,92 +1,70 @@
 import type { ChannelListItem } from '@navis/shared';
-import { BellOff, Paperclip } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { NavLink } from 'react-router';
 
+import { useChannelMenu } from '@/lib/chat/use-channel-menu';
 import { cn } from '@/lib/cn';
-import { formatConversationTime } from '@/lib/format';
-import { ChatAvatar } from './avatar';
+import { ChannelMenuDialogs } from './channel-menu-dialogs';
+import { ChannelRowContent } from './channel-row-content';
+import { MessageMenu } from './message-menu';
 
-export function ChannelRow({ channel }: { channel: ChannelListItem }) {
+/**
+ * Una fila de la bandeja, con su propio menú de opciones (RFC 0019 §1): lo
+ * que en WhatsApp se abre al mantener pulsado el chat, aquí siempre visible
+ * en `MessageMenu` — reutiliza exactamente las mismas acciones que
+ * `ConversationHeader`, vía `useChannelMenu`.
+ *
+ * En modo selección (`selectMode`) la fila entera es la casilla, como ya
+ * hace `Checkbox` (Regla 5): pulsar en cualquier parte marca o desmarca.
+ */
+export function ChannelRow({
+  channel,
+  currentUserRole,
+  selectMode = false,
+  selected = false,
+  onToggleSelect,
+}: {
+  channel: ChannelListItem;
+  currentUserRole: string;
+  selectMode?: boolean;
+  selected?: boolean;
+  onToggleSelect?: () => void;
+}) {
   const { t } = useTranslation();
+  const { actions, dialogProps } = useChannelMenu(channel, currentUserRole);
   const title =
     channel.kind === 'individual' ? (channel.otherMember?.name ?? '') : (channel.name ?? '');
-  const avatarId =
-    channel.kind === 'individual' ? (channel.otherMember?.id ?? channel.id) : channel.id;
-  const avatarImage = channel.kind === 'individual' ? (channel.otherMember?.image ?? null) : null;
-  const muted = Boolean(channel.mutedUntil);
 
-  const preview = channel.lastMessage
-    ? channel.lastMessage.deletedAt
-      ? t('communications.deletedMessage')
-      : (channel.lastMessage.body ?? '')
-    : '';
+  if (selectMode) {
+    return (
+      <label className="gap-3 px-3 py-2.5 flex cursor-pointer items-center rounded-lg hover:bg-muted">
+        <input
+          type="checkbox"
+          checked={selected}
+          onChange={onToggleSelect}
+          aria-label={t('communications.selectConversation', { name: title })}
+          className="h-4 w-4 rounded shrink-0 cursor-pointer accent-primary focus-visible:ring-2 focus-visible:ring-ring"
+        />
+        <ChannelRowContent channel={channel} isActive={false} />
+      </label>
+    );
+  }
 
   return (
     <NavLink
       to={`/communications/${channel.id}`}
       className={({ isActive }) =>
         cn(
-          'gap-3 px-3 py-2.5 flex items-center rounded-lg transition-colors duration-150',
+          'group gap-3 px-3 py-2.5 flex items-center rounded-lg transition-colors duration-150',
           isActive ? 'bg-primary text-primary-foreground' : 'hover:bg-muted',
         )
       }
     >
       {({ isActive }) => (
         <>
-          <ChatAvatar id={avatarId} name={title} image={avatarImage} />
-
-          <div className="min-w-0 flex-1">
-            <div className="gap-2 flex items-center justify-between">
-              <p className="text-sm font-medium truncate">{title}</p>
-              {channel.lastMessage && (
-                <span
-                  className={cn(
-                    'shrink-0 text-[11px]',
-                    isActive ? 'text-primary-foreground/80' : 'text-muted-foreground',
-                  )}
-                >
-                  {formatConversationTime(channel.lastMessage.createdAt)}
-                </span>
-              )}
-            </div>
-
-            <div className="gap-1.5 flex items-center justify-between">
-              <p
-                className={cn(
-                  'gap-1 text-xs min-w-0 flex items-center truncate',
-                  isActive ? 'text-primary-foreground/80' : 'text-muted-foreground',
-                )}
-              >
-                {channel.lastMessage?.hasAttachment && !channel.lastMessage.body && (
-                  <Paperclip size={11} aria-hidden className="shrink-0" />
-                )}
-                <span className="truncate">{preview}</span>
-              </p>
-
-              <div className="gap-1 flex shrink-0 items-center">
-                {muted && (
-                  <BellOff
-                    size={12}
-                    aria-hidden
-                    className={isActive ? 'text-primary-foreground/70' : 'text-muted-foreground'}
-                  />
-                )}
-                {channel.unreadCount > 0 && (
-                  <span
-                    className={cn(
-                      'h-5 min-w-5 px-1.5 font-semibold inline-flex items-center justify-center rounded-full text-[11px]',
-                      isActive
-                        ? 'bg-primary-foreground text-primary'
-                        : 'bg-primary text-primary-foreground',
-                    )}
-                  >
-                    {channel.unreadCount > 99 ? '99+' : channel.unreadCount}
-                  </span>
-                )}
-              </div>
-            </div>
-          </div>
+          <ChannelRowContent channel={channel} isActive={isActive} />
+          <MessageMenu actions={actions} />
+          <ChannelMenuDialogs {...dialogProps} />
         </>
       )}
     </NavLink>

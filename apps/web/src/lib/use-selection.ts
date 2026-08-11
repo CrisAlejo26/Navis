@@ -1,10 +1,10 @@
 import { useCallback, useState } from 'react';
 
 /**
- * Qué filas están marcadas para exportar en lote (D12).
- *
- * Es el primer sitio del proyecto con selección por casillas: ni profecías,
- * ni sueños, ni creyentes la tienen todavía, así que no hay nada que reusar.
+ * Qué filas están marcadas para una acción en lote (exportar, hoy en
+ * `journal` y `chat`). Nacida en `lib/journal` (RFC 0017 D12); se sube aquí
+ * en cuanto Comunicaciones la necesita también (Regla 1 §5: a la segunda vez
+ * se mira, y esta ya no tenía nada específico de un cuaderno).
  */
 export function useSelection() {
   const [selected, setSelected] = useState<ReadonlySet<string>>(new Set());

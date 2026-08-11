@@ -1,0 +1,90 @@
+import type { ChannelListItem } from '@navis/shared';
+import { BellOff, Paperclip } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+
+import { stripMessageFormat } from '@/lib/chat/message-plain-text';
+import { cn } from '@/lib/cn';
+import { formatConversationTime } from '@/lib/format';
+import { ChatAvatar } from './avatar';
+
+/** El avatar, el nombre, la hora, la vista previa y las insignias de una fila (RFC 0016 §5). */
+export function ChannelRowContent({
+  channel,
+  isActive,
+}: {
+  channel: ChannelListItem;
+  isActive: boolean;
+}) {
+  const { t } = useTranslation();
+
+  const title =
+    channel.kind === 'individual' ? (channel.otherMember?.name ?? '') : (channel.name ?? '');
+  const avatarId =
+    channel.kind === 'individual' ? (channel.otherMember?.id ?? channel.id) : channel.id;
+  const avatarImage = channel.kind === 'individual' ? (channel.otherMember?.image ?? null) : null;
+  const muted = Boolean(channel.mutedUntil);
+
+  const preview = channel.lastMessage
+    ? channel.lastMessage.deletedAt
+      ? t('communications.deletedMessage')
+      : stripMessageFormat(channel.lastMessage.body ?? '')
+    : '';
+
+  return (
+    <>
+      <ChatAvatar id={avatarId} name={title} image={avatarImage} />
+
+      <div className="min-w-0 flex-1">
+        <div className="gap-2 flex items-center justify-between">
+          <p className="text-sm font-medium truncate">{title}</p>
+          {channel.lastMessage && (
+            <span
+              className={cn(
+                'shrink-0 text-[11px]',
+                isActive ? 'text-primary-foreground/80' : 'text-muted-foreground',
+              )}
+            >
+              {formatConversationTime(channel.lastMessage.createdAt)}
+            </span>
+          )}
+        </div>
+
+        <div className="gap-1.5 flex items-center justify-between">
+          <p
+            className={cn(
+              'gap-1 text-xs min-w-0 flex items-center truncate',
+              isActive ? 'text-primary-foreground/80' : 'text-muted-foreground',
+            )}
+          >
+            {channel.lastMessage?.hasAttachment && !channel.lastMessage.body && (
+              <Paperclip size={11} aria-hidden className="shrink-0" />
+            )}
+            <span className="truncate">{preview}</span>
+          </p>
+
+          <div className="gap-1 flex shrink-0 items-center">
+            {muted && (
+              <BellOff
+                size={12}
+                aria-hidden
+                className={isActive ? 'text-primary-foreground/70' : 'text-muted-foreground'}
+              />
+            )}
+            {channel.unreadCount > 0 && (
+              <span
+                className={cn(
+                  'h-5 min-w-5 px-1.5 font-semibold inline-flex items-center justify-center rounded-full text-[11px]',
+                  isActive
+                    ? 'bg-primary-foreground text-primary'
+                    : 'bg-primary text-primary-foreground',
+                )}
+              >
+                {channel.unreadCount > 99 ? '99+' : channel.unreadCount}
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}

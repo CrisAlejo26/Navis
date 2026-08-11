@@ -5,8 +5,9 @@ import { Button } from '@/components/ui/button';
 
 /**
  * La barra que aparece con selección puesta: **«Exportar N»** es la única
- * acción en lote, nunca un borrado masivo (mismo criterio que la RFC 0003
- * §7.4 — una comodidad no puede ser también un accidente de un clic).
+ * acción en lote, nunca un borrado masivo (RFC 0017 §7.4 — una comodidad no
+ * puede ser también un accidente de un clic). Nacida en `journal/`; en
+ * cuanto Comunicaciones la necesitó también, subió a `ui` (Regla 1 §5).
  */
 export function SelectionBar({
   count,

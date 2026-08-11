@@ -1,7 +1,8 @@
 import { MoreVertical } from 'lucide-react';
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useDismissablePopover } from '@/lib/use-dismissable-popover';
 import { cn } from '@/lib/cn';
 
 export interface MessageMenuAction {
@@ -13,47 +14,50 @@ export interface MessageMenuAction {
 }
 
 /**
- * El menú de acciones de un mensaje: responder, reenviar, eliminar…
- * Icono suelto y no `MenuButton` (que lleva etiqueta): aquí el botón vive
- * dentro de una burbuja pequeña y solo se ve al pasar el ratón o enfocarlo.
+ * El menú de acciones de un mensaje o de una fila: responder, reenviar,
+ * silenciar…
+ *
+ * `opacity-0 group-hover:opacity-100` es lo que lo revela sin ratón de por
+ * medio — en un teléfono no hay hover, así que por debajo de `md` se ve
+ * siempre. Antes solo se revelaba al pasar el ratón o enfocarlo, y por eso
+ * no había forma de abrirlo en el móvil (RFC 0019).
  */
-export function MessageMenu({ actions }: { actions: MessageMenuAction[] }) {
+export function MessageMenu({
+  actions,
+  className,
+}: {
+  actions: MessageMenuAction[];
+  className?: string;
+}) {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
-  const box = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!open) return;
-
-    const close = (event: Event) => {
-      if (event instanceof KeyboardEvent && event.key !== 'Escape') return;
-      if (event.type === 'pointerdown' && box.current?.contains(event.target as Node)) return;
-      setOpen(false);
-    };
-
-    document.addEventListener('pointerdown', close);
-    document.addEventListener('keydown', close);
-    return () => {
-      document.removeEventListener('pointerdown', close);
-      document.removeEventListener('keydown', close);
-    };
-  }, [open]);
+  const box = useDismissablePopover<HTMLDivElement>(open, () => setOpen(false));
 
   if (actions.length === 0) return null;
 
   return (
-    <div ref={box} className="relative">
+    <div ref={box} className={cn('relative', className)}>
+      {/* `preventDefault` es lo que evita que este botón, dentro de la fila
+          de una conversación (`NavLink`, RFC 0019), dispare también la
+          navegación — `stopPropagation` solo no basta: al no dejar llegar el
+          clic al propio `onClick` de `NavLink`, es react-router quien deja
+          de llamar a `preventDefault()`, y el navegador sigue el `href` de
+          todas formas. Van en los dos elementos ya interactivos (el botón y
+          cada opción), no en un `div` envolvente — eso disparaba los avisos
+          de accesibilidad de un elemento no nativo con manejador de clic. */}
       <button
         type="button"
         aria-haspopup="menu"
         aria-expanded={open}
         aria-label={t('nav.more')}
-        onClick={() => {
+        onClick={(event) => {
+          event.preventDefault();
+          event.stopPropagation();
           setOpen((previous) => !previous);
         }}
         className={cn(
           'h-8 w-8 inline-flex cursor-pointer items-center justify-center rounded-full text-muted-foreground',
-          'opacity-0 transition-opacity duration-150 group-hover:opacity-100 focus-visible:opacity-100',
+          'md:opacity-0 md:group-hover:opacity-100 opacity-100 transition-opacity duration-150 focus-visible:opacity-100',
           'hover:bg-muted hover:text-foreground focus-visible:outline-none',
           open && 'bg-muted opacity-100',
         )}
@@ -71,7 +75,9 @@ export function MessageMenu({ actions }: { actions: MessageMenuAction[] }) {
               key={action.id}
               type="button"
               role="menuitem"
-              onClick={() => {
+              onClick={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
                 setOpen(false);
                 action.onSelect();
               }}
