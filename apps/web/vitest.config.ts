@@ -3,17 +3,31 @@ import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vitest/config';
 import tsconfigPaths from 'vite-tsconfig-paths';
 
+const workspaceSource = (name: string): string =>
+  fileURLToPath(new URL(`../../packages/${name}/src/index.ts`, import.meta.url));
+
 export default defineConfig({
   plugins: [react(), tsconfigPaths()],
   resolve: {
-    alias: {
+    alias: [
       // `virtual:pwa-register/react` lo inyecta el plugin de la PWA, que aquí
       // no está: sin este alias, cualquier test que monte el aviso de
       // actualización moriría con «cannot find module».
-      'virtual:pwa-register/react': fileURLToPath(
-        new URL('./src/test/pwa-register.ts', import.meta.url),
-      ),
-    },
+      {
+        find: 'virtual:pwa-register/react',
+        replacement: fileURLToPath(new URL('./src/test/pwa-register.ts', import.meta.url)),
+      },
+      // Mismo alias que `vite.config.ts`, y el mismo motivo (RFC 0019): sin
+      // resolver al fuente, un componente que llama a un hook de mutación de
+      // `@navis/api-client` (no pasado por prop, como `useChannelMenu`) monta
+      // dentro de su propia copia de React Query, distinta de la que ve
+      // `QueryClientProvider` en el test, y `useQueryClient()` revienta con
+      // «No QueryClient set» aunque el proveedor esté ahí.
+      { find: /^@navis\/api-client$/, replacement: workspaceSource('api-client') },
+      { find: /^@navis\/i18n$/, replacement: workspaceSource('i18n') },
+      { find: /^@navis\/shared$/, replacement: workspaceSource('shared') },
+      { find: /^@navis\/theme$/, replacement: workspaceSource('theme') },
+    ],
   },
   test: {
     globals: true,

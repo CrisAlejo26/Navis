@@ -10,13 +10,13 @@ import { JournalCards } from '@/components/journal/journal-cards';
 import { JournalTable } from '@/components/journal/journal-table';
 import { JournalToolbar } from '@/components/journal/journal-toolbar';
 import { Oleaje } from '@/components/journal/oleaje';
-import { SelectionBar } from '@/components/journal/selection-bar';
 import { BackLink } from '@/components/ui/back-link';
 import { Button } from '@/components/ui/button';
+import { SelectionBar } from '@/components/ui/selection-bar';
 import { useBatchMarkdownExport } from '@/lib/journal/use-batch-export';
 import { useJournalScreen } from '@/lib/journal/use-journal-screen';
-import { useSelection } from '@/lib/journal/use-selection';
 import { useJournalViewStore } from '@/lib/journal/view';
+import { useSelection } from '@/lib/use-selection';
 
 /**
  * El listado del cuaderno, con sus tres formas de verlo (RFC 0017 §7.4).

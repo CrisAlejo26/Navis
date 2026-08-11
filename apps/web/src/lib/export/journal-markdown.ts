@@ -1,6 +1,7 @@
 import type { JournalExportRow } from '@navis/shared';
 
 import { buildZip, utf8 } from '@/lib/export/zip';
+import { toPlainDateTime } from '@/lib/export/plain-date-time';
 import { slugify } from '@/lib/share/files';
 
 /** Los textos, ya traducidos: esto es una función pura y no sabe de i18next. */
@@ -11,15 +12,6 @@ export interface JournalMarkdownLabels {
   frontmatterReminder: string;
   annotationHeading: string;
   learnedHeading: string;
-}
-
-/** `2026-08-12T19:00:00.000Z` → `2026-08-12 19:00`: sencillo y ordenable, sin palabras de ningún idioma. */
-function toPlainDateTime(iso: string): string {
-  const date = new Date(iso);
-  if (Number.isNaN(date.getTime())) return iso;
-
-  const dos = (value: number) => String(value).padStart(2, '0');
-  return `${String(date.getFullYear())}-${dos(date.getMonth() + 1)}-${dos(date.getDate())} ${dos(date.getHours())}:${dos(date.getMinutes())}`;
 }
 
 /**
