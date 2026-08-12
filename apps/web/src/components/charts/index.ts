@@ -15,3 +15,4 @@ export { JournalMonthlyChart } from './journal-monthly-chart';
 export { MonthlyChart } from './monthly-chart';
 export { RateRing } from './rate-ring';
 export { Sparkline } from './sparkline';
+export { TaskWeeklyChart } from './task-weekly-chart';

@@ -6,6 +6,7 @@ import { CompositionSection } from '@/components/home/composition-section';
 import { EventsCard } from '@/components/home/events-card';
 import { NotesCard } from '@/components/home/notes-card';
 import { StatusCard } from '@/components/home/status-card';
+import { TodayTasksCard } from '@/components/home/today-tasks-card';
 import { WeekCalendar } from '@/components/home/week-calendar';
 import { WelcomeHeader } from '@/components/home/welcome-header';
 import { PageSkeleton } from '@/components/ui/page-skeleton';
@@ -34,6 +35,11 @@ export function DashboardPage() {
         />
         <EventsCard events={data.upcomingEvents} />
         <NotesCard notes={data.recentNotes} />
+        <TodayTasksCard
+          tasks={data.todayTasks}
+          streak={data.taskStreak}
+          className="sm:col-span-2 lg:col-span-4"
+        />
       </div>
 
       <WeekCalendar />

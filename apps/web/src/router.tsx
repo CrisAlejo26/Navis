@@ -103,6 +103,15 @@ const JournalListPage = lazy(() =>
 const JournalEntryPage = lazy(() =>
   import('@/routes/journal-entry').then((module) => ({ default: module.JournalEntryPage })),
 );
+const TasksPage = lazy(() =>
+  import('@/routes/tasks').then((module) => ({ default: module.TasksPage })),
+);
+const TasksStatsPage = lazy(() =>
+  import('@/routes/tasks-stats').then((module) => ({ default: module.TasksStatsPage })),
+);
+const TasksListPage = lazy(() =>
+  import('@/routes/tasks-list').then((module) => ({ default: module.TasksListPage })),
+);
 const LabPage = lazy(() => import('@/routes/lab').then((module) => ({ default: module.LabPage })));
 const NoAccessPage = lazy(() =>
   import('@/routes/no-access').then((module) => ({ default: module.NoAccessPage })),
@@ -385,6 +394,38 @@ export const router = createBrowserRouter([
           <RequirePermission permission="journal.view">
             <Lazy>
               <JournalEntryPage />
+            </Lazy>
+          </RequirePermission>
+        ),
+      },
+      // Tareas y hábitos (RFC 0018): tres pantallas, todas bajo `tasks.view`
+      // (D7) — un solo permiso, no hay «lo ajeno» que gestionar (D6).
+      {
+        path: 'tasks',
+        element: (
+          <RequirePermission permission="tasks.view">
+            <Lazy>
+              <TasksPage />
+            </Lazy>
+          </RequirePermission>
+        ),
+      },
+      {
+        path: 'tasks/stats',
+        element: (
+          <RequirePermission permission="tasks.view">
+            <Lazy>
+              <TasksStatsPage />
+            </Lazy>
+          </RequirePermission>
+        ),
+      },
+      {
+        path: 'tasks/list',
+        element: (
+          <RequirePermission permission="tasks.view">
+            <Lazy>
+              <TasksListPage />
             </Lazy>
           </RequirePermission>
         ),

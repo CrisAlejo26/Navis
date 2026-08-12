@@ -35,6 +35,8 @@ const EMPTY_DASHBOARD = {
   recentNotes: [],
   composition: { byCongregation: [], byMinistry: [], byGift: [] },
   weeklyActivity: [],
+  todayTasks: [],
+  taskStreak: 0,
 };
 
 const EMPTY_BY_KIND = {

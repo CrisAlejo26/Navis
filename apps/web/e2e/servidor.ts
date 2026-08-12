@@ -70,6 +70,8 @@ export function dashboardSummary(overrides: Record<string, unknown> = {}) {
     recentNotes: [],
     composition: { byCongregation: [], byMinistry: [], byGift: [] },
     weeklyActivity: [],
+    todayTasks: [],
+    taskStreak: 0,
     ...overrides,
   };
 }

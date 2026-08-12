@@ -22,3 +22,7 @@ export const RateRing = lazy(() =>
 export const Sparkline = lazy(() =>
   import('./index').then((module) => ({ default: module.Sparkline })),
 );
+
+export const TaskWeeklyChart = lazy(() =>
+  import('./index').then((module) => ({ default: module.TaskWeeklyChart })),
+);

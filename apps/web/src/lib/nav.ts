@@ -1,6 +1,7 @@
 import type { Permission } from '@navis/shared';
 import {
   CalendarDays,
+  CheckCircle2,
   ClipboardList,
   LayoutDashboard,
   MessageSquare,
@@ -125,6 +126,16 @@ export const NAV_ITEMS: readonly NavItem[] = [
     end: false,
     group: 'church',
     permission: 'journal.view',
+  },
+  {
+    // Tareas y hábitos son de la cuenta, dentro de la iglesia activa (RFC
+    // 0018 D6): un solo permiso, `tasks.view` (D7), igual que el cuaderno.
+    to: '/tasks',
+    labelKey: 'nav.tasks',
+    Icon: CheckCircle2,
+    end: false,
+    group: 'church',
+    permission: 'tasks.view',
   },
   {
     to: '/communications',
