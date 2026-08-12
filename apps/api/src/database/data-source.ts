@@ -40,6 +40,18 @@ import { Profile } from '../profiles/profile.entity';
 import { ProphecyFulfillment } from '../prophecies/prophecy-fulfillment.entity';
 import { Prophecy } from '../prophecies/prophecy.entity';
 import { Role } from '../roles/role.entity';
+import { HabitOccurrence } from '../tasks/habit-occurrence.entity';
+import { HabitReminderTag } from '../tasks/habit-reminder-tag.entity';
+import { HabitReminder } from '../tasks/habit-reminder.entity';
+import { HabitTag } from '../tasks/habit-tag.entity';
+import { Habit } from '../tasks/habit.entity';
+import { Tag } from '../tasks/tag.entity';
+import { TaskOccurrence } from '../tasks/task-occurrence.entity';
+import { TaskReminderTag } from '../tasks/task-reminder-tag.entity';
+import { TaskReminder } from '../tasks/task-reminder.entity';
+import { TaskStreakCache } from '../tasks/task-streak-cache.entity';
+import { TaskTag } from '../tasks/task-tag.entity';
+import { Task } from '../tasks/task.entity';
 
 const logging: DataSourceOptions['logging'] = isProduction
   ? ['error', 'warn']
@@ -91,6 +103,18 @@ const entities = [
   Message,
   MessageAttachment,
   MessageReaction,
+  Tag,
+  Task,
+  TaskTag,
+  TaskOccurrence,
+  TaskReminder,
+  TaskReminderTag,
+  Habit,
+  HabitTag,
+  HabitOccurrence,
+  HabitReminder,
+  HabitReminderTag,
+  TaskStreakCache,
 ];
 
 /**

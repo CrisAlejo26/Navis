@@ -9,11 +9,13 @@ import { Ministry } from '../believers/ministry.entity';
 import { CalendarModule } from '../calendar/calendar.module';
 import { Congregation } from '../calendar/congregation.entity';
 import { ChurchesModule } from '../churches/churches.module';
+import { TasksModule } from '../tasks/tasks.module';
 import { DashboardActivityService } from './dashboard-activity.service';
 import { DashboardCompositionService } from './dashboard-composition.service';
 import { DashboardController } from './dashboard.controller';
 import { DashboardEventsService } from './dashboard-events.service';
 import { DashboardNotesService } from './dashboard-notes.service';
+import { DashboardTasksService } from './dashboard-tasks.service';
 import { DashboardService } from './dashboard.service';
 
 /**
@@ -31,6 +33,7 @@ import { DashboardService } from './dashboard.service';
     BelieversModule,
     CalendarModule,
     ChurchesModule,
+    TasksModule,
   ],
   controllers: [DashboardController],
   providers: [
@@ -39,6 +42,7 @@ import { DashboardService } from './dashboard.service';
     DashboardActivityService,
     DashboardEventsService,
     DashboardNotesService,
+    DashboardTasksService,
   ],
 })
 export class DashboardModule {}

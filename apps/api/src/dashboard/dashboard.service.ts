@@ -8,6 +8,7 @@ import { DashboardActivityService } from './dashboard-activity.service';
 import { DashboardCompositionService } from './dashboard-composition.service';
 import { DashboardEventsService } from './dashboard-events.service';
 import { DashboardNotesService } from './dashboard-notes.service';
+import { DashboardTasksService } from './dashboard-tasks.service';
 
 /**
  * Todo lo del panel de inicio, reunido en una sola respuesta (RFC 0001).
@@ -26,24 +27,33 @@ export class DashboardService {
     private readonly activity: DashboardActivityService,
     private readonly events: DashboardEventsService,
     private readonly notes: DashboardNotesService,
+    private readonly tasks: DashboardTasksService,
   ) {}
 
-  async summary(churchId: string): Promise<DashboardSummary> {
+  async summary(churchId: string, ownerId: string): Promise<DashboardSummary> {
     const today = await this.clock.today(churchId);
 
-    const [believers, attentionPage, composition, weeklyActivity, upcomingEvents, recentNotes] =
-      await Promise.all([
-        this.believersSummary.of(churchId, today),
-        this.believersPage.findPage(
-          churchId,
-          { page: 1, limit: 5, sort: 'lastNote', order: 'asc', attention: true },
-          today,
-        ),
-        this.composition.of(churchId),
-        this.activity.weekly(churchId, today),
-        this.events.upcoming(churchId, today),
-        this.notes.recent(churchId),
-      ]);
+    const [
+      believers,
+      attentionPage,
+      composition,
+      weeklyActivity,
+      upcomingEvents,
+      recentNotes,
+      todayTasks,
+    ] = await Promise.all([
+      this.believersSummary.of(churchId, today),
+      this.believersPage.findPage(
+        churchId,
+        { page: 1, limit: 5, sort: 'lastNote', order: 'asc', attention: true },
+        today,
+      ),
+      this.composition.of(churchId),
+      this.activity.weekly(churchId, today),
+      this.events.upcoming(churchId, today),
+      this.notes.recent(churchId),
+      this.tasks.today(churchId, ownerId, today),
+    ]);
 
     return {
       believers: { total: believers.total, newThisMonth: believers.newThisMonth },
@@ -60,6 +70,8 @@ export class DashboardService {
       recentNotes,
       composition,
       weeklyActivity,
+      todayTasks: todayTasks.tasks,
+      taskStreak: todayTasks.streak,
     };
   }
 }
