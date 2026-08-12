@@ -26,6 +26,11 @@ export const PERMISSIONS = [
   // acceso a quien solo debería gestionar personas.
   'journal.view',
   'journal.manage',
+  // Tareas y hábitos son de la cuenta, dentro de la iglesia activa, no un
+  // tablón compartido (RFC 0018 D6): gestionar es siempre gestionar lo
+  // propio, así que un solo permiso basta — no hace falta el par
+  // `view`/`manage` de siempre (D7).
+  'tasks.view',
   'lists.view',
   'lists.manage',
   // Editar una lista y **echarla a internet** no son la misma acción (RFC 0010
@@ -61,6 +66,7 @@ export const PERMISSION_MODULES = [
   'calendar',
   'believers',
   'journal',
+  'tasks',
   'lists',
   'communications',
   'users',

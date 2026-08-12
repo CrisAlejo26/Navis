@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 import { noteKindSchema } from './believer-notes';
 import { isoDateSchema, timeSchema } from './common';
+import { TASK_PRIORITIES } from './tasks';
 
 /** Igual que el de las listas (`bucketSchema` en `list-stats.ts`): sede, labor o
  * don con su color y su cuenta. Se repite porque una cuenta es de **toda la
@@ -58,6 +59,19 @@ export const dashboardWeekActivitySchema = z.object({
 
 export type DashboardWeekActivity = z.infer<typeof dashboardWeekActivitySchema>;
 
+/** Una tarea de hoy, recortada para la tarjeta (RFC 0018 §9.7). */
+export const dashboardTaskSchema = z.object({
+  taskId: z.uuid(),
+  title: z.string(),
+  time: timeSchema.nullable(),
+  priority: z.enum(TASK_PRIORITIES),
+  completed: z.boolean(),
+  /** El de su primera etiqueta, o `primary` si no lleva ninguna. */
+  accent: z.string(),
+});
+
+export type DashboardTask = z.infer<typeof dashboardTaskSchema>;
+
 /**
  * Todo lo del panel de inicio, en una sola respuesta (RFC 0001).
  *
@@ -78,6 +92,9 @@ export const dashboardSummarySchema = z.object({
     byGift: z.array(dashboardBucketSchema),
   }),
   weeklyActivity: z.array(dashboardWeekActivitySchema),
+  /** Hasta cinco tareas de hoy, y la racha (RFC 0018 §9.7). Sin petición aparte. */
+  todayTasks: z.array(dashboardTaskSchema),
+  taskStreak: z.number().int(),
 });
 
 export type DashboardSummary = z.infer<typeof dashboardSummarySchema>;
@@ -90,3 +107,5 @@ export const DASHBOARD_NOTES_PREVIEW = 5;
 export const DASHBOARD_ACTIVITY_WEEKS = 6;
 /** Cuántos días de agenda se miran para sacar los próximos eventos. */
 export const DASHBOARD_EVENTS_WINDOW_DAYS = 30;
+/** Cuántas tareas de hoy trae la tarjeta (RFC 0018 §9.7). */
+export const DASHBOARD_TASKS_PREVIEW = 5;

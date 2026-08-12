@@ -21,6 +21,7 @@ export const ROLE_PERMISSIONS: Record<Role, readonly string[]> = {
    */
   pastor: [
     'dashboard.view',
+    'tasks.view',
     'calendar.view',
     'calendar.manage',
     'believers.view',
@@ -42,6 +43,7 @@ export const ROLE_PERMISSIONS: Record<Role, readonly string[]> = {
   /** Lleva las personas y la agenda: es quien está en la puerta. */
   recepcion: [
     'dashboard.view',
+    'tasks.view',
     'calendar.view',
     'calendar.manage',
     'believers.view',
@@ -55,6 +57,7 @@ export const ROLE_PERMISSIONS: Record<Role, readonly string[]> = {
   /** Consulta para preparar: ve a las personas, no las cambia. */
   biblias: [
     'dashboard.view',
+    'tasks.view',
     'calendar.view',
     'believers.view',
     'lists.view',
@@ -65,6 +68,7 @@ export const ROLE_PERMISSIONS: Record<Role, readonly string[]> = {
   /** Necesita saber qué hay programado, y poco más. */
   sonido: [
     'dashboard.view',
+    'tasks.view',
     'calendar.view',
     'lists.view',
     'communications.view',
@@ -74,6 +78,7 @@ export const ROLE_PERMISSIONS: Record<Role, readonly string[]> = {
   /** Habla desde el frente, así que publica los avisos. */
   pulpito: [
     'dashboard.view',
+    'tasks.view',
     'calendar.view',
     'lists.view',
     'communications.view',
@@ -89,6 +94,7 @@ export const ROLE_PERMISSIONS: Record<Role, readonly string[]> = {
    */
   'predicador-apoyo': [
     'dashboard.view',
+    'tasks.view',
     'calendar.view',
     'calendar.manage',
     'believers.view',

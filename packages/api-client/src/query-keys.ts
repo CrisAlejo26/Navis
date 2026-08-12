@@ -112,6 +112,23 @@ export const queryKeys = {
     emotions: ['dreams', 'emotions'] as const,
   },
   /**
+   * Tareas y hábitos (RFC 0018). Etiquetas, tareas y hábitos cuelgan de la
+   * misma raíz: completar una tarea mueve su fila, la racha y las
+   * estadísticas a la vez, e invalidar `all` es más barato que acertar cuál
+   * de las cuatro hay que refrescar.
+   */
+  tasks: {
+    all: ['tasks'] as const,
+    tags: ['tasks', 'tags'] as const,
+    list: (query: object) => [...queryKeys.tasks.all, 'list', query] as const,
+    streak: ['tasks', 'streak'] as const,
+    stats: (query: object) => [...queryKeys.tasks.all, 'stats', query] as const,
+    one: (id: string) => [...queryKeys.tasks.all, 'one', id] as const,
+    habitsList: (query: object) => [...queryKeys.tasks.all, 'habitsList', query] as const,
+    habitsStats: (query: object) => [...queryKeys.tasks.all, 'habitsStats', query] as const,
+    habitOne: (id: string) => [...queryKeys.tasks.all, 'habitOne', id] as const,
+  },
+  /**
    * El cuaderno de la iglesia (RFC 0017). Todo cuelga de la misma raíz porque
    * casi todo se toca a la vez: guardar una entrada mueve la fila del listado
    * y las cuentas de la portada. Es de la iglesia activa (D1), así que un
