@@ -35,7 +35,7 @@ Estructura estándar de la industria para separar **decisiones** de **propuestas
 | [0014](./rfcs/0014-alcance-de-pastor-y-superadministrador.md) | Tope de roles, onboarding del pastor y alcance del superadmin          | Implementado |
 | [0016](./rfcs/0016-chat-comunicaciones-plan.md)               | Chat de Comunicaciones: plan de implementación (amplía 0006)           | Implementado |
 | [0017](./rfcs/0017-notas-de-iglesia.md)                       | El cuaderno de la iglesia                                              | Implementado |
-| [0018](./rfcs/0018-tareas-y-habitos.md)                       | Tareas y hábitos                                                       | Borrador     |
+| [0018](./rfcs/0018-tareas-y-habitos-implementado.md)          | Tareas y hábitos                                                       | Implementado |
 | [0019](./rfcs/0019-comunicaciones-mejoras-plan.md)            | Comunicaciones: menú por chat, emoji, formato y exportar (amplía 0016) | Implementado |
 
 Orden sugerido de implementación: **0008 → 0003 → 0002 → 0001 → 0006 → 0004 →

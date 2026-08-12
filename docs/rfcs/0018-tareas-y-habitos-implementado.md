@@ -1,6 +1,6 @@
 # RFC 0018: Tareas y hábitos
 
-- **Estado**: Borrador
+- **Estado**: Implementado
 - **Fecha**: 2026-08-10
 - **Apps afectadas**: api y web (escritorio hereda de web, es la misma web
   dentro de Tauri). La app móvil **queda fuera de esta versión**, con su
@@ -745,21 +745,41 @@ Sin semilla: cada cuenta empieza sin tareas ni hábitos, y la pantalla vacía de
 
 ## Criterios de aceptación
 
-- [ ] Una tarea repetitiva («cada 2 días, hasta el 31 de diciembre») se
+- [x] Una tarea repetitiva («cada 2 días, hasta el 31 de diciembre») se
       completa un día concreto sin afectar a los demás días.
-- [ ] La racha sube al completar todas las tareas de hoy y de ayer seguidos, y
+- [x] La racha sube al completar todas las tareas de hoy y de ayer seguidos, y
       no baja por un día sin ninguna tarea.
-- [ ] Reabrir una tarea de hoy recalcula la racha correctamente en la
+- [x] Reabrir una tarea de hoy recalcula la racha correctamente en la
       siguiente lectura.
-- [ ] Un hábito nunca aparece en el cálculo de la racha.
-- [ ] Crear una etiqueta con icono y color, y verla en una tarea, en su
+- [x] Un hábito nunca aparece en el cálculo de la racha.
+- [x] Crear una etiqueta con icono y color, y verla en una tarea, en su
       recordatorio y en el filtro del listado.
-- [ ] El listado filtra y agrupa por cualquier combinación de §10.5 sin perder
+- [x] El listado filtra y agrupa por cualquier combinación de §10.5 sin perder
       el estado al recargar la página (todo en la URL).
-- [ ] La tarjeta de la página de inicio muestra las tareas de hoy sin una
+- [x] La tarjeta de la página de inicio muestra las tareas de hoy sin una
       petición adicional al servidor.
-- [ ] `creyente` no ve «Tareas» en la navegación.
-- [ ] Los textos están en los seis idiomas, incluida cada etiqueta accesible
+- [x] `creyente` no ve «Tareas» en la navegación.
+- [x] Los textos están en los seis idiomas, incluida cada etiqueta accesible
       del catálogo de iconos.
-- [ ] Funciona a 375 px, en los dos temas y con `prefers-reduced-motion`
+- [x] Funciona a 375 px, en los dos temas y con `prefers-reduced-motion`
       activo (el Faro deja de girar, la racha se sigue leyendo).
+
+## Notas de la implementación
+
+Dos decisiones tomadas al implementar, que no estaban explícitas en la
+propuesta:
+
+- **La vista de calendario del Listado (§9.5) no reutiliza literalmente la
+  cinta de fases del calendario de reuniones (RFC 0002 D20)**: esa pieza está
+  acoplada a sedes, patrones y reuniones, y adaptarla a tareas/hábitos habría
+  costado más que una cuadrícula propia con el mismo lenguaje visual (un punto
+  por elemento, coloreado por su primera etiqueta). D20 se cumple en su
+  intención — una sola audacia por pantalla, sin competir con el Faro —, no en
+  que sea el mismo componente.
+- **El filtro «Sin fecha» de §9.5 no está implementado**: `date` es obligatoria
+  en `tasks` y `habits` (D16), así que ninguna fila puede no tener fecha y ese
+  filtro siempre devolvería la lista vacía. Se ha dejado fuera de las pastillas
+  en vez de simular un estado que el modelo de datos no permite.
+- **`GET /tasks/:id` y `GET /habits/:id`** existen aunque no están en la tabla
+  de §8: el formulario de edición (§9.6) necesita la plantilla entera —
+  repetición incluida —, que una ocurrencia expandida no lleva.
