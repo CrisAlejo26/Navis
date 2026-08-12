@@ -580,18 +580,28 @@ mismo criterio: una audacia nueva, y una reutilizada donde ya existía).
 
 ### 7.7 La ficha — `/journal/:id`
 
-Dos columnas de `lg` para arriba; una sola por debajo.
+A lo ancho y de arriba abajo, como la ficha de un sueño y la de una profecía
+(revisado tras la primera entrega: antes era dos columnas de `lg` para
+arriba, con la identidad en una de 20 rem a la izquierda; era la única de las
+tres fichas de «entrada personal» sin la cabecera a lo ancho).
 
-**Izquierda, pegajosa:**
+**Cabecera, teñida con el color del tipo** (mismo mecanismo que el tinte por
+emoción de un sueño y por estado de una profecía — el dato pone el color, no
+la pantalla):
 
-- Filete superior de 4 px en el color del tipo.
+- Fecha y autor, en una línea pequeña encima del título.
 - El título a 24 px, `tracking-[-0.02em]`, con la pastilla de tipo debajo.
-- Fecha, autor, y si hay recordatorio: la tarjeta con su mensaje, fecha y hora,
-  y el botón «Dar por atendido».
 - Acciones: **«Editar»** como principal, y en menú: **«Exportar»** (dos
   entradas: Markdown e Imagen — D12/D13) y **«Eliminar»**.
 
-**Derecha:**
+**El oleaje** (§7.6, D14), bajo la cabecera: hasta ahora solo vivía en la
+portada y el listado; en la ficha cierra el círculo de las tres pantallas del
+cuaderno con la misma firma.
+
+**Debajo, si lo hay, el recordatorio**: la tarjeta con su mensaje, fecha y
+hora, y el botón «Dar por atendido».
+
+**Y el texto, a lo ancho:**
 
 - **Anotación**, a 17 px con más interlínea, `max-w-prose` (Regla 5 §3).
 - **Lo aprendido**, si lo hay, en su propio bloque con un filete vertical fino
