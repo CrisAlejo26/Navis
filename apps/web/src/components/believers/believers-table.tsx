@@ -65,8 +65,13 @@ export function BelieversTable({
       emptyIcon={UserSearch}
       emptyTitle={screen.filters.count > 0 ? t('believers.noResults') : t('believers.empty')}
       toolbar={toolbar}
+      // El aviso ya es el único dato de color de la pantalla (`Sonda`, §7.3):
+      // aquí se extiende de un filete a un lavado suave del fondo entero, para
+      // que se note sin desplazarse hasta la columna de la sonda.
       rowClassName={(believer) =>
-        believer.needsAttention ? 'border-l-destructive hover:border-l-destructive' : undefined
+        believer.needsAttention
+          ? 'border-l-destructive bg-destructive/5 hover:border-l-destructive hover:bg-destructive/10'
+          : undefined
       }
       columns={
         <>

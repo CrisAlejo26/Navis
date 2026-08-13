@@ -13,7 +13,9 @@ import { DataTable } from '@/components/ui/data-table';
 import { Pagination } from '@/components/ui/pagination';
 import { SortableColumns } from '@/components/ui/sortable-columns';
 import { TableHeader } from '@/components/ui/table';
+import { accentVars } from '@/lib/accents';
 import { api } from '@/lib/api';
+import { roleAccent } from '@/lib/roles';
 import { useRoleRows } from '@/lib/use-role-rows';
 import { useTableQuery } from '@/lib/use-table-query';
 
@@ -78,6 +80,11 @@ export function RolesPanel() {
         getKey={(role) => role.id}
         emptyIcon={SearchX}
         emptyTitle={t('roles.noRoles')}
+        // El filete de cada fila lleva el color de su nivel (`roleAccent`): la
+        // misma jerarquía que ya dibuja `RoleBadge` en puntos, ahora también
+        // en el borde de la fila (Regla 9 §3).
+        rowClassName={() => 'border-l-[var(--acento)]'}
+        rowStyle={(role) => accentVars(roleAccent(role.level))}
         toolbar={
           <RolesToolbar
             search={query.search}

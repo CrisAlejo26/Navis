@@ -8,6 +8,8 @@ import { EntryRow, type EntryCells } from '@/components/journal/entry-row';
 import { DataTable } from '@/components/ui/data-table';
 import { Pagination } from '@/components/ui/pagination';
 import { TableHeader } from '@/components/ui/table';
+import { accentVars } from '@/lib/accents';
+import { ENTRY_KIND_STYLES } from '@/lib/journal/entry-kind';
 import type { JournalScreen } from '@/lib/journal/use-journal-screen';
 
 /**
@@ -52,8 +54,13 @@ export function JournalTable({
           : t('journal.emptyTitle')
       }
       toolbar={toolbar}
-      rowClassName={() => 'animate-rise-in'}
-      rowStyle={(_entry, index) => ({ animationDelay: `${String(Math.min(index, 12) * 35)}ms` })}
+      // El mismo filete que ya lleva `EntryCard` en la ficha de móvil (D15):
+      // el color del tipo, también en el borde de la fila de escritorio.
+      rowClassName={() => 'animate-rise-in border-l-[var(--acento)]'}
+      rowStyle={(entry, index) => ({
+        ...accentVars(ENTRY_KIND_STYLES[entry.kind].accent),
+        animationDelay: `${String(Math.min(index, 12) * 35)}ms`,
+      })}
       columns={
         <>
           {/* Sin rótulo: cada casilla ya lleva su propia etiqueta accesible

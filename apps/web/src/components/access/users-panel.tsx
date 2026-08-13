@@ -13,9 +13,10 @@ import { DataTable } from '@/components/ui/data-table';
 import { Pagination } from '@/components/ui/pagination';
 import { SortableColumns } from '@/components/ui/sortable-columns';
 import { TableHeader } from '@/components/ui/table';
+import { accentVars } from '@/lib/accents';
 import { api } from '@/lib/api';
 import { useSession } from '@/lib/auth-client';
-import { useRoleCatalog } from '@/lib/roles';
+import { roleAccent, useRoleCatalog } from '@/lib/roles';
 import { useTableQuery } from '@/lib/use-table-query';
 import { useUsersFilterStore } from '@/lib/users-filter';
 import { NO_DIALOG, type UserDialogsState } from '@/lib/user-dialogs-state';
@@ -94,6 +95,11 @@ export function UsersPanel() {
         getKey={(user) => user.id}
         emptyIcon={UserSearch}
         emptyTitle={t('roles.noUsers')}
+        // El filete lleva el color del rol de esa cuenta (`roleAccent`): la
+        // misma jerarquía que se ve en la pestaña de roles, así que el color
+        // se reconoce igual en las dos pestañas de esta pantalla (Regla 9 §3).
+        rowClassName={() => 'border-l-[var(--acento)]'}
+        rowStyle={(user) => accentVars(roleAccent(catalog.get(user.role)?.level ?? 0))}
         toolbar={
           <UsersToolbar
             search={query.search}

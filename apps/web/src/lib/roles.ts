@@ -1,5 +1,6 @@
 import { useRoles } from '@navis/api-client';
 import {
+  ACCENT_PALETTE,
   DEFAULT_ROLE,
   isSystemRole,
   SUPERADMIN_ROLE,
@@ -80,6 +81,21 @@ export function useRoleCatalog(enabled = true): Map<RoleSlug, RoleRow> {
     () => new Map((data?.items ?? []).map((role) => [role.slug, role])),
     [data?.items],
   );
+}
+
+/**
+ * El color de un rol, por su nivel en la jerarquía.
+ *
+ * No es un campo nuevo en la base de datos: se deriva del `level` que ya
+ * tiene cada rol, con la misma paleta ampliada que ya distingue sedes, dones
+ * y tipos de anotación (`ACCENT_PALETTE`). Dos roles del mismo nivel
+ * comparten color a propósito —los cuatro ministerios, por ejemplo—: el color
+ * dice **el escalón**, no el rol exacto, que ya lo dice el nombre al lado
+ * (Regla 9 §3: el color nunca informa solo).
+ */
+export function roleAccent(level: number): string {
+  const index = ((level % ACCENT_PALETTE.length) + ACCENT_PALETTE.length) % ACCENT_PALETTE.length;
+  return ACCENT_PALETTE[index];
 }
 
 /**

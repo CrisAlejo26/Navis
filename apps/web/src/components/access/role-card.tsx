@@ -4,16 +4,24 @@ import { RoleActions } from '@/components/access/role-actions';
 import { RoleBadge } from '@/components/access/role-badge';
 import type { RoleCellsProps } from '@/components/access/role-row';
 import { Badge } from '@/components/ui/badge';
+import { accentVars } from '@/lib/accents';
 import { formatNumber } from '@/lib/format';
-import { useRoleHint } from '@/lib/roles';
+import { roleAccent, useRoleHint } from '@/lib/roles';
 
-/** El mismo rol que pinta `RoleRow`, apilado para un teléfono. */
+/**
+ * El mismo rol que pinta `RoleRow`, apilado para un teléfono. El filete
+ * izquierdo lleva el color de su nivel (`roleAccent`), igual que la fila de
+ * la tabla y que ya hace `EntryCard` con el tipo de una anotación.
+ */
 export function RoleCard({ role, ...actions }: RoleCellsProps) {
   const { t } = useTranslation();
   const hint = useRoleHint()(role);
 
   return (
-    <div className="gap-3 flex flex-col">
+    <div
+      style={accentVars(roleAccent(role.level))}
+      className="pl-3 gap-3 flex flex-col border-l-[3px] border-l-[var(--acento)]"
+    >
       <div className="gap-3 flex items-start justify-between">
         <div className="min-w-0">
           <RoleBadge slug={role.slug} role={role} className="font-medium" />

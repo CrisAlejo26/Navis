@@ -41,8 +41,9 @@ export function BelieverCard({
         'gap-3 p-4 flex h-full flex-col rounded-xl border bg-card',
         // El filete rojo es lo que se ve cuando la animación está apagada
         // (§7.3): quien ha agotado su margen se distingue sin depender del
-        // color de la sonda ni de su latido.
-        believer.needsAttention && 'border-l-2 border-l-destructive',
+        // color de la sonda ni de su latido. El lavado del fondo hace que se
+        // note entre fichas sin tener que leer el filete de cada una.
+        believer.needsAttention && 'border-l-2 border-l-destructive bg-destructive/5',
       )}
     >
       <div className="gap-2 flex items-start justify-between">
