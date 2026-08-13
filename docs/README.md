@@ -37,6 +37,7 @@ Estructura estándar de la industria para separar **decisiones** de **propuestas
 | [0017](./rfcs/0017-notas-de-iglesia.md)                       | El cuaderno de la iglesia                                              | Implementado |
 | [0018](./rfcs/0018-tareas-y-habitos-implementado.md)          | Tareas y hábitos                                                       | Implementado |
 | [0019](./rfcs/0019-comunicaciones-mejoras-plan.md)            | Comunicaciones: menú por chat, emoji, formato y exportar (amplía 0016) | Implementado |
+| [0021](./rfcs/0021-tablas-personalizadas.md)                  | Tablas personalizadas, con columnas, vistas y filtros dinámicos        | Borrador     |
 
 Orden sugerido de implementación: **0008 → 0003 → 0002 → 0001 → 0006 → 0004 →
 0005**. El 0008 va primero porque decide de quién son los datos y quién los ve:
