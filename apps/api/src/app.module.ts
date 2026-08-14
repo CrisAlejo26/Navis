@@ -26,6 +26,7 @@ import { ProfilesModule } from './profiles/profiles.module';
 import { PropheciesModule } from './prophecies/prophecies.module';
 import { RolesModule } from './roles/roles.module';
 import { SetupModule } from './setup/setup.module';
+import { TablesModule } from './tables/tables.module';
 import { TasksModule } from './tasks/tasks.module';
 import { UsersModule } from './users/users.module';
 import { WeatherModule } from './weather/weather.module';
@@ -59,6 +60,7 @@ import { WeatherModule } from './weather/weather.module';
     CalendarModule,
     DashboardModule,
     ListsModule,
+    TablesModule,
     PropheciesModule,
     DreamsModule,
     ChatModule,

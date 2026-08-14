@@ -37,6 +37,11 @@ export const PERMISSIONS = [
   // D8), así que publicar tiene permiso propio. Gestionar accesos va con él:
   // repartir llaves es parte de abrir la puerta.
   'lists.share',
+  // Tres niveles, como listas (RFC 0021): ver, añadir/editar filas y tocar la
+  // estructura (columnas) son decisiones de personas distintas.
+  'tables.view',
+  'tables.edit',
+  'tables.manage',
   'communications.view',
   'communications.manage',
   'users.view',
@@ -68,6 +73,7 @@ export const PERMISSION_MODULES = [
   'journal',
   'tasks',
   'lists',
+  'tables',
   'communications',
   'users',
   'roles',

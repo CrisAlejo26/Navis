@@ -30,11 +30,13 @@ export function ShareLinkBlock({
 
   return (
     <div className="gap-3 flex flex-col">
-      <div className="p-3 gap-3 flex flex-wrap items-center rounded-lg border bg-muted/40">
-        <Link2 size={16} aria-hidden className="shrink-0 text-muted-foreground" />
-        <code className="min-w-0 text-xs flex-1 break-all">{url}</code>
+      <div className="p-3 gap-3 flex flex-col rounded-lg border bg-muted/40">
+        <div className="gap-2 flex items-start">
+          <Link2 size={16} aria-hidden className="mt-0.5 shrink-0 text-muted-foreground" />
+          <code className="min-w-0 text-xs flex-1 break-all">{url}</code>
+        </div>
 
-        <div className="gap-1.5 flex">
+        <div className="gap-2 flex flex-wrap">
           <Button
             variant="secondary"
             size="sm"

@@ -18,6 +18,7 @@ export const MODULE_LABEL_KEY = {
   journal: 'nav.journal',
   tasks: 'nav.tasks',
   lists: 'nav.lists',
+  tables: 'nav.tables',
   communications: 'nav.communications',
   // Ni las profecías ni los sueños salen aquí: no tienen permiso de rol
   // (RFC 0004 D2 y RFC 0005 D2).

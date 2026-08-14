@@ -90,6 +90,20 @@ export const queryKeys = {
     public: (token: string) => ['public-list', token] as const,
   },
   /**
+   * Las tablas personalizadas de la iglesia (RFC 0021).
+   *
+   * `rows` cuelga del identificador de la tabla y de la consulta —página,
+   * orden, búsqueda, filtros—: cada combinación se cachea aparte, igual que
+   * el listado de creyentes.
+   */
+  tables: {
+    all: ['tables'] as const,
+    one: (id: string) => [...queryKeys.tables.all, 'one', id] as const,
+    rows: (tableId: string, query: object) =>
+      [...queryKeys.tables.all, 'rows', tableId, query] as const,
+    views: (tableId: string) => [...queryKeys.tables.all, 'views', tableId] as const,
+  },
+  /**
    * Las profecías de quien ha entrado (RFC 0004).
    *
    * Todo cuelga de la misma raíz porque casi todo se toca a la vez: anotar un

@@ -40,6 +40,10 @@ import { Profile } from '../profiles/profile.entity';
 import { ProphecyFulfillment } from '../prophecies/prophecy-fulfillment.entity';
 import { Prophecy } from '../prophecies/prophecy.entity';
 import { Role } from '../roles/role.entity';
+import { CustomTableColumn } from '../tables/custom-table-column.entity';
+import { CustomTableRow } from '../tables/custom-table-row.entity';
+import { CustomTableView } from '../tables/custom-table-view.entity';
+import { CustomTable } from '../tables/custom-table.entity';
 import { HabitOccurrence } from '../tasks/habit-occurrence.entity';
 import { HabitReminderTag } from '../tasks/habit-reminder-tag.entity';
 import { HabitReminder } from '../tasks/habit-reminder.entity';
@@ -115,6 +119,10 @@ const entities = [
   HabitReminder,
   HabitReminderTag,
   TaskStreakCache,
+  CustomTable,
+  CustomTableColumn,
+  CustomTableRow,
+  CustomTableView,
 ];
 
 /**

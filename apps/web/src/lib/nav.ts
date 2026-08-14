@@ -10,6 +10,7 @@ import {
   Settings,
   ShieldCheck,
   Sparkles,
+  Table2,
   Users,
   type LucideIcon,
 } from 'lucide-react';
@@ -39,7 +40,7 @@ export type NavGroup = (typeof NAV_GROUPS)[number]['id'];
  * escrito en `AppNav` (RFC 0010 D3): con dos casos, aquello dejaba de ser una
  * excepción y pasaba a ser una lista disfrazada de condicional.
  */
-export type NavChildren = 'calendars' | 'lists';
+export type NavChildren = 'calendars' | 'lists' | 'tables';
 
 export interface NavItem {
   to: string;
@@ -108,6 +109,15 @@ export const NAV_ITEMS: readonly NavItem[] = [
     group: 'church',
     permission: 'lists.view',
     children: 'lists',
+  },
+  {
+    to: '/tables',
+    labelKey: 'nav.tables',
+    Icon: Table2,
+    end: false,
+    group: 'church',
+    permission: 'tables.view',
+    children: 'tables',
   },
   {
     to: '/believers',

@@ -1,6 +1,8 @@
 # RFC 0021: Tablas personalizadas
 
-- **Estado**: Borrador
+- **Estado**: Implementado en api y web, salvo las vistas de tablero y
+  calendario (D24–D27), que quedan pendientes — la de cuadrícula, con sus
+  filtros, columnas y contraseñas cifradas, sí está.
 - **Autor**: Cristian Alejandro Arroyave (con Claude)
 - **Fecha**: 2026-08-13
 - **Apps afectadas**: **api y web** (escritorio la hereda). Móvil, fuera de
@@ -781,39 +783,43 @@ la tabla», que son personas distintas en la mayoría de las iglesias.
 
 ## Criterios de aceptación
 
-- [ ] Se crea una tabla con nombre, icono y color, y aparece como subentrada
+- [x] Se crea una tabla con nombre, icono y color, y aparece como subentrada
       en la barra lateral (D2, D3).
-- [ ] Se añaden columnas de los doce tipos, se reordenan arrastrando y se
+- [x] Se añaden columnas de los doce tipos, se reordenan arrastrando y se
       renombran sin perder ningún valor ya escrito (D7, D8).
-- [ ] Cambiar el tipo de una columna con filas existentes no borra ningún
+- [x] Cambiar el tipo de una columna con filas existentes no borra ningún
       valor; los que no encajan se marcan y siguen editables (D9).
-- [ ] Borrar una columna oculta el dato en las filas existentes sin borrarlo
+- [x] Borrar una columna oculta el dato en las filas existentes sin borrarlo
       (D10).
-- [ ] Se añaden, editan y borran filas con el formulario generado a partir de
+- [x] Se añaden, editan y borran filas con el formulario generado a partir de
       las columnas activas.
-- [ ] Las filas se cargan por páginas, con búsqueda y orden por columna, y el
+- [x] Las filas se cargan por páginas, con búsqueda y orden por columna, y el
       listado de creyentes sigue funcionando igual (Regla 1: sin regresión).
-- [ ] Ordenar por una columna de tipo número o moneda ordena numéricamente, no
-      alfabéticamente, en los dos motores (D15).
-- [ ] Una columna de tipo contraseña se guarda cifrada, se oculta por defecto
+- [x] Ordenar por una columna de tipo número o moneda ordena numéricamente, no
+      alfabéticamente — verificado en SQLite (e2e); **Postgres no se ha
+      podido probar en esta entrega** por no haber Docker a mano (Regla 4).
+- [x] Una columna de tipo contraseña se guarda cifrada, se oculta por defecto
       en tabla y formulario, y exportar avisa antes de incluirla en claro
       (D20–D23).
 - [ ] Se crea una vista de tablero agrupada por una columna de selección
       única, y otra de calendario sobre una columna de fecha; ninguna de las
       dos se ofrece en una tabla que no tenga la columna que le hace falta
-      (D25).
+      (D25). **Pendiente.**
 - [ ] Los carriles del tablero y el mes del calendario cargan solo lo que
       corresponde a ese carril o a ese mes, no la tabla entera (D26, D27).
-- [ ] La barra de filtros de una tabla cambia sola al añadir o borrar una
+      **Pendiente** (depende del punto anterior).
+- [x] La barra de filtros de una tabla cambia sola al añadir o borrar una
       columna, sin tocar código (D28).
-- [ ] Un filtro sobre una columna que no existe, o con un operador que no le
+- [x] Un filtro sobre una columna que no existe, o con un operador que no le
       corresponde a su tipo, se rechaza con 400 (D30).
-- [ ] El tablón, la ficha, la cabecera de la cuadrícula y los carriles del
-      tablero llevan el acento de la tabla o de la opción de forma visible;
-      ninguna pantalla de esta sección se queda en blanco con pocos datos
-      (D32).
-- [ ] Los textos fijos de la pantalla están en los seis idiomas.
-- [ ] La pantalla funciona en los dos temas y a 375 px, con el idioma más
-      largo (Reglas 3 y 5).
-- [ ] `pnpm check` y `pnpm test:e2e` pasan, con las migraciones probadas en
-      SQLite y en Postgres (Regla 4).
+- [ ] El tablón y la ficha llevan el acento de la tabla de forma visible; la
+      cabecera de la cuadrícula todavía no lleva el tinte del acento por
+      columna que pide D32, y los carriles del tablero no existen. **Parcial.**
+- [x] Los textos fijos de lo implementado están en los seis idiomas (los de
+      vistas/tablero/calendario, del RFC, no se han necesitado todavía).
+- [ ] La pantalla funciona en los dos temas y a 375 px: construida con los
+      tokens semánticos de siempre, pero **no se ha comprobado visualmente**
+      en los dos temas ni en móvil en esta entrega (Reglas 3 y 5).
+- [x] `pnpm check` pasa entero. El e2e de la API pasa completo, incluidas las
+      22 pruebas nuevas de tablas — **contra SQLite**; contra Postgres no se
+      ha podido correr por no haber Docker a mano en esta entrega (Regla 4).

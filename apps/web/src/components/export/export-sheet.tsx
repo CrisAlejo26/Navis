@@ -1,5 +1,5 @@
 import { AlertTriangle, Copy, Download, Send } from 'lucide-react';
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ExportPreview } from '@/components/export/export-preview';
@@ -25,6 +25,8 @@ export interface ExportSheetProps {
   total: number;
   truncated: boolean;
   isLoading: boolean;
+  /** Un aviso o ajuste antes del formato, como la casilla de contraseñas de tablas (RFC 0021 D23). */
+  before?: ReactNode;
 }
 
 /**
@@ -34,7 +36,15 @@ export interface ExportSheetProps {
  * descarga sin decir cuántas filas van y con qué filtros es el problema de
  * partida cambiado de sitio.
  */
-export function ExportSheet({ open, onClose, doc, total, truncated, isLoading }: ExportSheetProps) {
+export function ExportSheet({
+  open,
+  onClose,
+  doc,
+  total,
+  truncated,
+  isLoading,
+  before,
+}: ExportSheetProps) {
   const { t } = useTranslation();
   const [format, setFormat] = useState<ExportFormat>(DEFAULT_EXPORT_FORMAT);
   const actions = useExport(doc, format);
@@ -49,6 +59,8 @@ export function ExportSheet({ open, onClose, doc, total, truncated, isLoading }:
       width="min(38rem, calc(100vw - 2rem))"
     >
       <div className="gap-4 flex flex-col">
+        {before}
+
         {isLoading ? (
           <Skeleton className="h-64 w-full" />
         ) : vacio ? (

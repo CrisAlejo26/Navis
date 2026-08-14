@@ -84,7 +84,7 @@ export function SharePanel({
   };
 
   return (
-    <div className="gap-6 max-w-4xl flex flex-col">
+    <div className="gap-6 flex flex-col">
       {/* De `lg` para arriba, dos columnas —el modo y el enlace a la
           izquierda, lo que se ve y la caducidad a la derecha— para no obligar
           a bajar tanto en una pantalla ancha (Regla 5). En móvil, una sola

@@ -10,6 +10,7 @@ import { ListForm } from '@/components/lists/list-form';
 import { Logo } from '@/components/logo';
 import { PageTransition } from '@/components/page-transition';
 import { SessionFooter } from '@/components/session-footer';
+import { TableForm } from '@/components/tables/table-form';
 import { Drawer } from '@/components/ui/drawer';
 import { navItemsFor } from '@/lib/nav';
 import { useNavBranches } from '@/lib/nav-branches';
@@ -26,7 +27,7 @@ export function AppLayout() {
   const { t } = useTranslation();
   const { can } = usePermissions();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [creando, setCreando] = useState<'calendar' | 'list' | null>(null);
+  const [creando, setCreando] = useState<'calendar' | 'list' | 'table' | null>(null);
 
   // Las entradas dependen de los permisos del rol: cada una se pinta solo si su
   // pantalla se puede abrir (ver `navItemsFor`).
@@ -35,7 +36,7 @@ export function AppLayout() {
     setMenuOpen(false);
   }, []);
 
-  const abrirAlta = useCallback((que: 'calendar' | 'list') => {
+  const abrirAlta = useCallback((que: 'calendar' | 'list' | 'table') => {
     setMenuOpen(false);
     setCreando(que);
   }, []);
@@ -49,6 +50,11 @@ export function AppLayout() {
     onAddList: can('lists.manage')
       ? () => {
           abrirAlta('list');
+        }
+      : undefined,
+    onAddTable: can('tables.manage')
+      ? () => {
+          abrirAlta('table');
         }
       : undefined,
   });
@@ -89,6 +95,13 @@ export function AppLayout() {
 
       <ListForm
         open={creando === 'list'}
+        onClose={() => {
+          setCreando(null);
+        }}
+      />
+
+      <TableForm
+        open={creando === 'table'}
         onClose={() => {
           setCreando(null);
         }}

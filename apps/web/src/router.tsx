@@ -73,6 +73,12 @@ const ListPage = lazy(() =>
 const PublicListPage = lazy(() =>
   import('@/routes/public-list').then((module) => ({ default: module.PublicListPage })),
 );
+const TablesPage = lazy(() =>
+  import('@/routes/tables').then((module) => ({ default: module.TablesPage })),
+);
+const TablePage = lazy(() =>
+  import('@/routes/table').then((module) => ({ default: module.TablePage })),
+);
 const ListAccessPage = lazy(() =>
   import('@/routes/list-access').then((module) => ({ default: module.ListAccessPage })),
 );
@@ -318,6 +324,28 @@ export const router = createBrowserRouter([
           <RequirePermission permission="lists.view">
             <Lazy>
               <ListPage />
+            </Lazy>
+          </RequirePermission>
+        ),
+      },
+      // `/tables` es el tablón y cada tabla vive en su `slug`, igual que
+      // calendarios y listas (RFC 0021 D2).
+      {
+        path: 'tables',
+        element: (
+          <RequirePermission permission="tables.view">
+            <Lazy>
+              <TablesPage />
+            </Lazy>
+          </RequirePermission>
+        ),
+      },
+      {
+        path: 'tables/:slug',
+        element: (
+          <RequirePermission permission="tables.view">
+            <Lazy>
+              <TablePage />
             </Lazy>
           </RequirePermission>
         ),

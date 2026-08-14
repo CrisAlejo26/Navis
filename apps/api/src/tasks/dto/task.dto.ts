@@ -63,7 +63,7 @@ export class CreateTaskDto {
   @IsOptional()
   @Transform(booleano)
   @IsBoolean()
-  isRecurring = false;
+  isRecurring: boolean = false;
 
   @ApiPropertyOptional({ enum: TASK_REPEAT_FREQS })
   @IsOptional()
