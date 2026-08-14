@@ -16,7 +16,8 @@ import { RowValueCell } from '@/components/tables/row-value-cell';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { DataTable } from '@/components/ui/data-table';
 import { Pagination } from '@/components/ui/pagination';
-import { TableCell, TableHead } from '@/components/ui/table';
+import { TableCell, TableHeader } from '@/components/ui/table';
+import { accentVars } from '@/lib/accents';
 import { api } from '@/lib/api';
 import { encodeFilters } from '@/lib/tables/filters';
 import { toast } from '@/lib/toast';
@@ -24,13 +25,18 @@ import { toast } from '@/lib/toast';
 /**
  * La vista de cuadrícula (RFC 0021 D17–D19): la que siempre existe, paginada,
  * con búsqueda, orden y filtros calculados sobre las columnas activas.
+ *
+ * La fila de cabeceras lleva un tinte del acento de la tabla, y la columna por
+ * la que se ordena se marca con el acento sólido — nunca blanco puro (D32).
  */
 export function RowsGrid({
   tableId,
+  accent,
   columns,
   editable,
 }: {
   tableId: string;
+  accent: string;
   columns: readonly CustomTableColumn[];
   editable: boolean;
 }) {
@@ -58,6 +64,14 @@ export function RowsGrid({
   const visibles = columns.filter((one) => one.isActive);
   const abrirFila = (row: CustomTableRow | 'new') => {
     setEditando(row);
+  };
+  const alternarOrden = (key: string) => {
+    if (sort !== key) {
+      setSort(key);
+      setOrder('asc');
+      return;
+    }
+    setOrder(order === 'asc' ? 'desc' : 'asc');
   };
 
   return (
@@ -101,14 +115,22 @@ export function RowsGrid({
         columns={
           <>
             {visibles.map((column) => (
-              <TableHead
+              <TableHeader
                 key={column.key}
-                className="px-4 py-2.5 text-xs font-semibold text-left text-muted-foreground uppercase"
+                style={accentVars(accent)}
+                sorted={column.key === sort ? order : false}
+                onSort={() => {
+                  alternarOrden(column.key);
+                }}
+                sortLabel={`${t('tables.sortBy')}: ${column.label}`}
+                className={column.key === sort ? 'bg-[var(--acento)]/25' : 'bg-[var(--acento)]/10'}
               >
                 {column.label}
-              </TableHead>
+              </TableHeader>
             ))}
-            {editable && <TableHead className="w-24" />}
+            {editable && (
+              <TableHeader style={accentVars(accent)} className="w-24 bg-[var(--acento)]/10" />
+            )}
           </>
         }
         renderRow={(row) => (

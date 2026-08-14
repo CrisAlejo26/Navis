@@ -68,7 +68,7 @@ export class CreateHabitDto {
   @IsOptional()
   @Transform(booleano)
   @IsBoolean()
-  reminderEnabled = true;
+  reminderEnabled: boolean = true;
 
   @ApiPropertyOptional({ example: '2026-08-15T06:30' })
   @IsOptional()

@@ -25,6 +25,7 @@ export function RowForm({
   tableId,
   columns,
   row,
+  initialData,
 }: {
   open: boolean;
   onClose: () => void;
@@ -32,11 +33,16 @@ export function RowForm({
   columns: readonly CustomTableColumn[];
   /** Si viene, se edita; si no, se crea. */
   row?: CustomTableRow;
+  /** Valores con los que nace un alta — la fecha del día pulsado, por ejemplo. */
+  initialData?: RowData;
 }) {
   const { t } = useTranslation();
   const create = useCreateTableRow(api);
   const update = useUpdateTableRow(api);
-  const [values, setValues] = useState<RowData>(() => initial(columns, row));
+  const [values, setValues] = useState<RowData>(() => ({
+    ...initial(columns, row),
+    ...(row ? {} : initialData),
+  }));
   const [error, setError] = useState<string | null>(null);
 
   const submit = (event: React.FormEvent<HTMLFormElement>) => {

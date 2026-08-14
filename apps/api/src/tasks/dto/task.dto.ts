@@ -57,7 +57,7 @@ export class CreateTaskDto {
   @ApiPropertyOptional({ enum: TASK_PRIORITIES, default: 'media' })
   @IsOptional()
   @IsIn(TASK_PRIORITIES)
-  priority = 'media' as (typeof TASK_PRIORITIES)[number];
+  priority: (typeof TASK_PRIORITIES)[number] = 'media';
 
   @ApiPropertyOptional({ default: false })
   @IsOptional()
@@ -76,7 +76,7 @@ export class CreateTaskDto {
   @IsInt()
   @Min(1)
   @Max(365)
-  repeatInterval = 1;
+  repeatInterval: number = 1;
 
   @ApiPropertyOptional({ enum: TASK_REPEAT_END_TYPES })
   @IsOptional()
@@ -107,7 +107,7 @@ export class CreateTaskDto {
   @IsOptional()
   @Transform(booleano)
   @IsBoolean()
-  reminderEnabled = true;
+  reminderEnabled: boolean = true;
 
   @ApiPropertyOptional({ example: '2026-08-15T09:00' })
   @IsOptional()

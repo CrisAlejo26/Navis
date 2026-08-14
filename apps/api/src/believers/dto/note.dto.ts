@@ -90,14 +90,14 @@ export class NotesQueryDto {
   @Transform(({ value }: { value: unknown }) => Number(value))
   @IsInt()
   @Min(1)
-  page = 1;
+  page: number = 1;
 
   @ApiPropertyOptional({ default: 20 })
   @IsOptional()
   @Transform(({ value }: { value: unknown }) => Number(value))
   @IsInt()
   @Min(1)
-  limit = 20;
+  limit: number = 20;
 
   @ApiPropertyOptional({ enum: NOTE_KINDS })
   @IsOptional()

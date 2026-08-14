@@ -36,7 +36,7 @@ export class TasksQueryDto {
   @Type(() => Number)
   @IsInt()
   @Min(1)
-  page = 1;
+  page: number = 1;
 
   @ApiPropertyOptional({ default: DEFAULT_PAGE_SIZE, maximum: MAX_PAGE_SIZE })
   @IsOptional()
@@ -67,7 +67,7 @@ export class TasksQueryDto {
   @ApiPropertyOptional({ default: true, description: 'Oculta las completadas (D21)' })
   @IsOptional()
   @Transform(booleano)
-  hideCompleted = true;
+  hideCompleted: boolean = true;
 
   @ApiPropertyOptional({ enum: TASK_SORTS })
   @IsOptional()

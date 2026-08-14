@@ -24,5 +24,5 @@ export class MessagesQueryDto {
   @IsInt()
   @Min(1)
   @Max(100)
-  limit = MESSAGES_PAGE_SIZE;
+  limit: number = MESSAGES_PAGE_SIZE;
 }

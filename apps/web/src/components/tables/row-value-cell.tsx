@@ -64,7 +64,15 @@ export function RowValueCell({ column, value }: { column: CustomTableColumn; val
   return <span className="truncate">{texto}</span>;
 }
 
-function OptionChip({ option, fallback }: { option: ColumnOption | undefined; fallback: string }) {
+/** También la usa `ColumnFilterControl`, para que un filtro se vea como la
+    insignia que ya pinta en la cuadrícula (mismo color de acento). */
+export function OptionChip({
+  option,
+  fallback,
+}: {
+  option: ColumnOption | undefined;
+  fallback: string;
+}) {
   return (
     <span
       style={accentVars(option?.color ?? 'primary')}

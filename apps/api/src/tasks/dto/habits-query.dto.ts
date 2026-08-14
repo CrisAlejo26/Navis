@@ -36,7 +36,7 @@ export class HabitsQueryDto {
   @Type(() => Number)
   @IsInt()
   @Min(1)
-  page = 1;
+  page: number = 1;
 
   @ApiPropertyOptional({ default: DEFAULT_PAGE_SIZE, maximum: MAX_PAGE_SIZE })
   @IsOptional()
@@ -67,7 +67,7 @@ export class HabitsQueryDto {
   @ApiPropertyOptional({ default: true })
   @IsOptional()
   @Transform(booleano)
-  hideCompleted = true;
+  hideCompleted: boolean = true;
 
   @ApiPropertyOptional({ enum: HABIT_SORTS })
   @IsOptional()

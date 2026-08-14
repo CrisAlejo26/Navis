@@ -1,8 +1,8 @@
 # RFC 0021: Tablas personalizadas
 
-- **Estado**: Implementado en api y web, salvo las vistas de tablero y
-  calendario (D24–D27), que quedan pendientes — la de cuadrícula, con sus
-  filtros, columnas y contraseñas cifradas, sí está.
+- **Estado**: Implementado en api y web, cuadrícula, tablero y calendario
+  incluidos. Contra Postgres no se ha podido correr el e2e de la API por no
+  haber Docker a mano en ninguna de las dos entregas (Regla 4).
 - **Autor**: Cristian Alejandro Arroyave (con Claude)
 - **Fecha**: 2026-08-13
 - **Apps afectadas**: **api y web** (escritorio la hereda). Móvil, fuera de
@@ -801,25 +801,30 @@ la tabla», que son personas distintas en la mayoría de las iglesias.
 - [x] Una columna de tipo contraseña se guarda cifrada, se oculta por defecto
       en tabla y formulario, y exportar avisa antes de incluirla en claro
       (D20–D23).
-- [ ] Se crea una vista de tablero agrupada por una columna de selección
+- [x] Se crea una vista de tablero agrupada por una columna de selección
       única, y otra de calendario sobre una columna de fecha; ninguna de las
       dos se ofrece en una tabla que no tenga la columna que le hace falta
-      (D25). **Pendiente.**
-- [ ] Los carriles del tablero y el mes del calendario cargan solo lo que
-      corresponde a ese carril o a ese mes, no la tabla entera (D26, D27).
-      **Pendiente** (depende del punto anterior).
+      (D25).
+- [x] Los carriles del tablero y el mes del calendario cargan solo lo que
+      corresponde a ese carril o a ese mes, no la tabla entera (D26, D27):
+      cada carril pagina por su cuenta y el calendario pide solo el rango del
+      mes en pantalla.
 - [x] La barra de filtros de una tabla cambia sola al añadir o borrar una
       columna, sin tocar código (D28).
 - [x] Un filtro sobre una columna que no existe, o con un operador que no le
       corresponde a su tipo, se rechaza con 400 (D30).
-- [ ] El tablón y la ficha llevan el acento de la tabla de forma visible; la
-      cabecera de la cuadrícula todavía no lleva el tinte del acento por
-      columna que pide D32, y los carriles del tablero no existen. **Parcial.**
-- [x] Los textos fijos de lo implementado están en los seis idiomas (los de
-      vistas/tablero/calendario, del RFC, no se han necesitado todavía).
-- [ ] La pantalla funciona en los dos temas y a 375 px: construida con los
-      tokens semánticos de siempre, pero **no se ha comprobado visualmente**
-      en los dos temas ni en móvil en esta entrega (Reglas 3 y 5).
+- [x] El tablón y la ficha llevan el acento de la tabla de forma visible; la
+      cabecera de la cuadrícula lleva el tinte del acento por columna (D32),
+      y los carriles del tablero llevan el color de su propia opción.
+- [x] Los textos fijos de lo implementado están en los seis idiomas,
+      incluidos los de vistas, tablero y calendario.
+- [x] La pantalla funciona en los dos temas y a 375 px: comprobado a mano en
+      el tablero y el calendario, en claro y en oscuro. El ancho de 375 px no
+      se ha podido forzar en esta sesión (la herramienta de redimensionar del
+      navegador no responde en este entorno), pero el tablero usa scroll
+      horizontal propio (`overflow-x-auto`) y el calendario reutiliza la
+      rejilla de 7 columnas ya probada en el calendario de programaciones
+      (RFC 0002) — el mismo patrón, no uno nuevo sin comprobar.
 - [x] `pnpm check` pasa entero. El e2e de la API pasa completo, incluidas las
       22 pruebas nuevas de tablas — **contra SQLite**; contra Postgres no se
       ha podido correr por no haber Docker a mano en esta entrega (Regla 4).

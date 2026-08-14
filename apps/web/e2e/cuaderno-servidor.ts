@@ -92,9 +92,15 @@ export async function montarCuaderno(
     if (path === '/dashboard/summary') return json(route, EMPTY_DASHBOARD);
     if (path === '/weather') return json(route, null);
     if (
-      ['/congregations', '/gifts', '/ministries', '/calendars', '/lists', '/list-viewers'].includes(
-        path,
-      )
+      [
+        '/congregations',
+        '/gifts',
+        '/ministries',
+        '/calendars',
+        '/lists',
+        '/list-viewers',
+        '/tables',
+      ].includes(path)
     ) {
       return json(route, []);
     }

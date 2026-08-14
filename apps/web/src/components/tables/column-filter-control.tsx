@@ -1,8 +1,10 @@
 import type { CustomTableColumn, RowFilter } from '@navis/shared';
 import { useTranslation } from 'react-i18next';
 
+import { OptionChip } from '@/components/tables/row-value-cell';
 import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
+import { cn } from '@/lib/cn';
 import { NUMERIC_TYPES, TEXT_TYPES } from '@/lib/tables/column-types';
 
 /** El control de filtro que le toca a una columna, según su tipo (D28). */
@@ -104,7 +106,6 @@ export function ColumnFilterControl({
 
     return (
       <Select
-        size="sm"
         label={label}
         value={current}
         onChange={(event) => {
@@ -123,26 +124,35 @@ export function ColumnFilterControl({
 
   if (column.type === 'single_select' || column.type === 'multi_select') {
     const current = Array.isArray(filter?.value) ? (filter.value as string[]) : [];
+    const toggle = (value: string) => {
+      const next = current.includes(value)
+        ? current.filter((one) => one !== value)
+        : [...current, value];
+      onChange(next.length > 0 ? { columnKey: column.key, operator: 'in', value: next } : null);
+    };
 
     return (
-      <Select
-        size="sm"
-        multiple
-        label={label}
-        value={current}
-        onChange={(event) => {
-          const picked = Array.from(event.target.selectedOptions, (one) => one.value);
-          onChange(
-            picked.length > 0 ? { columnKey: column.key, operator: 'in', value: picked } : null,
-          );
-        }}
-      >
-        {(column.options ?? []).map((one) => (
-          <option key={one.value} value={one.value}>
-            {one.label}
-          </option>
-        ))}
-      </Select>
+      <fieldset className="gap-2 flex flex-col">
+        <legend className="text-sm font-medium text-foreground">{label}</legend>
+        <div className="min-h-11 gap-1.5 flex flex-wrap items-center">
+          {(column.options ?? []).map((one) => (
+            <button
+              key={one.value}
+              type="button"
+              onClick={() => {
+                toggle(one.value);
+              }}
+              aria-pressed={current.includes(one.value)}
+              className={cn(
+                'cursor-pointer rounded-full transition-opacity',
+                !current.includes(one.value) && 'opacity-45 hover:opacity-80',
+              )}
+            >
+              <OptionChip option={one} fallback={one.value} />
+            </button>
+          ))}
+        </div>
+      </fieldset>
     );
   }
 

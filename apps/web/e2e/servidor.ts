@@ -137,7 +137,8 @@ export async function montarApi(
       path === '/ministries' ||
       path === '/calendars' ||
       path === '/lists' ||
-      path === '/list-viewers'
+      path === '/list-viewers' ||
+      path === '/tables'
     ) {
       return json(route, []);
     }

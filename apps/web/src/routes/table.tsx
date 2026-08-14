@@ -1,36 +1,34 @@
-import { useDeleteTable } from '@navis/api-client';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router';
 
-import { ColumnsDialog } from '@/components/tables/columns-dialog';
-import { RowsGrid } from '@/components/tables/rows-grid';
-import { TableExportSheet } from '@/components/tables/table-export-sheet';
-import { TableForm } from '@/components/tables/table-form';
+import { TableDialogs } from '@/components/tables/table-dialogs';
 import { TableHeader } from '@/components/tables/table-header';
-import { ConfirmDialog } from '@/components/ui/confirm-dialog';
+import { TableViewContent } from '@/components/tables/table-view-content';
+import { ViewsTabs } from '@/components/tables/views-tabs';
 import { PageSkeleton } from '@/components/ui/page-skeleton';
-import { api } from '@/lib/api';
 import { usePermissions } from '@/lib/permissions';
-import { useTableScreen } from '@/lib/tables/use-table-screen';
-import { toast } from '@/lib/toast';
+import { useActiveView } from '@/lib/tables/use-active-view';
+import { useTableScreen, useTableViewTabs } from '@/lib/tables/use-table-screen';
 
 /**
  * La ficha de una tabla personalizada (RFC 0021, «Interfaz»).
  *
  * Cabecera a sangre en el color de la tabla, igual que una lista (D32), y
- * debajo la cuadrícula: es la única vista que existe siempre (D25).
+ * debajo la vista elegida: cuadrícula, que es la única que existe siempre
+ * (D24), o una de las guardadas. Los diálogos viven en `TableDialogs`.
  */
 export function TablePage() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const { can } = usePermissions();
   const { table, tableId, isLoading, notFound } = useTableScreen();
-  const deleteTable = useDeleteTable(api);
+  const views = useTableViewTabs(tableId);
+  const { activeId, active, setActiveId } = useActiveView(views);
 
   const [editando, setEditando] = useState(false);
   const [gestionandoColumnas, setGestionandoColumnas] = useState(false);
   const [exportando, setExportando] = useState(false);
+  const [creandoVista, setCreandoVista] = useState(false);
+  const [borrandoVista, setBorrandoVista] = useState<string | null>(null);
   const [borrando, setBorrando] = useState(false);
 
   if (isLoading) return <PageSkeleton />;
@@ -59,52 +57,46 @@ export function TablePage() {
         }}
       />
 
-      <RowsGrid tableId={tableId} columns={table.columns} editable={can('tables.edit')} />
-
-      <TableForm
-        open={editando}
-        onClose={() => {
-          setEditando(false);
+      <ViewsTabs
+        views={views}
+        activeId={activeId}
+        editable={editable}
+        onChange={setActiveId}
+        onAdd={() => {
+          setCreandoVista(true);
         }}
-        table={table}
+        onDelete={(view) => {
+          setBorrandoVista(view.id);
+        }}
       />
 
-      <ColumnsDialog
-        open={gestionandoColumnas}
-        onClose={() => {
-          setGestionandoColumnas(false);
-        }}
+      <TableViewContent
         tableId={tableId}
+        accent={table.accent}
+        activeId={activeId}
+        active={active}
         columns={table.columns}
+        editable={can('tables.edit')}
       />
 
-      <TableExportSheet
-        open={exportando}
-        onClose={() => {
-          setExportando(false);
-        }}
+      <TableDialogs
         table={table}
-        columns={table.columns}
-      />
-
-      <ConfirmDialog
-        open={borrando}
-        onClose={() => {
-          setBorrando(false);
+        tableId={tableId}
+        setActiveId={setActiveId}
+        dialogs={{
+          editando,
+          setEditando,
+          gestionandoColumnas,
+          setGestionandoColumnas,
+          exportando,
+          setExportando,
+          creandoVista,
+          setCreandoVista,
+          borrandoVista,
+          setBorrandoVista,
+          borrando,
+          setBorrando,
         }}
-        onConfirm={() => {
-          deleteTable.mutate(table.id, {
-            onSuccess: () => {
-              toast.success(t('tables.deleted', { name: table.name }));
-              void navigate('/tables');
-            },
-          });
-        }}
-        title={t('tables.delete')}
-        description={t('tables.deleteExplain')}
-        confirmLabel={t('common.delete')}
-        destructive
-        isPending={deleteTable.isPending}
       />
     </section>
   );
