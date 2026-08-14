@@ -1376,6 +1376,7 @@ export const pt = {
     visibilityLocked: 'Com acesso',
     visibilityLockedHint: 'É preciso entrar com utilizador e palavra-passe.',
     copyLink: 'Copiar a ligação',
+    openLink: 'Abrir a ligação',
     rotateLink: 'Mudar a ligação',
     rotateWarning: 'A ligação vai mudar. Terás de a voltar a distribuir.',
     publish: 'Publicar a lista',

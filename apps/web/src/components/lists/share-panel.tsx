@@ -84,29 +84,39 @@ export function SharePanel({
   };
 
   return (
-    <div className="gap-6 max-w-2xl flex flex-col">
-      <VisibilityPicker value={mode} onChange={setMode} />
+    <div className="gap-6 max-w-4xl flex flex-col">
+      {/* De `lg` para arriba, dos columnas —el modo y el enlace a la
+          izquierda, lo que se ve y la caducidad a la derecha— para no obligar
+          a bajar tanto en una pantalla ancha (Regla 5). En móvil, una sola
+          columna con el mismo orden de siempre. */}
+      <div className="gap-6 lg:grid-cols-2 grid">
+        <div className="gap-6 flex flex-col">
+          <VisibilityPicker value={mode} onChange={setMode} />
 
-      {list.visibility !== 'private' && url && (
-        <ShareLinkBlock list={list} churchName={churchName} url={url} />
-      )}
+          {list.visibility !== 'private' && url && (
+            <ShareLinkBlock list={list} churchName={churchName} url={url} />
+          )}
 
-      {mode === 'restricted' && <ShareViewersBlock list={list} url={url} />}
+          {mode === 'restricted' && <ShareViewersBlock list={list} url={url} />}
+        </div>
 
-      <PublicFieldsPicker fields={fields} onChange={setFields} />
+        <div className="gap-6 flex flex-col">
+          <PublicFieldsPicker fields={fields} onChange={setFields} />
 
-      <DownloadToggle value={allowDownload} onChange={setAllowDownload} />
+          <DownloadToggle value={allowDownload} onChange={setAllowDownload} />
 
-      <Input
-        type="date"
-        name="expiresAt"
-        label={t('lists.expiresAt')}
-        hint={t('lists.expiresHint')}
-        value={expiresAt}
-        onChange={(event) => {
-          setExpiresAt(event.target.value);
-        }}
-      />
+          <Input
+            type="date"
+            name="expiresAt"
+            label={t('lists.expiresAt')}
+            hint={t('lists.expiresHint')}
+            value={expiresAt}
+            onChange={(event) => {
+              setExpiresAt(event.target.value);
+            }}
+          />
+        </div>
+      </div>
 
       <FormError message={error} />
 

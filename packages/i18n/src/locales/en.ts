@@ -1375,6 +1375,7 @@ export const en = {
     visibilityLocked: 'With access',
     visibilityLockedHint: 'A username and password are needed.',
     copyLink: 'Copy the link',
+    openLink: 'Open the link',
     rotateLink: 'Change the link',
     rotateWarning: 'The link will change. You will have to share it again.',
     publish: 'Publish the list',

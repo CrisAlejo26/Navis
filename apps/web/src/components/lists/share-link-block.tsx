@@ -1,6 +1,6 @@
 import { useRotateListLink } from '@navis/api-client';
 import type { List } from '@navis/shared';
-import { Copy, Link2, RefreshCw } from 'lucide-react';
+import { Copy, ExternalLink, Link2, RefreshCw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import { SharePreview } from '@/components/lists/share-preview';
@@ -46,6 +46,17 @@ export function ShareLinkBlock({
           >
             <Copy size={14} aria-hidden />
             {t('lists.copyLink')}
+          </Button>
+
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => {
+              window.open(url, '_blank', 'noopener,noreferrer');
+            }}
+          >
+            <ExternalLink size={14} aria-hidden />
+            {t('lists.openLink')}
           </Button>
 
           <Button

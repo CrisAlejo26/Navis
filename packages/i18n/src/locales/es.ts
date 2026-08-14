@@ -1393,6 +1393,7 @@ export const es = {
     visibilityLocked: 'Con acceso',
     visibilityLockedHint: 'Hay que entrar con usuario y contraseña.',
     copyLink: 'Copiar el enlace',
+    openLink: 'Abrir el enlace',
     rotateLink: 'Cambiar el enlace',
     rotateWarning: 'El enlace va a cambiar. Tendrás que volver a repartirlo.',
     publish: 'Publicar la lista',

@@ -1381,6 +1381,7 @@ export const fr = {
     visibilityLocked: 'Avec accès',
     visibilityLockedHint: 'Il faut un identifiant et un mot de passe.',
     copyLink: 'Copier le lien',
+    openLink: 'Ouvrir le lien',
     rotateLink: 'Changer le lien',
     rotateWarning: 'Le lien va changer. Il faudra le repartager.',
     publish: 'Publier la liste',
