@@ -11,9 +11,10 @@ import type { PublicFilterState } from '@/lib/lists/use-public-filter';
  * de la aplicación— porque esta pantalla es un cartel y no un panel (D40): no
  * lleva más chrome del que ya tenían esos componentes.
  *
- * Cada fila de filtro solo aparece si de verdad sirve para algo: con una
- * única sede o labor compartida, filtrar por ella no cambiaría nada, así que
- * ni se enseña (Regla 9 §2, «un hueco no se rellena con un adorno»).
+ * La fila de sede solo aparece si de verdad sirve para algo: con una única
+ * sede compartida, filtrar por ella no cambiaría nada, así que ni se enseña
+ * (Regla 9 §2, «un hueco no se rellena con un adorno»). El filtro de labor no
+ * se enseña nunca aquí, a petición expresa: solo importa la sede.
  */
 export function PublicSearchFilters({ state }: { state: PublicFilterState }) {
   const { t } = useTranslation();
@@ -32,15 +33,6 @@ export function PublicSearchFilters({ state }: { state: PublicFilterState }) {
           value={state.congregation}
           options={state.congregations}
           onChange={state.setCongregation}
-        />
-      )}
-
-      {state.ministries.length > 1 && (
-        <FilterRow
-          label={t('calendar.labor')}
-          value={state.ministry}
-          options={state.ministries}
-          onChange={state.setMinistry}
         />
       )}
     </div>
