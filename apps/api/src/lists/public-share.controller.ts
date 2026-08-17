@@ -18,6 +18,7 @@ import { Public } from '../common/decorators/public.decorator';
 import { ImageStorageService } from '../media/image-storage.service';
 import { ListAccessService } from './list-access.service';
 import { listCookieFrom } from './list-access.cookie';
+import { renderListManifest } from './list-manifest';
 import { PublicListsService } from './public-lists.service';
 import { parsePublicFields } from './public-fields';
 import { originOf } from './request-origin';
@@ -68,6 +69,32 @@ export class PublicShareController {
       // En restringida, la vista previa no lleva ni un nombre (D18).
       list:
         list.visibility === 'restricted' ? null : await this.lists.payload(list, churchName, null),
+    });
+  }
+
+  /**
+   * El manifest de aplicación de esta lista, con su propio `start_url`
+   * («PWA por lista»): instalada desde aquí, el icono abre la lista
+   * directamente y no el inicio de sesión general, porque `/lists/s/:token`
+   * no pasa por `ProtectedRoute`.
+   */
+  @Get(':token/manifest.webmanifest')
+  async manifest(
+    @Param('token') token: string,
+    @Req() request: Request,
+    @Res({ passthrough: true }) response: Response,
+  ): Promise<object> {
+    const { list, churchName } = await this.lists.byToken(token);
+
+    response.setHeader('content-type', 'application/manifest+json');
+    response.setHeader('cache-control', 'public, max-age=300');
+    response.setHeader('x-robots-tag', 'noindex, nofollow');
+
+    return renderListManifest({
+      origin: originOf(request),
+      token,
+      listName: list.name,
+      churchName,
     });
   }
 

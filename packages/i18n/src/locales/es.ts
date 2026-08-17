@@ -1468,6 +1468,8 @@ export const es = {
       'Quien abra el enlace puede llevarse un PDF o una imagen con los nombres. Ese fichero ya no caduca ni se despublica.',
     allowDownloadOff: 'La lista se ve en la página y ahí se queda.',
     downloadFailed: 'No se ha podido crear el fichero',
+    installApp: 'Instalar como aplicación',
+    installAppHint: 'Toca «Compartir» y luego «Añadir a pantalla de inicio»',
     madeWith: 'Hecho con Navis',
     accessTitle: 'Accesos a las listas',
     accessSubtitle:

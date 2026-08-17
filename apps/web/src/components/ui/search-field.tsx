@@ -60,7 +60,9 @@ export function SearchField({ value, onChange, label, className, delay = 300 }: 
           setDraft(event.target.value);
         }}
         className={cn(
-          'h-10 pr-9 pl-9 text-sm w-full rounded-lg border bg-card text-foreground placeholder:text-muted-foreground',
+          // 16 px, no 14 (`text-sm`): por debajo, Safari/iOS hace zoom al
+          // enfocar el campo y la pantalla salta al escribir (Regla 5).
+          'h-10 pr-9 pl-9 text-base w-full rounded-lg border bg-card text-foreground placeholder:text-muted-foreground',
           'transition-[border-color,box-shadow] duration-200 outline-none',
           'focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/35',
           '[&::-webkit-search-cancel-button]:hidden',
@@ -73,7 +75,10 @@ export function SearchField({ value, onChange, label, className, delay = 300 }: 
           onClick={() => {
             setDraft('');
           }}
-          className="right-1 h-8 w-8 absolute top-1/2 inline-flex -translate-y-1/2 cursor-pointer items-center justify-center rounded-md text-muted-foreground hover:text-foreground"
+          // 36 px y no 32: el objetivo táctil más pequeño de todo el campo,
+          // justo donde el pulgar tiene que acertar para borrar y repetir la
+          // búsqueda (Regla 5 §4).
+          className="right-0.5 h-9 w-9 absolute top-1/2 inline-flex -translate-y-1/2 cursor-pointer items-center justify-center rounded-md text-muted-foreground hover:text-foreground"
         >
           <X size={15} aria-hidden />
         </button>

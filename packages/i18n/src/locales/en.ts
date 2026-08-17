@@ -1449,6 +1449,8 @@ export const en = {
       'Anyone opening the link can take away a PDF or an image with the names. That file no longer expires or gets unpublished.',
     allowDownloadOff: 'The list is seen on the page and stays there.',
     downloadFailed: 'The file could not be created',
+    installApp: 'Install as an app',
+    installAppHint: 'Tap "Share" then "Add to Home Screen"',
     madeWith: 'Made with Navis',
     accessTitle: 'List accesses',
     accessSubtitle:

@@ -56,7 +56,11 @@ export function Input({ label, hint, error, trailing, className, id, ref, ...pro
           aria-invalid={Boolean(error)}
           aria-describedby={describedBy}
           className={cn(
-            'h-11 px-3.5 w-full rounded-lg border bg-card text-[15px] text-foreground placeholder:text-muted-foreground',
+            // 16 px y no 15: por debajo, Safari/iOS hace zoom automático al
+            // enfocar el campo — la pantalla salta y escribir se vuelve
+            // incómodo. Es el mismo motivo en `Textarea`, `Select`,
+            // `Combobox` y `SearchField` (Regla 5).
+            'h-11 px-3.5 text-base w-full rounded-lg border bg-card text-foreground placeholder:text-muted-foreground',
             'transition-[border-color,box-shadow] duration-200 outline-none',
             'focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/35',
             error && 'border-destructive',

@@ -42,7 +42,9 @@ export function Textarea({ label, hint, className, id, ref, ...props }: Textarea
         ref={ref}
         id={fieldId}
         className={cn(
-          'px-3.5 py-3 leading-relaxed w-full resize-y rounded-lg border bg-card text-[15px]',
+          // 16 px, no 15: por debajo del umbral, Safari/iOS hace zoom al
+          // enfocar (ver `Input`).
+          'px-3.5 py-3 leading-relaxed text-base w-full resize-y rounded-lg border bg-card',
           'text-foreground outline-none placeholder:text-muted-foreground',
           'transition-[border-color,box-shadow] duration-200',
           'focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/35',

@@ -1,9 +1,9 @@
 import { useTags } from '@navis/api-client';
 import { TASK_SORTS, type TaskSort } from '@navis/shared';
-import { Search } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import { TagChip } from '@/components/tasks/tag-chip';
+import { SearchField } from '@/components/ui/search-field';
 import { Select } from '@/components/ui/select';
 import { api } from '@/lib/api';
 import { cn } from '@/lib/cn';
@@ -49,23 +49,12 @@ export function ListToolbar({ screen }: { screen: ReturnType<typeof useListScree
   return (
     <div className="gap-3 flex flex-col">
       <div className="gap-2 flex flex-wrap items-center">
-        <label className="relative min-w-[10rem] flex-1">
-          <span className="sr-only">{t('tasks.filterSearch')}</span>
-          <Search
-            size={14}
-            aria-hidden
-            className="left-3 absolute top-1/2 -translate-y-1/2 text-muted-foreground"
-          />
-          <input
-            type="search"
-            value={screen.search}
-            onChange={(event) => {
-              screen.setSearch(event.target.value);
-            }}
-            placeholder={t('tasks.filterSearch')}
-            className="h-9 pl-8 pr-3 text-sm w-full rounded-lg border bg-card outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/35"
-          />
-        </label>
+        <SearchField
+          value={screen.search}
+          onChange={screen.setSearch}
+          label={t('tasks.filterSearch')}
+          className="min-w-[10rem] flex-1"
+        />
 
         <Select
           size="sm"

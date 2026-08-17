@@ -1456,6 +1456,8 @@ export const fr = {
       'Qui ouvre le lien peut emporter un PDF ou une image avec les noms. Ce fichier n’expire plus et ne se dépublie plus.',
     allowDownloadOff: 'La liste se consulte sur la page et y reste.',
     downloadFailed: 'Le fichier n’a pas pu être créé',
+    installApp: 'Installer comme application',
+    installAppHint: 'Appuyez sur « Partager » puis « Sur l’écran d’accueil »',
     madeWith: 'Fait avec Navis',
     accessTitle: 'Accès aux listes',
     accessSubtitle:

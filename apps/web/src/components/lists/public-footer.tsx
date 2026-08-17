@@ -4,6 +4,7 @@ import { Download, FileText, LogOut } from 'lucide-react';
 import type { RefObject } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { InstallListButton } from '@/components/lists/install-list-button';
 import { Logo } from '@/components/logo';
 import { Button } from '@/components/ui/button';
 import { formatDate } from '@/lib/format';
@@ -75,6 +76,8 @@ export function PublicFooter({
             </Button>
           </>
         )}
+
+        <InstallListButton />
 
         <span className="gap-1.5 inline-flex items-center text-[11px] text-muted-foreground">
           <Logo className="h-4 w-4" />

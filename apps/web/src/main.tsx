@@ -8,6 +8,7 @@ import { RouterProvider } from 'react-router';
 import { PwaUpdatePrompt } from '@/components/pwa-update-prompt';
 import { Toaster } from '@/components/ui/toaster';
 import { i18n } from '@/lib/i18n';
+import { linkPublicListManifest } from '@/lib/lists/public-manifest';
 import '@/lib/theme'; // inicializa el tema (clase `dark`) antes del primer render
 import { router } from '@/router';
 import '@/styles/global.css';
@@ -16,6 +17,10 @@ const queryClient = createQueryClient();
 const container = document.getElementById('root');
 
 if (!container) throw new Error('No se encontró #root en index.html');
+
+// Antes de montar React: `PwaUpdatePrompt` registra el service worker en el
+// primer render, y un efecto de `PublicListPage` llegaría tarde a esa carrera.
+linkPublicListManifest();
 
 createRoot(container).render(
   <StrictMode>

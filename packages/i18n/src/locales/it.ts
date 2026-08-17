@@ -1452,6 +1452,8 @@ export const it = {
       'Chi apre il link può portarsi via un PDF o un’immagine con i nomi. Quel file non scade più e non si può ritirare.',
     allowDownloadOff: 'La lista si vede sulla pagina e lì resta.',
     downloadFailed: 'Non è stato possibile creare il file',
+    installApp: 'Installa come app',
+    installAppHint: 'Tocca "Condividi" e poi "Aggiungi alla schermata Home"',
     madeWith: 'Fatto con Navis',
     accessTitle: 'Accessi alle liste',
     accessSubtitle:

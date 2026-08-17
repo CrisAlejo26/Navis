@@ -201,6 +201,20 @@ describe('Creyentes y notas (e2e)', () => {
     expect(pagina.items[0]?.id).toBe(jesus);
   });
 
+  // Regresión: la búsqueda se guarda normalizada (D14) pero llegó a compararse
+  // sin normalizar el texto de la consulta. En Postgres `LIKE` distingue
+  // mayúsculas y acentos, así que escribir el nombre como lo escribe
+  // cualquiera —con mayúscula inicial y su tilde— dejaba de encontrar a nadie.
+  it('«Jesús», tal y como lo escribe cualquiera, también lo encuentra', async () => {
+    const respuesta = await get(`/api/v1/believers?search=${encodeURIComponent('Jesús')}`).expect(
+      200,
+    );
+    const pagina = body<Paginated<BelieverListItem>>(respuesta);
+
+    expect(pagina.total).toBe(1);
+    expect(pagina.items[0]?.id).toBe(jesus);
+  });
+
   it('quien no tiene ninguna nota va primero al ordenar por última nota', async () => {
     await post(`/api/v1/believers/${jesus}/notes`, {
       kind: 'seguimiento',

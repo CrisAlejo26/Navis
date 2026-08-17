@@ -1,4 +1,4 @@
-import type { BelieversQuery, IsoDate } from '@navis/shared';
+import { toSearchName, type BelieversQuery, type IsoDate } from '@navis/shared';
 import type { SelectQueryBuilder } from 'typeorm';
 
 import { NEEDS_ATTENTION } from './believer-alert.sql';
@@ -26,7 +26,10 @@ export function applyFilters(
   builder.setParameter('today', today);
 
   if (query.search) {
-    builder.andWhere('believer.searchName LIKE :search', { search: `%${query.search}%` });
+    builder.andWhere('believer.searchName LIKE :search', {
+      // La misma normalización con la que se guardó, o dejaría de encontrar.
+      search: `%${toSearchName(query.search)}%`,
+    });
   }
 
   if (query.status?.length) {

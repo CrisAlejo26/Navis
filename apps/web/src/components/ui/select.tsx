@@ -5,9 +5,11 @@ import { cn } from '@/lib/cn';
 
 type Size = 'sm' | 'md';
 
+// 16 px en los dos tamaños, no `text-sm`/15 px: por debajo de ese umbral,
+// Safari/iOS hace zoom al enfocar un control de formulario (ver `Input`).
 const sizes: Record<Size, string> = {
-  sm: 'h-9 pl-2.5 pr-8 text-sm',
-  md: 'h-11 pl-3.5 pr-9 text-[15px]',
+  sm: 'h-9 pl-2.5 pr-8 text-base',
+  md: 'h-11 pl-3.5 pr-9 text-base',
 };
 
 // Se omite el `size` nativo (número de filas visibles, que aquí no se usa)
