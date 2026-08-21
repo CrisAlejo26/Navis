@@ -1,15 +1,9 @@
 /**
  * Roles de serie, ordenados de menor a mayor privilegio. No se borran.
  *
- * Los cinco del medio son ministerios, no escalones: recepción, biblias,
- * sonido, púlpito y coordinador de la ofrenda están al mismo nivel y se
- * distinguen por sus permisos (ver `role-permissions.ts`), no por su
- * posición.
- *
- * **`coordinador-ofrenda`** es la labor de quien lleva la ofrenda cada
- * reunión — mismo nivel y mismos permisos de consulta que `sonido`: necesita
- * saber qué hay programado, no gestionarlo. Es la labor que propone por
- * defecto la plantilla «Ofrenda» al crear un calendario (`calendar-form.tsx`).
+ * Los cuatro del medio son ministerios, no escalones: recepción, biblias,
+ * sonido y púlpito están al mismo nivel y se distinguen por sus permisos (ver
+ * `role-permissions.ts`), no por su posición.
  *
  * **`predicador-apoyo`** se añadió después (RFC 0014), en ese mismo nivel:
  * gestiona calendario, creyentes, listas y comunicaciones como el pastor,
@@ -17,6 +11,13 @@
  * iglesia ni entra en más de una: nace en la del pastor que lo da de alta y
  * se queda ahí. Al no tener nivel de pastor, es este quien puede darlo de
  * alta (RFC 0014 D2: nadie asigna un rol de su mismo nivel o superior).
+ *
+ * Lo que **no** va aquí es una labor de la iglesia —«ofrenda», «vigilancia»—:
+ * eso es el catálogo de `ministries` (`packages/shared/src/schemas/
+ * ministries.ts`), que es lo que casa el calendario contra
+ * `believer_ministries`. Un rol es acceso a la cuenta; una labor es
+ * disponibilidad para una reunión, y no siempre coinciden (RFC 0002 D8: quien
+ * predica puede no tener ni cuenta).
  */
 export const ROLES = [
   'creyente',
@@ -24,7 +25,6 @@ export const ROLES = [
   'biblias',
   'sonido',
   'pulpito',
-  'coordinador-ofrenda',
   'predicador-apoyo',
   'pastor',
   'superadmin',
@@ -57,7 +57,6 @@ export const ROLE_HIERARCHY: Record<Role, number> = {
   biblias: 1,
   sonido: 1,
   pulpito: 1,
-  'coordinador-ofrenda': 1,
   'predicador-apoyo': 1,
   pastor: 2,
   superadmin: 3,

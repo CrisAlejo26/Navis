@@ -7,7 +7,7 @@ export type CalendarTemplateSlug = (typeof CALENDAR_TEMPLATE_SLUGS)[number];
 export interface CalendarTemplate {
   slug: CalendarTemplateSlug;
   name: string;
-  /** El slug de la labor del catálogo de roles, o `null` para «cualquiera». */
+  /** El slug de la labor del catálogo de la iglesia, o `null` para «cualquiera». */
   ministrySlug: string | null;
   pattern: {
     name: string;
@@ -42,8 +42,11 @@ function phasesOf(t: TFunction, key: PhasesKey): string[] {
  * calendario típico. Todo se puede cambiar después; no es una elección
  * cerrada, es para no empezar en blanco.
  *
- * **«Ofrenda»** propone la labor `coordinador-ofrenda`: quien la lleve cada
- * semana se asigna en esa reunión, igual que un predicador en el culto.
+ * **«Ofrenda»** propone la labor `ofrenda`, una de las que ya trae de serie el
+ * catálogo de la iglesia (`SYSTEM_MINISTRIES`): quien la lleve cada semana se
+ * asigna en esa reunión, igual que un predicador en el culto — para eso hace
+ * falta que alguien tenga esa labor marcada en su ficha, no una cuenta con un
+ * rol concreto.
  */
 export function useCalendarTemplates(): CalendarTemplate[] {
   const { t } = useTranslation();
@@ -74,7 +77,7 @@ export function useCalendarTemplates(): CalendarTemplate[] {
     {
       slug: 'offering',
       name: t('calendar.templates.offering.name'),
-      ministrySlug: 'coordinador-ofrenda',
+      ministrySlug: 'ofrenda',
       pattern: {
         name: t('calendar.templates.offering.name'),
         weekday: 0,

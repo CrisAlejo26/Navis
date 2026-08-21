@@ -217,7 +217,6 @@ export const it = {
     biblias: 'Bibbie',
     sonido: 'Audio',
     pulpito: 'Pulpito',
-    coordinadorOfrenda: 'Coordinatore dell’offerta',
     predicadorApoyo: 'Predicatore di supporto',
     pastor: 'Pastore',
     superadmin: 'Superamministratore',
@@ -226,7 +225,6 @@ export const it = {
     bibliasHint: 'Si occupa della zona delle bibbie.',
     sonidoHint: 'Supporta il lavoro dell’audio.',
     pulpitoHint: 'Parla dal fronte e pubblica gli avvisi.',
-    coordinadorOfrendaHint: 'Coordina l’offerta a ogni riunione.',
     predicadorApoyoHint:
       'Calendario, credenti, liste e comunicazioni, come il pastore; senza account né altre chiese.',
     pastorHint: 'Tutto delle sue chiese, compresi gli account che crea.',
@@ -418,7 +416,7 @@ export const it = {
     labor: 'Incarico',
     laborNone: 'Chiunque',
     onlyLabor: 'Solo di questo incarico',
-    laborHint: 'Gli incarichi sono i ruoli della chiesa e si gestiscono in',
+    laborHint: 'Gli incarichi sono il catalogo della chiesa e si gestiscono in',
     templateLabel: 'Modello',
     templateHint:
       'Compila il nome, l’incarico e una prima riunione fissa con le sue fasi. Dopo si può cambiare tutto.',

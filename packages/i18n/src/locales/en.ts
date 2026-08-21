@@ -216,7 +216,6 @@ export const en = {
     biblias: 'Bibles',
     sonido: 'Sound',
     pulpito: 'Pulpit',
-    coordinadorOfrenda: 'Offering coordinator',
     predicadorApoyo: 'Support preacher',
     pastor: 'Pastor',
     superadmin: 'Super administrator',
@@ -225,7 +224,6 @@ export const en = {
     bibliasHint: 'Looks after the Bible area.',
     sonidoHint: 'Supports the sound work.',
     pulpitoHint: 'Speaks from the front and posts the announcements.',
-    coordinadorOfrendaHint: 'Coordinates the offering at each meeting.',
     predicadorApoyoHint:
       'Calendar, believers, lists and communications, like the pastor; no accounts, no other churches.',
     pastorHint: 'Everything in their churches, including the accounts they create.',
@@ -416,7 +414,7 @@ export const en = {
     labor: 'Duty',
     laborNone: 'Anyone',
     onlyLabor: 'This duty only',
-    laborHint: 'Duties are the church roles and are managed in',
+    laborHint: 'Duties are the church catalog and are managed in',
     templateLabel: 'Template',
     templateHint:
       'Fills in the name, the duty and a first fixed meeting with its phases. Everything can be changed afterwards.',

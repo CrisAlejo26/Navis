@@ -225,7 +225,6 @@ export const es = {
     biblias: 'Biblias',
     sonido: 'Sonido',
     pulpito: 'Púlpito',
-    coordinadorOfrenda: 'Coordinador de la ofrenda',
     predicadorApoyo: 'Predicador de apoyo',
     pastor: 'Pastor',
     superadmin: 'Superadministrador',
@@ -234,7 +233,6 @@ export const es = {
     bibliasHint: 'Atiende la zona de las biblias.',
     sonidoHint: 'Apoya en la labor del sonido.',
     pulpitoHint: 'Habla desde el frente y publica los avisos.',
-    coordinadorOfrendaHint: 'Coordina la ofrenda de cada reunión.',
     predicadorApoyoHint:
       'Calendario, creyentes, listas y comunicaciones, como el pastor; sin cuentas ni otras iglesias.',
     pastorHint: 'Todo lo de sus iglesias, incluidas las cuentas que crea.',
@@ -426,7 +424,7 @@ export const es = {
     labor: 'Labor',
     laborNone: 'Cualquiera',
     onlyLabor: 'Solo de la labor',
-    laborHint: 'Las labores son los roles de la iglesia y se administran en',
+    laborHint: 'Las labores son el catálogo de la iglesia y se administran en',
     templateLabel: 'Plantilla',
     templateHint:
       'Rellena el nombre, la labor y una primera reunión fija con sus fases. Se puede cambiar todo después.',

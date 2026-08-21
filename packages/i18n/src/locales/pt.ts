@@ -216,7 +216,6 @@ export const pt = {
     biblias: 'Bíblias',
     sonido: 'Som',
     pulpito: 'Púlpito',
-    coordinadorOfrenda: 'Coordenador da oferta',
     predicadorApoyo: 'Pregador de apoio',
     pastor: 'Pastor',
     superadmin: 'Superadministrador',
@@ -225,7 +224,6 @@ export const pt = {
     bibliasHint: 'Cuida da zona das bíblias.',
     sonidoHint: 'Apoia no trabalho de som.',
     pulpitoHint: 'Fala a partir da frente e publica os avisos.',
-    coordinadorOfrendaHint: 'Coordena a oferta em cada reunião.',
     predicadorApoyoHint:
       'Calendário, crentes, listas e comunicações, como o pastor; sem contas nem outras igrejas.',
     pastorHint: 'Tudo o das suas igrejas, incluindo as contas que cria.',
@@ -417,7 +415,7 @@ export const pt = {
     labor: 'Função',
     laborNone: 'Qualquer pessoa',
     onlyLabor: 'Só desta função',
-    laborHint: 'As funções são os papéis da igreja e administram-se em',
+    laborHint: 'As funções são o catálogo da igreja e administram-se em',
     templateLabel: 'Modelo',
     templateHint:
       'Preenche o nome, a função e uma primeira reunião fixa com as suas fases. Depois dá para mudar tudo.',

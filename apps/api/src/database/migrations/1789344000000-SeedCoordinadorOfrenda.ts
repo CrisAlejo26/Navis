@@ -1,17 +1,28 @@
-import { ROLE_HIERARCHY, ROLE_PERMISSIONS } from '@navis/shared';
 import { type MigrationInterface, type QueryRunner } from 'typeorm';
 
 /**
- * El rol **coordinador de la ofrenda**: la labor de quien la lleva cada
- * reunión, con el mismo nivel y los mismos permisos de consulta que
- * `sonido` — necesita saber qué hay programado, no gestionarlo.
+ * El rol **coordinador de la ofrenda**: nació de confundir una labor de la
+ * iglesia con un rol de cuenta, y lo deshace `RemoveCoordinadorOfrenda`
+ * (D: «ofrenda» ya era una labor de serie del catálogo de `ministries`).
  *
- * Misma idea que `SeedPredicadorApoyo` y `SeedMinistryRoles`: en una
- * instalación nueva, `CreateRoles` ya lo habrá sembrado a partir de `ROLES`
- * (que ya lo incluye), así que aquí solo se le ponen el nivel y los
- * permisos; en una que ya existía, no está todavía y se inserta.
+ * **Este fichero se queda congelado a propósito.** Ya no importa
+ * `ROLE_HIERARCHY`/`ROLE_PERMISSIONS` de `@navis/shared` porque esa constante
+ * dejó de incluir este rol: una migración vieja no puede depender de que un
+ * slug siga vivo en el código de hoy (es la misma trampa que ya avisa
+ * `CLAUDE.md` sobre `CreateRoles`, al revés). Los valores de abajo son
+ * exactamente los que tenía cuando esto se escribió.
  */
 const SLUG = 'coordinador-ofrenda';
+const LEVEL = 1;
+const PERMISSIONS = [
+  'dashboard.view',
+  'tasks.view',
+  'calendar.view',
+  'lists.view',
+  'tables.view',
+  'communications.view',
+  'churches.view',
+];
 
 export class SeedCoordinadorOfrenda1789344000000 implements MigrationInterface {
   name = 'SeedCoordinadorOfrenda1789344000000';
@@ -20,8 +31,8 @@ export class SeedCoordinadorOfrenda1789344000000 implements MigrationInterface {
     const isPostgres = queryRunner.connection.options.type === 'postgres';
     const mark = (index: number) => (isPostgres ? `$${String(index)}` : '?');
     const yes = isPostgres ? true : 1;
-    const level = ROLE_HIERARCHY[SLUG];
-    const permissions = JSON.stringify(ROLE_PERMISSIONS[SLUG]);
+    const level = LEVEL;
+    const permissions = JSON.stringify(PERMISSIONS);
 
     const rows: unknown = await queryRunner.query(
       `SELECT "id" FROM "roles" WHERE "slug" = ${mark(1)}`,

@@ -1,4 +1,4 @@
-import { useCreateCalendar, useUpdateCalendar } from '@navis/api-client';
+import { useCreateCalendar, useMinistries, useUpdateCalendar } from '@navis/api-client';
 import { createCalendarSchema, type Calendar } from '@navis/shared';
 import { Info } from 'lucide-react';
 import { useState } from 'react';
@@ -13,7 +13,6 @@ import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
 import { useCalendarTemplates, type CalendarTemplateSlug } from '@/lib/calendar/templates';
 import { api } from '@/lib/api';
-import { useRoleCatalog, useRoleLabel } from '@/lib/roles';
 import { toast } from '@/lib/toast';
 
 /**
@@ -41,16 +40,6 @@ export function CalendarForm({
 }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  /*
-   * Las **labores** salen del catálogo de roles y no de una lista aparte: son
-   * la misma lista de la iglesia —púlpito, recepción, sonido, biblias— y
-   * mantenerla dos veces solo sirve para que se desincronicen. Si mañana se
-   * crea el rol «Alabanza», ahí aparece.
-   */
-  // El superadmin queda fuera: no es una labor de la iglesia sino el nivel de
-  // acceso de quien administra la instalación, y no hay calendario de eso.
-  const labores = [...useRoleCatalog(open).values()].filter((rol) => rol.slug !== 'superadmin');
-  const nombreDe = useRoleLabel();
   const templates = useCalendarTemplates();
   const createCalendar = useCreateCalendar(api);
   const updateCalendar = useUpdateCalendar(api);
@@ -59,6 +48,16 @@ export function CalendarForm({
   const [templateSlug, setTemplateSlug] = useState<CalendarTemplateSlug | null>(null);
   const [name, setName] = useState(calendar?.name ?? '');
   const [ministry, setMinistry] = useState(calendar?.ministry ?? '');
+
+  /*
+   * Las **labores** son el catálogo de la iglesia (`ministries`), no el de
+   * roles: son lo que casa contra `believer_ministries` al proponer a alguien
+   * (D16), y un rol de cuenta —«sonido», «pastor»— es otra cosa (acceso, no
+   * disponibilidad). La apagada no se propone, salvo que ya sea la elegida:
+   * quitarla de la lista no debe borrar lo que ya tenía este calendario.
+   */
+  const { data: ministries = [] } = useMinistries(api, open);
+  const labores = ministries.filter((one) => one.isActive || one.slug === ministry);
 
   const selectTemplate = (slug: CalendarTemplateSlug | null) => {
     setTemplateSlug(slug);
@@ -143,9 +142,9 @@ export function CalendarForm({
             }}
           >
             <option value="">{t('calendar.laborNone')}</option>
-            {labores.map((rol) => (
-              <option key={rol.slug} value={rol.slug}>
-                {nombreDe(rol)}
+            {labores.map((one) => (
+              <option key={one.slug} value={one.slug}>
+                {one.name}
               </option>
             ))}
           </Select>
@@ -156,10 +155,10 @@ export function CalendarForm({
             <span>
               {t('calendar.laborHint')}{' '}
               <Link
-                to="/users"
+                to="/believers/ministries"
                 className="font-medium text-primary underline-offset-4 hover:underline"
               >
-                {t('nav.users')}
+                {t('ministries.title')}
               </Link>
               .
             </span>
