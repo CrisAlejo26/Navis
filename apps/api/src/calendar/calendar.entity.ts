@@ -15,7 +15,9 @@ import { UUID } from '../database/column-types';
  * «propón a cualquiera».
  */
 @Entity('calendars')
-@Index('UQ_calendars_slug', ['churchId', 'slug'], { unique: true })
+// Parcial: sin el `WHERE`, borrar «Ofrenda» y crear otra con el mismo nombre
+// chocaría con la fila borrada, que sigue en la tabla (D `PartialUniqueSlugs`).
+@Index('UQ_calendars_slug', ['churchId', 'slug'], { unique: true, where: '"deleted_at" IS NULL' })
 export class Calendar extends BaseEntity {
   @ApiProperty()
   @Index()

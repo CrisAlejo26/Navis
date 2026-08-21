@@ -18,8 +18,11 @@ import { ListMember } from './list-member.entity';
  * servicio y en la misma transacción.
  */
 @Entity('lists')
-@Index('UQ_lists_slug', ['churchId', 'slug'], { unique: true })
-@Index('UQ_lists_name', ['churchId', 'name'], { unique: true })
+// Parciales: sin el `WHERE`, borrar una lista y crear otra con el mismo
+// nombre chocaría con la fila borrada, que sigue en la tabla (D
+// `PartialUniqueSlugs`).
+@Index('UQ_lists_slug', ['churchId', 'slug'], { unique: true, where: '"deleted_at" IS NULL' })
+@Index('UQ_lists_name', ['churchId', 'name'], { unique: true, where: '"deleted_at" IS NULL' })
 export class List extends BaseEntity {
   @ApiProperty()
   @Index()

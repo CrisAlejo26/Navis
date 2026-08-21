@@ -102,6 +102,33 @@ describe('Calendario (e2e)', () => {
     expect(calendarios[0]?.ministry).toBe('pulpito');
   });
 
+  /**
+   * Regresión: borrar un calendario es lógico (`softRemove`), y la fila se
+   * queda en la tabla con `deleted_at` puesto. El índice único de `slug` no
+   * lo sabía y una segunda «Ofrenda» chocaba con la primera, borrada, con un
+   * 409 que no decía por qué (D `PartialUniqueSlugs`).
+   */
+  it('borrar un calendario y crear otro con el mismo nombre no choca con el borrado', async () => {
+    const primero = await request(app.getHttpServer())
+      .post('/api/v1/calendars')
+      .set('Cookie', cookie)
+      .send({ name: 'Ofrenda' })
+      .expect(201);
+
+    await request(app.getHttpServer())
+      .delete(`/api/v1/calendars/${body<Calendar>(primero).id}`)
+      .set('Cookie', cookie)
+      .expect(200);
+
+    const segundo = await request(app.getHttpServer())
+      .post('/api/v1/calendars')
+      .set('Cookie', cookie)
+      .send({ name: 'Ofrenda' })
+      .expect(201);
+
+    expect(body<Calendar>(segundo).slug).toBe('ofrenda');
+  });
+
   it('cada iglesia nace con una sede, y se puede añadir otra', async () => {
     const inicial = await request(app.getHttpServer())
       .get('/api/v1/congregations')

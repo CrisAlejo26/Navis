@@ -417,6 +417,21 @@ describe('Listas compartidas (e2e)', () => {
     expect(listas.some((one) => one.id === nueva.id)).toBe(false);
   });
 
+  /**
+   * Regresión: el borrado es lógico y la fila se queda en la tabla con
+   * `deleted_at` puesto. El índice único de `slug` y de `name` no lo sabían,
+   * y una segunda lista con el mismo nombre chocaba con la primera, borrada,
+   * con un 409 que no decía por qué (D `PartialUniqueSlugs`).
+   */
+  it('borrar una lista y crear otra con el mismo nombre no choca con la borrada', async () => {
+    const nombre = `Coro ${sello}`;
+    const primera = body<List>(await post('/api/v1/lists', { name: nombre }).expect(201));
+    await del(`/api/v1/lists/${primera.id}`).expect(200);
+
+    const segunda = body<List>(await post('/api/v1/lists', { name: nombre }).expect(201));
+    expect(segunda.slug).toBe(primera.slug);
+  });
+
   it('la lista de otra iglesia no se lee ni se edita', async () => {
     const otroEmail = `listas-otro-${sello}@navis.test`;
     await anon()

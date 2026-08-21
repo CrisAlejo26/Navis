@@ -15,8 +15,17 @@ import type { CustomTableView } from './custom-table-view.entity';
  * quien lo anota.
  */
 @Entity('custom_tables')
-@Index('UQ_custom_tables_slug', ['churchId', 'slug'], { unique: true })
-@Index('UQ_custom_tables_name', ['churchId', 'name'], { unique: true })
+// Parciales: sin el `WHERE`, borrar una tabla y crear otra con el mismo
+// nombre chocaría con la fila borrada, que sigue en la tabla (D
+// `PartialUniqueSlugs`).
+@Index('UQ_custom_tables_slug', ['churchId', 'slug'], {
+  unique: true,
+  where: '"deleted_at" IS NULL',
+})
+@Index('UQ_custom_tables_name', ['churchId', 'name'], {
+  unique: true,
+  where: '"deleted_at" IS NULL',
+})
 export class CustomTable extends BaseEntity {
   @ApiProperty()
   @Index()

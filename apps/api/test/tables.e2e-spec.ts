@@ -408,5 +408,19 @@ describe('Tablas personalizadas (e2e)', () => {
       await del(`/api/v1/tables/${tableId}`).expect(200);
       await get(`/api/v1/tables/${tableId}`).expect(404);
     });
+
+    /**
+     * Regresión: el borrado es lógico y la fila se queda con `deleted_at`
+     * puesto. El índice único de `slug` y de `name` no lo sabían, y crear
+     * otra tabla con el mismo nombre —«Asistencia a la lectura», la que
+     * acaba de borrarse arriba— chocaba con la borrada, con un 409 que no
+     * decía por qué (D `PartialUniqueSlugs`).
+     */
+    it('crear otra tabla con el nombre de una borrada no choca con ella', async () => {
+      const nueva = body<CustomTable>(
+        await post('/api/v1/tables', { name: 'Asistencia a la lectura', icon: 'book' }).expect(201),
+      );
+      expect(nueva.slug).toBe('asistencia-a-la-lectura');
+    });
   });
 });
