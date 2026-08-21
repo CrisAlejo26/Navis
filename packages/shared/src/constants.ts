@@ -1,9 +1,15 @@
 /**
  * Roles de serie, ordenados de menor a mayor privilegio. No se borran.
  *
- * Los cuatro del medio son ministerios, no escalones: recepción, biblias,
- * sonido y púlpito están al mismo nivel y se distinguen por sus permisos
- * (ver `role-permissions.ts`), no por su posición.
+ * Los cinco del medio son ministerios, no escalones: recepción, biblias,
+ * sonido, púlpito y coordinador de la ofrenda están al mismo nivel y se
+ * distinguen por sus permisos (ver `role-permissions.ts`), no por su
+ * posición.
+ *
+ * **`coordinador-ofrenda`** es la labor de quien lleva la ofrenda cada
+ * reunión — mismo nivel y mismos permisos de consulta que `sonido`: necesita
+ * saber qué hay programado, no gestionarlo. Es la labor que propone por
+ * defecto la plantilla «Ofrenda» al crear un calendario (`calendar-form.tsx`).
  *
  * **`predicador-apoyo`** se añadió después (RFC 0014), en ese mismo nivel:
  * gestiona calendario, creyentes, listas y comunicaciones como el pastor,
@@ -18,6 +24,7 @@ export const ROLES = [
   'biblias',
   'sonido',
   'pulpito',
+  'coordinador-ofrenda',
   'predicador-apoyo',
   'pastor',
   'superadmin',
@@ -50,6 +57,7 @@ export const ROLE_HIERARCHY: Record<Role, number> = {
   biblias: 1,
   sonido: 1,
   pulpito: 1,
+  'coordinador-ofrenda': 1,
   'predicador-apoyo': 1,
   pastor: 2,
   superadmin: 3,

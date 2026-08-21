@@ -217,6 +217,7 @@ export const fr = {
     biblias: 'Bibles',
     sonido: 'Son',
     pulpito: 'Chaire',
+    coordinadorOfrenda: 'Coordinateur de l’offrande',
     predicadorApoyo: 'Prédicateur suppléant',
     pastor: 'Pasteur',
     superadmin: 'Super administrateur',
@@ -225,6 +226,7 @@ export const fr = {
     bibliasHint: 'S’occupe de l’espace des bibles.',
     sonidoHint: 'Assure la sonorisation.',
     pulpitoHint: 'Parle depuis l’estrade et publie les annonces.',
+    coordinadorOfrendaHint: 'Coordonne l’offrande à chaque réunion.',
     predicadorApoyoHint:
       'Calendrier, fidèles, listes et communications, comme le pasteur ; sans comptes ni autres églises.',
     pastorHint: 'Tout ce qui concerne ses églises, y compris les comptes qu’il crée.',
@@ -417,6 +419,24 @@ export const fr = {
     laborNone: "N'importe qui",
     onlyLabor: 'Cette fonction uniquement',
     laborHint: "Les fonctions sont les rôles de l'église et se gèrent dans",
+    templateLabel: 'Modèle',
+    templateHint:
+      'Remplit le nom, la fonction et une première réunion fixe avec ses phases. Tout peut être modifié ensuite.',
+    templateCustom: 'Vierge',
+    templates: {
+      sunday: {
+        name: 'Culte du dimanche',
+        phases: ['Accueil', 'Louange', 'Prédication', 'Offrande'],
+      },
+      prayer: {
+        name: 'Prière',
+        phases: ['Prière', 'Partage'],
+      },
+      offering: {
+        name: 'Offrande',
+        phases: ['Coordinateur de l’offrande'],
+      },
+    },
   },
   believers: {
     title: 'Personnes',

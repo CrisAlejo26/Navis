@@ -82,6 +82,17 @@ export const ROLE_PERMISSIONS: Record<Role, readonly string[]> = {
     'churches.view',
   ] satisfies Permission[],
 
+  /** Necesita saber qué hay programado para su turno, y poco más — igual que `sonido`. */
+  'coordinador-ofrenda': [
+    'dashboard.view',
+    'tasks.view',
+    'calendar.view',
+    'lists.view',
+    'tables.view',
+    'communications.view',
+    'churches.view',
+  ] satisfies Permission[],
+
   /** Habla desde el frente, así que publica los avisos. */
   pulpito: [
     'dashboard.view',

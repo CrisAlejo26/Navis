@@ -3,15 +3,11 @@ import type { Congregation, MeetingPattern } from '@navis/shared';
 import { CalendarClock, ChevronLeft, Pencil, Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router';
+import { Link, useLocation, useNavigate } from 'react-router';
 
-import { CalendarForm } from '@/components/calendar/calendar-form';
-import { CongregationForm } from '@/components/calendar/congregation-form';
+import { CalendarSettingsDialogs } from '@/components/calendar/calendar-settings-dialogs';
 import { CongregationRows } from '@/components/calendar/congregation-rows';
-import { DeleteCalendarDialog } from '@/components/calendar/delete-calendar-dialog';
-import { DeleteCongregationDialog } from '@/components/calendar/delete-congregation-dialog';
-import { DeletePatternDialog } from '@/components/calendar/delete-pattern-dialog';
-import { PatternForm } from '@/components/calendar/pattern-form';
+import type { PatternDefaults } from '@/components/calendar/pattern-form';
 import { PatternRows } from '@/components/calendar/pattern-rows';
 import { Button } from '@/components/ui/button';
 import { Card, CardTitle } from '@/components/ui/card';
@@ -28,6 +24,8 @@ import { useActiveCalendar } from '@/lib/calendar/use-active-calendar';
  */
 export function CalendarSettingsPage() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+  const location = useLocation();
   const { calendar, calendars } = useActiveCalendar();
   const { data: congregations = [] } = useCongregations(api);
   const { data: patterns = [] } = usePatterns(api, calendar?.id ?? '');
@@ -37,11 +35,24 @@ export function CalendarSettingsPage() {
   const [renaming, setRenaming] = useState(false);
   const [pattern, setPattern] = useState<MeetingPattern | null>(null);
   const [creating, setCreating] = useState(false);
-
-  // Lo que está esperando confirmación antes de borrarse.
   const [borrarCalendario, setBorrarCalendario] = useState(false);
   const [borrarSede, setBorrarSede] = useState<Congregation | null>(null);
   const [borrarPatron, setBorrarPatron] = useState<MeetingPattern | null>(null);
+
+  /**
+   * Al llegar desde una plantilla de calendario, `CalendarForm` deja la
+   * sugerencia de reunión en el estado de la navegación (`state`, no la URL:
+   * es un objeto, no un texto que compartir). Se deriva en el propio render
+   * —sin `useEffect`, que aquí dispararía un `setState` en cascada— y solo
+   * cuenta si ya hay una sede que proponer: sin eso, `PatternForm` no tiene
+   * qué poner en el desplegable.
+   */
+  const patternDefaults = (location.state as { patternDefaults?: PatternDefaults } | null)
+    ?.patternDefaults;
+  const abrirDesdePlantilla = Boolean(patternDefaults) && congregations.length > 0;
+  const limpiarPlantilla = () => {
+    if (patternDefaults) void navigate(location.pathname, { replace: true, state: null });
+  };
 
   const volver = `/calendar/${calendar?.slug ?? ''}`;
 
@@ -91,6 +102,7 @@ export function CalendarSettingsPage() {
             variant="ghost"
             size="sm"
             onClick={() => {
+              limpiarPlantilla();
               setCreating(true);
             }}
           >
@@ -136,59 +148,34 @@ export function CalendarSettingsPage() {
         />
       </Card>
 
-      <DeleteCalendarDialog
-        calendar={borrarCalendario ? (calendar ?? null) : null}
-        onClose={() => {
-          setBorrarCalendario(false);
+      <CalendarSettingsDialogs
+        state={{
+          calendar,
+          congregations,
+          renaming,
+          setRenaming,
+          congregation,
+          addCongregation,
+          setCongregation,
+          setAddCongregation,
+          pattern,
+          setPattern,
+          creating,
+          setCreating,
+          abrirDesdePlantilla,
+          patternDefaults,
+          limpiarPlantilla,
+          borrarCalendario,
+          setBorrarCalendario,
+          borrarSede,
+          setBorrarSede,
+          borrarPatron,
+          setBorrarPatron,
+          onCalendarDeleted: () => {
+            void navigate('/calendar');
+          },
         }}
       />
-
-      <DeleteCongregationDialog
-        congregation={borrarSede}
-        onClose={() => {
-          setBorrarSede(null);
-        }}
-      />
-
-      <DeletePatternDialog
-        pattern={borrarPatron}
-        calendarId={calendar?.id ?? ''}
-        onClose={() => {
-          setBorrarPatron(null);
-        }}
-      />
-
-      <CongregationForm
-        open={addCongregation || Boolean(congregation)}
-        congregation={congregation ?? undefined}
-        onClose={() => {
-          setAddCongregation(false);
-          setCongregation(null);
-        }}
-      />
-
-      {renaming && calendar && (
-        <CalendarForm
-          open
-          calendar={calendar}
-          onClose={() => {
-            setRenaming(false);
-          }}
-        />
-      )}
-
-      {(creating || pattern) && (
-        <PatternForm
-          open
-          congregations={congregations}
-          calendarId={calendar?.id ?? ''}
-          pattern={pattern ?? undefined}
-          onClose={() => {
-            setCreating(false);
-            setPattern(null);
-          }}
-        />
-      )}
     </section>
   );
 }

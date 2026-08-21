@@ -225,6 +225,7 @@ export const es = {
     biblias: 'Biblias',
     sonido: 'Sonido',
     pulpito: 'Púlpito',
+    coordinadorOfrenda: 'Coordinador de la ofrenda',
     predicadorApoyo: 'Predicador de apoyo',
     pastor: 'Pastor',
     superadmin: 'Superadministrador',
@@ -233,6 +234,7 @@ export const es = {
     bibliasHint: 'Atiende la zona de las biblias.',
     sonidoHint: 'Apoya en la labor del sonido.',
     pulpitoHint: 'Habla desde el frente y publica los avisos.',
+    coordinadorOfrendaHint: 'Coordina la ofrenda de cada reunión.',
     predicadorApoyoHint:
       'Calendario, creyentes, listas y comunicaciones, como el pastor; sin cuentas ni otras iglesias.',
     pastorHint: 'Todo lo de sus iglesias, incluidas las cuentas que crea.',
@@ -425,6 +427,24 @@ export const es = {
     laborNone: 'Cualquiera',
     onlyLabor: 'Solo de la labor',
     laborHint: 'Las labores son los roles de la iglesia y se administran en',
+    templateLabel: 'Plantilla',
+    templateHint:
+      'Rellena el nombre, la labor y una primera reunión fija con sus fases. Se puede cambiar todo después.',
+    templateCustom: 'En blanco',
+    templates: {
+      sunday: {
+        name: 'Culto dominical',
+        phases: ['Introducción', 'Alabanza', 'Predicación', 'Ofrenda'],
+      },
+      prayer: {
+        name: 'Oración',
+        phases: ['Oración', 'Compartir'],
+      },
+      offering: {
+        name: 'Ofrenda',
+        phases: ['Coordinador de la ofrenda'],
+      },
+    },
   },
   believers: {
     title: 'Creyentes',
@@ -944,7 +964,7 @@ export const es = {
       'Escribe lo que te llevas de una corrección o una enseñanza: queda aquí, con su fecha, para volver sobre ello.',
     noResults: 'Ninguna enseñanza con esos filtros',
     titleField: 'Título',
-    titlePlaceholder: 'Qué aprendiste',
+    titlePlaceholder: 'Enseñanza',
     notesField: 'Observaciones',
     notesPlaceholder: 'Anota lo que quieras recordar',
     receivedAtField: 'Fecha',

@@ -219,6 +219,7 @@ export const de = {
     biblias: 'Bibeln',
     sonido: 'Ton',
     pulpito: 'Kanzel',
+    coordinadorOfrenda: 'Koordinator der Kollekte',
     predicadorApoyo: 'Unterstützender Prediger',
     pastor: 'Pastor',
     superadmin: 'Superadministrator',
@@ -227,6 +228,7 @@ export const de = {
     bibliasHint: 'Betreut den Bibelbereich.',
     sonidoHint: 'Unterstützt bei der Tontechnik.',
     pulpitoHint: 'Spricht von vorn und veröffentlicht die Hinweise.',
+    coordinadorOfrendaHint: 'Koordiniert die Kollekte bei jedem Treffen.',
     predicadorApoyoHint:
       'Kalender, Gläubige, Listen und Kommunikation, wie der Pastor; ohne Konten und ohne andere Gemeinden.',
     pastorHint: 'Alles zu seinen Gemeinden, einschließlich der von ihm erstellten Konten.',
@@ -420,6 +422,24 @@ export const de = {
     laborNone: 'Alle',
     onlyLabor: 'Nur diese Aufgabe',
     laborHint: 'Die Aufgaben sind die Rollen der Gemeinde und werden verwaltet unter',
+    templateLabel: 'Vorlage',
+    templateHint:
+      'Füllt den Namen, die Aufgabe und ein erstes festes Treffen mit seinen Phasen aus. Alles lässt sich danach ändern.',
+    templateCustom: 'Leer',
+    templates: {
+      sunday: {
+        name: 'Sonntagsgottesdienst',
+        phases: ['Begrüßung', 'Lobpreis', 'Predigt', 'Kollekte'],
+      },
+      prayer: {
+        name: 'Gebet',
+        phases: ['Gebet', 'Austausch'],
+      },
+      offering: {
+        name: 'Kollekte',
+        phases: ['Koordinator der Kollekte'],
+      },
+    },
   },
   believers: {
     title: 'Personen',
