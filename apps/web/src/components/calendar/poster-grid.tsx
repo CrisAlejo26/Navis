@@ -2,6 +2,7 @@ import type { CalendarRange } from '@navis/shared';
 
 import { accentHex } from '@/lib/accents';
 import { dayNumber, weekdayHeadings } from '@/lib/calendar/labels';
+import { leadingBlanks } from './poster-grid-blanks';
 import type { PosterPalette } from './poster-palette';
 
 /**
@@ -38,6 +39,9 @@ export function PosterGrid({
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '8px' }}>
+        {Array.from({ length: leadingBlanks(range.days[0]?.date) }, (_unused, index) => (
+          <div key={`blank-${String(index)}`} aria-hidden />
+        ))}
         {range.days.map((day) => (
           <div
             key={day.date}
