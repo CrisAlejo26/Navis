@@ -52,7 +52,15 @@ export function applyRowFilter(
   }
 
   if (filter.operator === 'equals' && column.type === 'checkbox') {
-    qb.andWhere(`${field} = :${p}`, { [p]: filter.value ? 'true' : 'false' });
+    // Una fila donde nunca se tocó la casilla no tiene la clave en el JSON
+    // —no se guardó nunca `false`—, y eso también es «No»: la celda ya se
+    // pinta así (`RowValueCell`). Sin el `OR ... IS NULL`, «No» no
+    // encontraba las filas que nunca se marcaron.
+    if (filter.value) {
+      qb.andWhere(`${field} = :${p}`, { [p]: 'true' });
+    } else {
+      qb.andWhere(`(${field} = :${p} OR ${field} IS NULL)`, { [p]: 'false' });
+    }
     return;
   }
 

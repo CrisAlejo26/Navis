@@ -285,6 +285,30 @@ describe('Tablas personalizadas (e2e)', () => {
         await get(`/api/v1/tables/${tableId}/rows?filters=${malos}`).expect(400);
       });
 
+      it('filtra una casilla por «no», incluidas las filas que nunca la tocaron', async () => {
+        // Berta y Carlos no llevan `colAsistio` en su `data` — nunca se marcó
+        // la casilla al crearlos — y «No» tiene que encontrarlos igual que a
+        // una fila que sí guarda `false` explícito (Regla 4 §5: regresión).
+        const filtros = encodeURIComponent(
+          JSON.stringify([{ columnKey: colAsistio, operator: 'equals', value: false }]),
+        );
+        const filtradas = body<Paginated<CustomTableRow>>(
+          await get(`/api/v1/tables/${tableId}/rows?filters=${filtros}`),
+        );
+        expect(filtradas.items.map((one) => one.data[colNombre]).sort()).toEqual([
+          'Berta',
+          'Carlos',
+        ]);
+
+        const conAsistio = encodeURIComponent(
+          JSON.stringify([{ columnKey: colAsistio, operator: 'equals', value: true }]),
+        );
+        const asistieron = body<Paginated<CustomTableRow>>(
+          await get(`/api/v1/tables/${tableId}/rows?filters=${conAsistio}`),
+        );
+        expect(asistieron.items.map((one) => one.data[colNombre])).toEqual(['Ana María']);
+      });
+
       it('la contraseña no se puede filtrar (D29)', async () => {
         const filtros = encodeURIComponent(
           JSON.stringify([{ columnKey: colClave, operator: 'contains', value: 'x' }]),

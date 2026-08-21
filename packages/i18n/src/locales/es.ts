@@ -66,6 +66,7 @@ export const es = {
     tables: 'Tablas',
     prophecies: 'Profecías',
     dreams: 'Sueños',
+    teachings: 'Enseñanzas',
     communications: 'Comunicaciones',
     settings: 'Ajustes',
     users: 'Usuarios',
@@ -927,6 +928,58 @@ export const es = {
     errorOrder: 'No puede haberse cumplido antes de soñarse',
     errorEmpty: 'Escribe lo que soñaste',
   },
+  /* Enseñanzas personales (RFC 0022). «Enseñanza» y no «Corrección»: esa
+     palabra ya la usa el cuaderno de la iglesia (journal.*) para un tipo de
+     entrada compartida con el equipo, y esto es justo lo contrario —
+     personal, sin iglesia—. */
+  teachings: {
+    title: 'Enseñanzas',
+    lead: '{{total}} enseñanzas · {{thisYear}} este año',
+    add: 'Anotar una enseñanza',
+    edit: 'Editar la enseñanza',
+    open: 'Ver mis enseñanzas',
+    search: 'Buscar en tus enseñanzas',
+    emptyTitle: 'Todavía no has anotado ninguna enseñanza',
+    emptyBody:
+      'Escribe lo que te llevas de una corrección o una enseñanza: queda aquí, con su fecha, para volver sobre ello.',
+    noResults: 'Ninguna enseñanza con esos filtros',
+    titleField: 'Título',
+    titlePlaceholder: 'Qué aprendiste',
+    notesField: 'Observaciones',
+    notesPlaceholder: 'Anota lo que quieras recordar',
+    receivedAtField: 'Fecha',
+    columns: {
+      title: 'Enseñanza',
+      received: 'Fecha',
+      checklist: 'Checklist',
+    },
+    editor: {
+      bold: 'Negrita',
+      italic: 'Cursiva',
+      bulletList: 'Lista con viñetas',
+      orderedList: 'Lista numerada',
+      taskList: 'Checklist',
+    },
+    export: {
+      markdown: 'Descargar como Markdown',
+      image: 'Compartir como imagen',
+      continuesInNavis: '— sigue en Navis',
+    },
+    stats: {
+      total: 'Todas',
+      thisYear: 'Este año',
+      monthly: 'Enseñanzas mes a mes',
+      checklist: 'Checklist completada',
+      checklistValue: '{{checked}} / {{total}}',
+      noData: 'Sin datos todavía',
+    },
+    created: 'Enseñanza anotada',
+    updated: 'Enseñanza guardada',
+    removed: 'Enseñanza eliminada',
+    deleteTitle: 'Eliminar «{{title}}»',
+    deleteBody: 'Se borra el título y todo el texto de la enseñanza.',
+    errorEmpty: 'Escribe algo en las observaciones',
+  },
   /* El cuaderno de la iglesia (RFC 0017). Vive bajo `journal.*` para no chocar
      con `notes.*`, que ya es la bitácora de un creyente. */
   journal: {
@@ -1560,11 +1613,14 @@ export const es = {
     sortDesc: 'De mayor a menor',
     exportPasswordWarning: 'Este archivo incluirá {{count}} contraseñas en texto claro',
     filters: {
-      contains: 'Contiene',
-      min: 'Mínimo',
-      max: 'Máximo',
+      contains: 'Escribe el texto a buscar',
+      min: 'Valor mínimo',
+      max: 'Valor máximo',
       to: 'Hasta',
       any: 'Cualquiera',
+      today: 'Hoy',
+      thisWeek: 'Esta semana',
+      thisMonth: 'Este mes',
     },
     view: {
       grid: 'Cuadrícula',
