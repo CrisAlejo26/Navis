@@ -2,7 +2,6 @@ import { useDeleteCalendar } from '@navis/api-client';
 import type { Calendar } from '@navis/shared';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router';
 
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { api } from '@/lib/api';
@@ -11,16 +10,21 @@ import { toast } from '@/lib/toast';
 /**
  * Baja de un calendario. Se lleva por delante sus reuniones fijas y sus
  * programaciones, así que el aviso lo dice con todas las letras.
+ *
+ * Sin navegar por su cuenta: quien lo abre desde sus propios ajustes pasa
+ * `onDeleted` para volver al primer calendario que quede; desde la barra
+ * lateral no hace falta moverse de donde se esté.
  */
 export function DeleteCalendarDialog({
   calendar,
   onClose,
+  onDeleted,
 }: {
   calendar: Calendar | null;
   onClose: () => void;
+  onDeleted?: () => void;
 }) {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const remove = useDeleteCalendar(api);
   const [error, setError] = useState<string | null>(null);
 
@@ -36,7 +40,7 @@ export function DeleteCalendarDialog({
       onSuccess: () => {
         close();
         toast.success(t('calendar.calendarDeleted', { name: calendar.name }));
-        void navigate('/calendar');
+        onDeleted?.();
       },
       onError: () => {
         setError(t('calendar.lastCalendar'));

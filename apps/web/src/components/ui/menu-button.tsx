@@ -26,6 +26,7 @@ export function MenuButton({
   size,
   icon,
   className,
+  iconOnly = false,
 }: {
   label: string;
   options: MenuOption[];
@@ -33,6 +34,9 @@ export function MenuButton({
   size?: ComponentProps<typeof Button>['size'];
   icon?: ReactNode;
   className?: string;
+  /** Sin texto ni flecha visibles: `label` queda como `aria-label`, para un
+      disparador compacto (fila de la barra lateral, celda de una tabla). */
+  iconOnly?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const box = useRef<HTMLDivElement>(null);
@@ -62,13 +66,17 @@ export function MenuButton({
         size={size}
         aria-expanded={open}
         aria-haspopup="menu"
+        aria-label={iconOnly ? label : undefined}
+        title={iconOnly ? label : undefined}
         onClick={() => {
           setOpen((previous) => !previous);
         }}
       >
         {icon}
-        {label}
-        <ChevronDown size={14} aria-hidden className={cn('transition', open && 'rotate-180')} />
+        {!iconOnly && label}
+        {!iconOnly && (
+          <ChevronDown size={14} aria-hidden className={cn('transition', open && 'rotate-180')} />
+        )}
       </Button>
 
       {open && (
@@ -77,6 +85,11 @@ export function MenuButton({
           className={cn(
             'p-1 left-0 mb-2 w-52 animate-page-in absolute bottom-full z-10 origin-bottom-left',
             'shadow-lg rounded-xl border bg-popover',
+            // Compacto: el disparador vive pegado al borde derecho de una fila
+            // estrecha (la barra lateral), y esa barra recorta lo que se sale
+            // por la derecha (`overflow-x-hidden`, para el scroll vertical).
+            // Abrir hacia la izquierda es lo que deja el menú entero visible.
+            iconOnly && 'right-0 mt-1 mb-0 top-full bottom-auto left-auto origin-top-right',
           )}
         >
           {options.map((option) => (

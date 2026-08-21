@@ -1,13 +1,10 @@
-import { useDeleteList, type ListDetail } from '@navis/api-client';
-import { useTranslation } from 'react-i18next';
+import type { ListDetail } from '@navis/api-client';
 import { useNavigate } from 'react-router';
 
 import { AddMembersDialog } from '@/components/lists/add-members-dialog';
+import { DeleteListDialog } from '@/components/lists/delete-list-dialog';
 import { ListExportDialog } from '@/components/lists/list-export-dialog';
 import { ListForm } from '@/components/lists/list-form';
-import { ConfirmDialog } from '@/components/ui/confirm-dialog';
-import { api } from '@/lib/api';
-import { toast } from '@/lib/toast';
 
 /** Cuál está abierto, si alguno. Uno cada vez: son todos modales. */
 export type ListDialog = 'members' | 'edit' | 'export' | 'delete' | null;
@@ -31,9 +28,7 @@ export function ListDialogs({
   open: ListDialog;
   onClose: () => void;
 }) {
-  const { t } = useTranslation();
   const navigate = useNavigate();
-  const remove = useDeleteList(api);
 
   return (
     <>
@@ -53,22 +48,12 @@ export function ListDialogs({
         churchName={churchName}
       />
 
-      <ConfirmDialog
-        open={open === 'delete'}
+      <DeleteListDialog
+        list={open === 'delete' ? list : null}
         onClose={onClose}
-        onConfirm={() => {
-          remove.mutate(list.id, {
-            onSuccess: () => {
-              toast.success(t('lists.deleted', { name: list.name }));
-              void navigate('/lists');
-            },
-          });
+        onDeleted={() => {
+          void navigate('/lists');
         }}
-        title={t('lists.delete')}
-        description={t('lists.deleteExplain')}
-        confirmLabel={t('lists.delete')}
-        destructive
-        isPending={remove.isPending}
       />
     </>
   );

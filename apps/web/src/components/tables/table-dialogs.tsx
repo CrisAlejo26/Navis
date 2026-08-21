@@ -1,9 +1,10 @@
-import { useDeleteTable, useDeleteTableView } from '@navis/api-client';
+import { useDeleteTableView } from '@navis/api-client';
 import type { CustomTableWithColumns } from '@navis/shared';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 
 import { ColumnsDialog } from '@/components/tables/columns-dialog';
+import { DeleteTableDialog } from '@/components/tables/delete-table-dialog';
 import { TableExportSheet } from '@/components/tables/table-export-sheet';
 import { TableForm } from '@/components/tables/table-form';
 import { ViewForm } from '@/components/tables/view-form';
@@ -46,7 +47,6 @@ export function TableDialogs({
 }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const deleteTable = useDeleteTable(api);
   const deleteView = useDeleteTableView(api);
   const {
     editando,
@@ -117,22 +117,12 @@ export function TableDialogs({
         isPending={deleteView.isPending}
       />
 
-      <ConfirmDialog
-        open={borrando}
+      <DeleteTableDialog
+        table={borrando ? table : null}
         onClose={() => setBorrando(false)}
-        onConfirm={() => {
-          deleteTable.mutate(table.id, {
-            onSuccess: () => {
-              toast.success(t('tables.deleted', { name: table.name }));
-              void navigate('/tables');
-            },
-          });
+        onDeleted={() => {
+          void navigate('/tables');
         }}
-        title={t('tables.delete')}
-        description={t('tables.deleteExplain')}
-        confirmLabel={t('common.delete')}
-        destructive
-        isPending={deleteTable.isPending}
       />
     </>
   );

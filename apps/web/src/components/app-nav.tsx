@@ -11,6 +11,9 @@ export interface NavBranch {
   onAdd?: () => void;
   /** Clave de traducción del botón de añadir, que no dice lo mismo en cada una. */
   addLabelKey: string;
+  /** Editar o eliminar una subentrada, sin salir de la barra. Sin permiso, sin acción. */
+  onEditEntry?: (id: string) => void;
+  onDeleteEntry?: (id: string) => void;
 }
 
 /**
@@ -55,6 +58,8 @@ export function AppNav({
         onNavigate={onNavigate}
         onAdd={branch.onAdd}
         addLabel={t(branch.addLabelKey)}
+        onEditEntry={branch.onEditEntry}
+        onDeleteEntry={branch.onDeleteEntry}
       />
     ) : (
       <NavEntry key={item.to} item={item} collapsed={collapsed} onNavigate={onNavigate} />

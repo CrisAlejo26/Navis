@@ -31,7 +31,11 @@ export function CalendarFilters({
   const { filters, setFilters, clearFilters, hasFilters } = params;
 
   return (
-    <div className="gap-2 flex flex-wrap items-center">
+    // `flex-1 min-w-0`: en `calendar.tsx` esta fila comparte sitio con el
+    // botón «Reparto» dentro de un `justify-between`, que reparte hueco entre
+    // los dos en vez de estirarlos — sin esto, el buscador de más abajo solo
+    // crecía hasta donde ya llegaban sedes y chips, no hasta el botón.
+    <div className="gap-2 min-w-0 flex flex-1 flex-wrap items-center">
       <CongregationPills
         congregations={congregations}
         selected={filters.congregationIds}
@@ -48,13 +52,16 @@ export function CalendarFilters({
         onAdd={onAddCongregation}
       />
 
+      {/* `flex-1`: ocupa el resto del ancho de su fila en vez de quedarse en
+          los 14rem de antes — con las sedes y los chips ya puestos, sobraba
+          hueco vacío al lado del buscador. */}
       <SearchField
         value={filters.q}
         onChange={(q) => {
           setFilters({ q });
         }}
         label={t('calendar.filterSearch')}
-        className="sm:w-56 w-full"
+        className="min-w-40 flex-1"
       />
 
       <Chip

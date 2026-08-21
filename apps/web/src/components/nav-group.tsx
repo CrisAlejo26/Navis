@@ -1,14 +1,17 @@
-import { ChevronDown, Plus } from 'lucide-react';
+import { ChevronDown, MoreHorizontal, Pencil, Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NavLink, useLocation } from 'react-router';
 
+import { MenuButton } from '@/components/ui/menu-button';
 import { cn } from '@/lib/cn';
 import type { NavItem } from '@/lib/nav';
 
 export interface NavChild {
   to: string;
   label: string;
+  /** Con qué editarla o borrarla desde la propia barra (§RFC calendarios/listas/tablas). */
+  id: string;
 }
 
 /**
@@ -28,6 +31,8 @@ export function NavGroup({
   onNavigate,
   onAdd,
   addLabel,
+  onEditEntry,
+  onDeleteEntry,
 }: {
   item: NavItem;
   entries: readonly NavChild[];
@@ -37,6 +42,9 @@ export function NavGroup({
   onAdd?: () => void;
   /** Ya traducido: no dice lo mismo en calendarios que en listas. */
   addLabel: string;
+  /** Editar o borrar una subentrada sin salir de la barra. Sin permiso, sin botón. */
+  onEditEntry?: (id: string) => void;
+  onDeleteEntry?: (id: string) => void;
 }) {
   const { t } = useTranslation();
   const { pathname } = useLocation();
@@ -97,21 +105,63 @@ export function NavGroup({
       {open && (
         <div className="mt-0.5 ml-4 gap-0.5 pl-2 flex flex-col border-l">
           {entries.map((child) => (
-            <NavLink
-              key={child.to}
-              to={child.to}
-              onClick={onNavigate}
-              className={({ isActive }) =>
-                cn(
-                  'px-3 py-2 text-sm truncate rounded-lg transition-colors duration-200',
-                  isActive
-                    ? 'bg-primary text-primary-foreground'
-                    : 'text-muted-foreground hover:bg-muted hover:text-foreground',
-                )
-              }
-            >
-              {child.label}
-            </NavLink>
+            <div key={child.to} className="gap-0.5 flex items-center">
+              <NavLink
+                to={child.to}
+                onClick={onNavigate}
+                className={({ isActive }) =>
+                  cn(
+                    'px-3 py-2 text-sm min-w-0 flex-1 truncate rounded-lg transition-colors duration-200',
+                    isActive
+                      ? 'bg-primary text-primary-foreground'
+                      : 'text-muted-foreground hover:bg-muted hover:text-foreground',
+                  )
+                }
+              >
+                {child.label}
+              </NavLink>
+
+              {/* Editar y borrar, sin salir de la barra — un único disparador
+                  compacto en vez de dos iconos sueltos, que en 224 px de ancho
+                  no dejan sitio al nombre (Regla 6/Regla 9: nada de más piezas
+                  de las que hacen falta). */}
+              {(onEditEntry ?? onDeleteEntry) && (
+                <MenuButton
+                  label={t('common.actions')}
+                  iconOnly
+                  variant="ghost"
+                  size="icon"
+                  icon={<MoreHorizontal size={14} aria-hidden />}
+                  className="shrink-0"
+                  options={[
+                    ...(onEditEntry
+                      ? [
+                          {
+                            id: 'edit',
+                            label: t('common.edit'),
+                            icon: <Pencil size={14} aria-hidden />,
+                            onSelect: () => {
+                              onEditEntry(child.id);
+                            },
+                          },
+                        ]
+                      : []),
+                    ...(onDeleteEntry
+                      ? [
+                          {
+                            id: 'delete',
+                            label: t('common.delete'),
+                            icon: <Trash2 size={14} aria-hidden />,
+                            onSelect: () => {
+                              onDeleteEntry(child.id);
+                            },
+                          },
+                        ]
+                      : []),
+                  ]}
+                />
+              )}
+            </div>
           ))}
 
           {onAdd && (
