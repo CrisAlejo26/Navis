@@ -4,7 +4,12 @@ import { ScrollView, Text, View } from 'react-native';
 import { Card } from '@/components/ui/card';
 
 export type NavKey =
-  'nav.calendar' | 'nav.believers' | 'nav.prophecies' | 'nav.dreams' | 'nav.communications';
+  | 'nav.calendar'
+  | 'nav.believers'
+  | 'nav.prophecies'
+  | 'nav.dreams'
+  | 'nav.teachings'
+  | 'nav.communications';
 
 /**
  * Pantalla puente para las secciones que todavía son solo una RFC.

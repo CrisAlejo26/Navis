@@ -126,6 +126,16 @@ export const queryKeys = {
     emotions: ['dreams', 'emotions'] as const,
   },
   /**
+   * Las enseñanzas personales de quien ha entrado (RFC 0022). Mismo criterio
+   * que profecías: sin la iglesia en la clave, porque no depende de ella.
+   */
+  teachings: {
+    all: ['teachings'] as const,
+    list: (query: object) => [...queryKeys.teachings.all, 'list', query] as const,
+    stats: ['teachings', 'stats'] as const,
+    one: (id: string) => [...queryKeys.teachings.all, 'one', id] as const,
+  },
+  /**
    * Tareas y hábitos (RFC 0018). Etiquetas, tareas y hábitos cuelgan de la
    * misma raíz: completar una tarea mueve su fila, la racha y las
    * estadísticas a la vez, e invalidar `all` es más barato que acertar cuál

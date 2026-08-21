@@ -9,6 +9,7 @@ import { useThemeStore } from '@/lib/theme';
 const sections = [
   { href: '/prophecies', labelKey: 'nav.prophecies', icon: 'sparkles-outline' },
   { href: '/dreams', labelKey: 'nav.dreams', icon: 'moon-outline' },
+  { href: '/teachings', labelKey: 'nav.teachings', icon: 'school-outline' },
   { href: '/communications', labelKey: 'nav.communications', icon: 'chatbubbles-outline' },
 ] as const;
 

@@ -243,3 +243,36 @@
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
 }
+
+/*
+ * Barra de scroll, con los tokens del tema en vez del cromo por defecto del
+ * navegador: en `--border` (reposo) y `--ring` (hover), así que cambia sola
+ * con el tema en vez de quedarse gris claro sobre un fondo oscuro. Web
+ * solamente — móvil no tiene barra de scroll que pintar.
+ */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: var(--border);
+  border-radius: 999px;
+  /* El borde transparente con `background-clip` deja un margen visual sin
+     recurrir a un segundo elemento: el pulgar no toca los bordes de la pista. */
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: var(--ring);
+}

@@ -28,6 +28,7 @@ import { RolesModule } from './roles/roles.module';
 import { SetupModule } from './setup/setup.module';
 import { TablesModule } from './tables/tables.module';
 import { TasksModule } from './tasks/tasks.module';
+import { TeachingsModule } from './teachings/teachings.module';
 import { UsersModule } from './users/users.module';
 import { WeatherModule } from './weather/weather.module';
 
@@ -63,6 +64,7 @@ import { WeatherModule } from './weather/weather.module';
     TablesModule,
     PropheciesModule,
     DreamsModule,
+    TeachingsModule,
     ChatModule,
     RolesModule,
     UsersModule,

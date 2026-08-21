@@ -56,6 +56,7 @@ import { TaskReminder } from '../tasks/task-reminder.entity';
 import { TaskStreakCache } from '../tasks/task-streak-cache.entity';
 import { TaskTag } from '../tasks/task-tag.entity';
 import { Task } from '../tasks/task.entity';
+import { Teaching } from '../teachings/teaching.entity';
 
 const logging: DataSourceOptions['logging'] = isProduction
   ? ['error', 'warn']
@@ -123,6 +124,7 @@ const entities = [
   CustomTableColumn,
   CustomTableRow,
   CustomTableView,
+  Teaching,
 ];
 
 /**

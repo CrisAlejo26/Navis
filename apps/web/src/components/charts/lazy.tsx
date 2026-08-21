@@ -26,3 +26,7 @@ export const Sparkline = lazy(() =>
 export const TaskWeeklyChart = lazy(() =>
   import('./index').then((module) => ({ default: module.TaskWeeklyChart })),
 );
+
+export const TeachingMonthlyChart = lazy(() =>
+  import('./index').then((module) => ({ default: module.TeachingMonthlyChart })),
+);

@@ -37,6 +37,11 @@
   /* El pulso único al cerrar el día (§9.3): no en bucle, es la celebración de
      un momento. */
   --animate-pulso: pulso 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  /* El trazo de una checklist de enseñanzas al marcarla (RFC 0022 §3): se
+     dibuja de izquierda a derecha sobre el texto, como quien tacha algo
+     aprendido en un cuaderno de verdad — no el `check` genérico de una
+     librería de iconos. */
+  --animate-tacha: tacha 320ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 /*
@@ -156,6 +161,14 @@
 @keyframes faro-gira {
   to {
     transform: rotate(360deg);
+  }
+}
+
+/* El trazo de una checklist de enseñanzas, de izquierda a derecha (RFC 0022
+   §3). Mismo mecanismo que `track-in` y `sonda`: solo `scaleX`, nunca `width`. */
+@keyframes tacha {
+  from {
+    transform: scaleX(0);
   }
 }
 

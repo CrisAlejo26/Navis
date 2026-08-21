@@ -3,6 +3,7 @@ import {
   CalendarDays,
   CheckCircle2,
   ClipboardList,
+  GraduationCap,
   LayoutDashboard,
   MessageSquare,
   Moon,
@@ -86,6 +87,15 @@ export const NAV_ITEMS: readonly NavItem[] = [
     to: '/dreams',
     labelKey: 'nav.dreams',
     Icon: Moon,
+    end: false,
+    group: 'general',
+  },
+  {
+    // Sin `permission`, por lo mismo (RFC 0022 §1): las enseñanzas son de
+    // cada usuario y no de la iglesia, mismo modelo que profecías y sueños.
+    to: '/teachings',
+    labelKey: 'nav.teachings',
+    Icon: GraduationCap,
     end: false,
     group: 'general',
   },

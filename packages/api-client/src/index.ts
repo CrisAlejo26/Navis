@@ -34,6 +34,8 @@ export * from './ministry-hooks';
 export * from './note-hooks';
 export * from './prophecy-hooks';
 export * from './prophecy-mutations';
+export * from './teaching-hooks';
+export * from './teaching-mutations';
 export * from './public-list-hooks';
 export * from './query-client';
 export * from './query-keys';

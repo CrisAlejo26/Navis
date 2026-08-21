@@ -100,6 +100,15 @@ const DreamsListPage = lazy(() =>
 const DreamPage = lazy(() =>
   import('@/routes/dream').then((module) => ({ default: module.DreamPage })),
 );
+const TeachingsPage = lazy(() =>
+  import('@/routes/teachings').then((module) => ({ default: module.TeachingsPage })),
+);
+const TeachingsListPage = lazy(() =>
+  import('@/routes/teachings-list').then((module) => ({ default: module.TeachingsListPage })),
+);
+const TeachingPage = lazy(() =>
+  import('@/routes/teaching').then((module) => ({ default: module.TeachingPage })),
+);
 const JournalPage = lazy(() =>
   import('@/routes/journal').then((module) => ({ default: module.JournalPage })),
 );
@@ -511,6 +520,32 @@ export const router = createBrowserRouter([
         element: (
           <Lazy>
             <DreamPage />
+          </Lazy>
+        ),
+      },
+      // Las enseñanzas, igual: sin `RequirePermission` (RFC 0022 §1, mismo
+      // modelo que profecías y sueños) y con `list` declarada antes que `:id`.
+      {
+        path: 'teachings',
+        element: (
+          <Lazy>
+            <TeachingsPage />
+          </Lazy>
+        ),
+      },
+      {
+        path: 'teachings/list',
+        element: (
+          <Lazy>
+            <TeachingsListPage />
+          </Lazy>
+        ),
+      },
+      {
+        path: 'teachings/:id',
+        element: (
+          <Lazy>
+            <TeachingPage />
           </Lazy>
         ),
       },
