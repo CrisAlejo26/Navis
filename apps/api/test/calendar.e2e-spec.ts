@@ -1,7 +1,15 @@
 import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import type { NestExpressApplication } from '@nestjs/platform-express';
-import type { Calendar, CalendarRange, Congregation, Meeting, MeetingPattern } from '@navis/shared';
+import type {
+  Calendar,
+  CalendarRange,
+  Congregation,
+  Meeting,
+  MeetingPattern,
+  Paginated,
+  Preacher,
+} from '@navis/shared';
 import { toNodeHandler } from 'better-auth/node';
 import express from 'express';
 import request from 'supertest';
@@ -213,6 +221,58 @@ describe('Calendario (e2e)', () => {
     const materializada = delDia.filter((meeting) => meeting.patternId === patternId);
     expect(materializada).toHaveLength(1);
     expect(materializada[0]?.id).not.toBeNull();
+  });
+
+  it('los candidatos vienen paginados, con quien lleva más tiempo sin subir primero', async () => {
+    const pagina = await request(app.getHttpServer())
+      .get(`/api/v1/calendars/${calendarId}/preachers?from=${rango.from}&to=${rango.to}&all=true`)
+      .set('Cookie', cookie)
+      .expect(200);
+
+    const datos = body<Paginated<Preacher>>(pagina);
+    expect(datos.total).toBe(1);
+    expect(datos.page).toBe(1);
+    expect(datos.totalPages).toBe(1);
+    expect(datos.items[0]?.name).toBe('Luis Fernando Ruiz');
+    expect(datos.items[0]?.lastDate).toBe(viernes);
+    expect(datos.items[0]?.timesInRange).toBe(1);
+
+    // Sin `all`, manda el ministerio del calendario (púlpito), que también tiene.
+    const deLaLabor = body<Paginated<Preacher>>(
+      await request(app.getHttpServer())
+        .get(`/api/v1/calendars/${calendarId}/preachers?from=${rango.from}&to=${rango.to}`)
+        .set('Cookie', cookie)
+        .expect(200),
+    );
+    expect(deLaLabor.total).toBe(1);
+  });
+
+  it('la plantilla «Enviar programación» siembra el viernes con reunión y fase distintas', async () => {
+    const creado = await request(app.getHttpServer())
+      .post('/api/v1/calendars')
+      .set('Cookie', cookie)
+      .send({ name: 'Enviar programación', ministry: 'enviar-programacion' })
+      .expect(201);
+
+    const suId = body<Calendar>(creado).id;
+    const semana = body<MeetingPattern[]>(
+      await request(app.getHttpServer())
+        .get(`/api/v1/calendars/${suId}/patterns`)
+        .set('Cookie', cookie)
+        .expect(200),
+    );
+
+    // Un solo encuentro por sede, el viernes: «Programación» con la fase «Enviar
+    // programación». Que el nombre no se repita es lo que evita el título
+    // doblado al compartir (regresión).
+    const viernes = semana.filter((one) => one.weekday === 5);
+    expect(viernes.length).toBeGreaterThan(0);
+    expect(viernes.every((one) => one.name === 'Programación')).toBe(true);
+    expect(
+      viernes.every(
+        (one) => one.phases.map((phase) => phase.name).join() === 'Enviar programación',
+      ),
+    ).toBe(true);
   });
 
   it('el mismo día admite la programación de otra sede', async () => {

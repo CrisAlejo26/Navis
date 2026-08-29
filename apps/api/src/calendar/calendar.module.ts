@@ -2,6 +2,8 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { BelieversModule } from '../believers/believers.module';
+import { BelieverMinistry } from '../believers/believer-ministry.entity';
+import { Believer } from '../believers/believer.entity';
 import { Church } from '../churches/church.entity';
 import { ChurchesModule } from '../churches/churches.module';
 import { HolidaysModule } from '../holidays/holidays.module';
@@ -39,6 +41,8 @@ import { WeekSeederService } from './week-seeder.service';
       Meeting,
       MeetingSlot,
       Church,
+      Believer,
+      BelieverMinistry,
     ]),
     ChurchesModule,
     BelieversModule,

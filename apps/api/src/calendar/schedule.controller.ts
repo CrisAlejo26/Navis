@@ -15,6 +15,7 @@ import type {
   CalendarRange,
   CalendarSummary,
   Meeting as MeetingView,
+  Paginated,
   Preacher,
 } from '@navis/shared';
 
@@ -122,12 +123,12 @@ export class ScheduleController {
 
   @Get('preachers')
   @RequirePermissions('calendar.manage')
-  @ApiOperation({ summary: 'Candidatos del ministerio de este calendario' })
+  @ApiOperation({ summary: 'Candidatos del ministerio de este calendario, por páginas' })
   async listPreachers(
     @CurrentChurch() churchId: string,
     @Param('calendarId') calendarId: string,
     @Query() query: PreachersQueryDto,
-  ): Promise<Preacher[]> {
+  ): Promise<Paginated<Preacher>> {
     const calendar = await this.calendars.require(churchId, calendarId);
     return this.preachers.list(churchId, {
       ...query,

@@ -27,6 +27,11 @@ export interface PickTarget {
  * sin subir, que es la pregunta que se está haciendo quien programa. Y si la
  * persona no está todavía en la lista, se da de alta aquí mismo: mandar a otra
  * pantalla es la forma segura de que se vuelva a la hoja de cálculo.
+ *
+ * **Por defecto se proponen todos**, no solo la labor del calendario: quien
+ * asigna quiere ver a la persona que piensa, y el filtro de la labor se queda
+ * como alternativa. Y se carga por tandas —de veinticinco en veinticinco, con
+ * «Ver más»— para que abrir el selector no arrastre a la iglesia entera.
  */
 export function PreacherPicker({
   target,
@@ -48,13 +53,10 @@ export function PreacherPicker({
 }) {
   const { t } = useTranslation();
   const [q, setQ] = useState('');
-  const [all, setAll] = useState(false);
+  const [all, setAll] = useState(true);
 
-  const { data: preachers = [] } = usePreachers(
-    api,
-    { ...range, calendarId, q, all },
-    Boolean(target),
-  );
+  const preachers = usePreachers(api, { ...range, calendarId, q, all }, Boolean(target));
+  const candidates = preachers.data?.pages.flatMap((page) => page.items) ?? [];
   const createBeliever = useCreateBeliever(api);
 
   const addPerson = async () => {
@@ -100,7 +102,7 @@ export function PreacherPicker({
         </div>
 
         <ul className="max-h-72 -mx-1 flex flex-col overflow-y-auto">
-          {preachers.map((preacher: Preacher) => (
+          {candidates.map((preacher: Preacher) => (
             <PreacherRow
               key={preacher.id}
               preacher={preacher}
@@ -112,6 +114,19 @@ export function PreacherPicker({
             />
           ))}
         </ul>
+
+        {preachers.hasNextPage && (
+          <button
+            type="button"
+            disabled={preachers.isFetchingNextPage}
+            onClick={() => {
+              void preachers.fetchNextPage();
+            }}
+            className="h-10 px-4 text-sm font-medium self-center rounded-lg border bg-card hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none disabled:opacity-50"
+          >
+            {t('calendar.loadMore')}
+          </button>
+        )}
 
         <div className="gap-2 pt-3 flex flex-wrap items-center justify-between border-t">
           {q.trim().length > 1 && (

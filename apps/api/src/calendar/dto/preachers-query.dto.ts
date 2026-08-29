@@ -1,6 +1,16 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Transform } from 'class-transformer';
-import { IsBoolean, IsISO8601, IsOptional, IsString, MaxLength } from 'class-validator';
+import { DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE } from '@navis/shared';
+import { Transform, Type } from 'class-transformer';
+import {
+  IsBoolean,
+  IsInt,
+  IsISO8601,
+  IsOptional,
+  IsString,
+  Max,
+  MaxLength,
+  Min,
+} from 'class-validator';
 
 /** `'true'` → `true`. En la query string todo llega como texto. */
 const booleano = ({ value }: { value: unknown }): unknown =>
@@ -29,4 +39,19 @@ export class PreachersQueryDto {
   @Transform(booleano)
   @IsBoolean()
   all?: boolean;
+
+  @ApiPropertyOptional({ default: 1 })
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  page: number = 1;
+
+  @ApiPropertyOptional({ default: DEFAULT_PAGE_SIZE, maximum: MAX_PAGE_SIZE })
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  @Max(MAX_PAGE_SIZE)
+  limit: number = DEFAULT_PAGE_SIZE;
 }

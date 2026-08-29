@@ -4,9 +4,15 @@ import type {
   CalendarSummary,
   Congregation,
   MeetingPattern,
+  Paginated,
   Preacher,
 } from '@navis/shared';
-import { useQuery, type UseQueryResult } from '@tanstack/react-query';
+import {
+  useInfiniteQuery,
+  useQuery,
+  type UseInfiniteQueryResult,
+  type UseQueryResult,
+} from '@tanstack/react-query';
 
 import type { ApiClient } from './client';
 import { queryKeys } from './query-keys';
@@ -114,23 +120,38 @@ export interface PreachersQuery extends CalendarQuery {
   all?: boolean;
 }
 
+/** De cuántos en cuántos: el selector carga por tandas, no a la iglesia entera. */
+export const PREACHER_PAGE_SIZE = 25;
+
 /**
  * Los candidatos del selector, ya ordenados por quien lleva más tiempo sin
- * subir. La lista es corta y se consulta mucho: se cachea un rato.
+ * subir. De veinticinco en veinticinco con «Ver más» —como la bitácora—, para
+ * no traerse miles de filas en cada apertura (D: el calendario de una iglesia
+ * grande no puede depender de un listado sin paginar).
  */
 export function usePreachers(
   api: ApiClient,
   query: PreachersQuery,
   enabled = true,
-): UseQueryResult<Preacher[]> {
-  const params = new URLSearchParams({ from: query.from, to: query.to });
-  if (query.q) params.set('q', query.q);
-  if (query.all) params.set('all', 'true');
-
-  return useQuery({
+): UseInfiniteQueryResult<{ pages: Paginated<Preacher>[] }> {
+  return useInfiniteQuery({
     queryKey: queryKeys.calendar.preachers({ ...keyOf(query), q: query.q ?? '', all: !!query.all }),
-    queryFn: () =>
-      api.get<Preacher[]>(`/calendars/${query.calendarId}/preachers?${params.toString()}`),
+    initialPageParam: 1,
+    queryFn: ({ pageParam }) => {
+      const params = new URLSearchParams({
+        from: query.from,
+        to: query.to,
+        page: String(pageParam),
+        limit: String(PREACHER_PAGE_SIZE),
+      });
+      if (query.q) params.set('q', query.q);
+      if (query.all) params.set('all', 'true');
+
+      return api.get<Paginated<Preacher>>(
+        `/calendars/${query.calendarId}/preachers?${params.toString()}`,
+      );
+    },
+    getNextPageParam: (last) => (last.page < last.totalPages ? last.page + 1 : undefined),
     enabled: enabled && Boolean(query.calendarId),
     staleTime: 30_000,
   });
