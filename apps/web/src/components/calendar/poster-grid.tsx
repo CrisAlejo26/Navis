@@ -95,9 +95,14 @@ export function PosterGrid({
                     .map((slot) => (
                       <span
                         key={`${slot.name}-${String(slot.position)}`}
-                        style={{ fontSize: '16px', fontWeight: 500, color: palette.foreground }}
+                        style={{ fontSize: '16px' }}
                       >
-                        {slot.believer?.name}
+                        {/* Sin la fase, una lista de nombres no dice a qué se
+                            les convoca (mismo motivo que en poster-table.tsx). */}
+                        <span style={{ color: palette.muted }}>{slot.name} </span>
+                        <span style={{ fontWeight: 500, color: palette.foreground }}>
+                          {slot.believer?.name}
+                        </span>
                       </span>
                     ))}
                   {meeting.slots.some((slot) => !slot.believer) && (

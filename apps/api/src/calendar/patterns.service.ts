@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import type { CreatePatternInput, UpdatePatternInput } from '@navis/shared';
 import { Repository } from 'typeorm';
 
+import { toHm } from './calendar-format';
 import { CongregationsService } from './congregations.service';
 import { MeetingPattern } from './meeting-pattern.entity';
 import { PatternPhase } from './pattern-phase.entity';
@@ -22,8 +23,8 @@ export class PatternsService {
     private readonly congregations: CongregationsService,
   ) {}
 
-  list(churchId: string, calendarId: string): Promise<MeetingPattern[]> {
-    return this.patterns.find({
+  async list(churchId: string, calendarId: string): Promise<MeetingPattern[]> {
+    const patterns = await this.patterns.find({
       where: { churchId, calendarId },
       relations: { phases: true },
       /*
@@ -35,6 +36,8 @@ export class PatternsService {
        */
       order: { weekday: 'ASC', startTime: 'ASC', phases: { position: 'ASC' } },
     });
+
+    return patterns.map((pattern) => this.toView(pattern));
   }
 
   /** Los que se pueden proponer en el tramo: activos y dentro de su vigencia. */
@@ -65,7 +68,7 @@ export class PatternsService {
     );
 
     await this.replacePhases(pattern.id, input.phases);
-    return this.require(churchId, pattern.id);
+    return this.toView(await this.require(churchId, pattern.id));
   }
 
   async update(churchId: string, id: string, input: UpdatePatternInput): Promise<MeetingPattern> {
@@ -82,7 +85,7 @@ export class PatternsService {
     await this.patterns.save(pattern);
     if (input.phases) await this.replacePhases(pattern.id, input.phases);
 
-    return this.require(churchId, id);
+    return this.toView(await this.require(churchId, id));
   }
 
   /** Borrado lógico. Las reuniones ya materializadas se quedan donde están. */
@@ -90,6 +93,10 @@ export class PatternsService {
     await this.patterns.softRemove(await this.require(churchId, id));
   }
 
+  /**
+   * Sin normalizar: `update` la usa para releer la entidad, mutarla y
+   * guardarla, y ahí hace falta la instancia real, no una copia plana.
+   */
   async require(churchId: string, id: string): Promise<MeetingPattern> {
     const pattern = await this.patterns.findOne({
       where: { id, churchId },
@@ -99,6 +106,16 @@ export class PatternsService {
     if (!pattern) throw new NotFoundException('Ese patrón no existe en esta iglesia');
 
     return pattern;
+  }
+
+  /**
+   * Postgres devuelve la columna `time` con segundos (`20:00:00`); SQLite,
+   * lo que se guardó. Se normaliza aquí, en la frontera, para que un
+   * `<input type="time">` no reciba nunca un valor que no sabe interpretar
+   * (mismo motivo que `toHm` en `calendar-format.ts`, para reuniones).
+   */
+  private toView(pattern: MeetingPattern): MeetingPattern {
+    return { ...pattern, startTime: toHm(pattern.startTime) };
   }
 
   private async replacePhases(
