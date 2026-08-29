@@ -1,4 +1,4 @@
-import { ChevronLeft, ChevronRight, Share2, Settings2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Settings, Share2, Settings2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 
@@ -120,10 +120,15 @@ export function CalendarToolbar({
         </Button>
 
         {canManage && (
+          // Mismo aspecto que los botones `ghost` vecinos («Hoy», la
+          // densidad): un `Link` no puede ser un `<button>`, pero sus clases
+          // sí pueden ser las mismas, en vez de una versión más pálida que
+          // desentonaba en la barra.
           <Link
             to={`/calendar/${calendarSlug}/settings`}
-            className="h-8 px-3 text-sm sm:inline-flex hidden items-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+            className="gap-2 h-8 px-3 text-sm font-medium sm:inline-flex hidden cursor-pointer items-center justify-center rounded-lg text-foreground ring-offset-background transition-[transform,opacity,background-color] duration-200 hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none active:scale-[0.985]"
           >
+            <Settings size={15} aria-hidden />
             {t('calendar.settings')}
           </Link>
         )}

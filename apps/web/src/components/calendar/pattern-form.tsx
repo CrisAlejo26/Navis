@@ -123,7 +123,10 @@ export function PatternForm({
             name="startTime"
             type="time"
             label={t('calendar.startTime')}
-            defaultValue={pattern?.startTime ?? defaults?.startTime ?? '20:00'}
+            // `pattern.startTime` puede llegar con segundos («20:00:00»,
+            // como en Postgres): un `<input type="time">` sin `step` de
+            // segundos no lo acepta como valor inicial (ver pattern-rows.tsx).
+            defaultValue={pattern?.startTime.slice(0, 5) ?? defaults?.startTime ?? '20:00'}
             required
           />
         </div>
