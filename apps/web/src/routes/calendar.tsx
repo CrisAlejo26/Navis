@@ -70,7 +70,10 @@ export function CalendarPage() {
         }}
       />
 
-      <div className="gap-2 flex flex-wrap items-center justify-between">
+      {/* `items-start`: `CalendarFilters` envuelve sus propias sedes en dos o
+          tres líneas en un móvil, y `items-center` dejaba «Reparto» flotando
+          a media altura de ese bloque en vez de junto a la primera fila. */}
+      <div className="gap-2 flex flex-wrap items-start justify-between">
         <CalendarFilters
           params={params}
           congregations={congregations}

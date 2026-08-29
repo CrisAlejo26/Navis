@@ -123,13 +123,16 @@ export function CalendarToolbar({
           // Mismo aspecto que los botones `ghost` vecinos («Hoy», la
           // densidad): un `Link` no puede ser un `<button>`, pero sus clases
           // sí pueden ser las mismas, en vez de una versión más pálida que
-          // desentonaba en la barra.
+          // desentonaba en la barra. Antes se escondía entera por debajo de
+          // `sm` y en el móvil no había ninguna otra forma de llegar a los
+          // ajustes del calendario: el texto se esconde ahí, no el botón.
           <Link
             to={`/calendar/${calendarSlug}/settings`}
-            className="gap-2 h-8 px-3 text-sm font-medium sm:inline-flex hidden cursor-pointer items-center justify-center rounded-lg text-foreground ring-offset-background transition-[transform,opacity,background-color] duration-200 hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none active:scale-[0.985]"
+            aria-label={t('calendar.settings')}
+            className="gap-2 h-8 px-3 text-sm font-medium inline-flex cursor-pointer items-center justify-center rounded-lg text-foreground ring-offset-background transition-[transform,opacity,background-color] duration-200 hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none active:scale-[0.985]"
           >
             <Settings size={15} aria-hidden />
-            {t('calendar.settings')}
+            <span className="sm:not-sr-only sr-only">{t('calendar.settings')}</span>
           </Link>
         )}
 
