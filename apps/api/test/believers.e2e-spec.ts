@@ -25,6 +25,19 @@ import { auth } from '../src/auth/auth';
 const body = <T>(response: { body: unknown }): T => response.body as T;
 
 /**
+ * Un día antes (o después, con `n` negativo) de hoy. Las notas de este
+ * fichero se fechan así y no con un literal: «Jesús» nace con un margen de
+ * 20 días (línea de alta más abajo), y una fecha fija se acerca a ese límite
+ * con el simple paso del tiempo real — ya rompió `needsAttention` una vez.
+ */
+const diasAtras = (n: number): string =>
+  new Date(Date.now() - n * 86_400_000).toISOString().slice(0, 10);
+
+const NOTA_UNO = diasAtras(5);
+const NOTA_DOS = diasAtras(4);
+const NOTA_TRES = diasAtras(2);
+
+/**
  * El recorrido de quien acompaña: da de alta a tres hermanos, los busca sin
  * acentos, ve quién lleva más tiempo sin nota y escribe la primera.
  *
@@ -218,7 +231,7 @@ describe('Creyentes y notas (e2e)', () => {
   it('quien no tiene ninguna nota va primero al ordenar por última nota', async () => {
     await post(`/api/v1/believers/${jesus}/notes`, {
       kind: 'seguimiento',
-      occurredAt: '2026-08-01',
+      occurredAt: NOTA_UNO,
       told: 'Me contó que le va bien en el trabajo nuevo',
       advice: 'Que venga al grupo de los jueves',
     }).expect(201);
@@ -235,7 +248,7 @@ describe('Creyentes y notas (e2e)', () => {
     const respuesta = await get(`/api/v1/believers/${jesus}`).expect(200);
     const ficha = body<BelieverListItem>(respuesta);
 
-    expect(ficha.lastNoteAt).toBe('2026-08-01');
+    expect(ficha.lastNoteAt).toBe(NOTA_UNO);
     expect(ficha.notesCount).toBe(1);
     expect(ficha.needsAttention).toBe(false);
   });
@@ -243,7 +256,7 @@ describe('Creyentes y notas (e2e)', () => {
   it('una nota de tipo don se lo añade a la ficha, y borrarla no se lo quita', async () => {
     const creada = await post(`/api/v1/believers/${jesus}/notes`, {
       kind: 'don',
-      occurredAt: '2026-08-02',
+      occurredAt: NOTA_DOS,
       told: 'Pidió oración por su espalda',
       advice: 'Oramos por él y quedó bien',
       giftId: sanidad,
@@ -263,7 +276,7 @@ describe('Creyentes y notas (e2e)', () => {
     const despues = await get(`/api/v1/believers/${jesus}`).expect(200);
     expect(body<BelieverListItem>(despues).gifts.map((one) => one.id)).toEqual([sanidad]);
     // Y el margen vuelve a contar desde la nota que queda.
-    expect(body<BelieverListItem>(despues).lastNoteAt).toBe('2026-08-01');
+    expect(body<BelieverListItem>(despues).lastNoteAt).toBe(NOTA_UNO);
   });
 
   it('una nota de tipo don sin don elegido no se guarda', async () => {
@@ -299,9 +312,9 @@ describe('Creyentes y notas (e2e)', () => {
   it('un recordatorio guarda día y hora, y se puede dar por atendido', async () => {
     const creada = await post(`/api/v1/believers/${jesus}/notes`, {
       kind: 'seguimiento',
-      occurredAt: '2026-08-04',
+      occurredAt: NOTA_TRES,
       told: 'Está preocupado por su madre',
-      remindAt: '2026-08-12T19:00',
+      remindAt: `${diasAtras(-8)}T19:00`,
       remindText: 'Preguntarle cómo sigue su madre',
     }).expect(201);
 
@@ -326,13 +339,16 @@ describe('Creyentes y notas (e2e)', () => {
   });
 
   it('los días con notas alimentan la vista de calendario', async () => {
+    // Un tramo ancho alrededor de hoy, no un año fijo: NOTA_UNO cae en el
+    // año que le toque según cuándo se ejecute el test.
+    const año = new Date().getFullYear();
     const respuesta = await get(
-      `/api/v1/believers/${jesus}/notes/days?from=2026-01-01&to=2026-12-31`,
+      `/api/v1/believers/${jesus}/notes/days?from=${String(año - 1)}-01-01&to=${String(año + 1)}-12-31`,
     ).expect(200);
 
     const dias = body<NoteDay[]>(respuesta);
-    expect(dias.map((one) => one.date)).toContain('2026-08-01');
-    expect(dias.find((one) => one.date === '2026-08-01')?.kinds).toEqual(['seguimiento']);
+    expect(dias.map((one) => one.date)).toContain(NOTA_UNO);
+    expect(dias.find((one) => one.date === NOTA_UNO)?.kinds).toEqual(['seguimiento']);
   });
 
   it('graba un audio en la nota y lo devuelve al descargarlo', async () => {
