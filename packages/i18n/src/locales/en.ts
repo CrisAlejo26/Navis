@@ -417,21 +417,15 @@ export const en = {
     laborHint: 'Duties are the church catalog and are managed in',
     templateLabel: 'Template',
     templateHint:
-      'Fills in the name, the duty and a first fixed meeting with its phases. Everything can be changed afterwards.',
+      "Fills in the name and the duty, and seeds that duty's week in every site already. Everything can be changed afterwards.",
     templateCustom: 'Blank',
     templates: {
-      sunday: {
-        name: 'Sunday service',
-        phases: ['Welcome', 'Worship', 'Preaching', 'Offering'],
-      },
-      prayer: {
-        name: 'Prayer',
-        phases: ['Prayer', 'Sharing'],
-      },
-      offering: {
-        name: 'Offering',
-        phases: ['Offering coordinator'],
-      },
+      pulpito: 'Pulpit',
+      recepcion: 'Reception',
+      sonido: 'Sound',
+      biblias: 'Bibles',
+      vigilancia: 'Guard duty',
+      ofrenda: 'Offering',
     },
   },
   believers: {

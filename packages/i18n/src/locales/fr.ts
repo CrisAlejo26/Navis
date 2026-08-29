@@ -419,21 +419,15 @@ export const fr = {
     laborHint: "Les fonctions sont le catalogue de l'église et se gèrent dans",
     templateLabel: 'Modèle',
     templateHint:
-      'Remplit le nom, la fonction et une première réunion fixe avec ses phases. Tout peut être modifié ensuite.',
+      'Remplit le nom et la fonction, et sème déjà la semaine de cette fonction dans chaque site. Tout peut être modifié ensuite.',
     templateCustom: 'Vierge',
     templates: {
-      sunday: {
-        name: 'Culte du dimanche',
-        phases: ['Accueil', 'Louange', 'Prédication', 'Offrande'],
-      },
-      prayer: {
-        name: 'Prière',
-        phases: ['Prière', 'Partage'],
-      },
-      offering: {
-        name: 'Offrande',
-        phases: ['Coordinateur de l’offrande'],
-      },
+      pulpito: 'Chaire',
+      recepcion: 'Accueil',
+      sonido: 'Son',
+      biblias: 'Bibles',
+      vigilancia: 'Garde',
+      ofrenda: 'Offrande',
     },
   },
   believers: {

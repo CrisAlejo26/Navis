@@ -133,6 +133,32 @@ describe('la semana de serie', () => {
     expect(fases[0]?.map((phase) => phase.name)).toEqual(['Equipo de sonido', 'Apoyo']);
   });
 
+  it('guardia y custodia solo entra los días de enseñanza, con su propia fase', async () => {
+    const { service, guardados, fases } = build({ ministry: 'vigilancia' });
+
+    await service.seed('c1', 'cal', 'elda');
+
+    expect(guardados.map((one) => [one.weekday, one.name, one.startTime])).toEqual([
+      [3, 'Enseñanza', '19:00'],
+      [0, 'Enseñanza', '10:00'],
+    ]);
+    expect(fases[0]?.map((phase) => phase.name)).toEqual(['Guardia']);
+    expect(fases[1]?.map((phase) => phase.name)).toEqual(['Guardia']);
+  });
+
+  it('coordinación de ofrenda: los mismos dos días, con su propio campo', async () => {
+    const { service, guardados, fases } = build({ ministry: 'ofrenda' });
+
+    await service.seed('c1', 'cal', 'elda');
+
+    expect(guardados.map((one) => [one.weekday, one.name, one.startTime])).toEqual([
+      [3, 'Enseñanza', '19:00'],
+      [0, 'Enseñanza', '10:00'],
+    ]);
+    expect(fases[0]?.map((phase) => phase.name)).toEqual(['Coordinador de ofrenda']);
+    expect(fases[1]?.map((phase) => phase.name)).toEqual(['Coordinador de ofrenda']);
+  });
+
   it('no vuelve a sembrar donde ya hay algo: la semana ajustada no se pisa', async () => {
     const { service, guardados } = build({ yaTiene: true });
 

@@ -22,11 +22,11 @@ import { toast } from '@/lib/toast';
  * sonido salgan primero los de sonido (D16). Se puede dejar sin ninguno, y
  * entonces se propone a cualquiera.
  *
- * Al **crear**, una plantilla rellena el nombre y la labor, y de paso deja
- * dicho el día, la hora y las fases de una primera reunión: al guardar se va
- * a los ajustes del calendario recién nacido con eso ya propuesto en el
- * formulario de «Añadir reunión fija», no en blanco (`calendar-settings.tsx`).
- * Al **renombrar** no hay plantilla: ya hay un calendario de verdad detrás.
+ * Al **crear**, una plantilla rellena el nombre y la labor; esa labor es la
+ * que hace que la API siembre sola la semana que le toca en cada sede
+ * (`defaultWeekFor`, en `packages/shared`), así que al guardar el calendario
+ * ya nace con su semana puesta, no en blanco. Al **renombrar** no hay
+ * plantilla: ya hay un calendario de verdad detrás.
  */
 export function CalendarForm({
   open,
@@ -93,19 +93,13 @@ export function CalendarForm({
       return;
     }
 
-    const template = templateSlug ? templates.find((one) => one.slug === templateSlug) : undefined;
-
     createCalendar.mutate(parsed.data, {
       onSuccess: (creado) => {
         toast.success(t('calendar.calendarCreated', { name: creado.name }));
         onClose();
-        if (template) {
-          void navigate(`/calendar/${creado.slug}/settings`, {
-            state: { patternDefaults: template.pattern },
-          });
-        } else {
-          void navigate(`/calendar/${creado.slug}`);
-        }
+        // Con labor o sin ella, el calendario ya nace con su semana puesta
+        // (o en blanco): no hace falta pasar por los ajustes.
+        void navigate(`/calendar/${creado.slug}`);
       },
       onError: () => {
         setError(t('calendar.saveFailed'));

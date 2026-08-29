@@ -5,7 +5,7 @@ import { CongregationForm } from '@/components/calendar/congregation-form';
 import { DeleteCalendarDialog } from '@/components/calendar/delete-calendar-dialog';
 import { DeleteCongregationDialog } from '@/components/calendar/delete-congregation-dialog';
 import { DeletePatternDialog } from '@/components/calendar/delete-pattern-dialog';
-import { PatternForm, type PatternDefaults } from '@/components/calendar/pattern-form';
+import { PatternForm } from '@/components/calendar/pattern-form';
 
 /** Qué está abierto en los ajustes de un calendario, y con qué dato. */
 export interface CalendarSettingsDialogsState {
@@ -21,9 +21,6 @@ export interface CalendarSettingsDialogsState {
   setPattern: (value: MeetingPattern | null) => void;
   creating: boolean;
   setCreating: (value: boolean) => void;
-  abrirDesdePlantilla: boolean;
-  patternDefaults: PatternDefaults | undefined;
-  limpiarPlantilla: () => void;
   borrarCalendario: boolean;
   setBorrarCalendario: (value: boolean) => void;
   borrarSede: Congregation | null;
@@ -51,9 +48,6 @@ export function CalendarSettingsDialogs({ state }: { state: CalendarSettingsDial
     setPattern,
     creating,
     setCreating,
-    abrirDesdePlantilla,
-    patternDefaults,
-    limpiarPlantilla,
     borrarCalendario,
     setBorrarCalendario,
     borrarSede,
@@ -107,17 +101,15 @@ export function CalendarSettingsDialogs({ state }: { state: CalendarSettingsDial
         />
       )}
 
-      {(creating || pattern || abrirDesdePlantilla) && (
+      {(creating || pattern) && (
         <PatternForm
           open
           congregations={congregations}
           calendarId={calendar?.id ?? ''}
           pattern={pattern ?? undefined}
-          defaults={pattern ? undefined : patternDefaults}
           onClose={() => {
             setCreating(false);
             setPattern(null);
-            limpiarPlantilla();
           }}
         />
       )}

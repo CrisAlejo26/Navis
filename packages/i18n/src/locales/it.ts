@@ -419,21 +419,15 @@ export const it = {
     laborHint: 'Gli incarichi sono il catalogo della chiesa e si gestiscono in',
     templateLabel: 'Modello',
     templateHint:
-      'Compila il nome, l’incarico e una prima riunione fissa con le sue fasi. Dopo si può cambiare tutto.',
+      'Compila il nome e l’incarico, e semina già la settimana di quell’incarico in ogni sede. Dopo si può cambiare tutto.',
     templateCustom: 'Vuoto',
     templates: {
-      sunday: {
-        name: 'Culto domenicale',
-        phases: ['Accoglienza', 'Lode', 'Predicazione', 'Offerta'],
-      },
-      prayer: {
-        name: 'Preghiera',
-        phases: ['Preghiera', 'Condivisione'],
-      },
-      offering: {
-        name: 'Offerta',
-        phases: ['Coordinatore dell’offerta'],
-      },
+      pulpito: 'Pulpito',
+      recepcion: 'Accoglienza',
+      sonido: 'Audio',
+      biblias: 'Bibbie',
+      vigilancia: 'Guardia e custodia',
+      ofrenda: 'Offerta',
     },
   },
   believers: {

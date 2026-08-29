@@ -422,21 +422,15 @@ export const de = {
     laborHint: 'Die Aufgaben sind der Katalog der Gemeinde und werden verwaltet unter',
     templateLabel: 'Vorlage',
     templateHint:
-      'Füllt den Namen, die Aufgabe und ein erstes festes Treffen mit seinen Phasen aus. Alles lässt sich danach ändern.',
+      'Füllt den Namen und die Aufgabe aus und sät die Woche dieser Aufgabe schon in jeder Gemeinde. Alles lässt sich danach ändern.',
     templateCustom: 'Leer',
     templates: {
-      sunday: {
-        name: 'Sonntagsgottesdienst',
-        phases: ['Begrüßung', 'Lobpreis', 'Predigt', 'Kollekte'],
-      },
-      prayer: {
-        name: 'Gebet',
-        phases: ['Gebet', 'Austausch'],
-      },
-      offering: {
-        name: 'Kollekte',
-        phases: ['Koordinator der Kollekte'],
-      },
+      pulpito: 'Kanzel',
+      recepcion: 'Empfang',
+      sonido: 'Ton',
+      biblias: 'Bibeln',
+      vigilancia: 'Wachdienst',
+      ofrenda: 'Kollekte',
     },
   },
   believers: {

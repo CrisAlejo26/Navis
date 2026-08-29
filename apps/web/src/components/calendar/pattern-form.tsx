@@ -20,21 +20,12 @@ import { toast } from '@/lib/toast';
  * De aquí sale todo lo demás: el mes se rellena solo con estas propuestas y no
  * se crea una fila hasta que alguien asigna a alguien (D3).
  */
-/** Lo que sugiere una plantilla de calendario, solo para la creación (§ ampliación RFC 0002). */
-export interface PatternDefaults {
-  name: string;
-  weekday: number;
-  startTime: string;
-  phases: string[];
-}
-
 export function PatternForm({
   open,
   onClose,
   congregations,
   calendarId,
   pattern,
-  defaults,
 }: {
   open: boolean;
   calendarId: string;
@@ -42,15 +33,11 @@ export function PatternForm({
   congregations: readonly Congregation[];
   /** Si viene, se edita; si no, se crea. */
   pattern?: MeetingPattern;
-  /** Sugerencia de una plantilla, cuando se crea el calendario desde una. */
-  defaults?: PatternDefaults;
 }) {
   const { t } = useTranslation();
   const createPattern = useCreatePattern(api, calendarId);
   const updatePattern = useUpdatePattern(api, calendarId);
-  const [phases, setPhases] = useState(
-    pattern?.phases.map((phase) => phase.name) ?? defaults?.phases ?? ['', ''],
-  );
+  const [phases, setPhases] = useState(pattern?.phases.map((phase) => phase.name) ?? ['', '']);
   const [error, setError] = useState<string | null>(null);
 
   const submit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -101,7 +88,7 @@ export function PatternForm({
         <Input
           name="name"
           label={t('calendar.meetingName')}
-          defaultValue={pattern?.name ?? defaults?.name}
+          defaultValue={pattern?.name}
           required
         />
 
@@ -109,7 +96,7 @@ export function PatternForm({
           <Select
             name="weekday"
             label={t('calendar.patternWeekday')}
-            defaultValue={String(pattern?.weekday ?? defaults?.weekday ?? 0)}
+            defaultValue={String(pattern?.weekday ?? 0)}
             required
           >
             {weekdayHeadings().map((heading, index) => (
@@ -126,7 +113,7 @@ export function PatternForm({
             // `pattern.startTime` puede llegar con segundos («20:00:00»,
             // como en Postgres): un `<input type="time">` sin `step` de
             // segundos no lo acepta como valor inicial (ver pattern-rows.tsx).
-            defaultValue={pattern?.startTime.slice(0, 5) ?? defaults?.startTime ?? '20:00'}
+            defaultValue={pattern?.startTime.slice(0, 5) ?? '20:00'}
             required
           />
         </div>

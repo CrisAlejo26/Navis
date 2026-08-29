@@ -78,6 +78,24 @@ export const SOUND_WEEK: readonly WeeklyMeeting[] = conFases(() => ['Equipo de s
 export const BIBLES_WEEK: readonly WeeklyMeeting[] = conFases(() => ['Biblias']);
 
 /**
+ * Guardia y custodia, y coordinación de ofrenda: solo los dos días de
+ * enseñanza —miércoles y domingo—, que es cuando hace falta cada una. No los
+ * siete días de la semana del púlpito: ahí no hay nada que custodiar ni
+ * ofrenda que coordinar.
+ */
+const ENSEÑANZA = ENCUENTROS.filter((encuentro) => encuentro.name === 'Enseñanza');
+
+export const CUSTODY_WEEK: readonly WeeklyMeeting[] = ENSEÑANZA.map((encuentro) => ({
+  ...encuentro,
+  phases: ['Guardia'],
+}));
+
+export const OFFERING_COORDINATION_WEEK: readonly WeeklyMeeting[] = ENSEÑANZA.map((encuentro) => ({
+  ...encuentro,
+  phases: ['Coordinador de ofrenda'],
+}));
+
+/**
  * La semana de serie de un ministerio. Un calendario sin ministerio arranca
  * con la del púlpito, que es la que describe la semana de la iglesia.
  */
@@ -85,5 +103,7 @@ export function defaultWeekFor(ministry: string | null | undefined): readonly We
   if (ministry === 'recepcion') return RECEPTION_WEEK;
   if (ministry === 'sonido') return SOUND_WEEK;
   if (ministry === 'biblias') return BIBLES_WEEK;
+  if (ministry === 'vigilancia') return CUSTODY_WEEK;
+  if (ministry === 'ofrenda') return OFFERING_COORDINATION_WEEK;
   return DEFAULT_WEEK;
 }

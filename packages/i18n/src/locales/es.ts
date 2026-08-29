@@ -427,21 +427,15 @@ export const es = {
     laborHint: 'Las labores son el catálogo de la iglesia y se administran en',
     templateLabel: 'Plantilla',
     templateHint:
-      'Rellena el nombre, la labor y una primera reunión fija con sus fases. Se puede cambiar todo después.',
+      'Rellena el nombre y la labor, y siembra ya la semana de esa labor en cada sede. Se puede cambiar todo después.',
     templateCustom: 'En blanco',
     templates: {
-      sunday: {
-        name: 'Culto dominical',
-        phases: ['Introducción', 'Alabanza', 'Predicación', 'Ofrenda'],
-      },
-      prayer: {
-        name: 'Oración',
-        phases: ['Oración', 'Compartir'],
-      },
-      offering: {
-        name: 'Ofrenda',
-        phases: ['Coordinador de la ofrenda'],
-      },
+      pulpito: 'Púlpito',
+      recepcion: 'Recepción',
+      sonido: 'Sonido',
+      biblias: 'Biblias',
+      vigilancia: 'Guardia y custodia',
+      ofrenda: 'Ofrenda',
     },
   },
   believers: {

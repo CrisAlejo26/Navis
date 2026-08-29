@@ -1,89 +1,65 @@
 import type { TFunction } from 'i18next';
 import { useTranslation } from 'react-i18next';
 
-export const CALENDAR_TEMPLATE_SLUGS = ['sunday', 'prayer', 'offering'] as const;
+/**
+ * Las mismas seis labores de serie del catálogo de la iglesia
+ * (`SYSTEM_MINISTRIES`) que ya tienen una semana propia. El slug de la
+ * plantilla **es** el de la labor: al crear el calendario con esa labor, la
+ * API siembra sola la semana que le toca (`defaultWeekFor`, en
+ * `packages/shared`) — aquí no hay que repetir días, horas ni fases.
+ */
+export const CALENDAR_TEMPLATE_SLUGS = [
+  'pulpito',
+  'recepcion',
+  'sonido',
+  'biblias',
+  'vigilancia',
+  'ofrenda',
+] as const;
 export type CalendarTemplateSlug = (typeof CALENDAR_TEMPLATE_SLUGS)[number];
 
 export interface CalendarTemplate {
   slug: CalendarTemplateSlug;
   name: string;
-  /** El slug de la labor del catálogo de la iglesia, o `null` para «cualquiera». */
-  ministrySlug: string | null;
-  pattern: {
-    name: string;
-    /** 0 = domingo, como `Date.getDay()` y como `weekdayHeadings()`. */
-    weekday: number;
-    startTime: string;
-    phases: string[];
-  };
+  /** El slug de la labor del catálogo de la iglesia: es lo único que hace falta. */
+  ministrySlug: string;
 }
 
-type PhasesKey =
-  | 'calendar.templates.sunday.phases'
-  | 'calendar.templates.prayer.phases'
-  | 'calendar.templates.offering.phases';
-
 /**
- * `t(key, { returnObjects: true })` no tipa el array de vuelta —el paquete
- * de i18next resuelve un genérico `$SpecialObject` en vez de `string[]`,
- * aunque el recurso sea un array de verdad—, así que el `as` se acota aquí,
- * en un solo sitio y con la clave restringida a las tres que existen
- * (Regla 10 §6): nunca una clave inventada, solo la librería tipando mal una
- * que sí está en `es.ts`.
+ * Claves literales, una por cada plantilla (Regla 2 §3): nada de
+ * `t(`calendar.templates.${slug}`)`, que se salta el tipado de `i18next.d.ts`.
  */
-function phasesOf(t: TFunction, key: PhasesKey): string[] {
-  return t(key, { returnObjects: true }) as string[];
+function nameFor(t: TFunction, slug: CalendarTemplateSlug): string {
+  switch (slug) {
+    case 'pulpito':
+      return t('calendar.templates.pulpito');
+    case 'recepcion':
+      return t('calendar.templates.recepcion');
+    case 'sonido':
+      return t('calendar.templates.sonido');
+    case 'biblias':
+      return t('calendar.templates.biblias');
+    case 'vigilancia':
+      return t('calendar.templates.vigilancia');
+    case 'ofrenda':
+      return t('calendar.templates.ofrenda');
+  }
 }
 
 /**
  * Las plantillas de calendario (RFC 0002, ampliación): un punto de partida al
- * crear uno, con el nombre, la labor y una primera reunión fija ya escritos
- * — igual que la instalación siembra los roles de serie, esto siembra un
- * calendario típico. Todo se puede cambiar después; no es una elección
- * cerrada, es para no empezar en blanco.
- *
- * **«Ofrenda»** propone la labor `ofrenda`, una de las que ya trae de serie el
- * catálogo de la iglesia (`SYSTEM_MINISTRIES`): quien la lleve cada semana se
- * asigna en esa reunión, igual que un predicador en el culto — para eso hace
- * falta que alguien tenga esa labor marcada en su ficha, no una cuenta con un
- * rol concreto.
+ * crear uno. Elegir una rellena el nombre y la labor, y la labor es la que
+ * hace que la API siembre ya la semana de esa labor en cada sede —igual que
+ * el púlpito, la recepción, el sonido y las biblias nacen solos con la
+ * iglesia—. Todo se puede cambiar después; no es una elección cerrada, es
+ * para no empezar en blanco.
  */
 export function useCalendarTemplates(): CalendarTemplate[] {
   const { t } = useTranslation();
 
-  return [
-    {
-      slug: 'sunday',
-      name: t('calendar.templates.sunday.name'),
-      ministrySlug: null,
-      pattern: {
-        name: t('calendar.templates.sunday.name'),
-        weekday: 0,
-        startTime: '10:00',
-        phases: phasesOf(t, 'calendar.templates.sunday.phases'),
-      },
-    },
-    {
-      slug: 'prayer',
-      name: t('calendar.templates.prayer.name'),
-      ministrySlug: null,
-      pattern: {
-        name: t('calendar.templates.prayer.name'),
-        weekday: 3,
-        startTime: '19:00',
-        phases: phasesOf(t, 'calendar.templates.prayer.phases'),
-      },
-    },
-    {
-      slug: 'offering',
-      name: t('calendar.templates.offering.name'),
-      ministrySlug: 'ofrenda',
-      pattern: {
-        name: t('calendar.templates.offering.name'),
-        weekday: 0,
-        startTime: '10:00',
-        phases: phasesOf(t, 'calendar.templates.offering.phases'),
-      },
-    },
-  ];
+  return CALENDAR_TEMPLATE_SLUGS.map((slug) => ({
+    slug,
+    name: nameFor(t, slug),
+    ministrySlug: slug,
+  }));
 }

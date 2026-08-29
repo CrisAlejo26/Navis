@@ -418,21 +418,15 @@ export const pt = {
     laborHint: 'As funções são o catálogo da igreja e administram-se em',
     templateLabel: 'Modelo',
     templateHint:
-      'Preenche o nome, a função e uma primeira reunião fixa com as suas fases. Depois dá para mudar tudo.',
+      'Preenche o nome e a função, e já semeia a semana dessa função em cada sede. Depois dá para mudar tudo.',
     templateCustom: 'Em branco',
     templates: {
-      sunday: {
-        name: 'Culto de domingo',
-        phases: ['Boas-vindas', 'Louvor', 'Pregação', 'Oferta'],
-      },
-      prayer: {
-        name: 'Oração',
-        phases: ['Oração', 'Partilha'],
-      },
-      offering: {
-        name: 'Oferta',
-        phases: ['Coordenador da oferta'],
-      },
+      pulpito: 'Púlpito',
+      recepcion: 'Receção',
+      sonido: 'Som',
+      biblias: 'Bíblias',
+      vigilancia: 'Guarda e custódia',
+      ofrenda: 'Oferta',
     },
   },
   believers: {
