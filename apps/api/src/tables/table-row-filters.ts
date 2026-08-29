@@ -56,10 +56,20 @@ export function applyRowFilter(
     // —no se guardó nunca `false`—, y eso también es «No»: la celda ya se
     // pinta así (`RowValueCell`). Sin el `OR ... IS NULL`, «No» no
     // encontraba las filas que nunca se marcaron.
+    //
+    // `json_extract` de SQLite devuelve `1`/`0` para un booleano del JSON y
+    // `data::jsonb ->>` de Postgres devuelve `'true'`/`'false'`: se compara
+    // con los dos para que la casilla filtre igual en los dos motores.
     if (filter.value) {
-      qb.andWhere(`${field} = :${p}`, { [p]: 'true' });
+      qb.andWhere(`(${field} = :${p}text OR ${field} = :${p}num)`, {
+        [`${p}text`]: 'true',
+        [`${p}num`]: 1,
+      });
     } else {
-      qb.andWhere(`(${field} = :${p} OR ${field} IS NULL)`, { [p]: 'false' });
+      qb.andWhere(`(${field} = :${p}text OR ${field} = :${p}num OR ${field} IS NULL)`, {
+        [`${p}text`]: 'false',
+        [`${p}num`]: 0,
+      });
     }
     return;
   }
