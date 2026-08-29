@@ -15,6 +15,7 @@ export const CALENDAR_TEMPLATE_SLUGS = [
   'biblias',
   'vigilancia',
   'ofrenda',
+  'enviar-programacion',
 ] as const;
 export type CalendarTemplateSlug = (typeof CALENDAR_TEMPLATE_SLUGS)[number];
 
@@ -43,6 +44,8 @@ function nameFor(t: TFunction, slug: CalendarTemplateSlug): string {
       return t('calendar.templates.vigilancia');
     case 'ofrenda':
       return t('calendar.templates.ofrenda');
+    case 'enviar-programacion':
+      return t('calendar.templates.enviarProgramacion');
   }
 }
 

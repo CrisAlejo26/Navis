@@ -51,6 +51,7 @@ export const SYSTEM_MINISTRIES = [
   { slug: 'microfono', name: 'Micrófono' },
   { slug: 'profecia-ensenanzas', name: 'Profecía en enseñanzas' },
   { slug: 'profecia-primera-vez', name: 'Profecía por primera vez' },
+  { slug: 'enviar-programacion', name: 'Enviar programación' },
 ] as const;
 
 /**

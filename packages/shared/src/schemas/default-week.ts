@@ -96,6 +96,15 @@ export const OFFERING_COORDINATION_WEEK: readonly WeeklyMeeting[] = ENSEÑANZA.m
 }));
 
 /**
+ * Enviar programación: **un solo encuentro, el viernes**, cuando se reparte la
+ * programación de la semana siguiente. No hay nada que custodiar ni tramos que
+ * repartir el resto de la semana.
+ */
+export const PROGRAM_SENDING_WEEK: readonly WeeklyMeeting[] = [
+  { weekday: 5, name: 'Enviar programación', startTime: '19:00', phases: ['Enviar programación'] },
+];
+
+/**
  * La semana de serie de un ministerio. Un calendario sin ministerio arranca
  * con la del púlpito, que es la que describe la semana de la iglesia.
  */
@@ -105,5 +114,6 @@ export function defaultWeekFor(ministry: string | null | undefined): readonly We
   if (ministry === 'biblias') return BIBLES_WEEK;
   if (ministry === 'vigilancia') return CUSTODY_WEEK;
   if (ministry === 'ofrenda') return OFFERING_COORDINATION_WEEK;
+  if (ministry === 'enviar-programacion') return PROGRAM_SENDING_WEEK;
   return DEFAULT_WEEK;
 }
