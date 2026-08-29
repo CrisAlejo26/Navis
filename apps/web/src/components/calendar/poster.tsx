@@ -4,6 +4,7 @@ import type { CalendarRange } from '@navis/shared';
 import { forwardRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { formatDate } from '@/lib/format';
 import { PosterDays } from './poster-days';
 import { PosterGrid } from './poster-grid';
 import { posterPalette } from './poster-palette';
@@ -92,7 +93,7 @@ export const Poster = forwardRef<
       </div>
 
       <div style={{ padding: '0 44px 30px', fontSize: '17px', color: palette.muted }}>
-        {t('calendar.generatedOn', { date: new Date().toLocaleDateString() })}
+        {t('calendar.generatedOn', { date: formatDate(new Date(), 'short') })}
       </div>
     </div>
   );

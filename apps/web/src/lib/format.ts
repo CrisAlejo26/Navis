@@ -4,12 +4,22 @@ import { getLocale } from './i18n';
  * Fechas y números en el idioma activo. Salen de `Intl`, que ya sabe el orden
  * de los componentes y los separadores de cada idioma; no se formatean a mano
  * (Regla 2).
+ *
+ * El estilo corto es «05/07/2026», con día y mes de dos cifras y el año
+ * completo: el `dateStyle: 'short'` de Intl da «6/6/24» en varios idiomas, sin
+ * rellenar y con el año a dos cifras. Las cifras puestas a mano piden el
+ * relleno y el año entero.
  */
+const FECHA_CORTA = { day: '2-digit', month: '2-digit', year: 'numeric' } as const;
+
 export function formatDate(value: Date | string, style: 'short' | 'medium' = 'medium'): string {
   const date = value instanceof Date ? value : new Date(value);
   if (Number.isNaN(date.getTime())) return '—';
 
-  return new Intl.DateTimeFormat(getLocale(), { dateStyle: style }).format(date);
+  return new Intl.DateTimeFormat(
+    getLocale(),
+    style === 'short' ? FECHA_CORTA : { dateStyle: 'medium' },
+  ).format(date);
 }
 
 /** «lunes, 3 de agosto de 2026». Para la cabecera del panel. */
@@ -72,7 +82,10 @@ export function formatDay(iso: string, style: 'short' | 'medium' = 'medium'): st
   const date = new Date(`${iso.slice(0, 10)}T00:00:00Z`);
   if (Number.isNaN(date.getTime())) return '—';
 
-  return new Intl.DateTimeFormat(getLocale(), { dateStyle: style, timeZone: 'UTC' }).format(date);
+  return new Intl.DateTimeFormat(getLocale(), {
+    timeZone: 'UTC',
+    ...(style === 'short' ? FECHA_CORTA : { dateStyle: 'medium' }),
+  }).format(date);
 }
 
 /**
