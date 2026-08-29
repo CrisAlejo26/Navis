@@ -2,4 +2,4 @@
 #
 # `lint-staged` (configurado en package.json) pasa oxlint, eslint y prettier
 # **solo por los ficheros en el índice**, así que cuesta un par de segundos.
-pnpm lint-staged
+pnpm lint-staged --quiet
