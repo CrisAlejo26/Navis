@@ -58,10 +58,17 @@ export function CalendarToolbar({
           </Button>
         </div>
 
-        <label className="group relative cursor-pointer">
+        <label className="group min-w-0 relative cursor-pointer">
           {/* El calendario, encima del mes: es lo primero que hay que saber
-              cuando hay cuatro y todos se parecen. */}
-          <span className="font-semibold block text-[11px] tracking-[0.14em] text-muted-foreground uppercase">
+              cuando hay cuatro y todos se parecen. Trunca en una línea: sin
+              `min-w-0` aquí un nombre largo («Custodia mesa Diezmos y
+              ofrenda») se envolvía en dos líneas en un móvil y descolocaba
+              «Hoy», que comparte fila con `items-center` (mismo motivo que
+              «Reparto» en calendar.tsx). */}
+          <span
+            title={calendarName}
+            className="font-semibold block truncate text-[11px] tracking-[0.14em] text-muted-foreground uppercase"
+          >
             {calendarName}
           </span>
           <span className="text-xl font-semibold tracking-tight sm:text-2xl">
