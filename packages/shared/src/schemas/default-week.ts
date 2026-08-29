@@ -97,11 +97,14 @@ export const OFFERING_COORDINATION_WEEK: readonly WeeklyMeeting[] = ENSEÑANZA.m
 
 /**
  * Enviar programación: **un solo encuentro, el viernes**, cuando se reparte la
- * programación de la semana siguiente. No hay nada que custodiar ni tramos que
- * repartir el resto de la semana.
+ * programación de la semana siguiente.
+ *
+ * El encuentro se llama «Programación» y la fase «Enviar programación»: son
+ * dos cosas distintas —la reunión y el puesto—, y ponerlas igual dejaba la
+ * lámina y el texto compartido con el título repetido dos veces.
  */
 export const PROGRAM_SENDING_WEEK: readonly WeeklyMeeting[] = [
-  { weekday: 5, name: 'Enviar programación', startTime: '19:00', phases: ['Enviar programación'] },
+  { weekday: 5, name: 'Programación', startTime: '19:00', phases: ['Enviar programación'] },
 ];
 
 /**
