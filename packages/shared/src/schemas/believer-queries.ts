@@ -49,6 +49,8 @@ export interface BelieversQuery {
   status?: readonly BelieverStatus[];
   congregationId?: string;
   giftId?: string;
+  /** Solo quien tenga esa etiqueta del catálogo (no solo la destacada). */
+  tagId?: string;
   /**
    * Solo quien tenga esa **labor** (`pulpito`).
    *

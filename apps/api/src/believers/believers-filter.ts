@@ -52,6 +52,14 @@ export function applyFilters(
     );
   }
 
+  if (query.tagId) {
+    builder.andWhere(
+      `EXISTS (SELECT 1 FROM believer_tag_links t
+               WHERE t.believer_id = believer.id AND t.tag_id = :tagId AND t.deleted_at IS NULL)`,
+      { tagId: query.tagId },
+    );
+  }
+
   if (query.ministry) {
     builder.andWhere(
       `EXISTS (SELECT 1 FROM believer_ministries m

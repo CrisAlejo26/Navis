@@ -80,6 +80,7 @@ export function useBelieversScreen(): BelieversScreen {
     status: filters.status,
     congregationId: filters.congregationId || undefined,
     giftId: filters.giftId || undefined,
+    tagId: filters.tagId || undefined,
     listId: filters.listId || undefined,
     inLists: filters.inLists || undefined,
     attention: filters.attention || undefined,

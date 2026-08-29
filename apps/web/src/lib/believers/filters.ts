@@ -6,6 +6,7 @@ export interface BelieverFilters {
   status: BelieverStatus[];
   congregationId: string;
   giftId: string;
+  tagId: string;
   /** Solo quien esté en esa lista. Es la vuelta del camino de la RFC 0010 D5. */
   listId: string;
   /**
@@ -22,6 +23,7 @@ export interface BelieverFilters {
   toggleStatus: (status: BelieverStatus) => void;
   setCongregation: (id: string) => void;
   setGift: (id: string) => void;
+  setTag: (id: string) => void;
   setList: (id: string) => void;
   toggleAttention: () => void;
   clear: () => void;
@@ -72,6 +74,7 @@ export function useBelieverFilters(): BelieverFilters {
 
   const congregationId = params.get('congregationId') ?? '';
   const giftId = params.get('giftId') ?? '';
+  const tagId = params.get('tagId') ?? '';
   const listId = params.get('listId') ?? '';
   const inLists = Number(params.get('inLists') ?? '') || 0;
   const attention = params.get('attention') === 'true';
@@ -81,6 +84,7 @@ export function useBelieverFilters(): BelieverFilters {
       status,
       congregationId,
       giftId,
+      tagId,
       listId,
       inLists,
       attention,
@@ -88,6 +92,7 @@ export function useBelieverFilters(): BelieverFilters {
         status.length +
         (congregationId ? 1 : 0) +
         (giftId ? 1 : 0) +
+        (tagId ? 1 : 0) +
         (listId ? 1 : 0) +
         (inLists ? 1 : 0) +
         (attention ? 1 : 0),
@@ -103,6 +108,9 @@ export function useBelieverFilters(): BelieverFilters {
       setGift: (id: string) => {
         update({ giftId: id });
       },
+      setTag: (id: string) => {
+        update({ tagId: id });
+      },
       setList: (id: string) => {
         // Elegir una lista concreta deja sin sentido «en cuatro o más».
         update({ listId: id, inLists: null });
@@ -115,12 +123,13 @@ export function useBelieverFilters(): BelieverFilters {
           status: [],
           congregationId: null,
           giftId: null,
+          tagId: null,
           listId: null,
           inLists: null,
           attention: null,
         });
       },
     }),
-    [status, congregationId, giftId, listId, inLists, attention, update],
+    [status, congregationId, giftId, tagId, listId, inLists, attention, update],
   );
 }

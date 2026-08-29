@@ -499,6 +499,17 @@ describe('Creyentes y notas (e2e)', () => {
       expect(listado.items[0]?.featuredTagId).toBe(segunda.id);
       expect(listado.items[0]?.tags.map((one) => one.id)).toEqual([primera.id, segunda.id]);
 
+      // El filtro por etiqueta deja a quien la tiene, aunque no sea la destacada.
+      const porSegunda = body<Paginated<BelieverListItem>>(
+        await get(`/api/v1/believers?tagId=${segunda.id}`).expect(200),
+      );
+      expect(porSegunda.total).toBe(1);
+      expect(porSegunda.items[0]?.id).toBe(jesus);
+      const porPrimera = body<Paginated<BelieverListItem>>(
+        await get(`/api/v1/believers?tagId=${primera.id}`).expect(200),
+      );
+      expect(porPrimera.items.map((one) => one.id)).toContain(jesus);
+
       // Quitar la destacada deja de destacarla: no queda apuntando a nada.
       const sinDestacada = body<BelieverListItem>(
         await patch(`/api/v1/believers/${jesus}`, {

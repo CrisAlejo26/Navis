@@ -51,6 +51,11 @@ export class BelieversQueryDto extends PaginationQueryDto {
   @IsUUID()
   giftId?: string;
 
+  @ApiPropertyOptional({ description: 'Solo quien tenga esa etiqueta' })
+  @IsOptional()
+  @IsUUID()
+  tagId?: string;
+
   @ApiPropertyOptional({ description: 'Solo quien tenga esa labor', example: 'pulpito' })
   @IsOptional()
   @IsString()

@@ -32,6 +32,7 @@ export function BelieversToolbar({
       summary={screen.summary}
       congregations={screen.congregations}
       gifts={screen.gifts}
+      tags={screen.tags}
       lists={screen.lists}
     />
   );
