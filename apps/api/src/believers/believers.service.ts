@@ -15,7 +15,13 @@ import { In, Repository } from 'typeorm';
 import { BelieverHistoryService } from './believer-history.service';
 import { BelieverLinksService } from './believer-links.service';
 import { Believer } from './believer.entity';
-import { giftsByBeliever, toListItem } from './believers.mapper';
+import { BelieverTagsService } from './believer-tags.service';
+import {
+  featuredByBeliever,
+  giftsByBeliever,
+  tagsByBeliever,
+  toListItem,
+} from './believers.mapper';
 import { GiftsService } from './gifts.service';
 
 /**
@@ -34,6 +40,7 @@ export class BelieversService {
     @InjectRepository(Believer) private readonly believers: Repository<Believer>,
     private readonly links: BelieverLinksService,
     private readonly gifts: GiftsService,
+    private readonly tags: BelieverTagsService,
     private readonly history: BelieverHistoryService,
   ) {}
 
@@ -61,6 +68,12 @@ export class BelieversService {
 
     await this.links.setMinistries(believer.id, input.ministries ?? [], input.ministryDates ?? {});
     await this.links.setGifts(churchId, believer.id, input.giftIds ?? [], input.giftDates ?? {});
+    await this.links.setTags(
+      churchId,
+      believer.id,
+      input.tagIds ?? [],
+      input.featuredTagId ?? null,
+    );
 
     return this.require(churchId, believer.id);
   }
@@ -92,6 +105,9 @@ export class BelieversService {
     }
     if (input.giftIds) {
       await this.links.setGifts(churchId, believer.id, input.giftIds, input.giftDates ?? {});
+    }
+    if (input.tagIds) {
+      await this.links.setTags(churchId, believer.id, input.tagIds, input.featuredTagId ?? null);
     }
 
     return this.require(churchId, id);
@@ -130,7 +146,7 @@ export class BelieversService {
   async require(churchId: string, id: string): Promise<Believer> {
     const believer = await this.believers.findOne({
       where: { id, churchId },
-      relations: { ministries: true, gifts: true },
+      relations: { ministries: true, gifts: true, tagLinks: true },
     });
     if (!believer) throw new NotFoundException('Esa persona no está en esta iglesia');
     return believer;
@@ -146,15 +162,19 @@ export class BelieversService {
    */
   async detail(churchId: string, id: string, today: IsoDate): Promise<BelieverListItem> {
     const believer = await this.require(churchId, id);
-    const [catalog, counts] = await Promise.all([
+    const [catalog, tagCatalog, counts] = await Promise.all([
       this.gifts.ensureFor(churchId),
+      this.tags.list(churchId),
       this.history.countsOf(believer.id),
     ]);
+    const tagLinks = believer.tagLinks ?? [];
 
     return toListItem({
       believer,
       ministries: (believer.ministries ?? []).map((one) => one.ministry),
       gifts: giftsByBeliever(believer.gifts ?? [], catalog).get(believer.id) ?? [],
+      tags: tagsByBeliever(tagLinks, tagCatalog).get(believer.id) ?? [],
+      featuredTagId: featuredByBeliever(tagLinks).get(believer.id) ?? null,
       notesCount: counts.total,
       today,
     });

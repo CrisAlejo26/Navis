@@ -97,6 +97,22 @@ export class CreateBelieverDto {
   @IsUUID('all', { each: true })
   giftIds?: string[];
 
+  @ApiPropertyOptional({ description: 'Las etiquetas que tiene, del catálogo' })
+  @IsOptional()
+  @IsArray()
+  @IsUUID('all', { each: true })
+  tagIds?: string[];
+
+  /**
+   * La etiqueta que sale en la tabla del listado: solo una, y tiene que estar
+   * entre las que tiene. Si llega una que no, se ignora al guardar.
+   */
+  @ApiPropertyOptional({ description: 'La etiqueta destacada de la tabla, o `null`' })
+  @IsOptional()
+  @ValidateIf((_object, value) => value !== null)
+  @IsUUID()
+  featuredTagId?: string | null;
+
   /* --- La trayectoria en la iglesia (RFC 0012) ----------------------------- */
 
   @ApiPropertyOptional({ description: 'Mes y año en que llegó, como AAAA-MM-DD' })

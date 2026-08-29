@@ -62,6 +62,9 @@ const GiftsPage = lazy(() =>
 const MinistriesPage = lazy(() =>
   import('@/routes/ministries').then((module) => ({ default: module.MinistriesPage })),
 );
+const BelieverTagsPage = lazy(() =>
+  import('@/routes/believer-tags').then((module) => ({ default: module.BelieverTagsPage })),
+);
 const ListsPage = lazy(() =>
   import('@/routes/lists').then((module) => ({ default: module.ListsPage })),
 );
@@ -387,6 +390,16 @@ export const router = createBrowserRouter([
           <RequirePermission permission="believers.manage">
             <Lazy>
               <MinistriesPage />
+            </Lazy>
+          </RequirePermission>
+        ),
+      },
+      {
+        path: 'believers/tags',
+        element: (
+          <RequirePermission permission="believers.manage">
+            <Lazy>
+              <BelieverTagsPage />
             </Lazy>
           </RequirePermission>
         ),

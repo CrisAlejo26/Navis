@@ -5,6 +5,7 @@ import { Link } from 'react-router';
 
 import { BelieverActions } from '@/components/believers/believer-actions';
 import { BelieverPhoto } from '@/components/believers/believer-photo';
+import { BelieverTagPills } from '@/components/believers/believer-tag-pills';
 import type { BelieverCells } from '@/components/believers/believer-row';
 import { GiftTags } from '@/components/believers/gift-tags';
 import { MinistryTags } from '@/components/believers/ministry-tags';
@@ -34,6 +35,9 @@ export function BelieverCard({
 }: BelieverCells) {
   const { t } = useTranslation();
   const name = believerName(believer);
+  // En la ficha la etiqueta no compite con el nombre como en la fila, así que
+  // se enseña la destacada con su color —la que ayuda a saber «busca trabajo»—.
+  const tag = believer.tags.find((one) => one.id === believer.featuredTagId) ?? believer.tags[0];
 
   return (
     <article
@@ -93,6 +97,7 @@ export function BelieverCard({
 
       <GiftTags gifts={believer.gifts} max={4} />
       <MinistryTags slugs={believer.ministries} catalog={ministries} max={3} />
+      <BelieverTagPills tags={tag ? [tag] : []} />
 
       <div className="pt-1 mt-auto">
         <Sonda believer={believer} today={today} variant="block" index={index} />

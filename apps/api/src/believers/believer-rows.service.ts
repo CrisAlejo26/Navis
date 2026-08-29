@@ -6,13 +6,20 @@ import { In, Repository } from 'typeorm';
 import { BelieverGift } from './believer-gift.entity';
 import { BelieverMinistry } from './believer-ministry.entity';
 import { BelieverNote } from './believer-note.entity';
+import { BelieverTagLink } from './believer-tag-link.entity';
 import type { Believer } from './believer.entity';
-import { giftsByBeliever, toListItem } from './believers.mapper';
+import {
+  featuredByBeliever,
+  giftsByBeliever,
+  tagsByBeliever,
+  toListItem,
+} from './believers.mapper';
+import { BelieverTagsService } from './believer-tags.service';
 import { GiftsService } from './gifts.service';
 
 /**
- * De filas de `believers` a fichas completas: labores, dones y cuántas notas
- * tiene cada uno.
+ * De filas de `believers` a fichas completas: labores, dones, etiquetas y
+ * cuántas notas tiene cada uno.
  *
  * Está aparte porque lo usan **dos** consultas distintas —la página del
  * listado y la exportación entera (RFC 0009 D3)— y son las mismas cuatro
@@ -24,8 +31,10 @@ export class BelieverRowsService {
   constructor(
     @InjectRepository(BelieverMinistry) private readonly ministries: Repository<BelieverMinistry>,
     @InjectRepository(BelieverGift) private readonly links: Repository<BelieverGift>,
+    @InjectRepository(BelieverTagLink) private readonly tagLinks: Repository<BelieverTagLink>,
     @InjectRepository(BelieverNote) private readonly notes: Repository<BelieverNote>,
     private readonly gifts: GiftsService,
+    private readonly tags: BelieverTagsService,
   ) {}
 
   async of(
@@ -35,20 +44,26 @@ export class BelieverRowsService {
   ): Promise<BelieverListItem[]> {
     const ids = people.map((person) => person.id);
 
-    const [catalog, ministries, links, counts] = await Promise.all([
+    const [catalog, ministries, links, tagCatalog, tagLinkRows, counts] = await Promise.all([
       this.gifts.ensureFor(churchId),
       this.ministriesOf(ids),
       this.giftLinksOf(ids),
+      this.tags.list(churchId),
+      this.tagLinksOf(ids),
       this.countNotes(ids),
     ]);
 
     const giftsOf = giftsByBeliever(links, catalog);
+    const tagsOf = tagsByBeliever(tagLinkRows, tagCatalog);
+    const featuredOf = featuredByBeliever(tagLinkRows);
 
     return people.map((person) =>
       toListItem({
         believer: person,
         ministries: ministries.get(person.id) ?? [],
         gifts: giftsOf.get(person.id) ?? [],
+        tags: tagsOf.get(person.id) ?? [],
+        featuredTagId: featuredOf.get(person.id) ?? null,
         notesCount: counts.get(person.id) ?? 0,
         today,
       }),
@@ -74,6 +89,13 @@ export class BelieverRowsService {
     return unique.length === 0
       ? Promise.resolve([])
       : this.links.find({ where: { believerId: In(unique) } });
+  }
+
+  private tagLinksOf(ids: readonly string[]): Promise<BelieverTagLink[]> {
+    const unique = usable(ids);
+    return unique.length === 0
+      ? Promise.resolve([])
+      : this.tagLinks.find({ where: { believerId: In(unique) } });
   }
 
   /** Cuántas notas tiene cada uno, de una consulta agrupada y no de N. */

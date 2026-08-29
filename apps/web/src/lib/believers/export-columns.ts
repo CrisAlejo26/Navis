@@ -63,6 +63,11 @@ export function useBelieverExportColumns(catalogs: {
       header: t('believers.gifts'),
       value: (row) => cellTags(row.gifts.map((gift) => ({ text: gift.name, accent: gift.accent }))),
     },
+    {
+      key: 'tags',
+      header: t('believerTags.title'),
+      value: (row) => cellTags(row.tags.map((tag) => ({ text: tag.name, accent: tag.accent }))),
+    },
     { key: 'phone', header: t('believers.phone'), value: (row) => cellText(row.phone) },
     { key: 'email', header: t('believers.email'), value: (row) => cellText(row.email) },
     {

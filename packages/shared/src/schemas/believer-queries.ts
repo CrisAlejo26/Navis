@@ -1,4 +1,5 @@
 import type { Believer, BelieverStatus } from './believers';
+import type { BelieverTag } from './believer-tags';
 import type { Gift } from './gifts';
 
 /**
@@ -27,6 +28,15 @@ export interface BelieverListItem extends Believer {
   needsAttention: boolean;
   /** El don entero —nombre y color—, para pintar la etiqueta sin otra consulta. */
   gifts: Gift[];
+  /**
+   * Las etiquetas que tiene, con su color (del catálogo de la iglesia).
+   *
+   * La fila de la tabla muestra **solo una** —la destacada, o la primera si no
+   * hay ninguna marcada—; la ficha las enseña todas.
+   */
+  tags: BelieverTag[];
+  /** Cuál sale en la tabla: la destacada. `null` es «la primera de la lista». */
+  featuredTagId: string | null;
   notesCount: number;
 }
 

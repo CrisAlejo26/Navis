@@ -1,6 +1,7 @@
 import {
   useBelievers,
   useBelieversSummary,
+  useBelieverTags,
   useCongregations,
   useGifts,
   useListMemberships,
@@ -12,6 +13,7 @@ import {
   DEFAULT_BELIEVER_SORT,
   todayIn,
   type BelieverListItem,
+  type BelieverTag,
   type Congregation,
   type Gift,
   type MinistryCatalog,
@@ -35,6 +37,8 @@ export interface BelieversScreen {
   gifts: Gift[];
   /** El catálogo de labores, para resolver a nombre y color los slugs de cada fila. */
   ministries: MinistryCatalog[];
+  /** El catálogo de etiquetas de creyente de la iglesia. */
+  tags: BelieverTag[];
   /**
    * Las listas de la iglesia y en cuáles está cada persona (RFC 0010 §8.7).
    *
@@ -87,6 +91,7 @@ export function useBelieversScreen(): BelieversScreen {
   const { data: congregations = [] } = useCongregations(api);
   const { data: gifts = [] } = useGifts(api);
   const { data: ministries = [] } = useMinistries(api);
+  const { data: tags = [] } = useBelieverTags(api);
   // Los nombres de las listas también son información: sin `lists.view` no se
   // piden ni se pintan los puntos (§7.1).
   const puedeVerListas = can('lists.view');
@@ -101,6 +106,7 @@ export function useBelieversScreen(): BelieversScreen {
     congregations,
     gifts,
     ministries,
+    tags,
     lists,
     memberships,
     // El día de quien mira: la sonda del cliente y la del servidor pueden

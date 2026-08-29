@@ -60,7 +60,7 @@ export function BelieversTable({
       isLoading={screen.isLoading}
       isError={screen.isError}
       onRetry={screen.refetch}
-      columnCount={(screen.canManage ? 7 : 6) + (showPhoto ? 1 : 0)}
+      columnCount={(screen.canManage ? 8 : 7) + (showPhoto ? 1 : 0)}
       getKey={(believer) => believer.id}
       emptyIcon={UserSearch}
       emptyTitle={screen.filters.count > 0 ? t('believers.noResults') : t('believers.empty')}
@@ -95,6 +95,7 @@ export function BelieversTable({
           {sortable('status', t('believers.columnStatus'))}
           <TableHeader className="lg:table-cell hidden">{t('believers.columnGifts')}</TableHeader>
           <TableHeader className="xl:table-cell hidden">{t('ministries.title')}</TableHeader>
+          <TableHeader className="md:table-cell hidden">{t('believers.columnTag')}</TableHeader>
           {sortable('lastNote', t('believers.columnAlert'))}
           <TableHeader className="text-right">
             <span className="sr-only">{t('common.actions')}</span>

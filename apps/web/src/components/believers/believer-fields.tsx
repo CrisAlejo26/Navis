@@ -3,6 +3,7 @@ import {
   isBelieverStatus,
   type BelieverListItem,
   type BelieverStatus,
+  type BelieverTag,
   type Congregation,
   type Gift,
   type MinistryCatalog,
@@ -10,6 +11,7 @@ import {
 import { useTranslation } from 'react-i18next';
 
 import { AlertField } from '@/components/believers/alert-field';
+import { BelieverTagPicker } from '@/components/believers/believer-tag-picker';
 import { GiftPicker } from '@/components/believers/gift-picker';
 import { JourneyFields, type JourneyDraft } from '@/components/believers/journey-fields';
 import { MinistryPicker } from '@/components/believers/ministry-picker';
@@ -23,6 +25,10 @@ export interface BelieverDraft extends JourneyDraft {
   giftIds: string[];
   /** Las labores, por **slug**: es lo que guarda la persona y mira el calendario. */
   ministries: string[];
+  /** Las etiquetas que tiene, por identificador del catálogo. */
+  tagIds: string[];
+  /** La única que sale en la tabla del listado. `null` es «la primera». */
+  featuredTagId: string | null;
   /** Cuándo empezó cada labor y cuándo recibió cada don (RFC 0012). */
   ministryDates: Record<string, string | null>;
   giftDates: Record<string, string | null>;
@@ -40,6 +46,7 @@ export function BelieverFields({
   believer,
   congregations,
   gifts,
+  tags,
   ministries,
   draft,
   onChange,
@@ -47,6 +54,7 @@ export function BelieverFields({
   believer?: BelieverListItem;
   congregations: readonly Congregation[];
   gifts: readonly Gift[];
+  tags: readonly BelieverTag[];
   ministries: readonly MinistryCatalog[];
   draft: BelieverDraft;
   onChange: (draft: BelieverDraft) => void;
@@ -153,6 +161,28 @@ export function BelieverFields({
               ? draft.ministries.filter((one) => one !== slug)
               : [...draft.ministries, slug],
           });
+        }}
+      />
+
+      {/* Las etiquetas van con su destacado: se marcan varias y una sale en la
+          tabla. Si se quita la que estaba destacada, el destacado se va con
+          ella —no puede quedar apuntando a una etiqueta que ya no tiene—. */}
+      <BelieverTagPicker
+        tags={tags}
+        selected={draft.tagIds}
+        featuredId={draft.featuredTagId}
+        label={t('believerTags.title')}
+        onToggle={(id) => {
+          const tagIds = draft.tagIds.includes(id)
+            ? draft.tagIds.filter((one) => one !== id)
+            : [...draft.tagIds, id];
+          const featuredTagId =
+            draft.featuredTagId === id && !tagIds.includes(id) ? null : draft.featuredTagId;
+
+          onChange({ ...draft, tagIds, featuredTagId });
+        }}
+        onSetFeatured={(featuredTagId) => {
+          onChange({ ...draft, featuredTagId });
         }}
       />
 

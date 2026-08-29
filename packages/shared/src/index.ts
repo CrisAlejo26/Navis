@@ -12,6 +12,7 @@ export * from './teaching-body-text';
 export * from './schemas/auth';
 export * from './schemas/believer-notes';
 export * from './schemas/believer-queries';
+export * from './schemas/believer-tags';
 export * from './schemas/believers';
 export * from './schemas/calendar';
 export * from './schemas/calendars';

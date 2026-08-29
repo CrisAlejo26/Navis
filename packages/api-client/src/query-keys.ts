@@ -68,6 +68,7 @@ export const queryKeys = {
       [...queryKeys.believers.all, 'noteDays', id, range] as const,
     gifts: ['believers', 'gifts'] as const,
     ministries: ['believers', 'ministries'] as const,
+    tags: ['believers', 'tags'] as const,
   },
   /**
    * Las listas de la iglesia (RFC 0010).

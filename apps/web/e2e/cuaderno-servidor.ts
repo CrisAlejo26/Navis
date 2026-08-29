@@ -96,6 +96,7 @@ export async function montarCuaderno(
         '/congregations',
         '/gifts',
         '/ministries',
+        '/believer-tags',
         '/calendars',
         '/lists',
         '/list-viewers',

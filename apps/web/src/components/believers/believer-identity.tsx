@@ -124,6 +124,7 @@ export function BelieverIdentity({
       <BelieverVocabulary
         gifts={believer.gifts}
         ministrySlugs={believer.ministries}
+        tags={believer.tags}
         catalog={ministries}
       />
 

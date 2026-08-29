@@ -1,4 +1,4 @@
-import { useBeliever, useCongregations, useGifts } from '@navis/api-client';
+import { useBeliever, useBelieverTags, useCongregations, useGifts } from '@navis/api-client';
 import { todayIn } from '@navis/shared';
 import { UserSearch } from 'lucide-react';
 import { useState } from 'react';
@@ -39,6 +39,7 @@ export function BelieverPage() {
   const { data: believer, isLoading, isError } = useBeliever(api, id);
   const { data: congregations = [] } = useCongregations(api);
   const { data: gifts = [] } = useGifts(api);
+  const { data: tags = [] } = useBelieverTags(api);
 
   const today = todayIn(Intl.DateTimeFormat().resolvedOptions().timeZone);
 
@@ -102,6 +103,7 @@ export function BelieverPage() {
           believer={believer}
           congregations={congregations}
           gifts={gifts}
+          tags={tags}
           onClose={() => {
             setEditing(false);
           }}

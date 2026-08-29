@@ -4,6 +4,7 @@ import {
   needsAttention,
   type Believer as BelieverView,
   type BelieverListItem,
+  type BelieverTag as BelieverTagView,
   type Gift as GiftView,
   type IsoDate,
   type MinistryCatalog as MinistryView,
@@ -12,6 +13,8 @@ import {
 import { toIsoDay } from '../database/iso-day';
 import type { BelieverGift } from './believer-gift.entity';
 import type { Believer } from './believer.entity';
+import type { BelieverTag } from './believer-tag.entity';
+import type { BelieverTagLink } from './believer-tag-link.entity';
 import type { Gift } from './gift.entity';
 import type { Ministry } from './ministry.entity';
 
@@ -92,6 +95,18 @@ export function toGiftView(gift: Gift): GiftView {
   };
 }
 
+export function toBelieverTagView(tag: BelieverTag): BelieverTagView {
+  return {
+    id: tag.id,
+    churchId: tag.churchId,
+    name: tag.name,
+    accent: tag.accent,
+    position: tag.position,
+    isSystem: tag.isSystem,
+    isActive: tag.isActive,
+  };
+}
+
 /** La labor del catálogo. Lleva el `slug`, que es lo que guarda la persona. */
 export function toMinistryView(ministry: Ministry): MinistryView {
   return {
@@ -117,6 +132,8 @@ export function toListItem(input: {
   believer: Believer;
   ministries: readonly string[];
   gifts: readonly Gift[];
+  tags: readonly BelieverTag[];
+  featuredTagId: string | null;
   notesCount: number;
   today: IsoDate;
 }): BelieverListItem {
@@ -127,6 +144,8 @@ export function toListItem(input: {
     daysWithoutNote: daysWithoutNote(view, input.today),
     needsAttention: needsAttention(view, input.today),
     gifts: input.gifts.map(toGiftView),
+    tags: input.tags.map(toBelieverTagView),
+    featuredTagId: input.featuredTagId,
     notesCount: input.notesCount,
   };
 }
@@ -150,6 +169,53 @@ export function giftsByBeliever(
   }
 
   return grouped;
+}
+
+/**
+ * Las etiquetas de cada persona, resueltas contra el catálogo de su iglesia,
+ * y **cuál es la destacada** de cada una.
+ *
+ * Igual que los dones, el catálogo se pide entero una vez en vez de unirlo a
+ * cada consulta: la tabla puente no merece un `JOIN`.
+ */
+export function tagsByBeliever(
+  links: readonly BelieverTagLink[],
+  catalog: readonly BelieverTag[],
+): Map<string, BelieverTag[]> {
+  const byId = new Map(catalog.map((tag) => [tag.id, tag]));
+  const grouped = new Map<string, BelieverTag[]>();
+
+  for (const link of links) {
+    const tag = byId.get(link.tagId);
+    if (tag) grouped.set(link.believerId, [...(grouped.get(link.believerId) ?? []), tag]);
+  }
+
+  // El `IN (...)` no garantiza orden (CLAUDE.md), y aquí la primera de la lista
+  // es lo que sale en la tabla si nadie destaca ninguna: se recompone por la
+  // posición del catálogo, que es el orden que se ve en el selector.
+  for (const [id, tags] of grouped) {
+    grouped.set(
+      id,
+      [...tags].sort((a, b) => a.position - b.position || a.name.localeCompare(b.name)),
+    );
+  }
+
+  return grouped;
+}
+
+/**
+ * La etiqueta que sale en la tabla de cada persona: la única con `featured`.
+ * Quien no la tiene marcada sale con `null`, y la interfaz muestra entonces la
+ * primera de su lista.
+ */
+export function featuredByBeliever(links: readonly BelieverTagLink[]): Map<string, string> {
+  const featured = new Map<string, string>();
+
+  for (const link of links) {
+    if (link.featured) featured.set(link.believerId, link.tagId);
+  }
+
+  return featured;
 }
 
 /** El nombre compuesto, que es lo que se pinta en la cinta y en la lámina. */

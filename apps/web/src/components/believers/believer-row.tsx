@@ -13,6 +13,7 @@ import {
   type BelieverActionHandlers,
 } from '@/components/believers/believer-actions';
 import { BelieverPhoto } from '@/components/believers/believer-photo';
+import { BelieverTagPills } from '@/components/believers/believer-tag-pills';
 import { GiftTags } from '@/components/believers/gift-tags';
 import { MinistryTags } from '@/components/believers/ministry-tags';
 import { Sonda } from '@/components/believers/sonda';
@@ -70,6 +71,9 @@ export function BelieverRow({
 }) {
   const { t } = useTranslation();
   const name = believerName(believer);
+  // Solo una etiqueta por fila: la destacada, o la primera si no hay ninguna
+  // marcada. La ficha enseña todas; la tabla, la que ayuda a leer de un vistazo.
+  const tag = believer.tags.find((one) => one.id === believer.featuredTagId) ?? believer.tags[0];
 
   return (
     <>
@@ -126,6 +130,12 @@ export function BelieverRow({
           quinta columna de la fila y en un portátil estrecho la aprietan. */}
       <TableCell className="xl:table-cell hidden">
         <MinistryTags slugs={believer.ministries} catalog={ministries} max={2} />
+      </TableCell>
+
+      {/* La etiqueta es lo que ayuda a saber «quién es el que busca trabajo»
+          de un vistazo, y por eso sale antes que las labores, desde `md`. */}
+      <TableCell className="md:table-cell hidden">
+        <BelieverTagPills tags={tag ? [tag] : []} />
       </TableCell>
 
       <TableCell>

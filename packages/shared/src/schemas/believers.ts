@@ -127,6 +127,13 @@ export const createBelieverSchema = z.object({
   ministries: z.array(ministrySchema).optional(),
   /** Los dones que ya se le conocen, por identificador del catálogo (D5). */
   giftIds: z.array(z.uuid()).optional(),
+  /** Las etiquetas que tiene, por identificador del catálogo. */
+  tagIds: z.array(z.uuid()).optional(),
+  /**
+   * La etiqueta que sale en la tabla del listado. Solo una, y tiene que estar
+   * entre las que tiene: quien la quita, desmarca también el destacado.
+   */
+  featuredTagId: z.uuid().nullable().optional(),
 
   arrivedAt: isoDateSchema.nullable().optional(),
   arrivalSite: z.string().trim().max(120).nullable().optional(),

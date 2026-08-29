@@ -5,6 +5,7 @@ import type {
   BelieverExportRow,
   BelieverListItem,
   BelieverNote,
+  BelieverTag,
   BelieversSummary,
   ExportResponse,
   Gift,
@@ -456,6 +457,70 @@ describe('Creyentes y notas (e2e)', () => {
 
       expect(salida.total).toBe(0);
       expect(salida.rows).toEqual([]);
+    });
+  });
+
+  /**
+   * Las etiquetas de creyente: catálogo propio, y **una** destacada por
+   * persona que es la única que viaja para la tabla. Lo que se comprueba aquí
+   * y no con dobles es el cierre del destacado: si llega uno que no está entre
+   * las suyas —o se le quitó— se cae, que es lo que evita que la tabla enseñe
+   * una etiqueta que esa persona ya no tiene.
+   */
+  describe('etiquetas de creyente', () => {
+    it('el catálogo nace vacío y cada iglesia crea las suyas', async () => {
+      const vacio = body<BelieverTag[]>(await get('/api/v1/believer-tags').expect(200));
+
+      expect(vacio).toEqual([]);
+    });
+
+    it('se cuelgan de una persona, y solo una sale en la tabla', async () => {
+      const primera = body<BelieverTag>(
+        await post('/api/v1/believer-tags', { name: 'En busca de trabajo' }).expect(201),
+      );
+      const segunda = body<BelieverTag>(
+        await post('/api/v1/believer-tags', { name: 'Voluntario' }).expect(201),
+      );
+
+      // Dos etiquetas, y la segunda es la destacada.
+      const conEtiquetas = body<BelieverListItem>(
+        await patch(`/api/v1/believers/${jesus}`, {
+          tagIds: [primera.id, segunda.id],
+          featuredTagId: segunda.id,
+        }).expect(200),
+      );
+      expect(conEtiquetas.tags.map((one) => one.id)).toEqual([primera.id, segunda.id]);
+      expect(conEtiquetas.featuredTagId).toBe(segunda.id);
+
+      // El listado trae la misma forma: la fila no vuelve a pedir nada.
+      const listado = body<Paginated<BelieverListItem>>(
+        await get('/api/v1/believers?search=jesus').expect(200),
+      );
+      expect(listado.items[0]?.featuredTagId).toBe(segunda.id);
+      expect(listado.items[0]?.tags.map((one) => one.id)).toEqual([primera.id, segunda.id]);
+
+      // Quitar la destacada deja de destacarla: no queda apuntando a nada.
+      const sinDestacada = body<BelieverListItem>(
+        await patch(`/api/v1/believers/${jesus}`, {
+          tagIds: [primera.id],
+          featuredTagId: null,
+        }).expect(200),
+      );
+      expect(sinDestacada.tags.map((one) => one.id)).toEqual([primera.id]);
+      expect(sinDestacada.featuredTagId).toBeNull();
+
+      // Un destacado que no está entre las suyas se cae en el servidor.
+      const rechazado = body<BelieverListItem>(
+        await patch(`/api/v1/believers/${jesus}`, {
+          tagIds: [primera.id],
+          featuredTagId: segunda.id,
+        }).expect(200),
+      );
+      expect(rechazado.featuredTagId).toBeNull();
+    });
+
+    it('el catálogo no deja repetir el nombre de una etiqueta', async () => {
+      await post('/api/v1/believer-tags', { name: 'En busca de trabajo' }).expect(400);
     });
   });
 

@@ -6,6 +6,7 @@ import { BaseEntity } from '../common/entities/base.entity';
 import { UUID } from '../database/column-types';
 import { BelieverGift } from './believer-gift.entity';
 import { BelieverMinistry } from './believer-ministry.entity';
+import { BelieverTagLink } from './believer-tag-link.entity';
 
 /**
  * Una persona de la iglesia, con su ficha completa (RFC 0003 §5.1).
@@ -112,4 +113,7 @@ export class Believer extends BaseEntity {
 
   @OneToMany(() => BelieverGift, (gift) => gift.believer, { cascade: true })
   gifts: BelieverGift[];
+
+  @OneToMany(() => BelieverTagLink, (link) => link.believer, { cascade: true })
+  tagLinks: BelieverTagLink[];
 }

@@ -31,6 +31,8 @@ export function believer(index: number, overrides: Record<string, unknown> = {})
     daysWithoutNote: days,
     needsAttention: days > 30,
     gifts: [],
+    tags: [],
+    featuredTagId: null,
     notesCount: 1,
     ...overrides,
   };
@@ -135,6 +137,7 @@ export async function montarApi(
       path === '/congregations' ||
       path === '/gifts' ||
       path === '/ministries' ||
+      path === '/believer-tags' ||
       path === '/calendars' ||
       path === '/lists' ||
       path === '/list-viewers' ||

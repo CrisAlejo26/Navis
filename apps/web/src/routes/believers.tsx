@@ -131,6 +131,7 @@ export function BelieversPage() {
           believer={editing ?? undefined}
           congregations={screen.congregations}
           gifts={screen.gifts}
+          tags={screen.tags}
           onClose={() => {
             setCreating(false);
             setEditing(null);

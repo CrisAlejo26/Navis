@@ -14,6 +14,10 @@ import { BelieverNote } from './believer-note.entity';
 import { BelieverNotesController } from './believer-notes.controller';
 import { BelieverNotesService } from './believer-notes.service';
 import { BelieverRowsService } from './believer-rows.service';
+import { BelieverTag } from './believer-tag.entity';
+import { BelieverTagLink } from './believer-tag-link.entity';
+import { BelieverTagsController } from './believer-tags.controller';
+import { BelieverTagsService } from './believer-tags.service';
 import { Believer } from './believer.entity';
 import { BelieversExportService } from './believers-export.service';
 import { BelieversPageService } from './believers-page.service';
@@ -50,6 +54,8 @@ import { NotesViewService } from './notes-view.service';
       BelieverMinistry,
       Gift,
       BelieverGift,
+      BelieverTag,
+      BelieverTagLink,
       BelieverNote,
       NoteAudio,
       Ministry,
@@ -64,6 +70,7 @@ import { NotesViewService } from './notes-view.service';
     NoteAudiosController,
     GiftsController,
     MinistriesController,
+    BelieverTagsController,
     BelieverPhotosController,
   ],
   providers: [
@@ -80,6 +87,7 @@ import { NotesViewService } from './notes-view.service';
     NoteAudiosService,
     GiftsService,
     MinistriesService,
+    BelieverTagsService,
     BelieverPhotosService,
   ],
   // `BelieverPhotosService` sale porque la página pública de una lista sirve la

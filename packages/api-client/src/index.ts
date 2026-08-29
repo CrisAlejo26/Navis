@@ -3,6 +3,7 @@ export * from './access-mutations';
 export * from './api-error';
 export * from './believer-hooks';
 export * from './believer-mutations';
+export * from './believer-tag-hooks';
 export * from './calendar-cache';
 export * from './calendar-hooks';
 export * from './calendar-mutations';

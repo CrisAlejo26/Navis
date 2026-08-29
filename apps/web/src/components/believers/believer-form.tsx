@@ -11,6 +11,7 @@ import {
   believerName,
   createBelieverSchema,
   type BelieverListItem,
+  type BelieverTag,
   type Congregation,
   type Gift,
 } from '@navis/shared';
@@ -33,6 +34,7 @@ interface FormProps {
   believer?: BelieverListItem;
   congregations: readonly Congregation[];
   gifts: readonly Gift[];
+  tags: readonly BelieverTag[];
 }
 
 /**
@@ -41,7 +43,7 @@ interface FormProps {
  * El `toast` usa el mismo verbo que el botón: quien pulsa «Añadir hermano» lee
  * «Fulano en la lista», no «Operación completada» (Regla 9 §6).
  */
-export function BelieverForm({ open, onClose, believer, congregations, gifts }: FormProps) {
+export function BelieverForm({ open, onClose, believer, congregations, gifts, tags }: FormProps) {
   const { t } = useTranslation();
   const create = useCreateBeliever(api);
   const update = useUpdateBeliever(api);
@@ -58,6 +60,8 @@ export function BelieverForm({ open, onClose, believer, congregations, gifts }: 
     alertAfterDays: believer ? believer.alertAfterDays : DEFAULT_ALERT_AFTER_DAYS,
     giftIds: believer?.gifts.map((one) => one.id) ?? [],
     ministries: believer?.ministries ?? [],
+    tagIds: believer?.tags.map((one) => one.id) ?? [],
+    featuredTagId: believer?.featuredTagId ?? null,
     giftDates: { ...(believer?.giftDates ?? {}) },
     ministryDates: { ...(believer?.ministryDates ?? {}) },
     arrivedAt: believer?.arrivedAt ?? null,
@@ -141,6 +145,7 @@ export function BelieverForm({ open, onClose, believer, congregations, gifts }: 
           believer={believer}
           congregations={congregations}
           gifts={gifts}
+          tags={tags}
           draft={draft}
           onChange={setDraft}
         />

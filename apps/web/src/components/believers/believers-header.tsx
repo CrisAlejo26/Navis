@@ -1,5 +1,5 @@
 import type { BelieversSummary } from '@navis/shared';
-import { HandHeart, Sprout, UserPlus } from 'lucide-react';
+import { HandHeart, Sprout, Tag, UserPlus } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 
@@ -69,6 +69,14 @@ export function BelieversHeader({
           >
             <HandHeart size={16} aria-hidden />
             <span className="sm:not-sr-only sr-only">{t('ministries.manage')}</span>
+          </Link>
+
+          <Link
+            to="/believers/tags"
+            className="h-10 gap-2 px-3 text-sm inline-flex items-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+          >
+            <Tag size={16} aria-hidden />
+            <span className="sm:not-sr-only sr-only">{t('believerTags.manage')}</span>
           </Link>
 
           <Button size="md" onClick={onAdd}>
