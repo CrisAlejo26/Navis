@@ -24,4 +24,15 @@ export const authClient = createAuthClient({
   ],
 });
 
-export const { signIn, signUp, signOut, useSession, getSession } = authClient;
+export const {
+  signIn,
+  signUp,
+  signOut,
+  useSession,
+  getSession,
+  // RFC 0023: métodos del proxy dinámico de Better Auth — `/request-password-reset`
+  // y `/reset-password` ya existen en el servidor en cuanto `emailAndPassword`
+  // lleva `sendResetPassword`, sin plugin de cliente adicional.
+  requestPasswordReset,
+  resetPassword,
+} = authClient;

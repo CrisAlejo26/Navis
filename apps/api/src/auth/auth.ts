@@ -7,6 +7,7 @@ import { Pool } from 'pg';
 
 import { env, isProduction, sqlitePath } from '../config/env';
 import { ensureSqliteDirectory } from '../database/data-source';
+import { createMailer } from './mailer';
 
 /**
  * Conexión dedicada a Better Auth, del mismo motor que el resto de la app.
@@ -33,6 +34,7 @@ function createAuthDatabase(): Pool | SqliteDatabase {
 }
 
 export const authDatabase = createAuthDatabase();
+const mailer = createMailer(env);
 
 export const auth = betterAuth({
   appName: 'Navis',
@@ -55,6 +57,15 @@ export const auth = betterAuth({
     maxPasswordLength: 128,
     autoSignIn: true,
     requireEmailVerification: false,
+    // RFC 0023: `url` ya viene resuelta por Better Auth apuntando a su
+    // propio endpoint de redirección — el correo no construye ningún
+    // enlace a mano.
+    sendResetPassword: async ({ user, url }) => {
+      await mailer.sendPasswordReset(user.email, url);
+    },
+    // Si el motivo del cambio era una cuenta comprometida, cierra también
+    // la sesión de quien la comprometió.
+    revokeSessionsOnPasswordReset: true,
   },
 
   // Campos propios añadidos a la tabla `user` de Better Auth.

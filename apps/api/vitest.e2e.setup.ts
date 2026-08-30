@@ -14,3 +14,7 @@
 process.env.NODE_ENV ??= 'test';
 process.env.BETTER_AUTH_SECRET ??= 'secreto-solo-para-los-tests-de-navis-no-usar-fuera';
 process.env.HOLIDAYS_API_URL = '';
+// Mismo motivo que arriba, para el SMTP de «recuperar contraseña» (RFC 0023):
+// sin esto, el e2e de auth mandaría un correo real a un dominio inventado
+// (`@navis.test`) usando las credenciales del `.env` de quien lo ejecute.
+process.env.SMTP_HOST = '';

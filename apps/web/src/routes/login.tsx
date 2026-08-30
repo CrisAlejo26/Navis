@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { PasswordInput } from '@/components/ui/password-input';
+import { TextLink } from '@/components/ui/text-link';
 import { signIn, useSession } from '@/lib/auth-client';
 
 export function LoginPage() {
@@ -79,12 +80,17 @@ export function LoginPage() {
           error={errors.email?.message}
           {...register('email')}
         />
-        <PasswordInput
-          label={t('auth.password')}
-          autoComplete="current-password"
-          error={errors.password?.message}
-          {...register('password')}
-        />
+        <div className="gap-2 flex flex-col">
+          <PasswordInput
+            label={t('auth.password')}
+            autoComplete="current-password"
+            error={errors.password?.message}
+            {...register('password')}
+          />
+          <TextLink to="/forgot-password" className="text-sm self-end">
+            {t('auth.forgotPassword')}
+          </TextLink>
+        </div>
 
         <Checkbox label={t('auth.rememberMe')} {...register('rememberMe')} />
 

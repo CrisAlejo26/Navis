@@ -91,6 +91,20 @@ export const apiEnvSchema = z
     ANTHROPIC_API_KEY: z.string().optional(),
     AI_MODEL: z.string().default('claude-sonnet-5'),
     AI_SERVICE_URL: z.url().optional(),
+
+    /**
+     * SMTP para el correo de «recuperar contraseña» (RFC 0023). Todas
+     * opcionales: sin ellas, `sendResetPassword` avisa por el log y no manda
+     * nada — el registro y el login normales no dependen de esto.
+     */
+    SMTP_HOST: z.string().optional(),
+    SMTP_PORT: z.coerce.number().int().min(1).max(65535).default(465),
+    /** `true` para SSL directo (puerto 465); `false` para STARTTLS (587). */
+    SMTP_SECURE: booleanish.default(true),
+    SMTP_USER: z.string().optional(),
+    SMTP_PASSWORD: z.string().optional(),
+    /** Remitente que ve quien recibe el correo, p. ej. `Navis <no-reply@…>`. */
+    SMTP_FROM: z.string().optional(),
   })
   .superRefine((env, ctx) => {
     // Las credenciales de Postgres solo son obligatorias si se usa Postgres:

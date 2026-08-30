@@ -39,6 +39,7 @@ Estructura estándar de la industria para separar **decisiones** de **propuestas
 | [0019](./rfcs/0019-comunicaciones-mejoras-plan.md)             | Comunicaciones: menú por chat, emoji, formato y exportar (amplía 0016) | Implementado |
 | [0021](./rfcs/0021-tablas-personalizadas.md)                   | Tablas personalizadas, con columnas, vistas y filtros dinámicos        | Implementado |
 | [0022](./rfcs/0022-ensenanzas-personales-plan-implementado.md) | Enseñanzas personales                                                  | Implementado |
+| [0023](./rfcs/0023-recuperar-contrasena.md)                    | Recuperar contraseña por email                                         | Implementado |
 
 Orden sugerido de implementación: **0008 → 0003 → 0002 → 0001 → 0006 → 0004 →
 0005**. El 0008 va primero porque decide de quién son los datos y quién los ve:

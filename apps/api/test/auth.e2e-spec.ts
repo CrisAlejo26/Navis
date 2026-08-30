@@ -78,4 +78,30 @@ describe('Auth (e2e)', () => {
 
     expect(body<{ church: string }>(response).church).toBe('Iglesia E2E');
   });
+
+  // RFC 0023. El entorno de test no lleva SMTP configurado: `sendResetPassword`
+  // registra el enlace por el log en vez de mandarlo, así que estos dos no
+  // comprueban el correo en sí — eso está en `mailer.ts` — sino que el
+  // servidor no filtra si el email existe y que un token inventado no vale.
+  it('pedir el enlace responde igual con un email que existe que con uno que no', async () => {
+    const existing = await request(app.getHttpServer())
+      .post('/api/auth/request-password-reset')
+      .send({ email })
+      .expect(200);
+
+    const missing = await request(app.getHttpServer())
+      .post('/api/auth/request-password-reset')
+      .send({ email: 'no-existe-nunca@navis.test' })
+      .expect(200);
+
+    expect(body<{ status: boolean }>(existing).status).toBe(true);
+    expect(body<{ status: boolean }>(missing).status).toBe(true);
+  });
+
+  it('rechaza cambiar la contraseña con un token que no existe', async () => {
+    await request(app.getHttpServer())
+      .post('/api/auth/reset-password')
+      .send({ newPassword: 'OtraContraseña2026', token: 'token-que-no-existe' })
+      .expect(400);
+  });
 });

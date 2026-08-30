@@ -20,6 +20,12 @@ const LoginPage = lazy(() =>
 const RegisterPage = lazy(() =>
   import('@/routes/register').then((module) => ({ default: module.RegisterPage })),
 );
+const ForgotPasswordPage = lazy(() =>
+  import('@/routes/forgot-password').then((module) => ({ default: module.ForgotPasswordPage })),
+);
+const ResetPasswordPage = lazy(() =>
+  import('@/routes/reset-password').then((module) => ({ default: module.ResetPasswordPage })),
+);
 const SetupPage = lazy(() =>
   import('@/routes/setup').then((module) => ({ default: module.SetupPage })),
 );
@@ -200,6 +206,28 @@ export const router = createBrowserRouter([
       <SetupGate expects="ready">
         <Lazy>
           <RegisterPage />
+        </Lazy>
+      </SetupGate>
+    ),
+  },
+  // RFC 0023. Igual que login/register: sin sesión y solo tienen sentido
+  // cuando ya hay al menos una cuenta creada (`SetupGate`).
+  {
+    path: '/forgot-password',
+    element: (
+      <SetupGate expects="ready">
+        <Lazy>
+          <ForgotPasswordPage />
+        </Lazy>
+      </SetupGate>
+    ),
+  },
+  {
+    path: '/reset-password',
+    element: (
+      <SetupGate expects="ready">
+        <Lazy>
+          <ResetPasswordPage />
         </Lazy>
       </SetupGate>
     ),

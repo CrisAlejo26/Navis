@@ -68,6 +68,8 @@ export const de = {
     groupChurch: 'Die Gemeinde',
     collapse: 'Menü einklappen',
     expand: 'Menü ausklappen',
+    allSections: 'Alle Bereiche',
+    closeMenu: 'Menü schließen',
   },
   auth: {
     signIn: 'Anmelden',
@@ -99,6 +101,28 @@ export const de = {
     creatingAccount: 'Konto wird erstellt…',
     accountCreated: 'Konto erstellt',
     emailTaken: 'Mit dieser E-Mail gibt es bereits ein Konto',
+    forgotPassword: 'Passwort vergessen?',
+    forgotPasswordTitle: 'Zugang wiederherstellen',
+    forgotPasswordSubtitle:
+      'Gib deine E-Mail-Adresse ein, und wir schicken dir einen Link für ein neues Passwort.',
+    sendResetLink: 'Link senden',
+    sendingResetLink: 'Wird gesendet…',
+    resetLinkSent: 'Schau in dein Postfach',
+    resetLinkSentDetail:
+      'Falls diese Adresse ein Konto hat, haben wir einen Link zum Zurücksetzen geschickt. Er läuft in einer Stunde ab.',
+    backToLogin: 'Zurück zur Anmeldung',
+    resetPasswordTitle: 'Lege dein neues Passwort fest',
+    resetPasswordSubtitle: 'Gib es zweimal ein, um sicherzugehen, dass es stimmt.',
+    newPassword: 'Neues Passwort',
+    confirmPassword: 'Passwort bestätigen',
+    passwordsDontMatch: 'Die Passwörter stimmen nicht überein',
+    resetPassword: 'Passwort ändern',
+    resettingPassword: 'Wird geändert…',
+    passwordReset: 'Passwort geändert. Du kannst dich jetzt damit anmelden.',
+    invalidResetToken: 'Dieser Link ist nicht mehr gültig',
+    invalidResetTokenDetail:
+      'Er ist möglicherweise abgelaufen oder wurde schon benutzt. Fordere einen neuen an.',
+    requestNewLink: 'Neuen Link anfordern',
   },
   setup: {
     eyebrow: 'Erster Start',
