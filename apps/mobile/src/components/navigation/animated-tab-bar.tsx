@@ -18,9 +18,18 @@ import { TAB_BAR_ENTRIES, type TabBarEntry } from '@/lib/nav-mobile';
 import { useThemeStore } from '@/lib/theme';
 
 const BAR_HEIGHT = 60;
-const PILL_WIDTH = 52;
-const PILL_HEIGHT = 34;
+const PILL_WIDTH = 64;
+const PILL_HEIGHT = 46;
 const PILL_SPRING = { stiffness: 240, damping: 24 };
+/** Elevación de las dos pastillas (la que se desliza y la de «Más» abierto):
+ * sin ella se leen como una mancha plana pegada al fondo (Regla 9 §2). */
+const PILL_SHADOW = {
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.18,
+  shadowRadius: 6,
+  elevation: 4,
+} as const;
 
 interface AnimatedTabBarProps extends BottomTabBarProps {
   menuOpen: boolean;
@@ -70,27 +79,37 @@ function TabButton({
       accessibilityState={{ selected: active }}
       accessibilityLabel={label}
       onPress={onPress}
-      className="gap-1 flex-1 items-center justify-center"
+      className="flex-1 items-center justify-center"
       style={{ height: BAR_HEIGHT }}
     >
-      <Animated.View style={iconStyle}>
-        {highlighted ? (
-          <View
-            className="h-8 w-8 items-center justify-center rounded-full"
-            style={{ backgroundColor: accent }}
-          >
-            <Ionicons name={entry.icon[0]} size={18} color={iconColor} />
-          </View>
-        ) : (
-          <Ionicons name={active ? entry.icon[0] : entry.icon[1]} size={22} color={iconColor} />
-        )}
-      </Animated.View>
-      <Text
-        className={active || highlighted ? 'font-semibold' : ''}
-        style={{ color: iconColor, fontSize: 10 }}
+      <Animated.View
+        style={[
+          iconStyle,
+          {
+            width: PILL_WIDTH,
+            height: PILL_HEIGHT,
+            borderRadius: PILL_HEIGHT / 2,
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 2,
+          },
+          // Solo «Más» abierto lleva pastilla propia: la del tab activo ya la
+          // pinta la que se desliza, detrás de todos los botones.
+          highlighted ? { backgroundColor: accent, ...PILL_SHADOW } : null,
+        ]}
       >
-        {label}
-      </Text>
+        <Ionicons
+          name={active || highlighted ? entry.icon[0] : entry.icon[1]}
+          size={22}
+          color={iconColor}
+        />
+        <Text
+          className={active || highlighted ? 'font-semibold' : ''}
+          style={{ color: iconColor, fontSize: 10 }}
+        >
+          {label}
+        </Text>
+      </Animated.View>
     </Pressable>
   );
 }
@@ -144,6 +163,8 @@ export function AnimatedTabBar({
               height: PILL_HEIGHT,
               borderRadius: PILL_HEIGHT / 2,
               backgroundColor: palette.primary,
+              opacity: menuOpen ? 0 : 1,
+              ...PILL_SHADOW,
             },
           ]}
         />
@@ -151,8 +172,14 @@ export function AnimatedTabBar({
           const isMore = entry.name === 'more';
           const isActive = state.index === index && !isMore;
           const isMenuOpen = isMore && menuOpen;
-          const color =
-            isActive || isMenuOpen ? palette.primaryForeground : palette.mutedForeground;
+          // El acento es un dorado claro (`--accent`): un icono blanco encima
+          // apenas se lee. `foreground` (casi negro) sí contrasta — el mismo
+          // fallo que ya resuelve `accent-foreground` en la web (Regla 3 §2).
+          const color = isActive
+            ? palette.primaryForeground
+            : isMenuOpen
+              ? palette.foreground
+              : palette.mutedForeground;
           return (
             <TabButton
               key={entry.name}

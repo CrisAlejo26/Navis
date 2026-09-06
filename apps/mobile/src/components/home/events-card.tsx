@@ -24,7 +24,7 @@ export function EventsCard({
   return (
     <Pressable
       onPress={() => router.push('/calendar')}
-      className="gap-3 p-5 rounded-xl border border-border bg-card active:opacity-90"
+      className="gap-3 p-4 rounded-xl border border-t-4 border-border border-t-primary bg-card active:opacity-90"
     >
       <TileHeader
         icon="calendar"

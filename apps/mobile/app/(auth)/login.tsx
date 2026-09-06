@@ -3,7 +3,9 @@ import { Link, router } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { KeyboardAvoidingView, Platform, ScrollView, Text, View } from 'react-native';
+import Animated, { FadeInUp } from 'react-native-reanimated';
 
+import { BrandHeader } from '@/components/auth/brand-header';
 import { LanguageSelect } from '@/components/language-select';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { Button } from '@/components/ui/button';
@@ -46,53 +48,64 @@ export default function LoginScreen() {
       className="flex-1 bg-background"
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      <ScrollView contentContainerClassName="grow justify-center gap-6 p-6">
-        <View className="gap-1">
-          <Text className="text-3xl font-bold text-foreground">{t('common.appName')}</Text>
-          <Text className="text-muted-foreground">{t('home.subtitle')}</Text>
-        </View>
+      <ScrollView contentContainerClassName="grow" keyboardShouldPersistTaps="handled">
+        <BrandHeader />
 
-        <View className="gap-4">
-          <TextField
-            label={t('auth.email')}
-            value={email}
-            onChangeText={setEmail}
-            autoCapitalize="none"
-            autoComplete="email"
-            keyboardType="email-address"
-            textContentType="emailAddress"
-          />
-          <TextField
-            label={t('auth.password')}
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-            autoComplete="current-password"
-            textContentType="password"
-          />
+        <Animated.View
+          entering={FadeInUp.delay(80).duration(420).springify().damping(18)}
+          className="gap-6 rounded-t-3xl p-6 pt-8 grow justify-between bg-background"
+          style={{ marginTop: -20 }}
+        >
+          <View className="gap-6">
+            <View className="gap-1">
+              <Text className="text-xl font-semibold text-foreground">{t('auth.signInTitle')}</Text>
+              <Text className="text-sm text-muted-foreground">{t('auth.signInSubtitle')}</Text>
+            </View>
 
-          {error ? <Text className="text-sm text-destructive">{error}</Text> : null}
+            <View className="gap-4">
+              <TextField
+                label={t('auth.email')}
+                value={email}
+                onChangeText={setEmail}
+                autoCapitalize="none"
+                autoComplete="email"
+                keyboardType="email-address"
+                textContentType="emailAddress"
+              />
+              <TextField
+                label={t('auth.password')}
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry
+                autoComplete="current-password"
+                textContentType="password"
+              />
 
-          <Button
-            title={loading ? t('auth.signingIn') : t('auth.signIn')}
-            loading={loading}
-            onPress={() => {
-              void onSubmit();
-            }}
-          />
-        </View>
+              {error ? <Text className="text-sm text-destructive">{error}</Text> : null}
 
-        <View className="gap-1 flex-row items-center justify-center">
-          <Text className="text-sm text-muted-foreground">{t('auth.noAccount')}</Text>
-          <Link href="/(auth)/register" className="text-sm font-medium text-primary">
-            {t('auth.signUp')}
-          </Link>
-        </View>
+              <Button
+                title={loading ? t('auth.signingIn') : t('auth.signIn')}
+                loading={loading}
+                size="lg"
+                onPress={() => {
+                  void onSubmit();
+                }}
+              />
+            </View>
 
-        <View className="gap-4 pt-4 items-center">
-          <ThemeToggle />
-          <LanguageSelect />
-        </View>
+            <View className="gap-1 flex-row items-center justify-center">
+              <Text className="text-sm text-muted-foreground">{t('auth.noAccount')}</Text>
+              <Link href="/(auth)/register" className="text-sm font-medium text-primary">
+                {t('auth.signUp')}
+              </Link>
+            </View>
+          </View>
+
+          <View className="gap-4 pt-4 flex-row items-center justify-center">
+            <ThemeToggle />
+            <LanguageSelect />
+          </View>
+        </Animated.View>
       </ScrollView>
     </KeyboardAvoidingView>
   );

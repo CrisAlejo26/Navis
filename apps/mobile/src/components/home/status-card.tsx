@@ -36,7 +36,7 @@ export function StatusCard({
     <View className="overflow-hidden rounded-xl border border-border bg-card">
       <Pressable
         onPress={() => router.push('/believers')}
-        className="gap-3 p-5 active:opacity-90"
+        className="gap-3 p-4 active:opacity-90"
         style={{ backgroundColor: palette.primary }}
       >
         <TileHeader icon="people" label={t('home.believers')} tone="filled" palette={palette} />
@@ -59,7 +59,7 @@ export function StatusCard({
 
       <Pressable
         onPress={() => router.push('/believers?attention=true')}
-        className="gap-3 p-5 border-t border-border active:opacity-80"
+        className="gap-3 p-4 border-t-4 border-t-warning active:opacity-80"
       >
         <TileHeader icon="warning" label={t('home.attention')} tone="warning" palette={palette} />
         <Text className="text-3xl font-semibold text-foreground tabular-nums">

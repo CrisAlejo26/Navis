@@ -24,7 +24,7 @@ export function BucketBars({
   if (total === 0) return null;
 
   return (
-    <View className="gap-3 p-5 rounded-xl border border-border bg-card">
+    <View className="gap-3 p-4 rounded-xl border border-t-4 border-border border-t-accent bg-card">
       <Text className="text-sm font-semibold text-foreground">{title}</Text>
 
       <View className="h-3 flex-row overflow-hidden rounded-full bg-muted">

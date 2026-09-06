@@ -17,7 +17,7 @@ export function EmptyRow({
   palette: ThemeColors;
 }) {
   return (
-    <View className="gap-2 py-6 items-center">
+    <View className="gap-1.5 py-3 items-center">
       <Ionicons name={icon} size={22} color={palette.mutedForeground} />
       <Text className="text-sm text-muted-foreground">{label}</Text>
     </View>

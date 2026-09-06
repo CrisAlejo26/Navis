@@ -1,3 +1,4 @@
+import { Ionicons } from '@expo/vector-icons';
 import { useDashboardSummary } from '@navis/api-client';
 import { themeColorsHex } from '@navis/theme';
 import { useTranslation } from 'react-i18next';
@@ -11,6 +12,7 @@ import { NotesCard } from '@/components/home/notes-card';
 import { StatusCard } from '@/components/home/status-card';
 import { TodayTasksCard } from '@/components/home/today-tasks-card';
 import { WelcomeHeader } from '@/components/home/welcome-header';
+import { Button } from '@/components/ui/button';
 import { api } from '@/lib/api';
 import { useThemeStore } from '@/lib/theme';
 
@@ -40,8 +42,15 @@ export default function DashboardScreen() {
 
   if (isError || !data) {
     return (
-      <View className="gap-2 p-6 flex-1 items-center justify-center bg-background">
+      <View className="gap-3 p-6 flex-1 items-center justify-center bg-background">
+        <Ionicons name="cloud-offline-outline" size={32} color={palette.mutedForeground} />
         <Text className="text-sm text-center text-muted-foreground">{t('errors.generic')}</Text>
+        <Button
+          title={t('common.retry')}
+          variant="secondary"
+          size="sm"
+          onPress={() => void refetch()}
+        />
       </View>
     );
   }
@@ -49,7 +58,7 @@ export default function DashboardScreen() {
   return (
     <ScrollView
       className="flex-1 bg-background"
-      contentContainerClassName="gap-4 p-4 pt-16"
+      contentContainerClassName="gap-3 p-4 pt-16"
       refreshControl={
         <RefreshControl
           refreshing={isRefetching}

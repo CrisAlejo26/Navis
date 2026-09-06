@@ -28,7 +28,7 @@ export function ActivityCard({ weeks }: { weeks: readonly DashboardWeekActivity[
   const cumbre = weeks[shape.peak];
 
   return (
-    <View className="gap-3 p-5 rounded-xl border border-border bg-card">
+    <View className="gap-3 p-4 rounded-xl border border-t-4 border-border border-t-primary bg-card">
       <View className="gap-2 flex-row flex-wrap items-baseline justify-between">
         <Text className="text-sm font-semibold text-foreground">{t('home.weeklyActivity')}</Text>
         <Text className="text-xs text-muted-foreground">
