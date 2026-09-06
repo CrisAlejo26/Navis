@@ -30,6 +30,7 @@ export const en = {
     last30Days: '30 days',
     thisYear: 'This year',
     clearFilters: 'Clear the filters ({{total}})',
+    clearSearch: 'Clear the search',
     audio: {
       title: 'Audio',
       record: 'Record audio',

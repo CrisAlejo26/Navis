@@ -38,6 +38,7 @@ export const es = {
     last30Days: '30 días',
     thisYear: 'Este año',
     clearFilters: 'Quitar los filtros ({{total}})',
+    clearSearch: 'Borrar la búsqueda',
     audio: {
       title: 'Audios',
       record: 'Grabar un audio',

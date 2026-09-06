@@ -1,8 +1,16 @@
 import '@/global.css';
 
+import { LibreCaslonDisplay_400Regular } from '@expo-google-fonts/libre-caslon-display';
+import {
+  PublicSans_400Regular,
+  PublicSans_500Medium,
+  PublicSans_600SemiBold,
+  PublicSans_700Bold,
+} from '@expo-google-fonts/public-sans';
 import { themeColorsHex } from '@navis/theme';
 import { MORE_MENU_ENTRIES } from '@/lib/nav-mobile';
 import { QueryClientProvider } from '@tanstack/react-query';
+import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
@@ -61,11 +69,29 @@ function RootNavigator() {
 }
 
 export default function RootLayout() {
+  // La pareja tipográfica de Navis (packages/theme/src/fonts.ts): se carga
+  // una sola vez, aquí, bajo los mismos nombres que usan los `--font-*` de
+  // `tokens.native.css`. Sin esperar a `fontsLoaded`, el primer fotograma
+  // saldría con la fuente del sistema y se vería el salto al llegar la real.
+  const [fontsLoaded] = useFonts({
+    LibreCaslonDisplay_400Regular,
+    PublicSans_400Regular,
+    PublicSans_500Medium,
+    PublicSans_600SemiBold,
+    PublicSans_700Bold,
+  });
+
   useEffect(() => {
     // El store de tema rehidrata desde AsyncStorage de forma asíncrona; se
-    // oculta el splash cuando ya sabemos qué tema pintar.
-    void SplashScreen.hideAsync();
-  }, []);
+    // oculta el splash cuando ya sabemos qué tema pintar y ya está la fuente.
+    if (fontsLoaded) {
+      void SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded]);
+
+  if (!fontsLoaded) {
+    return null;
+  }
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>

@@ -22,6 +22,8 @@
   },
   "dependencies": {
     "@better-auth/expo": "1.6.25",
+    "@expo-google-fonts/libre-caslon-display": "^0.4.1",
+    "@expo-google-fonts/public-sans": "^0.4.2",
     "@expo/metro-runtime": "~57.0.14",
     "@expo/vector-icons": "^15.0.2",
     "@navis/api-client": "workspace:*",

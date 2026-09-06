@@ -54,6 +54,12 @@ export const themeColors = {
  * del manifest PWA, el splash de Expo, la barra de navegación de Android o el
  * prop `color` de los iconos de `@expo/vector-icons` (que no admiten
  * `className`). Se usa aquí y nunca a ojo.
+ *
+ * Hasta ahora nadie necesitaba el `-foreground` de `secondary`, `accent`,
+ * `destructive`, `success` ni `warning` en hexadecimal (llegaba con la clase
+ * de Tailwind); un icono dentro de un botón de esos tonos sí lo necesita
+ * (Regla 3 §6: los dos ficheros van a la par). Conversión oklch → sRGB de los
+ * mismos valores de `tokens.css`, no una paleta nueva.
  */
 export const themeColorsHex = {
   light: {
@@ -64,12 +70,17 @@ export const themeColorsHex = {
     primary: '#2140cf',
     primaryForeground: '#ffffff',
     secondary: '#eef2f9',
+    secondaryForeground: '#262e3d',
     muted: '#f0f2f5',
     mutedForeground: '#636975',
     accent: '#f1bf5b',
+    accentForeground: '#302103',
     destructive: '#db2c2b',
+    destructiveForeground: '#fff6f5',
     success: '#2e9e52',
+    successForeground: '#f4faf5',
     warning: '#e99b2a',
+    warningForeground: '#331f05',
     border: '#dee1e7',
   },
   dark: {
@@ -80,12 +91,17 @@ export const themeColorsHex = {
     primary: '#355cec',
     primaryForeground: '#ffffff',
     secondary: '#222630',
+    secondaryForeground: '#f0f2f5',
     muted: '#222630',
     mutedForeground: '#989fab',
     accent: '#e1af4a',
+    accentForeground: '#1f1401',
     destructive: '#f14e46',
+    destructiveForeground: '#150a09',
     success: '#4cb86a',
+    successForeground: '#071009',
     warning: '#f7ac4d',
+    warningForeground: '#211201',
     border: '#2b303b',
   },
 } as const satisfies Record<ResolvedTheme, Record<string, string>>;

@@ -12,6 +12,22 @@
 
 @import './tokens.css';
 
+/*
+ * Tipografía (Fase 0 de docs/sistema-componentes-movil-plan.md): los nombres
+ * exactos que registra `useFonts` en `apps/mobile/app/_layout.tsx`, así que
+ * tienen que coincidir letra a letra con lo que exporta cada paquete
+ * `@expo-google-fonts/*`. La pareja está documentada en
+ * `packages/theme/src/fonts.ts` (`FONT_FAMILIES`) — cambiarla es cambiar los
+ * cinco valores de ahí y estos cinco, nada más.
+ */
+@theme inline {
+  --font-display: LibreCaslonDisplay_400Regular;
+  --font-sans: PublicSans_400Regular;
+  --font-sans-medium: PublicSans_500Medium;
+  --font-sans-semibold: PublicSans_600SemiBold;
+  --font-sans-bold: PublicSans_700Bold;
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     --background: var(--dark-background);

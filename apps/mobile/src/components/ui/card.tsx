@@ -13,8 +13,10 @@ interface CardProps {
 export function Card({ title, description, children, className }: CardProps) {
   return (
     <View className={cn('gap-2 p-4 rounded-xl border border-border bg-card', className)}>
-      {title ? <Text className="text-base font-semibold text-foreground">{title}</Text> : null}
-      {description ? <Text className="text-sm text-muted-foreground">{description}</Text> : null}
+      {title ? <Text className="text-base font-sans-semibold text-foreground">{title}</Text> : null}
+      {description ? (
+        <Text className="text-sm font-sans text-muted-foreground">{description}</Text>
+      ) : null}
       {children}
     </View>
   );

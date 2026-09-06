@@ -3,6 +3,8 @@ import { Image, Text, View } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 
 import { ChartLines } from '@/components/auth/chart-lines';
+import { BodyText } from '@/components/ui/text';
+import { Title } from '@/components/ui/title';
 
 import navisIcon from '../../../assets/icon.png';
 
@@ -30,7 +32,7 @@ export function BrandHeader({ tagline = true }: { tagline?: boolean }) {
         className="gap-3 flex-row items-center"
       >
         <Image source={navisIcon} className="h-11 w-11 rounded-xl" />
-        <Text className="text-xs font-semibold -mr-[0.1em] tracking-[6px] text-brand-foreground uppercase">
+        <Text className="text-xs font-sans-bold -mr-[0.1em] tracking-[6px] text-brand-foreground uppercase">
           {t('common.appName')}
         </Text>
       </Animated.View>
@@ -41,14 +43,14 @@ export function BrandHeader({ tagline = true }: { tagline?: boolean }) {
           className="mt-6 gap-2"
         >
           <View className="w-10 h-px bg-accent" />
-          <Text className="text-2xl font-semibold leading-tight text-brand-foreground">
+          <Title size="lg" className="text-brand-foreground">
             {t('auth.tagline')}
-          </Text>
+          </Title>
           {/* `/70` no es una clase de color válida en nativo (Regla 3 §5):
               la opacidad va como `style`, aparte del color. */}
-          <Text className="text-sm leading-relaxed text-brand-foreground" style={{ opacity: 0.7 }}>
+          <BodyText className="text-brand-foreground" style={{ opacity: 0.7 }}>
             {t('auth.taglineDetail')}
-          </Text>
+          </BodyText>
         </Animated.View>
       )}
     </View>

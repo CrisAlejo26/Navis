@@ -1,7 +1,9 @@
 import { greetingKeyFor } from '@navis/shared';
 import { useTranslation } from 'react-i18next';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
 
+import { Caption } from '@/components/ui/text';
+import { Title } from '@/components/ui/title';
 import { formatLongDate } from '@/lib/format';
 import { useSession } from '@/lib/auth-client';
 
@@ -25,10 +27,8 @@ export function WelcomeHeader({ now = new Date() }: { now?: Date }) {
 
   return (
     <View className="gap-1">
-      <Text className="text-2xl font-semibold text-foreground">
-        {name ? t(greetingKeyFor(now), { name }) : t('home.title')}
-      </Text>
-      <Text className="text-sm text-muted-foreground">{dateCapitalized}</Text>
+      <Title size="lg">{name ? t(greetingKeyFor(now), { name }) : t('home.title')}</Title>
+      <Caption>{dateCapitalized}</Caption>
     </View>
   );
 }
