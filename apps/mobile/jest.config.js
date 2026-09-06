@@ -15,4 +15,9 @@ module.exports = {
     'node_modules/(?!((jest-)?react-native|@react-native(-community)?|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg|nativewind|react-native-css|@navis/.*))',
   ],
   collectCoverageFrom: ['src/**/*.{ts,tsx}', 'app/**/*.{ts,tsx}'],
+  // El runner de CI es bastante más lento que una máquina de desarrollo: un
+  // `render` async (Testing Library 14) que aquí tarda milisegundos llegó a
+  // superar los 5000 ms por defecto de Jest en GitHub Actions y tumbó el PR
+  // sin que el componente tuviera ningún fallo real.
+  testTimeout: 15000,
 };
