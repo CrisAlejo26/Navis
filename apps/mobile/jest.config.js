@@ -18,6 +18,10 @@ module.exports = {
   // El runner de CI es bastante más lento que una máquina de desarrollo: un
   // `render` async (Testing Library 14) que aquí tarda milisegundos llegó a
   // superar los 5000 ms por defecto de Jest en GitHub Actions y tumbó el PR
-  // sin que el componente tuviera ningún fallo real.
-  testTimeout: 15000,
+  // sin que el componente tuviera ningún fallo real. Subido a 15000 ms lo
+  // volvió a hacer con `DateRangePicker` (su árbol es el más pesado: la
+  // cuadrícula de un mes son hasta 42 celdas con icono) — 30000 ms da
+  // margen de verdad sin dejar de cazar un cuelgue real, que tardaría
+  // muchísimo más que eso.
+  testTimeout: 30000,
 };
