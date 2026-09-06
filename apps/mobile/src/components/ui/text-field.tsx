@@ -1,7 +1,7 @@
 import { useState, type ReactNode } from 'react';
 import { Text, TextInput, View, type TextInputProps } from 'react-native';
 
-import { Icon } from '@/components/ui/icon';
+import { FieldError } from '@/components/ui/field-error';
 import { cn } from '@/lib/cn';
 
 export interface TextFieldProps extends TextInputProps {
@@ -72,12 +72,7 @@ export function TextField({
         />
         {trailingIcon}
       </View>
-      {error ? (
-        <View className="gap-1 flex-row items-center">
-          <Icon name="alert-circle" tone="destructive" size="sm" />
-          <Text className="text-sm font-sans text-destructive">{error}</Text>
-        </View>
-      ) : null}
+      {error ? <FieldError message={error} /> : null}
     </View>
   );
 }

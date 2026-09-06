@@ -1,6 +1,7 @@
 import { View } from 'react-native';
 
 import { ControlRow } from '@/components/ui/control-row';
+import { FieldError } from '@/components/ui/field-error';
 import { cn } from '@/lib/cn';
 
 export interface RadioOption<T extends string> {
@@ -12,6 +13,7 @@ export interface RadioOption<T extends string> {
 interface RadioGroupProps<T extends string> {
   options: RadioOption<T>[];
   value: T;
+  error?: string;
   onChange: (value: T) => void;
   disabled?: boolean;
 }
@@ -33,23 +35,27 @@ function RadioGlyph({ selected }: { selected: boolean }) {
 export function RadioGroup<T extends string>({
   options,
   value,
+  error,
   onChange,
   disabled = false,
 }: RadioGroupProps<T>) {
   return (
-    <View accessibilityRole="radiogroup">
-      {options.map((option) => (
-        <ControlRow
-          key={option.value}
-          label={option.label}
-          description={option.description}
-          accessibilityRole="radio"
-          selected={option.value === value}
-          disabled={disabled}
-          onPress={() => onChange(option.value)}
-          control={<RadioGlyph selected={option.value === value} />}
-        />
-      ))}
+    <View className="gap-1">
+      <View accessibilityRole="radiogroup">
+        {options.map((option) => (
+          <ControlRow
+            key={option.value}
+            label={option.label}
+            description={option.description}
+            accessibilityRole="radio"
+            selected={option.value === value}
+            disabled={disabled}
+            onPress={() => onChange(option.value)}
+            control={<RadioGlyph selected={option.value === value} />}
+          />
+        ))}
+      </View>
+      {error ? <FieldError message={error} /> : null}
     </View>
   );
 }

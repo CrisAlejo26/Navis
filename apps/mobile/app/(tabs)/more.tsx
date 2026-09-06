@@ -1,7 +1,8 @@
 import { useTranslation } from 'react-i18next';
-import { ScrollView, Text, View } from 'react-native';
+import { ScrollView } from 'react-native';
 
 import { MoreMenuContent } from '@/components/navigation/more-menu-content';
+import { TopBar } from '@/components/ui/top-bar';
 
 /** Pantalla de respaldo del menú «Más»: el mismo listado que el bottom sheet. */
 export default function MoreScreen() {
@@ -9,10 +10,7 @@ export default function MoreScreen() {
 
   return (
     <ScrollView className="flex-1 bg-background" contentContainerClassName="gap-4 p-4 pt-16">
-      <View className="gap-0.5">
-        <Text className="text-2xl font-semibold text-foreground">{t('nav.more')}</Text>
-        <Text className="text-muted-foreground">{t('nav.allSections')}</Text>
-      </View>
+      <TopBar title={t('nav.more')} subtitle={t('nav.allSections')} />
       <MoreMenuContent />
     </ScrollView>
   );

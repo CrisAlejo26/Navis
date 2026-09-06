@@ -16,6 +16,7 @@ interface SelectProps<T extends string> {
   value: T | null;
   options: SelectOption<T>[];
   placeholder: string;
+  error?: string;
   onChange: (value: T) => void;
   disabled?: boolean;
 }
@@ -30,6 +31,7 @@ export function Select<T extends string>({
   value,
   options,
   placeholder,
+  error,
   onChange,
   disabled = false,
 }: SelectProps<T>) {
@@ -43,6 +45,7 @@ export function Select<T extends string>({
         value={selected?.label}
         placeholder={placeholder}
         icon="chevron-down"
+        error={error}
         disabled={disabled}
         onPress={() => setOpen(true)}
       />

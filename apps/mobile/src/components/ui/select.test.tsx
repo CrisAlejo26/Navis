@@ -52,4 +52,19 @@ describe('Select', () => {
 
     expect(onChange).toHaveBeenCalledWith('en');
   });
+
+  it('muestra el error cuando se pasa', async () => {
+    await render(
+      <Select
+        label="Idioma"
+        value={null}
+        options={OPTIONS}
+        placeholder="Elige uno"
+        error="Elige un idioma"
+        onChange={jest.fn()}
+      />,
+    );
+
+    expect(screen.getByText('Elige un idioma')).toBeTruthy();
+  });
 });

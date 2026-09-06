@@ -15,6 +15,7 @@ interface DateRangePickerProps {
   label: string;
   value: DateRange | null;
   placeholder: string;
+  error?: string;
   onChange: (value: DateRange) => void;
   disabled?: boolean;
   timezone?: string;
@@ -29,6 +30,7 @@ export function DateRangePicker({
   label,
   value,
   placeholder,
+  error,
   onChange,
   disabled = false,
   timezone = 'UTC',
@@ -68,6 +70,7 @@ export function DateRangePicker({
         value={value ? `${formatDay(value.from)} – ${formatDay(value.to)}` : undefined}
         placeholder={placeholder}
         icon="calendar-outline"
+        error={error}
         disabled={disabled}
         onPress={openSheet}
       />

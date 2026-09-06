@@ -42,4 +42,18 @@ describe('DateRangePicker', () => {
 
     expect(onChange).toHaveBeenCalledWith({ from: today, to: today });
   });
+
+  it('muestra el error cuando se pasa', async () => {
+    await render(
+      <DateRangePicker
+        label="Fechas"
+        value={null}
+        placeholder="Elige un tramo"
+        error="Elige un tramo de fechas"
+        onChange={jest.fn()}
+      />,
+    );
+
+    expect(screen.getByText('Elige un tramo de fechas')).toBeTruthy();
+  });
 });

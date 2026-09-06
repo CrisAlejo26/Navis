@@ -29,4 +29,18 @@ describe('DatePicker', () => {
 
     expect(onChange).toHaveBeenCalledWith(today);
   });
+
+  it('muestra el error cuando se pasa', async () => {
+    await render(
+      <DatePicker
+        label="Fecha"
+        value={null}
+        placeholder="Elige un día"
+        error="Elige una fecha"
+        onChange={jest.fn()}
+      />,
+    );
+
+    expect(screen.getByText('Elige una fecha')).toBeTruthy();
+  });
 });

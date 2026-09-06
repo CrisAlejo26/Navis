@@ -23,4 +23,12 @@ describe('RadioGroup', () => {
 
     expect(onChange).toHaveBeenCalledWith('en');
   });
+
+  it('muestra el error cuando se pasa', async () => {
+    await render(
+      <RadioGroup options={OPTIONS} value="es" error="Elige un idioma" onChange={jest.fn()} />,
+    );
+
+    expect(screen.getByText('Elige un idioma')).toBeTruthy();
+  });
 });

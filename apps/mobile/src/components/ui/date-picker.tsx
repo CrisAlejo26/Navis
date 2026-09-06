@@ -13,6 +13,7 @@ interface DatePickerProps {
   label: string;
   value: IsoDate | null;
   placeholder: string;
+  error?: string;
   onChange: (value: IsoDate) => void;
   disabled?: boolean;
   timezone?: string;
@@ -23,6 +24,7 @@ export function DatePicker({
   label,
   value,
   placeholder,
+  error,
   onChange,
   disabled = false,
   timezone = 'UTC',
@@ -49,6 +51,7 @@ export function DatePicker({
         value={value ? formatDay(value) : undefined}
         placeholder={placeholder}
         icon="calendar-outline"
+        error={error}
         disabled={disabled}
         onPress={openSheet}
       />

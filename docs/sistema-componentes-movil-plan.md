@@ -427,6 +427,33 @@ debajo de la etiqueta en varias). Salida:
 
 ## 12. Fase 7 — Formularios (composición, no un componente nuevo)
 
+**Estado: hecho (2026-09-06).** Dos de las tres salidas previstas no se
+construyeron, con motivo:
+
+- **`FormField` no se hizo.** La idea era envolver «cualquier input de las
+  fases 4-6» con etiqueta + control + error, pero al mirar esos inputs
+  ninguno lo necesitaba de fuera: `TextField` ya trae su propia etiqueta y su
+  propio error desde la Fase 4, y `FieldButton`/`ControlRow` (las bases de
+  `Select`, `DatePicker`, `DateRangePicker`, `Checkbox`, `RadioGroup`,
+  `Switch`) también traen la suya. Un `FormField` genérico no habría tenido
+  ni un caso real que envolver — exactamente el «abstraer por si acaso» que
+  prohíbe la Regla 1 punto 4. Lo que sí faltaba era el **error**, que
+  `FieldButton` y `RadioGroup` no tenían: se les añadió un prop `error`
+  directamente, reutilizando `FieldError` (nuevo, extraído de `TextField`:
+  icono + texto, nunca solo color — Regla 3 §7), en vez de montar un
+  envoltorio que nadie iba a usar.
+- **`Stepper` tampoco.** Ningún flujo de `apps/mobile` tiene hoy varios
+  pasos (una búsqueda en el código no encontró ninguno) — el propio texto de
+  esta fase ya lo condicionaba a «si aparece», y no ha aparecido. Se decide
+  el día que lo pida un flujo real, como el FAB de la Fase 3.
+- **`FilterSheet`** sí, tal cual se pidió esta sesión: una hoja con
+  Cancelar/Aplicar abajo (patrón exacto de Shopify) y los campos como
+  `children` — no conoce `SearchField`, `DateRangePicker` ni `Checkbox`, los
+  compone quien la use. Así sirve para un listado de creyentes o uno de
+  tareas sin que `FilterSheet` tenga que saber qué filtros tiene cada uno.
+
+`pnpm check` en verde; `expo-doctor` 20/20.
+
 - **Buscar**: `refero_search_flows` — «multi step form mobile», «settings form
   with validation» — para ver dónde se muestra el error (inline vs. resumen) y
   cómo se agrupan campos relacionados. Para la pantalla de filtros en
@@ -450,6 +477,27 @@ debajo de la etiqueta en varias). Salida:
 
 Ya hay una implementación (RFC de navegación móvil); esta fase es ampliar
 variantes reutilizables, no repetir ese trabajo.
+
+**Estado: hecho (2026-09-06).** Búsqueda dirigida («top app bar with action
+button mobile»): Ivory (avatar + título «Lists» + botón «Edit»), Bear (título
+«Notes» + iconos de buscar y menú), TikTok (flecha atrás + título «Scan» — la
+referencia de la variante que no se construyó). Salida:
+
+- **`TopBar`**: título, subtítulo opcional y una acción opcional
+  (`IconButton` a la derecha, como Ivory/Bear). **Sin variante «con botón
+  atrás»**, a diferencia de lo previsto: las pantallas que se empujan en la
+  pila (`journal`, `tasks`, `lists`…) ya tienen una, nativa, puesta por
+  `Stack.Screen` en `app/_layout.tsx` (RFC 0001) con su propio botón de
+  volver — una cabecera propia con botón atrás no sustituiría a esa, la
+  duplicaría, porque esa configuración no se apaga pantalla a pantalla sino
+  para todo el grupo. Construirla habría sido technical debt sin ningún sitio
+  real donde encajar (Regla 1 punto 4).
+- Aplicado en las dos pantallas que hoy pintaban su título a mano:
+  `MoreScreen` (título + subtítulo) y `PlaceholderScreen` (título solo).
+  Ninguna de las dos usaba componentes de `ui/` para esto, así que la
+  ganancia es real, no cosmética.
+
+`pnpm check` en verde; `expo-doctor` 20/20.
 
 - **Buscar**: ya investigado en `docs/referencias-app-movil.md` — reutilizar
   esas referencias (pill deslizante, bottom sheet escalonado) antes de buscar
