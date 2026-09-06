@@ -1,22 +1,20 @@
-import { Ionicons } from '@expo/vector-icons';
-import { themeColorsHex } from '@navis/theme';
 import { Redirect, Tabs } from 'expo-router';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, View } from 'react-native';
 
+import { AnimatedTabBar } from '@/components/navigation/animated-tab-bar';
+import { MoreMenu } from '@/components/navigation/more-menu';
 import { useSession } from '@/lib/auth-client';
-import { useThemeStore } from '@/lib/theme';
 
 /**
- * Área autenticada. Cinco pestañas: la web tiene siete entradas de menú, pero
- * en una barra inferior más de cinco quedan ilegibles, así que profecías,
- * sueños y comunicaciones se agrupan en «Más».
+ * Área autenticada. La barra inferior es la de `AnimatedTabBar` (pill con
+ * spring); «Más» abre `MoreMenu`, un bottom sheet con el resto de secciones.
  */
 export default function TabsLayout() {
   const { t } = useTranslation();
   const { data: session, isPending } = useSession();
-  const resolvedTheme = useThemeStore((state) => state.resolvedTheme);
-  const palette = themeColorsHex[resolvedTheme];
+  const [menuOpen, setMenuOpen] = useState(false);
 
   if (isPending) {
     return (
@@ -29,59 +27,24 @@ export default function TabsLayout() {
   if (!session) return <Redirect href="/(auth)/login" />;
 
   return (
-    <Tabs
-      screenOptions={{
-        headerShown: false,
-        tabBarActiveTintColor: palette.primary,
-        tabBarInactiveTintColor: palette.mutedForeground,
-        tabBarStyle: { backgroundColor: palette.card, borderTopColor: palette.border },
-      }}
-    >
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: t('nav.dashboard'),
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="home-outline" color={color} size={size} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="calendar"
-        options={{
-          title: t('nav.calendar'),
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="calendar-outline" color={color} size={size} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="believers"
-        options={{
-          title: t('nav.believers'),
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="people-outline" color={color} size={size} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="more"
-        options={{
-          title: t('nav.more'),
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="ellipsis-horizontal" color={color} size={size} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="settings"
-        options={{
-          title: t('nav.settings'),
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="settings-outline" color={color} size={size} />
-          ),
-        }}
-      />
-    </Tabs>
+    <View className="flex-1">
+      <Tabs
+        tabBar={(props) => (
+          <AnimatedTabBar
+            {...props}
+            menuOpen={menuOpen}
+            onToggleMenu={() => setMenuOpen((o) => !o)}
+          />
+        )}
+        screenOptions={{ headerShown: false }}
+      >
+        <Tabs.Screen name="index" options={{ title: t('nav.dashboard') }} />
+        <Tabs.Screen name="calendar" options={{ title: t('nav.calendar') }} />
+        <Tabs.Screen name="believers" options={{ title: t('nav.believers') }} />
+        <Tabs.Screen name="more" options={{ title: t('nav.more') }} />
+        <Tabs.Screen name="settings" options={{ title: t('nav.settings') }} />
+      </Tabs>
+      <MoreMenu open={menuOpen} onClose={() => setMenuOpen(false)} />
+    </View>
   );
 }

@@ -1,6 +1,9 @@
 import { isCongregationAccent, type CongregationAccent } from '@navis/shared';
-import { brandColorHex, themeColorsHex, type ResolvedTheme } from '@navis/theme';
 import type { CSSProperties } from 'react';
+
+// `accentHex` vive en `@navis/theme` (móvil también la necesita, para props
+// nativos). Reexportada para no tocar los ocho sitios que la importan de aquí.
+export { accentHex } from '@navis/theme';
 
 /**
  * Cómo se pinta lo que lleva color propio: una sede en el calendario, un don en
@@ -79,21 +82,4 @@ function luminance(hex: string): number {
   };
 
   return 0.2126 * canal(1) + 0.7152 * canal(3) + 0.0722 * canal(5);
-}
-
-/**
- * El mismo color en hexadecimal, para la lámina que se comparte: se rasteriza
- * a imagen y ni `oklch` ni una variable sobreviven a ese viaje (RFC 0002 D14).
- */
-export function accentHex(accent: string, theme: ResolvedTheme = 'light'): string {
-  if (HEX.test(accent)) return accent;
-
-  const palette = themeColorsHex[theme];
-
-  if (accent === 'accent') return palette.accent;
-  if (accent === 'success') return palette.success;
-  if (accent === 'warning') return palette.warning;
-  if (accent === 'destructive') return palette.destructive;
-  if (accent === 'brand') return brandColorHex;
-  return palette.primary;
 }

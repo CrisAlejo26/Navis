@@ -1,6 +1,7 @@
 import '@/global.css';
 
 import { themeColorsHex } from '@navis/theme';
+import { MORE_MENU_ENTRIES } from '@/lib/nav-mobile';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
@@ -18,12 +19,11 @@ import { useThemeStore } from '@/lib/theme';
 
 void SplashScreen.preventAutoHideAsync();
 
-/** Pantallas que viven fuera de las pestañas y se abren desde «Más». */
-const stackScreens = [
-  { name: 'prophecies', titleKey: 'nav.prophecies' },
-  { name: 'dreams', titleKey: 'nav.dreams' },
-  { name: 'communications', titleKey: 'nav.communications' },
-] as const;
+/** Pantallas que viven fuera de las pestañas y se abren desde el menú «Más». */
+const stackScreens = MORE_MENU_ENTRIES.map(({ name, labelKey }) => ({
+  name,
+  titleKey: labelKey,
+}));
 
 function RootNavigator() {
   const { t } = useTranslation();

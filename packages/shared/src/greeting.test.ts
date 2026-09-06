@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { GREETING_KEY, greetingKeyFor } from '@/lib/greeting';
+import { GREETING_KEY, greetingKeyFor } from './greeting';
 
 /** Una fecha cualquiera a la hora local que se quiera probar. */
 const aLas = (hour: number) => new Date(2026, 7, 3, hour, 30);

@@ -90,6 +90,16 @@ export const themeColorsHex = {
   },
 } as const satisfies Record<ResolvedTheme, Record<string, string>>;
 
+/**
+ * Una paleta resuelta (`themeColorsHex.light` o `.dark`), para tipar props.
+ *
+ * Ensanchada a `string`: `themeColorsHex` es `as const`, así que `light` y
+ * `dark` son dos tipos de literales *distintos* (`"#fcfcfa"` no es
+ * `"#0d0f15"`) y `themeColorsHex[tema]` sería su unión, no un tipo único que
+ * puedan aceptar los dos.
+ */
+export type ThemeColors = { readonly [K in keyof (typeof themeColorsHex)['light']]: string };
+
 /** Atajo al color de fondo, que es el que más se usa fuera de las clases. */
 export const themeColorHex = {
   light: themeColorsHex.light.background,

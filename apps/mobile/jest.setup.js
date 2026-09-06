@@ -20,6 +20,35 @@ jest.mock('expo-secure-store', () => ({
   setItemAsync: jest.fn(),
 }));
 
+// Reanimated corre con worklets en el hilo de UI. Su mock oficial arrastra el
+// módulo nativo de react-native-worklets y revienta en Jest («loadUnpackers»),
+// así que se sustituye por un stub que resuelve las animaciones al instante:
+// estilos calculados al momento y entering/exiting que no hacen nada.
+jest.mock('react-native-reanimated', () => {
+  const { View } = require('react-native');
+  const entering = { duration: () => entering, delay: () => entering, springify: () => entering };
+  const Animated = { View, createAnimatedComponent: (Component) => Component };
+  return {
+    ...Animated,
+    default: Animated,
+    useSharedValue: (init) => ({ value: init }),
+    useAnimatedStyle: (updater) => (typeof updater === 'function' ? updater() : {}),
+    useReducedMotion: () => false,
+    withSpring: (value) => value,
+    withTiming: (value) => value,
+    withSequence: (...values) => values[values.length - 1],
+    withDelay: (_delay, value) => value,
+    FadeIn: entering,
+    FadeOut: entering,
+    FadeInDown: entering,
+    FadeOutDown: entering,
+    SlideInDown: entering,
+    SlideOutDown: entering,
+    ZoomIn: entering,
+    ZoomOut: entering,
+  };
+});
+
 // i18next se inicializa una vez para toda la suite: sin esto los componentes
 // renderizan las claves («theme.system») en vez del texto traducido.
 require('./src/lib/i18n');
