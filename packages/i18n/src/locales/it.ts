@@ -31,6 +31,11 @@ export const it = {
     thisYear: 'Quest’anno',
     clearFilters: 'Togliere i filtri ({{total}})',
     clearSearch: 'Cancella la ricerca',
+    today: 'Oggi',
+    thisWeek: 'Questa settimana',
+    thisMonth: 'Questo mese',
+    previousMonth: 'Mese precedente',
+    nextMonth: 'Mese successivo',
     audio: {
       title: 'Audio',
       record: 'Registra un audio',

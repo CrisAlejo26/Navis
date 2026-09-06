@@ -303,6 +303,63 @@ con `packages/theme` en la Fase 3, ahora anotada en `CLAUDE.md`.
 
 ## 10. Fase 5 — Selectores
 
+**Estado: hecho (2026-09-06).** No había ningún date picker que extraer:
+`apps/mobile` no tenía ni `Modal` ni hoja inferior (`search_graph`/`grep`
+sobre `calendar`/`date picker` en `apps/mobile/src` no encontró nada), así
+que RFC 0002 no dejaba nada que reutilizar todavía — el calendario en móvil
+sigue siendo pantalla puente. Salida:
+
+- **`BottomSheet`** (nuevo, no estaba en la lista de variantes de esta fase
+  pero hacía falta antes que las demás): hoja inferior genérica con
+  `Modal` + `Animated.View` (`SlideInDown`, respeta `useReducedMotion`,
+  Regla 9 §5) y fondo atenuado con `bg-black opacity-50` — dos utilidades
+  sueltas, no el atajo `bg-black/50` que en nativo no resuelve (Regla 3 §5).
+  `Select`, `DatePicker` y `DateRangePicker` la comparten; la Fase 13 la
+  reutilizará para lo suyo en vez de montar otra.
+- **`FieldButton`** (nuevo): el mismo lenguaje visual que `TextField` pero
+  como disparador (`Pressable`) en vez de campo editable — lo comparten los
+  tres selectores para que un formulario con campos de texto y selectores se
+  vea de la misma familia.
+- **`Select`**: hoja con la lista completa, patrón de «contenedor dominante»
+  ya investigado en `docs/referencias-app-movil.md` §1.
+- **`SegmentedControl`**: la misma firma de pastilla deslizante que
+  `AnimatedTabBar` (Regla 9 §7: se reutiliza el gesto con `withSpring`, no el
+  fichero — allí las opciones son rutas fijas, aquí son genéricas).
+- **`CalendarGrid`** + **`CalendarNav`** (nuevos, compartidos): la cuadrícula
+  de un mes y su cabecera de navegación, usadas por `DatePicker` y
+  `DateRangePicker` — se extrajeron a su propio fichero nada más aparecer la
+  segunda vez (Regla 1 §5). La aritmética de calendario (`monthGrid`,
+  `eachDay`, `addMonths`…) sale de `@navis/shared`, que la API ya usa para lo
+  mismo — nada nuevo que inventar, solo `lib/ui/date-grid.ts` poniéndole el
+  idioma encima con `Intl`.
+- **`DatePicker`**: cuadrícula + atajo «Hoy» (`Button` variante `link`) que
+  selecciona el día actual y cierra, como Revolut.
+- **`DateRangePicker`**: primer toque marca el inicio, el segundo cierra el
+  tramo sin un botón «Aplicar» aparte (como el gesto libre de Wise/TikTok);
+  **`DateRangePresets`** (nuevo, propio fichero) son los atajos «Hoy»/«Esta
+  semana»/«Este mes» — resueltos con `Button` `variant="outline" size="sm"`,
+  **no** con el `Chip` que preveía el plan: un atajo aquí dispara una acción
+  al momento, no mantiene un estado de «marcado» entre pulsaciones, que es
+  justo lo único que un `Chip` añadiría sobre un botón pequeño. El `Chip` de
+  verdad (con estado de selección y opción de quitar) sigue esperando a la
+  Fase 13, donde si hace falta.
+- **Traducciones nuevas** en `common.*` (los seis idiomas): `today`,
+  `thisWeek`, `thisMonth`, `previousMonth`, `nextMonth` — no existía ninguna
+  centralizada pese a que varias secciones ya tenían su propio «Hoy» suelto;
+  no se tocaron esas por no ser parte de este cambio.
+- **Trampa nueva** (anotada en `CLAUDE.md`): `react-native-safe-area-context`
+  no tiene insets sin un `SafeAreaProvider` alrededor, y ningún componente de
+  `components/ui` lo había necesitado hasta `BottomSheet`. Se añadió el mock
+  oficial de la librería a `jest.setup.js` (`jest/mock`) en vez de envolver
+  cada test — es lo que la propia librería recomienda. De paso, el mock de
+  Reanimated de ese fichero no tenía `.damping()` en la cadena de una
+  animación de entrada (`FadeInDown.duration().springify().damping()`, ya en
+  uso en `BrandHeader` sin test): se completó, porque `BottomSheet` sí la
+  ejercita.
+
+`pnpm check` en verde; `expo-doctor` 20/20 (sin dependencias nuevas esta
+fase).
+
 - **Buscar**: `refero_search_screens` — «segmented control mobile», «dropdown
   select bottom sheet», «slider range mobile», más una tanda específica de
   calendario/rango de fechas: **Airbnb** (hoja inferior para cambiar entre
@@ -327,6 +384,37 @@ con `packages/theme` en la Fase 3, ahora anotada en `CLAUDE.md`.
   extraer a `components/ui`.
 
 ## 11. Fase 6 — Checkbox, radio y switches
+
+**Estado: hecho (2026-09-06).** `refero_search_screens` — Netflix y Patreon
+(casilla a la izquierda, etiqueta a la derecha, sin descripción), Acorns y
+The Body Coach (tarjetas de radio con la fila entera como objetivo táctil),
+The Athletic/Flo/Ground News (interruptor a la derecha, con descripción
+debajo de la etiqueta en varias). Salida:
+
+- **`ControlRow`** (nuevo, no estaba en el plan pero salió al escribir el
+  primero de los tres): la fila —etiqueta, descripción opcional, control— se
+  repetía igual en los tres, así que se extrajo antes de escribirla tres
+  veces (Regla 1 §5). Toda la fila es `Pressable`; el control que recibe
+  siempre es decorativo (`accessibilityElementsHidden` en el interruptor,
+  nada especial en la casilla/radio porque son `View` sin comportamiento
+  propio) — es la fila la que anuncia el estado, una sola vez.
+- **`Checkbox`**: casilla + etiqueta a la derecha, como Netflix/Patreon.
+- **`RadioGroup`**: gestiona la selección única él mismo; cada opción admite
+  descripción opcional (Acorns no la usa, pero el patrón de tarjeta con texto
+  de apoyo aparece en otras referencias de esta sesión).
+- **`Switch`**: envuelve el `Switch` nativo de React Native (no uno pintado a
+  mano): ya es accesible, ya cumple el tamaño táctil en las dos plataformas,
+  y es exactamente el control que enseñan todas las referencias — no hay
+  «genérico» que evitar aquí (Regla 9), es la convención real del sistema
+  operativo. Sus colores salen de `themeColorsHex` (Regla 3 §5: `trackColor`/
+  `thumbColor` no aceptan `className`); va con `pointerEvents="none"` para
+  que sea `ControlRow` quien reciba el toque en cualquier punto de la fila,
+  no solo en el interruptor.
+- Los tres comparten alto de fila (`min-h-11` en `ControlRow`) para poder
+  combinarse en una misma lista de ajustes, y el objetivo táctil es la fila
+  entera, no el dibujo pequeño del control (Regla 5 punto 4).
+
+`pnpm check` en verde.
 
 - **Buscar**: `refero_search_screens` — «checkbox list settings», «radio
   button selection card», «toggle switch settings list».
@@ -420,9 +508,12 @@ variantes reutilizables, no repetir ese trabajo.
 
 Catch-all deliberado: aquí van piezas pequeñas que no merecen fase propia pero
 que las fases anteriores van a necesitar. **`Badge`/`Chip` va primero y con
-más detalle** (pedido explícito de esta sesión, 2026-09-06): varias fases de
-más arriba ya lo daban por hecho sin que existiera — los atajos de fecha de
-la Fase 5 y las casillas de la Fase 7 son `Chip` sin nombrar.
+más detalle** (pedido explícito de esta sesión, 2026-09-06): esta sección se
+escribió pensando que los atajos de fecha de la Fase 5 y las casillas de la
+Fase 7 iban a ser `Chip` sin nombrarlo — al llegar a la Fase 5 resultó que no
+(ver su «Estado»: un atajo que dispara al momento no necesita el estado de
+selección que es lo único que distingue a un `Chip` de un botón pequeño), así
+que de momento el único candidato real que queda es la Fase 7.
 
 ### 18.1 Etiquetas: `Badge` (estado, no interactivo) y `Chip` (seleccionable)
 
@@ -436,8 +527,8 @@ Son dos cosas distintas aunque se parezcan, y Refero lo confirma:
 - **`Chip`** — se toca: pastillas de género que se marcan/desmarcan con
   «Clear»/«Show results» (ElevenReader), tags de clase/fuente que se
   añaden y quitan con una X (Plane Finder), filtros activos removibles
-  (Matter). Es el `Chip` que ya pedían sin nombrarlo la Fase 5 (atajos
-  «Hoy»/«Esta semana») y la Fase 7 (`FilterSheet`).
+  (Matter). Candidato real: la Fase 7 (`FilterSheet`), para las casillas de
+  filtro activas que se puedan quitar de una en una.
 - **Ya existe en la web algo más específico**: `apps/web/src/components/
 tasks/tag-chip.tsx`, la etiqueta de una tarea/creyente con su propio color
   (no uno de los cuatro tokens fijos). Usa `color-mix()` en CSS — no existe en

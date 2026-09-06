@@ -31,6 +31,11 @@ export const en = {
     thisYear: 'This year',
     clearFilters: 'Clear the filters ({{total}})',
     clearSearch: 'Clear the search',
+    today: 'Today',
+    thisWeek: 'This week',
+    thisMonth: 'This month',
+    previousMonth: 'Previous month',
+    nextMonth: 'Next month',
     audio: {
       title: 'Audio',
       record: 'Record audio',

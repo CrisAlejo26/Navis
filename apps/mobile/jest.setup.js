@@ -26,7 +26,12 @@ jest.mock('expo-secure-store', () => ({
 // estilos calculados al momento y entering/exiting que no hacen nada.
 jest.mock('react-native-reanimated', () => {
   const { View } = require('react-native');
-  const entering = { duration: () => entering, delay: () => entering, springify: () => entering };
+  const entering = {
+    duration: () => entering,
+    delay: () => entering,
+    springify: () => entering,
+    damping: () => entering,
+  };
   const Animated = { View, createAnimatedComponent: (Component) => Component };
   return {
     ...Animated,
@@ -48,6 +53,13 @@ jest.mock('react-native-reanimated', () => {
     ZoomOut: entering,
   };
 });
+
+// El mock oficial resuelve los insets sin tener que envolver cada test en un
+// `SafeAreaProvider`: cae a un valor por defecto si no hay uno alrededor.
+jest.mock(
+  'react-native-safe-area-context',
+  () => require('react-native-safe-area-context/jest/mock').default,
+);
 
 // i18next se inicializa una vez para toda la suite: sin esto los componentes
 // renderizan las claves («theme.system») en vez del texto traducido.

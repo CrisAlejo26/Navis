@@ -31,6 +31,11 @@ export const de = {
     thisYear: 'Dieses Jahr',
     clearFilters: 'Filter entfernen ({{total}})',
     clearSearch: 'Suche löschen',
+    today: 'Heute',
+    thisWeek: 'Diese Woche',
+    thisMonth: 'Diesen Monat',
+    previousMonth: 'Vorheriger Monat',
+    nextMonth: 'Nächster Monat',
     audio: {
       title: 'Audio',
       record: 'Audio aufnehmen',

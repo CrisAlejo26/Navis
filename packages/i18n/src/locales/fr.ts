@@ -31,6 +31,11 @@ export const fr = {
     thisYear: 'Cette année',
     clearFilters: 'Enlever les filtres ({{total}})',
     clearSearch: 'Effacer la recherche',
+    today: "Aujourd'hui",
+    thisWeek: 'Cette semaine',
+    thisMonth: 'Ce mois-ci',
+    previousMonth: 'Mois précédent',
+    nextMonth: 'Mois suivant',
     audio: {
       title: 'Audio',
       record: 'Enregistrer un audio',
