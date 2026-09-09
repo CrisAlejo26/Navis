@@ -6,6 +6,9 @@ import { LanguageSelect } from '@/components/language-select';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { CardGroup } from '@/components/ui/card-group';
+import { Icon } from '@/components/ui/icon';
+import { ListRow } from '@/components/ui/list-row';
 import { signOut, useSession } from '@/lib/auth-client';
 import { env } from '@/lib/env';
 
@@ -49,6 +52,15 @@ export default function SettingsScreen() {
       {/* La conexión se configura por variables de entorno (EXPO_PUBLIC_*),
           no desde la app: ver docs/rfcs/0007-modo-local-y-servidor.md */}
       <Card title={t('settings.connection')} description={env.EXPO_PUBLIC_API_URL} />
+
+      <CardGroup>
+        <ListRow
+          leading={<Icon name="grid" tone="primary" background="soft" />}
+          title={t('catalog.title')}
+          subtitle={t('catalog.subtitle')}
+          onPress={() => router.push('/components')}
+        />
+      </CardGroup>
     </ScrollView>
   );
 }

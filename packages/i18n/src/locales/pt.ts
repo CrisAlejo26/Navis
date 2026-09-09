@@ -1773,6 +1773,22 @@ export const pt = {
     reload: 'Atualizar',
     offlineReady: 'A aplicação já funciona sem ligação',
   },
+  catalog: {
+    title: 'Catálogo de componentes',
+    subtitle: 'As peças da interface da app, por secção',
+    typography: 'Tipografia',
+    icons: 'Ícones',
+    buttons: 'Botões',
+    inputs: 'Campos',
+    selectors: 'Seletores',
+    controls: 'Controlos',
+    badges: 'Etiquetas',
+    cards: 'Cartões',
+    charts: 'Gráficos',
+    carousels: 'Carrosséis',
+    navigation: 'Navegação',
+    extras: 'Complementares',
+  },
 } satisfies Translation;
 
 export default pt;

@@ -34,13 +34,18 @@ jest.mock('react-native-reanimated', () => {
   };
   const Animated = { View, createAnimatedComponent: (Component) => Component };
   return {
-    ...Animated,
+    // `__esModule` evita que la interop de babel copie el objeto (una foto de
+    // sus propiedades): así un test puede reasignar un hook concreto (p. ej.
+    // `useReducedMotion`) y el componente lo ve en vivo.
+    __esModule: true,
     default: Animated,
+    Animated,
     useSharedValue: (init) => ({ value: init }),
     useAnimatedStyle: (updater) => (typeof updater === 'function' ? updater() : {}),
     useReducedMotion: () => false,
     withSpring: (value) => value,
     withTiming: (value) => value,
+    withRepeat: (value) => value,
     withSequence: (...values) => values[values.length - 1],
     withDelay: (_delay, value) => value,
     FadeIn: entering,

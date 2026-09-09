@@ -1770,6 +1770,22 @@ export const it = {
     reload: 'Aggiorna',
     offlineReady: "L'app ora funziona offline",
   },
+  catalog: {
+    title: 'Catalogo dei componenti',
+    subtitle: "I mattoni dell'interfaccia dell'app, per sezione",
+    typography: 'Tipografia',
+    icons: 'Icone',
+    buttons: 'Pulsanti',
+    inputs: 'Campi',
+    selectors: 'Selettori',
+    controls: 'Controlli',
+    badges: 'Badge',
+    cards: 'Schede',
+    charts: 'Grafici',
+    carousels: 'Caroselli',
+    navigation: 'Navigazione',
+    extras: 'Complementi',
+  },
 } satisfies Translation;
 
 export default it;

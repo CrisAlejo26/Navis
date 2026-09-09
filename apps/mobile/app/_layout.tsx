@@ -60,6 +60,10 @@ function RootNavigator() {
           />
         ))}
         <Stack.Screen
+          name="components"
+          options={{ headerShown: true, title: t('catalog.title') }}
+        />
+        <Stack.Screen
           name="+not-found"
           options={{ headerShown: true, title: t('errors.notFound') }}
         />

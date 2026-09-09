@@ -1793,6 +1793,24 @@ export const es = {
     reload: 'Actualizar',
     offlineReady: 'La aplicación ya funciona sin conexión',
   },
+  /* El catálogo de componentes de la app móvil (pantalla de desarrollo que
+     muestra las piezas de `components/ui` por sección). */
+  catalog: {
+    title: 'Catálogo de componentes',
+    subtitle: 'Las piezas de la interfaz de la app, por sección',
+    typography: 'Tipografía',
+    icons: 'Iconos',
+    buttons: 'Botones',
+    inputs: 'Campos',
+    selectors: 'Selectores',
+    controls: 'Controles',
+    badges: 'Etiquetas',
+    cards: 'Tarjetas',
+    charts: 'Gráficas',
+    carousels: 'Carruseles',
+    navigation: 'Navegación',
+    extras: 'Complementarios',
+  },
 };
 
 export type Translation = typeof es;

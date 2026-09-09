@@ -1785,6 +1785,22 @@ export const de = {
     reload: 'Aktualisieren',
     offlineReady: 'Die App funktioniert jetzt offline',
   },
+  catalog: {
+    title: 'Komponenten-Katalog',
+    subtitle: 'Die Bausteine der App-Oberfläche, nach Abschnitt',
+    typography: 'Typografie',
+    icons: 'Symbole',
+    buttons: 'Schaltflächen',
+    inputs: 'Eingabefelder',
+    selectors: 'Auswahl',
+    controls: 'Steuerelemente',
+    badges: 'Abzeichen',
+    cards: 'Karten',
+    charts: 'Diagramme',
+    carousels: 'Karussells',
+    navigation: 'Navigation',
+    extras: 'Ergänzungen',
+  },
 } satisfies Translation;
 
 export default de;

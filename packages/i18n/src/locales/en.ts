@@ -1769,6 +1769,22 @@ export const en = {
     reload: 'Update',
     offlineReady: 'The app now works offline',
   },
+  catalog: {
+    title: 'Component catalog',
+    subtitle: 'The building blocks of the app interface, by section',
+    typography: 'Typography',
+    icons: 'Icons',
+    buttons: 'Buttons',
+    inputs: 'Inputs',
+    selectors: 'Selectors',
+    controls: 'Controls',
+    badges: 'Badges',
+    cards: 'Cards',
+    charts: 'Charts',
+    carousels: 'Carousels',
+    navigation: 'Navigation',
+    extras: 'Extras',
+  },
 } satisfies Translation;
 
 export default en;

@@ -6,7 +6,8 @@ centralizada en un solo sitio. Cada fase de este plan es **un componente**:
 se investiga en Refero, se decide qué se toma y qué no, se define la matriz
 de variantes y se implementa sobre los tokens existentes (Regla 3).
 
-Estado: **plan** (2026-09-06). Ninguna fase implementada todavía.
+Estado: **hecho** (2026-09-09). Las trece fases implementadas; el detalle de
+cada una —qué se tomó de Refero y qué se descartó— queda en su sección.
 
 ---
 
@@ -508,6 +509,32 @@ referencia de la variante que no se construyó). Salida:
 
 ## 14. Fase 9 — Tarjetas de contenido (ampliar `card.tsx`)
 
+**Estado: hecho (2026-09-09).** `refero_search_screens` (ios): LEGO Builder y
+Comet (tarjeta **agrupada** con separadores finos y filas con icono a la
+izquierda, valor/estado a la derecha y chevron), 1Password (lista de filas
+táctiles), Notion (tarjeta con etiqueta de estado de color). De ahí se tomó el
+patrón de fila + grupo; se evitó lo que la Regla 9 descarta (sombras por todas
+partes, degradados, emoji). Salida, sin tocar `card.tsx` (lo simple ya existe):
+
+- **`list-row.tsx`** (nuevo): la fila-tarjeta — `leading` (`Icon`), título,
+  subtítulo opcional, `trailing` opcional (valor o `Badge`) y chevron
+  automático cuando lleva `onPress` (el chevron es decorativo, se oculta del
+  lector). Sin `onPress` es una fila estática, no un botón. Alto mínimo de
+  44 px en toda la fila (Regla 5 punto 4).
+- **`card-group.tsx`** (nuevo): la tarjeta agrupada redondeada con separadores
+  finos entre filas — el patrón de LEGO/Comet — así cada `ListRow` no repite
+  borde ni divisor.
+- **`badge.tsx`** (nuevo, **adelantada de la Fase 13 §18.1**, que esta fase
+  necesitaba): la `Badge` de la web portada a móvil, pero con tinte **suave**
+  (`hexAlpha`, el mismo lenguaje que `Icon`) en vez de fondo sólido — el color
+  nunca va solo, siempre con su texto (Regla 3 punto 7). Tonos `primary`/
+  `accent`/`success`/`warning`/`destructive`/`muted`, con icono opcional.
+
+Test de comportamiento (`list-row.test.tsx`: `onPress` al pulsar, no cuando
+está deshabilitado, etiqueta accesible propia, fila estática sin `onPress` no
+es botón, título+subtítulo; `card-group.test.tsx` y `badge.test.tsx`: renderizan
+sus hijos). `pnpm check` en verde.
+
 - **Buscar**: `refero_search_screens` — «list item card with icon», «settings
   card with chevron», «content card with image and tag».
 - **Variantes**: tarjeta simple (ya existe), tarjeta-fila para listados
@@ -516,6 +543,34 @@ referencia de la variante que no se construyó). Salida:
   §18.1, nunca solo color — Regla 3 punto 7).
 
 ## 15. Fase 10 — Tarjetas de estadística y números
+
+**Estado: hecho (2026-09-09).** `refero_search_screens` (ios): The Outsiders
+(tres métricas en fila: número grande + etiqueta), Wispr Flow (número +
+etiqueta + variación) y Orbit (dos columnas con cifras en negrita) confirman
+el patrón número-como-protagonista. Salida, en `components/ui`:
+
+- **`stat-card.tsx`**: número grande + etiqueta + icono opcional (`Icon` con
+  `background="soft"`) + indicador de cambio con flecha (`arrow-up`/
+  `arrow-down`/`remove`), texto **y** color (`success`/`destructive`/neutro —
+  nunca solo color, Regla 3 §7). El valor llega ya formateado: la tarjeta no
+  sabe de formato.
+- **`number-card.tsx`**: el número como protagonista único (cifra muy grande +
+  etiqueta debajo), para una racha o un dato del panel — el vocabulario de
+  «sonda» que apuntaba el plan.
+
+Además, y a petición de esta sesión, se creó la pantalla
+**`apps/mobile/app/components.tsx`**: el **catálogo de componentes** de la
+app, por secciones (tipografía, iconos, botones, campos, selectores, controles,
+etiquetas, tarjetas, navegación), con cada pieza de `components/ui` en vivo.
+Se enlaza desde Ajustes (`CardGroup` + `ListRow`, las piezas de la Fase 9
+usadas de verdad) y se abre como pantalla del Stack (`Stack.Screen
+name="components"` en `_layout.tsx`), con su propio namespace `catalog.*` en
+los seis idiomas. Hace de verificación visual de las fases sin depender del
+emulador.
+
+Test de comportamiento (`stat-card.test.tsx`, `number-card.test.tsx`): se
+muestran etiqueta/valor/cambio y el cambio no sale si no se pasa. `pnpm check`
+en verde; `expo-doctor` no se tocó (sin dependencias nuevas).
 
 - **Buscar**: ya adelantado en esta sesión — **Dock** y **Copilot** (stat cards
   compactas, número grande + etiqueta + variación pequeña) y **GO Club** /
@@ -530,6 +585,49 @@ referencia de la variante que no se construyó). Salida:
 
 ## 16. Fase 11 — Gráficas
 
+**Estado: hecho (2026-09-09).** `refero_search_screens` (ios): Andante (líneas
+y barras en tarjeta), Gentler Streak (tendencia en tarjeta con valor grande),
+The Outsiders y Waterllama (anillo de progreso + donut), Tripsy (donuts de
+desglose). **Decisión de librería resuelta de hecho**: `react-native-gifted-charts`
+**ya era dependencia directa de `apps/mobile`** (con `react-native-svg` y
+`expo-linear-gradient` en el árbol), así que esta fase la usa en vez de añadir
+`victory-native`/Skia — peer deps satisfechas y `expo-doctor` sin fallo nuevo.
+Salida, en `components/ui`:
+
+- **`line-chart.tsx`** — `LineChart` (línea en `--primary`, ejes/reglas en
+  `--border`, etiquetas en `--muted-foreground`, resueltos en
+  `lib/ui/chart-theme.ts`). Con `area` (degradado del token), `showDataPoints`
+  y **`sparkline`** — no es otro componente: es esta misma con los ejes
+  ocultos y sin etiquetas de datos (Regla 1 punto 4), para dentro de un
+  `StatCard`.
+- **`bar-chart.tsx`** — `BarChart`, la compañera: barras en `--primary` con la
+  esquina superior redondeada (una barra cuadrada no es Navis) y `showValues`.
+  Sin degradado de relleno (Regla 9).
+- **`donut-chart.tsx`** — `DonutChart` de desglose: tonos semánticos
+  (`primary`/`success`/`warning`/`destructive`/`accent`/`muted`) resueltos a
+  tokens (nunca hex suelto, Regla 3), con `centerLabel` reenviado como función
+  (la librería lo invoca).
+- **`progress-ring.tsx`** — `ProgressRing` de un valor (la «sonda» náutica):
+  dibujado a mano sobre `react-native-svg` (dos arcos) porque un progreso
+  único no justifica la librería de donut; trazo redondo, color del token,
+  etiqueta central.
+- **`lib/ui/chart-theme.ts`** — el tema compartido de las gráficas (Regla 6).
+
+Se añadió la sección **Gráficas** al catálogo (`catalog.charts`, seis idiomas)
+con los cuatro en vivo.
+
+Test de comportamiento: como `react-native-gifted-charts` anima al montar con
+`Animated.timing` dentro de `setTimeout`s que en Jest se disparan tras el
+teardown del entorno, los tests **mockean la librería** y comprueban el
+contrato del envoltorio: qué datos y qué colores de token se le pasan (p. ej.
+`color === themeColorsHex.light.primary`, `hideAxesAndRules` en sparkline, el
+`centerLabel` reenviado). `ProgressRing` sí se prueba renderizando su etiqueta
+(y que recorta el progreso a 0–1). Para que Jest transformara la librería
+(ESM) hizo falta añadir `react-native-gifted-charts|gifted-charts-core` al
+`transformIgnorePatterns` de `jest.config.js`. `pnpm check` en verde;
+`expo-doctor` solo con el desfase de parche de Expo ya presente antes de esta
+fase (sin relación).
+
 - **Buscar**: `refero_search_screens` — «line chart card mobile», «bar chart
   stats card», «donut chart progress mobile». Las referencias de la fase 10
   (Dock, Copilot, Plane Finder) ya traen gráficas de barras/líneas dentro de
@@ -538,11 +636,43 @@ referencia de la variante que no se construyó). Salida:
   Native (evaluar `react-native-gifted-charts` o `victory-native` contra el
   peso del bundle y compatibilidad con Expo 57/Reanimated — la web usa
   `recharts` detrás de `React.lazy`, Regla 1, pero ese paquete es de DOM y no
-  sirve en móvil).
+  sirve en móvil). **Resuelta**: `react-native-gifted-charts`, que ya era
+  dependencia de `apps/mobile`.
 - **Variantes**: línea, barras, donut/progreso circular, sparkline (mini
   gráfica sin ejes para meter dentro de un `StatCard`).
 
 ## 17. Fase 12 — Carruseles
+
+**Estado: hecho (2026-09-09).** `refero_search_screens` (ios) — «horizontal
+card carousel mobile»: Craft (carrusel de tarjetas con los puntos de paginación
+justo debajo), Airbnb (carrusel de preguntas con progreso segmentado), Artsy
+(tarjetas apiladas que se tapan), ElevenLabs (carrusel de modelos dentro de una
+hoja de ajustes) y LookUp (secciones horizontales con «Show All»). Se toma el
+snap por tarjeta sobre un `FlatList` horizontal con `snapToInterval` y
+`decelerationRate: 'fast'` (Regla 5 punto 5: nunca `ScrollView` con `map`) y el
+punto activo como **pastilla** en `--primary` — la misma firma que
+`AnimatedTabBar` (Regla 9 §7). Se evita el autoplay con pausa al tocar (no hay
+ningún flujo de onboarding en la app — misma decisión que el FAB de la Fase 3,
+Regla 1 punto 4) y el carrusel de tarjetas apiladas de Artsy (un gesto, no el
+patrón de listado que piden los flujos actuales). Salida:
+
+- **`carousel.tsx`**: `FlatList` horizontal con snap por tarjeta; el ancho y el
+  gap los fija quien lo usa (`itemWidth`/`gap`). Notifica el índice activo con
+  `onIndexChange` y **no sabe nada del indicador de página**: `PageDots` se
+  compone fuera, así que una pantalla puede usar otro indicador o ninguno.
+- **`page-dots.tsx`**: el indicador — punto activo como pastilla, resto tenue
+  (`hexAlpha` sobre `mutedForeground`, porque `bg-…/40` no se resuelve en
+  nativo, Regla 3 §5). Es informativo, no táctil, y expone la posición como
+  `accessibilityRole="progressbar"` con `accessibilityValue` (Regla 2).
+- Sección **«Carruseles»** en el catálogo (`catalog.carousels`, los seis
+  idiomas) con los dos en vivo.
+
+Test de comportamiento (`carousel.test.tsx`: muestra sus tarjetas y notifica el
+índice al hacer snap; `page-dots.test.tsx`: la posición viaja como
+`accessibilityValue` del progressbar). Sin dependencias nuevas (`FlatList` es
+núcleo de RN), así que `expo-doctor` no hace falta. `pnpm check` en verde; el
+trabajo quedó cortado en la sesión anterior antes de la clave de i18n y el
+formateo — completado aquí.
 
 - **Buscar**: `refero_search_screens` — «horizontal card carousel mobile»,
   «onboarding carousel with dots», «featured story carousel». La referencia
@@ -554,14 +684,55 @@ referencia de la variante que no se construyó). Salida:
 
 ## 18. Fase 13 — Complementarios (lo que falta para que el set esté completo)
 
-Catch-all deliberado: aquí van piezas pequeñas que no merecen fase propia pero
-que las fases anteriores van a necesitar. **`Badge`/`Chip` va primero y con
-más detalle** (pedido explícito de esta sesión, 2026-09-06): esta sección se
-escribió pensando que los atajos de fecha de la Fase 5 y las casillas de la
-Fase 7 iban a ser `Chip` sin nombrarlo — al llegar a la Fase 5 resultó que no
-(ver su «Estado»: un atajo que dispara al momento no necesita el estado de
-selección que es lo único que distingue a un `Chip` de un botón pequeño), así
-que de momento el único candidato real que queda es la Fase 7.
+**Estado: hecho (2026-09-09).** `refero_search_screens` (ios), tres tandas:
+chips — Matter (filtros activos removibles), Plane Finder (tags de clase/fuente
+con su «x» dentro de tarjetas de filtro) y Glow (pastillas de selector con
+contador); empty states — Mela y UGLYCASH (icono grande + mensaje centrado),
+Bear/Vocabulary/Family (ilustración); avatares — Poppy y komoot (iniciales en
+círculo dentro de filas); skeleton — Uber Eats, WhatsApp, District y Headspace
+(bloques grises redondeados). De las dos previsiones de §18, `Badge` ya se había
+portado en la Fase 9 y `BottomSheet` ya existía desde la Fase 5 — no se
+duplicó ninguna (Regla 1). Salida, en `components/ui`:
+
+- **`chip.tsx`** — la pastilla que se toca (§18.1). Seleccionable **controlado**
+  (el dueño decide qué está marcado), con la «x» de quitar como **botón
+  hermano** — no el mismo `Pressable`: en Plane Finder son dos objetivos
+  táctiles distintos, y aquí cada uno lleva su etiqueta accesible propia
+  (`removeLabel` obligatorio en el tipo si hay `onRemove`, Regla 2). Marcada:
+  borde al 35 %, fondo al 14 % y texto al 100 % del tono — el patrón que el
+  plan ya dejaba escrito. Acepta tono semántico o **hex propio** (`color`, el
+  camino abierto para el color por etiqueta del RFC 0018, que aquí no se
+  implementa).
+- **`empty-state.tsx`** — icono grande + título + descripción opcional + acción
+  opcional (`Button` primary `sm`), centrado. Sin ilustración: no hay ficheros
+  de ilustración en el proyecto y el emoji está proscrito (Regla 9) — el
+  patrón de Mela/UGLYCASH es el que la marca puede sostener. Es distinto de
+  `PlaceholderScreen` (que anuncia una sección sin implementar): uno es «no
+  hay datos», el otro es «aún no existe».
+- **`avatar.tsx`** — iniciales derivadas del nombre («Ana García» → «AG»),
+  círculo con tinte suave del tono, tres tamaños que casan con los
+  contenedores de `Icon` para poder convivir en las mismas filas. Sin
+  imágenes: ningún flujo de móvil maneja fotos de personas todavía (Regla 1
+  punto 4); las traerá la implementación real de creyentes. Se oculta del
+  lector de pantalla salvo que le pasen `accessibilityLabel` — siempre va
+  junto al nombre en texto (Regla 2), igual que `Icon`.
+- **`skeleton.tsx`** — el bloque de carga: tamaño y forma por `className`,
+  latido en **opacidad** (`withRepeat`), nunca parpadeo de color (Regla 9 §5).
+  Con movimiento reducido no arranca la animación y un estilo estático de 0.6
+  va detrás en el array, pisándola.
+
+En el catálogo: los chips entran en la sección «Etiquetas» (son la familia de
+`Badge`) y hay una sección nueva **«Complementarios»** (`catalog.extras`, seis
+idiomas) con Avatar, Skeleton y EmptyState en vivo. El mock de Reanimated de
+`jest.setup.js` ganó `withRepeat` (mismo caso que el `.damping()` de la Fase 5)
+y `__esModule: true` — sin él, la interop de babel copia el objeto y un test
+que reasigne un hook no se ve (trampa anotada en `CLAUDE.md`). Test de
+comportamiento: `chip.test.tsx` (dispara al pulsar, nada deshabilitado,
+selección expuesta al lector, la «x» quita sin marcar), `empty-state.test.tsx`
+(textos, acción, sin acción no hay botón), `avatar.test.tsx` (iniciales de uno
+y dos nombres, oculto/anunciado) y `skeleton.test.tsx` (bloque presente,
+estático con movimiento reducido). Sin dependencias nuevas, así que
+`expo-doctor` no hace falta. `pnpm check` en verde.
 
 ### 18.1 Etiquetas: `Badge` (estado, no interactivo) y `Chip` (seleccionable)
 
@@ -572,6 +743,8 @@ Son dos cosas distintas aunque se parezcan, y Refero lo confirma:
   Eats). Ya existe en la web (`apps/web/src/components/ui/badge.tsx`): cuatro
   variantes de token (`brand`/`accent`/`muted`/`outline`), sin lógica —
   directamente portable, cambiando `span`+`HTMLAttributes` por `View`+`Text`.
+  **Ya portada a móvil en la Fase 9** (`components/ui/badge.tsx`), adaptada con
+  tinte suave `hexAlpha` y tonos semánticos; aquí queda solo `Chip`.
 - **`Chip`** — se toca: pastillas de género que se marcan/desmarcan con
   «Clear»/«Show results» (ElevenReader), tags de clase/fuente que se
   añaden y quitan con una X (Plane Finder), filtros activos removibles

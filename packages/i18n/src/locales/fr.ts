@@ -1778,6 +1778,22 @@ export const fr = {
     reload: 'Mettre à jour',
     offlineReady: "L'application fonctionne désormais hors ligne",
   },
+  catalog: {
+    title: 'Catalogue de composants',
+    subtitle: "Les briques de l'interface de l'app, par section",
+    typography: 'Typographie',
+    icons: 'Icônes',
+    buttons: 'Boutons',
+    inputs: 'Champs',
+    selectors: 'Sélecteurs',
+    controls: 'Contrôles',
+    badges: 'Badges',
+    cards: 'Cartes',
+    charts: 'Graphiques',
+    carousels: 'Carrousels',
+    navigation: 'Navigation',
+    extras: 'Compléments',
+  },
 } satisfies Translation;
 
 export default fr;
