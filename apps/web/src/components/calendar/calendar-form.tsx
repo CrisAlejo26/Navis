@@ -45,7 +45,6 @@ export function CalendarForm({
   const updateCalendar = useUpdateCalendar(api);
   const [error, setError] = useState<string | null>(null);
 
-  const [templateSlug, setTemplateSlug] = useState<CalendarTemplateSlug | null>(null);
   const [name, setName] = useState(calendar?.name ?? '');
   const [ministry, setMinistry] = useState(calendar?.ministry ?? '');
 
@@ -59,8 +58,16 @@ export function CalendarForm({
   const { data: ministries = [] } = useMinistries(api, open);
   const labores = ministries.filter((one) => one.isActive || one.slug === ministry);
 
+  /*
+   * Qué botón sale marcado se calcula a partir de la labor, no al revés: si
+   * se guardara en un estado propio, tocar el selector de labor a mano lo
+   * dejaría desincronizado del botón —seguiría marcado el último que se
+   * pulsó, aunque la labor real ya fuera otra—. Así los dos caminos para
+   * llegar a una labor (botón o selector) siempre están de acuerdo.
+   */
+  const templateSlug = templates.find((one) => one.ministrySlug === ministry)?.slug ?? null;
+
   const selectTemplate = (slug: CalendarTemplateSlug | null) => {
-    setTemplateSlug(slug);
     const template = slug ? templates.find((one) => one.slug === slug) : undefined;
     setName(template?.name ?? '');
     setMinistry(template?.ministrySlug ?? '');
