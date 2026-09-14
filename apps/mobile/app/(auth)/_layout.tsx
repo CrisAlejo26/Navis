@@ -1,12 +1,16 @@
 import { Redirect, Stack } from 'expo-router';
 
-import { useSession } from '@/lib/auth-client';
+import { useLocalSession } from '@/stores/local-session';
 
-/** Rutas públicas. Si ya hay sesión, no tiene sentido volver a entrar. */
+/**
+ * Rutas públicas. Si ya hay sesión **completa** —cuenta e iglesia— no tiene
+ * sentido volver a entrar. Con cuenta pero sin iglesia se deja pasar: falta
+ * `church-setup`, que es el paso bloqueante del alta (RFC 0024, Fase 1).
+ */
 export default function AuthLayout() {
-  const { data: session, isPending } = useSession();
+  const session = useLocalSession((state) => state.session);
 
-  if (!isPending && session) return <Redirect href="/(tabs)" />;
+  if (session?.churchId) return <Redirect href="/(tabs)" />;
 
   return <Stack screenOptions={{ headerShown: false }} />;
 }

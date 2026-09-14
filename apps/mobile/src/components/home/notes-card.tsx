@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
 import { EmptyRow } from '@/components/home/empty-row';
+import { PANEL_SHADOW } from '@/components/home/panel';
 import { TileHeader } from '@/components/home/tile-header';
 import { formatDay } from '@/lib/format';
 
@@ -39,7 +40,8 @@ export function NotesCard({
   return (
     <Pressable
       onPress={() => router.push('/believers')}
-      className="gap-3 p-4 rounded-xl border border-t-4 border-border border-t-success bg-card active:opacity-90"
+      className="gap-3 p-4 rounded-3xl bg-card active:opacity-90"
+      style={PANEL_SHADOW}
     >
       <TileHeader icon="book" label={t('home.recentNotes')} tone="success" palette={palette} />
 

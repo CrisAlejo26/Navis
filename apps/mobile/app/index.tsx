@@ -1,18 +1,19 @@
 import { Redirect } from 'expo-router';
 
 import { BrandSplash } from '@/components/auth/brand-splash';
-import { useSession } from '@/lib/auth-client';
+import { useLocalSession } from '@/stores/local-session';
 
 /**
- * Punto de entrada: decide entre el área autenticada y el login. La sesión se
- * lee del almacén seguro, así que el primer render llega sin respuesta
- * todavía — y ese instante lleva la marca (`BrandSplash`), no un spinner
- * suelto sobre blanco.
+ * Punto de entrada: decide entre el área autenticada y la bienvenida. La
+ * sesión es **local** (RFC 0024): vive en AsyncStorage, que se rehidrata de
+ * forma asíncrona — ese instante lleva la marca (`BrandSplash`), no un
+ * spinner suelto sobre blanco.
  */
 export default function Index() {
-  const { data: session, isPending } = useSession();
+  const session = useLocalSession((state) => state.session);
+  const hydrated = useLocalSession((state) => state.hydrated);
 
-  if (isPending) return <BrandSplash />;
+  if (!hydrated) return <BrandSplash />;
 
-  return <Redirect href={session ? '/(tabs)' : '/(auth)/login'} />;
+  return <Redirect href={session ? '/(tabs)' : '/(auth)/welcome'} />;
 }

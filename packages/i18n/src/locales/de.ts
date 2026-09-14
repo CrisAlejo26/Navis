@@ -36,6 +36,15 @@ export const de = {
     thisMonth: 'Diesen Monat',
     previousMonth: 'Vorheriger Monat',
     nextMonth: 'Nächster Monat',
+    optional: 'Optional',
+    daysAgo_one: 'vor {{count}} Tag',
+    daysAgo_other: 'vor {{count}} Tagen',
+    weeksAgo_one: 'vor {{count}} Woche',
+    weeksAgo_other: 'vor {{count}} Wochen',
+    monthsAgo_one: 'vor {{count}} Monat',
+    monthsAgo_other: 'vor {{count}} Monaten',
+    yearsAgo_one: 'vor {{count}} Jahr',
+    yearsAgo_other: 'vor {{count}} Jahren',
     audio: {
       title: 'Audio',
       record: 'Audio aufnehmen',
@@ -107,6 +116,13 @@ export const de = {
     creatingAccount: 'Konto wird erstellt…',
     accountCreated: 'Konto erstellt',
     emailTaken: 'Mit dieser E-Mail gibt es bereits ein Konto',
+    noLocalAccount: 'Auf diesem Gerät gibt es kein Konto mit dieser E-Mail',
+    welcomeTitle: 'Willkommen an Bord',
+    welcomeSubtitle: 'Deine Gemeinde auf dem Handy: Deine Daten bleiben hier, auf deinem Gerät.',
+    haveAccountCta: 'Ich habe schon ein Konto',
+    demoEntry: 'Mit Beispieldaten öffnen',
+    localModeNote:
+      'Lokaler Modus: Nichts verlässt dein Gerät. Wann immer du willst, kannst du dich in den Einstellungen mit dem Server deiner Gemeinde verbinden.',
     forgotPassword: 'Passwort vergessen?',
     forgotPasswordTitle: 'Zugang wiederherstellen',
     forgotPasswordSubtitle:
@@ -173,6 +189,11 @@ export const de = {
     restrictOwnScopeHint: 'Deine Gemeinden und die Konten ihrer Mitglieder.',
     profile: 'Profil',
     connection: 'Verbindung',
+    localMode: 'Lokaler Modus: Deine Daten leben auf diesem Handy',
+    demoTitle: 'Beispieldaten',
+    demoDescription:
+      'Zwölf Gläubige mit Notizen und Etiketten, um die Oberfläche gefüllt zu sehen.',
+    demoSeed: 'Beispieldaten einsäen',
   },
   roles: {
     title: 'Benutzer und Rollen',
@@ -283,6 +304,9 @@ export const de = {
     believersLink: 'Gläubige ansehen',
     attention: 'Brauchen Aufmerksamkeit',
     attentionLink: 'Wer ansehen',
+    newBelievers: 'Neue',
+    streak: 'Serie',
+    todayTitle: 'Heute in deiner Kirche',
     upcomingEvents: 'Anstehende Termine',
     noUpcomingEvents: 'Noch nichts geplant',
     calendarLink: 'Kalender ansehen',
@@ -663,7 +687,7 @@ export const de = {
   ministries: {
     title: 'Aufgaben',
     description:
-      'Wofür jede Person verfügbar ist. Die sieben voreingestellten lassen sich umbenennen und abschalten, aber nicht löschen.',
+      'Die Aufgaben deiner Gemeinde. Die voreingestellten lassen sich umbenennen und abschalten, aber nicht löschen.',
     manage: 'Aufgaben verwalten',
     add: 'Aufgabe hinzufügen',
     edit: 'Aufgabe bearbeiten',

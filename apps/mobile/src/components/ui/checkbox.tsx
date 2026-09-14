@@ -20,7 +20,7 @@ function CheckboxGlyph({ checked }: { checked: boolean }) {
   return (
     <View
       className={cn(
-        'h-5 w-5 items-center justify-center rounded-sm border-2',
+        'h-5 w-5 items-center justify-center rounded-md border-2',
         checked ? 'border-primary bg-primary' : 'border-input',
       )}
     >

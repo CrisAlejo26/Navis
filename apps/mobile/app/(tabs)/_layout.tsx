@@ -1,30 +1,28 @@
 import { Redirect, Tabs } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, View } from 'react-native';
+import { View } from 'react-native';
 
 import { AnimatedTabBar } from '@/components/navigation/animated-tab-bar';
 import { MoreMenu } from '@/components/navigation/more-menu';
-import { useSession } from '@/lib/auth-client';
+import { BrandSplash } from '@/components/auth/brand-splash';
+import { useLocalSession } from '@/stores/local-session';
 
 /**
- * Área autenticada. La barra inferior es la de `AnimatedTabBar` (pill con
- * spring); «Más» abre `MoreMenu`, un bottom sheet con el resto de secciones.
+ * Área autenticada, con sesión **local** (RFC 0024, Fase 1). La barra inferior
+ * es la de `AnimatedTabBar` (pill con spring); «Más» abre `MoreMenu`, un
+ * bottom sheet con el resto de secciones. Sin sesión completa —cuenta e
+ * iglesia— no se entra: la lleva `(auth)`.
  */
 export default function TabsLayout() {
   const { t } = useTranslation();
-  const { data: session, isPending } = useSession();
+  const session = useLocalSession((state) => state.session);
+  const hydrated = useLocalSession((state) => state.hydrated);
   const [menuOpen, setMenuOpen] = useState(false);
 
-  if (isPending) {
-    return (
-      <View className="flex-1 items-center justify-center bg-background">
-        <ActivityIndicator />
-      </View>
-    );
-  }
+  if (!hydrated) return <BrandSplash />;
 
-  if (!session) return <Redirect href="/(auth)/login" />;
+  if (!session?.churchId) return <Redirect href="/(auth)/welcome" />;
 
   return (
     <View className="flex-1">

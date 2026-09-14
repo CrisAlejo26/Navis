@@ -28,13 +28,13 @@ export function LanguageSelect() {
                 void setLocale(locale);
               }}
               className={cn(
-                'px-3 py-1.5 rounded-full border border-border',
+                'px-3 py-1.5 grow basis-[30%] rounded-full border border-border',
                 selected ? 'border-primary bg-primary' : 'bg-card',
               )}
             >
               <Text
                 className={cn(
-                  'text-sm',
+                  'text-sm text-center',
                   selected ? 'text-primary-foreground' : 'text-muted-foreground',
                 )}
               >

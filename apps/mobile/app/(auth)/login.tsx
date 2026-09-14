@@ -10,10 +10,19 @@ import { LanguageSelect } from '@/components/language-select';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { Button } from '@/components/ui/button';
 import { TextField } from '@/components/ui/text-field';
-import { signIn } from '@/lib/auth-client';
+import { login } from '@/data/repos/account-repo';
+import { findChurchByOwner } from '@/data/repos/church-repo';
+import { useLocalSession } from '@/stores/local-session';
 
+/**
+ * Entrar con la cuenta **local** (RFC 0024, Fase 1): la comprobación es
+ * contra la base del teléfono —hash con pepper del SecureStore—, no contra
+ * un servidor. Quien ya tiene iglesia entra directo; quien no, pasa por
+ * `church-setup`.
+ */
 export default function LoginScreen() {
   const { t } = useTranslation();
+  const setSession = useLocalSession((state) => state.setSession);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -22,7 +31,7 @@ export default function LoginScreen() {
   async function onSubmit(): Promise<void> {
     setError(null);
 
-    // El mismo esquema zod que usa la web y que valida la API.
+    // El mismo esquema zod que usa la web y que validaba la API.
     const parsed = loginSchema.safeParse({ email, password, rememberMe: true });
     if (!parsed.success) {
       setError(parsed.error.issues[0]?.message ?? t('errors.validation'));
@@ -30,17 +39,22 @@ export default function LoginScreen() {
     }
 
     setLoading(true);
-    const { error: authError } = await signIn.email({
+    const result = await login({
       email: parsed.data.email,
       password: parsed.data.password,
     });
     setLoading(false);
 
-    if (authError) {
-      setError(t('auth.invalidCredentials'));
+    if ('error' in result) {
+      setError(
+        result.error === 'no-account' ? t('auth.noLocalAccount') : t('auth.invalidCredentials'),
+      );
       return;
     }
-    router.replace('/(tabs)');
+
+    const church = await findChurchByOwner(result.user.id);
+    setSession({ userId: result.user.id, churchId: church?.id ?? null });
+    router.replace(church ? '/(tabs)' : '/(auth)/church-setup');
   }
 
   return (

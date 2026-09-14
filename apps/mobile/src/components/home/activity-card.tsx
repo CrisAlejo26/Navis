@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 import Svg, { Circle, Line, Path } from 'react-native-svg';
 
+import { PANEL_SHADOW, Panel } from '@/components/home/panel';
 import { formatDay, formatNumber } from '@/lib/format';
 import { useThemeStore } from '@/lib/theme';
 
@@ -28,7 +29,7 @@ export function ActivityCard({ weeks }: { weeks: readonly DashboardWeekActivity[
   const cumbre = weeks[shape.peak];
 
   return (
-    <View className="gap-3 p-4 rounded-xl border border-t-4 border-border border-t-primary bg-card">
+    <Panel className="gap-3" style={PANEL_SHADOW}>
       <View className="gap-2 flex-row flex-wrap items-baseline justify-between">
         <Text className="text-sm font-semibold text-foreground">{t('home.weeklyActivity')}</Text>
         <Text className="text-xs text-muted-foreground">
@@ -84,6 +85,6 @@ export function ActivityCard({ weeks }: { weeks: readonly DashboardWeekActivity[
           )}
         </>
       )}
-    </View>
+    </Panel>
   );
 }

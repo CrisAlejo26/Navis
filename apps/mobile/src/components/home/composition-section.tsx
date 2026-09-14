@@ -1,8 +1,9 @@
 import type { DashboardSummary } from '@navis/shared';
 import { useTranslation } from 'react-i18next';
-import { Text, View } from 'react-native';
+import { Text } from 'react-native';
 
 import { BucketBars } from '@/components/home/bucket-bars';
+import { Panel } from '@/components/home/panel';
 
 /**
  * Cómo está repartida la iglesia entre sedes, labores y dones (RFC 0001).
@@ -25,11 +26,11 @@ export function CompositionSection({
   }
 
   return (
-    <View className="gap-3">
+    <Panel className="gap-3">
       <Text className="text-sm font-semibold text-muted-foreground">{t('home.composition')}</Text>
       <BucketBars title={t('calendar.congregations')} buckets={composition.byCongregation} />
       <BucketBars title={t('believers.ministries')} buckets={composition.byMinistry} />
       <BucketBars title={t('believers.gifts')} buckets={composition.byGift} />
-    </View>
+    </Panel>
   );
 }

@@ -13,6 +13,12 @@ interface TopBarProps {
     label: string;
     onPress: () => void;
   };
+  /** Varias acciones a la derecha, en orden: la última es la principal. */
+  actions?: {
+    icon: IoniconName;
+    label: string;
+    onPress: () => void;
+  }[];
 }
 
 /**
@@ -23,15 +29,25 @@ interface TopBarProps {
  * duplicaría en vez de sustituirla, porque esa cabecera no se apaga por
  * pantalla, sino para todo el grupo `(tabs)`.
  */
-export function TopBar({ title, subtitle, action }: TopBarProps) {
+export function TopBar({ title, subtitle, action, actions }: TopBarProps) {
+  const all = [...(actions ?? []), ...(action ? [action] : [])];
   return (
     <View className="gap-3 flex-row items-start justify-between">
       <View className="gap-0.5 flex-1">
         <Title size="lg">{title}</Title>
         {subtitle ? <BodyText className="text-muted-foreground">{subtitle}</BodyText> : null}
       </View>
-      {action ? (
-        <IconButton icon={action.icon} accessibilityLabel={action.label} onPress={action.onPress} />
+      {all.length > 0 ? (
+        <View className="gap-2 flex-row items-center">
+          {all.map((one) => (
+            <IconButton
+              key={one.label}
+              icon={one.icon}
+              accessibilityLabel={one.label}
+              onPress={one.onPress}
+            />
+          ))}
+        </View>
       ) : null}
     </View>
   );

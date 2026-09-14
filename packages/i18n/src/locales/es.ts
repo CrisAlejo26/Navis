@@ -44,6 +44,17 @@ export const es = {
     thisMonth: 'Este mes',
     previousMonth: 'Mes anterior',
     nextMonth: 'Mes siguiente',
+    optional: 'Opcional',
+    // «hace 3 días», «hace 2 meses» (Regla 2 §6): sin `Intl.RelativeTimeFormat`
+    // porque Hermes en Android no lo trae — ver `apps/mobile/src/lib/format.ts`.
+    daysAgo_one: 'hace {{count}} día',
+    daysAgo_other: 'hace {{count}} días',
+    weeksAgo_one: 'hace {{count}} semana',
+    weeksAgo_other: 'hace {{count}} semanas',
+    monthsAgo_one: 'hace {{count}} mes',
+    monthsAgo_other: 'hace {{count}} meses',
+    yearsAgo_one: 'hace {{count}} año',
+    yearsAgo_other: 'hace {{count}} años',
     audio: {
       title: 'Audios',
       record: 'Grabar un audio',
@@ -115,6 +126,13 @@ export const es = {
     creatingAccount: 'Creando la cuenta…',
     accountCreated: 'Cuenta creada',
     emailTaken: 'Ya hay una cuenta con ese correo',
+    noLocalAccount: 'No hay ninguna cuenta con ese correo en este dispositivo',
+    welcomeTitle: 'Bienvenido a bordo',
+    welcomeSubtitle: 'Tu iglesia en el móvil: los datos se guardan aquí, en tu teléfono.',
+    haveAccountCta: 'Ya tengo cuenta',
+    demoEntry: 'Entrar con datos de prueba',
+    localModeNote:
+      'Modo local: nada sale de tu dispositivo. Cuando quieras, puedes conectarte al servidor de tu iglesia desde Ajustes.',
     forgotPassword: '¿Olvidaste tu contraseña?',
     forgotPasswordTitle: 'Recupera el acceso',
     forgotPasswordSubtitle: 'Escribe tu correo y te mandamos un enlace para fijar una nueva.',
@@ -178,6 +196,10 @@ export const es = {
     restrictOwnScopeHint: 'Tus iglesias y las cuentas de sus miembros.',
     profile: 'Perfil',
     connection: 'Conexión',
+    localMode: 'Modo local: los datos viven en este teléfono',
+    demoTitle: 'Datos de prueba',
+    demoDescription: 'Doce hermanos con notas y etiquetas, para ver la interfaz llena.',
+    demoSeed: 'Sembrar datos de prueba',
   },
   roles: {
     title: 'Usuarios y roles',
@@ -287,6 +309,9 @@ export const es = {
     believersLink: 'Ver creyentes',
     attention: 'Piden atención',
     attentionLink: 'Ver quién',
+    newBelievers: 'Nuevos',
+    streak: 'Racha',
+    todayTitle: 'Hoy en tu iglesia',
     upcomingEvents: 'Próximos eventos',
     noUpcomingEvents: 'Nada programado todavía',
     calendarLink: 'Ver calendario',
@@ -664,7 +689,7 @@ export const es = {
   ministries: {
     title: 'Labores',
     description:
-      'Para qué está disponible cada hermano. Las siete de serie se renombran y se apagan, pero no se borran.',
+      'Las labores de tu iglesia. Las de serie se renombran y se apagan, pero no se borran.',
     manage: 'Administrar las labores',
     add: 'Añadir labor',
     edit: 'Editar la labor',

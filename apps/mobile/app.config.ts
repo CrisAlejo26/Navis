@@ -52,6 +52,17 @@ const config: ExpoConfig = {
     'expo-router',
     'expo-localization',
     'expo-secure-store',
+    // El micrófono pide permiso y declaración en el manifest: lo lleva su
+    // plugin de config, no un ajuste a mano.
+    'expo-audio',
+    [
+      'expo-image-picker',
+      {
+        photosPermission: 'Navis usa tus fotos para la ficha de cada hermano.',
+        cameraPermission: 'Navis usa la cámara para la foto de cada hermano.',
+        microphonePermission: false,
+      },
+    ],
     [
       'expo-splash-screen',
       {

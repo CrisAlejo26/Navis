@@ -1,3 +1,4 @@
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, Text, View } from 'react-native';
@@ -9,16 +10,52 @@ import { Card } from '@/components/ui/card';
 import { CardGroup } from '@/components/ui/card-group';
 import { Icon } from '@/components/ui/icon';
 import { ListRow } from '@/components/ui/list-row';
-import { signOut, useSession } from '@/lib/auth-client';
-import { env } from '@/lib/env';
+import { hasDemoData, seedDemoData } from '@/data/demo-data';
+import { findUser } from '@/data/repos/account-repo';
+import { useLocalSession } from '@/stores/local-session';
 
+/**
+ * Los ajustes, con la sesión **local** (RFC 0024, Fase 1): cerrar sesión
+ * borra solo la sesión — la cuenta y los datos siguen en el teléfono.
+ *
+ * Mientras la app está en desarrollo, aquí vive el botón de **datos de
+ * prueba** (Regla 11): siembra doce hermanos con notas y etiquetas para ver
+ * la interfaz llena. Desaparece en cuanto hay creyentes en la base.
+ */
 export default function SettingsScreen() {
   const { t } = useTranslation();
-  const { data: session } = useSession();
+  const session = useLocalSession((state) => state.session);
+  const clear = useLocalSession((state) => state.clear);
+  const client = useQueryClient();
 
-  async function onSignOut(): Promise<void> {
-    await signOut();
-    router.replace('/(auth)/login');
+  const { data: user } = useQuery({
+    queryKey: ['local-user', session?.userId],
+    queryFn: () => findUser(session!.userId),
+    enabled: Boolean(session),
+  });
+
+  const { data: seeded } = useQuery({
+    queryKey: ['demo-data', session?.churchId],
+    queryFn: () => hasDemoData(session!.churchId!),
+    enabled: Boolean(session?.churchId),
+  });
+
+  const seed = useMutation({
+    mutationFn: () => {
+      if (!session?.churchId) throw new Error('Sin iglesia activa no se siembra');
+      return seedDemoData(session.churchId, session.userId);
+    },
+    onSuccess: () => {
+      void client.invalidateQueries({ queryKey: ['demo-data'] });
+      void client.invalidateQueries({ queryKey: ['believers'] });
+      void client.invalidateQueries({ queryKey: ['dashboard'] });
+      void client.invalidateQueries({ queryKey: ['catalog'] });
+    },
+  });
+
+  function onSignOut(): void {
+    clear();
+    router.replace('/(auth)/welcome');
   }
 
   return (
@@ -38,20 +75,29 @@ export default function SettingsScreen() {
         </View>
       </Card>
 
-      <Card title={t('settings.profile')} description={session?.user.email}>
+      <Card title={t('settings.profile')} description={user?.email}>
         <Button
           title={t('auth.signOut')}
           variant="secondary"
           className="mt-2"
-          onPress={() => {
-            void onSignOut();
-          }}
+          onPress={onSignOut}
         />
       </Card>
 
-      {/* La conexión se configura por variables de entorno (EXPO_PUBLIC_*),
-          no desde la app: ver docs/rfcs/0007-modo-local-y-servidor.md */}
-      <Card title={t('settings.connection')} description={env.EXPO_PUBLIC_API_URL} />
+      {/* El modo local guarda todo en el teléfono; la conexión al servidor
+          llega con la Fase 3 del RFC 0024. */}
+      <Card title={t('settings.connection')} description={t('settings.localMode')} />
+
+      {seeded ? null : (
+        <Card title={t('settings.demoTitle')} description={t('settings.demoDescription')}>
+          <Button
+            title={t('settings.demoSeed')}
+            loading={seed.isPending}
+            className="mt-2"
+            onPress={() => seed.mutate()}
+          />
+        </Card>
+      )}
 
       <CardGroup>
         <ListRow

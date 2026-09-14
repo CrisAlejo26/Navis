@@ -65,10 +65,10 @@ export function Chip({
         accessibilityState={{ selected, disabled }}
         disabled={disabled}
         onPress={onPress}
-        className="py-1 flex-row items-center rounded-full"
+        className="py-1 gap-1.5 flex-row items-center rounded-full"
         style={{
-          paddingLeft: 10,
-          paddingRight: onRemove ? 6 : 10,
+          paddingLeft: 12,
+          paddingRight: onRemove ? 22 : 12,
           borderWidth: 1,
           borderColor: selected ? hexAlpha(toneHex, 0.35) : palette.border,
           backgroundColor: selected ? hexAlpha(toneHex, 0.14) : 'transparent',

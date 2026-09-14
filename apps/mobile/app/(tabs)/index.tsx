@@ -1,27 +1,31 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useDashboardSummary } from '@navis/api-client';
 import { themeColorsHex } from '@navis/theme';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, RefreshControl, ScrollView, Text, View } from 'react-native';
-import Animated, { FadeInDown } from 'react-native-reanimated';
+import Animated, {
+  FadeInDown,
+  useAnimatedScrollHandler,
+  useAnimatedStyle,
+  useSharedValue,
+} from 'react-native-reanimated';
 
 import { ActivityCard } from '@/components/home/activity-card';
-import { CompositionSection } from '@/components/home/composition-section';
+import { DashboardHero } from '@/components/home/dashboard-hero';
 import { EventsCard } from '@/components/home/events-card';
+import { MetricGrid } from '@/components/home/metric-grid';
 import { NotesCard } from '@/components/home/notes-card';
-import { StatusCard } from '@/components/home/status-card';
 import { TodayTasksCard } from '@/components/home/today-tasks-card';
-import { WelcomeHeader } from '@/components/home/welcome-header';
+import { CompositionSection } from '@/components/home/composition-section';
 import { Button } from '@/components/ui/button';
-import { api } from '@/lib/api';
+import { useDashboardSummary, useRegisteredBelievers } from '@/hooks/use-dashboard';
 import { useThemeStore } from '@/lib/theme';
 
 /**
- * El panel de inicio (RFC 0001): las mismas métricas que la web, con el mismo
- * hook (`useDashboardSummary`, una sola llamada — Regla 1). No lleva la
- * semana de calendario de la web: eso pide su propia rejilla de siete
- * columnas y un `MeetingRibbon`, que es la interfaz del calendario en sí
- * (RFC 0002), todavía puente en móvil.
+ * El panel de inicio (RFC 0001, rediseño): hero náutico ilustrado arriba —
+ * la estampa de la marca, que muda con la hora del saludo — y debajo las
+ * mismas métricas de siempre, en paneles redondos sin borde, en una sola
+ * columna. Lo calculan los **repositorios** (RFC 0024, Fase 1): hoy sobre la
+ * base local del teléfono, mañana sobre la API cuando esté conectada.
  *
  * Cada tarjeta ya navega a su sección al tocarla (creyentes, calendario,
  * tareas): es el acceso rápido que pide la portada, sin duplicar el menú
@@ -30,9 +34,28 @@ import { useThemeStore } from '@/lib/theme';
 export default function DashboardScreen() {
   const { t } = useTranslation();
   const palette = themeColorsHex[useThemeStore((state) => state.resolvedTheme)];
-  const { data, isLoading, isError, refetch, isRefetching } = useDashboardSummary(api);
+  const { data, isPending, isError, refetch, isRefetching } = useDashboardSummary();
+  const { data: registered } = useRegisteredBelievers();
 
-  if (isLoading) {
+  // El parallax: el hero se pinta medio desplazado (0.5×) hacia abajo, así
+  // que sube a la mitad de velocidad mientras el panel blanco le pasa por
+  // encima — la estampa se queda mirando mientras el contenido hace scroll.
+  // Se sujeta a cero para que el rebote del «pull to refresh» no descubra un
+  // hueco por debajo del mar.
+  const scrollY = useSharedValue(0);
+  const scrollHandler = useAnimatedScrollHandler({
+    onScroll: (event) => {
+      scrollY.value = event.contentOffset.y;
+    },
+  });
+  const heroStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: Math.max(0, scrollY.value * 0.5) }],
+  }));
+
+  // «Pendiente» cubre también la consulta deshabilitada mientras AsyncStorage
+  // hidrata la sesión: no es un error, es «aún no ha empezado». Tratarlo como
+  // error pintaba el «Reintentar» un instante en cada arranque.
+  if (isPending || !data) {
     return (
       <View className="flex-1 items-center justify-center bg-background">
         <ActivityIndicator color={palette.primary} />
@@ -40,7 +63,7 @@ export default function DashboardScreen() {
     );
   }
 
-  if (isError || !data) {
+  if (isError) {
     return (
       <View className="gap-3 p-6 flex-1 items-center justify-center bg-background">
         <Ionicons name="cloud-offline-outline" size={32} color={palette.mutedForeground} />
@@ -56,37 +79,53 @@ export default function DashboardScreen() {
   }
 
   return (
-    <ScrollView
-      className="flex-1 bg-background"
-      contentContainerClassName="gap-3 p-4 pt-16"
-      refreshControl={
-        <RefreshControl
-          refreshing={isRefetching}
-          onRefresh={() => void refetch()}
-          tintColor={palette.primary}
-        />
-      }
-    >
-      <WelcomeHeader />
+    <View className="flex-1 bg-background">
+      <Animated.ScrollView
+        onScroll={scrollHandler}
+        scrollEventThrottle={16}
+        contentContainerClassName="min-h-full"
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefetching}
+            onRefresh={() => void refetch()}
+            tintColor="#ffffff"
+            progressBackgroundColor={palette.primary}
+          />
+        }
+      >
+        <Animated.View style={heroStyle}>
+          <DashboardHero
+            total={registered ?? data.believers.total}
+            newThisMonth={data.believers.newThisMonth}
+          />
+        </Animated.View>
 
-      <Animated.View entering={FadeInDown.delay(40).springify()}>
-        <StatusCard believers={data.believers} attention={data.attention} palette={palette} />
-      </Animated.View>
-      <Animated.View entering={FadeInDown.delay(80).springify()}>
-        <EventsCard events={data.upcomingEvents} palette={palette} />
-      </Animated.View>
-      <Animated.View entering={FadeInDown.delay(120).springify()}>
-        <NotesCard notes={data.recentNotes} palette={palette} />
-      </Animated.View>
-      <Animated.View entering={FadeInDown.delay(160).springify()}>
-        <TodayTasksCard tasks={data.todayTasks} streak={data.taskStreak} palette={palette} />
-      </Animated.View>
-      <Animated.View entering={FadeInDown.delay(200).springify()}>
-        <CompositionSection composition={data.composition} />
-      </Animated.View>
-      <Animated.View entering={FadeInDown.delay(240).springify()}>
-        <ActivityCard weeks={data.weeklyActivity} />
-      </Animated.View>
-    </ScrollView>
+        <View className="gap-3 -mt-7 px-4 pt-5 pb-10 rounded-t-[28px] bg-background">
+          <Animated.View entering={FadeInDown.delay(40).springify()}>
+            <MetricGrid
+              believers={data.believers}
+              attention={data.attention}
+              streak={data.taskStreak}
+            />
+          </Animated.View>
+          <Animated.View entering={FadeInDown.delay(80).springify()}>
+            <EventsCard events={data.upcomingEvents} palette={palette} />
+          </Animated.View>
+          <Animated.View entering={FadeInDown.delay(120).springify()}>
+            <TodayTasksCard tasks={data.todayTasks} palette={palette} />
+          </Animated.View>
+          <Animated.View entering={FadeInDown.delay(160).springify()}>
+            <NotesCard notes={data.recentNotes} palette={palette} />
+          </Animated.View>
+          <Animated.View entering={FadeInDown.delay(200).springify()}>
+            <ActivityCard weeks={data.weeklyActivity} />
+          </Animated.View>
+          <Animated.View entering={FadeInDown.delay(200).springify()}>
+            <CompositionSection composition={data.composition} />
+          </Animated.View>
+        </View>
+      </Animated.ScrollView>
+    </View>
   );
 }

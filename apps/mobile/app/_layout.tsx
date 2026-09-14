@@ -1,12 +1,11 @@
 import '@/global.css';
 
-import { LibreCaslonDisplay_400Regular } from '@expo-google-fonts/libre-caslon-display';
 import {
-  PublicSans_400Regular,
-  PublicSans_500Medium,
-  PublicSans_600SemiBold,
-  PublicSans_700Bold,
-} from '@expo-google-fonts/public-sans';
+  Roboto_400Regular,
+  Roboto_500Medium,
+  Roboto_600SemiBold,
+  Roboto_700Bold,
+} from '@expo-google-fonts/roboto';
 import { themeColorsHex } from '@navis/theme';
 import { MORE_MENU_ENTRIES } from '@/lib/nav-mobile';
 import { QueryClientProvider } from '@tanstack/react-query';
@@ -63,6 +62,8 @@ function RootNavigator() {
           name="components"
           options={{ headerShown: true, title: t('catalog.title') }}
         />
+        <Stack.Screen name="believers/[id]" options={{ headerShown: false }} />
+        <Stack.Screen name="believers/catalog" options={{ headerShown: false }} />
         <Stack.Screen
           name="+not-found"
           options={{ headerShown: true, title: t('errors.notFound') }}
@@ -78,11 +79,10 @@ export default function RootLayout() {
   // `tokens.native.css`. Sin esperar a `fontsLoaded`, el primer fotograma
   // saldría con la fuente del sistema y se vería el salto al llegar la real.
   const [fontsLoaded] = useFonts({
-    LibreCaslonDisplay_400Regular,
-    PublicSans_400Regular,
-    PublicSans_500Medium,
-    PublicSans_600SemiBold,
-    PublicSans_700Bold,
+    Roboto_400Regular,
+    Roboto_500Medium,
+    Roboto_600SemiBold,
+    Roboto_700Bold,
   });
 
   useEffect(() => {

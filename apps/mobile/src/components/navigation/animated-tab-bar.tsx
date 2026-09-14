@@ -18,8 +18,11 @@ import { TAB_BAR_ENTRIES, type TabBarEntry } from '@/lib/nav-mobile';
 import { useThemeStore } from '@/lib/theme';
 
 const BAR_HEIGHT = 60;
-const PILL_WIDTH = 64;
-const PILL_HEIGHT = 46;
+const PILL_HEIGHT = 48;
+/** Ancho mínimo de la pastilla y aire a cada lado del texto: sin él la
+ * etiqueta roza el borde (y en alemán o portugués se sale y se corta). */
+const PILL_MIN_WIDTH = 64;
+const PILL_PADDING = 14;
 const PILL_SPRING = { stiffness: 240, damping: 24 };
 /** Elevación de las dos pastillas (la que se desliza y la de «Más» abierto):
  * sin ella se leen como una mancha plana pegada al fondo (Regla 9 §2). */
@@ -44,6 +47,7 @@ function TabButton({
   accent,
   label,
   onPress,
+  onLabelLayout,
 }: {
   entry: TabBarEntry;
   active: boolean;
@@ -52,6 +56,7 @@ function TabButton({
   accent: string;
   label: string;
   onPress: () => void;
+  onLabelLayout: (name: string, width: number) => void;
 }) {
   const reducedMotion = useReducedMotion();
   const scale = useSharedValue(active ? 1 : 0.9);
@@ -86,9 +91,9 @@ function TabButton({
         style={[
           iconStyle,
           {
-            width: PILL_WIDTH,
             height: PILL_HEIGHT,
             borderRadius: PILL_HEIGHT / 2,
+            paddingHorizontal: PILL_PADDING,
             alignItems: 'center',
             justifyContent: 'center',
             gap: 2,
@@ -106,6 +111,9 @@ function TabButton({
         <Text
           className={active || highlighted ? 'font-semibold' : ''}
           style={{ color: iconColor, fontSize: 10 }}
+          numberOfLines={1}
+          adjustsFontSizeToFit
+          onLayout={(event) => onLabelLayout(entry.name, event.nativeEvent.layout.width)}
         >
           {label}
         </Text>
@@ -126,17 +134,29 @@ export function AnimatedTabBar({
   const palette = themeColorsHex[useThemeStore((store) => store.resolvedTheme)];
   const reducedMotion = useReducedMotion();
   const [containerWidth, setContainerWidth] = useState(0);
+  // Ancho real de cada etiqueta, medido al pintar: la pastilla se adapta a la
+  // más larga y el texto nunca queda pegado al borde ni cortado (i18n: en
+  // alemán «Einstellungen» no cabe en un ancho fijo).
+  const [labelWidths, setLabelWidths] = useState<Record<string, number>>({});
   const pillX = useSharedValue(state.index);
+
+  const recordLabelWidth = (name: string, width: number) =>
+    setLabelWidths((prev) => (prev[name] === width ? prev : { ...prev, [name]: width }));
 
   useEffect(() => {
     pillX.value = state.index;
   }, [state.index, pillX]);
 
   const tabWidth = containerWidth / TAB_BAR_ENTRIES.length;
+  const maxLabelWidth = Math.max(0, ...Object.values(labelWidths));
+  const pillWidth = Math.max(
+    PILL_MIN_WIDTH,
+    Math.min(maxLabelWidth + PILL_PADDING * 2, Math.max(tabWidth - 8, PILL_MIN_WIDTH)),
+  );
   const pillStyle = useAnimatedStyle(() => {
-    const x = pillX.value * tabWidth + (tabWidth - PILL_WIDTH) / 2;
+    const x = pillX.value * tabWidth + (tabWidth - pillWidth) / 2;
     return { transform: [{ translateX: reducedMotion ? x : withSpring(x, PILL_SPRING) }] };
-  }, [tabWidth, reducedMotion]);
+  }, [tabWidth, pillWidth, reducedMotion]);
 
   const onLayout = (event: LayoutChangeEvent) => setContainerWidth(event.nativeEvent.layout.width);
 
@@ -159,7 +179,7 @@ export function AnimatedTabBar({
             {
               position: 'absolute',
               top: (BAR_HEIGHT - PILL_HEIGHT) / 2,
-              width: PILL_WIDTH,
+              width: pillWidth,
               height: PILL_HEIGHT,
               borderRadius: PILL_HEIGHT / 2,
               backgroundColor: palette.primary,
@@ -190,6 +210,7 @@ export function AnimatedTabBar({
               accent={palette.accent}
               label={t(entry.labelKey)}
               onPress={() => handlePress(index)}
+              onLabelLayout={recordLabelWidth}
             />
           );
         })}

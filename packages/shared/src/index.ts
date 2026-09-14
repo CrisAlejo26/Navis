@@ -6,6 +6,8 @@ export * from './dates';
 export * from './dream-state';
 export * from './env';
 export * from './greeting';
+export * from './local-schema';
+export * from './note-kind-accents';
 export * from './permissions';
 export * from './prophecy-state';
 export * from './role-permissions';

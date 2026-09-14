@@ -84,7 +84,11 @@ Todo el entorno se valida con **zod** en el arranque, no cuando se usa:
 - **Solo SQLite con réplica**: soluciones como LiteFS o Turso resolverían el
   caso compartido sin Postgres, pero añaden un servicio propio y un modelo de
   consistencia que hay que entender. No compensa todavía.
-- **Pantalla de ajustes con URL y token**: descartada por lo explicado arriba.
+- **Pantalla de ajustes con URL y token**: descartada por lo explicado arriba
+  para web y escritorio. Para el móvil se revisita en el RFC 0024 (pantalla de
+  conexión con la URL, sin token a mano): la app nativa se instala, no se
+  recompila por iglesia. Ese RFC añade además el modo local **del teléfono**
+  (SQLite propio y migración local ↔ servidor), que aquí no se contemplaba.
 
 ## Criterios de aceptación
 

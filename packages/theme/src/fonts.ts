@@ -7,15 +7,11 @@
  * fuente a mano; todos leen de aquí.
  *
  * La pareja, elegida por su carácter (no genérica, Regla 9):
- * - **Libre Caslon Display** para títulos: un Caslon es la letra de los
- *   documentos náuticos y cuadernos de bitácora de los siglos XVIII-XIX
- *   (Almirantazgo británico, cartas de navegación), que es justo el
- *   vocabulario visual de Navis (`navis` = «nave» en latín).
- * - **Public Sans** para cuerpo: humanista y muy legible, con un origen
- *   cívico (USWDS) que la aleja del aire de plantilla de SaaS de las sans
- *   geométricas más vistas (Inter, Manrope…).
+ * - **Roboto** en todo: la fuente de Android y de Material Design, presente
+ *   en millones de pantallas y con todos los pesos del sistema. Sustituyó a
+ *   la pareja Libre Caslon Display + Public Sans a petición de Cristian.
  *
- * Las dos declaran subset `latin` + `latin-ext` en Google Fonts: cubren los
+ * Declarada con subset `latin` + `latin-ext` en Google Fonts: cubre los
  * acentos de los seis idiomas del proyecto (Regla 2), incluida la `ß`
  * alemana y las cedillas del francés y el portugués.
  *
@@ -28,11 +24,11 @@
  * `themeColorsHex` y `tokens.css` se mantienen a mano en Regla 3).
  */
 export const FONT_FAMILIES = {
-  display: { native: 'LibreCaslonDisplay_400Regular' },
-  sans: { native: 'PublicSans_400Regular' },
-  sansMedium: { native: 'PublicSans_500Medium' },
-  sansSemiBold: { native: 'PublicSans_600SemiBold' },
-  sansBold: { native: 'PublicSans_700Bold' },
+  display: { native: 'Roboto_500Medium' },
+  sans: { native: 'Roboto_400Regular' },
+  sansMedium: { native: 'Roboto_500Medium' },
+  sansSemiBold: { native: 'Roboto_600SemiBold' },
+  sansBold: { native: 'Roboto_700Bold' },
 } as const;
 
 export type FontToken = keyof typeof FONT_FAMILIES;

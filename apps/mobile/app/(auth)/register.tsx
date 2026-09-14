@@ -8,10 +8,18 @@ import Animated, { FadeInUp } from 'react-native-reanimated';
 import { BrandHeader } from '@/components/auth/brand-header';
 import { Button } from '@/components/ui/button';
 import { TextField } from '@/components/ui/text-field';
-import { signUp } from '@/lib/auth-client';
+import { createAccount } from '@/data/repos/account-repo';
+import { useLocalSession } from '@/stores/local-session';
 
+/**
+ * El alta de la cuenta **local** (RFC 0024, Fase 1): el mismo esquema zod que
+ * usaba el registro contra Better Auth (`registerSchema`, contraseña de 10+),
+ * pero la cuenta nace en la base del teléfono. Después de aquí toca crear la
+ * iglesia (`church-setup`) — sin ella no hay dónde guardar nada.
+ */
 export default function RegisterScreen() {
   const { t } = useTranslation();
+  const setSession = useLocalSession((state) => state.setSession);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -28,14 +36,22 @@ export default function RegisterScreen() {
     }
 
     setLoading(true);
-    const { error: authError } = await signUp.email(parsed.data);
+    const result = await createAccount({
+      name: parsed.data.name,
+      email: parsed.data.email,
+      password: parsed.data.password,
+    });
     setLoading(false);
 
-    if (authError) {
-      setError(authError.message ?? t('errors.generic'));
+    if ('error' in result) {
+      setError(t('auth.emailTaken'));
       return;
     }
-    router.replace('/(tabs)');
+
+    // Sin iglesia todavía: el guard de `(auth)` deja pasar y `index.tsx`
+    // del grupo lleva a `church-setup`, que es el paso que falta.
+    setSession({ userId: result.user.id, churchId: null });
+    router.replace('/(auth)/church-setup');
   }
 
   return (

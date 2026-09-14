@@ -6,23 +6,20 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
 import { EmptyRow } from '@/components/home/empty-row';
+import { PANEL_SHADOW } from '@/components/home/panel';
 import { TileHeader } from '@/components/home/tile-header';
-import { hexAlpha } from '@/lib/color';
 import { useThemeStore } from '@/lib/theme';
 
 /**
  * Las tareas de hoy, en el panel de inicio (RFC 0018 §9.7). Espejo de
- * `TodayTasksCard` de la web, con la racha en una esquina de la cabecera en
- * vez de a la derecha del título: en un ancho de teléfono no cabían las dos
- * cosas en una sola línea sin recortar el título en alemán (Regla 5 §6).
+ * `TodayTasksCard` de la web. La racha ya vive en la rejilla de métricas
+ * (rediseño RFC 0001): aquí queda solo la lista del día.
  */
 export function TodayTasksCard({
   tasks,
-  streak,
   palette,
 }: {
   tasks: readonly DashboardTask[];
-  streak: number;
   palette: ThemeColors;
 }) {
   const { t } = useTranslation();
@@ -31,27 +28,15 @@ export function TodayTasksCard({
   return (
     <Pressable
       onPress={() => router.push('/tasks')}
-      className="gap-3 p-4 rounded-xl border border-t-4 border-border border-t-warning bg-card active:opacity-90"
+      className="gap-3 p-4 rounded-3xl bg-card active:opacity-90"
+      style={PANEL_SHADOW}
     >
-      <View className="flex-row items-center justify-between">
-        <TileHeader
-          icon="checkmark-circle"
-          label={t('tasks.today')}
-          tone="warning"
-          palette={palette}
-        />
-        {streak > 0 && (
-          <View
-            className="gap-1 px-2 py-1 flex-row items-center rounded-full"
-            style={{ backgroundColor: hexAlpha(palette.warning, 0.14) }}
-          >
-            <Ionicons name="flame" size={12} color={palette.warning} />
-            <Text className="text-xs font-semibold" style={{ color: palette.warning }}>
-              {t('tasks.streakDays', { count: streak })}
-            </Text>
-          </View>
-        )}
-      </View>
+      <TileHeader
+        icon="checkmark-circle"
+        label={t('tasks.today')}
+        tone="warning"
+        palette={palette}
+      />
 
       {tasks.length === 0 ? (
         <EmptyRow icon="checkmark-done-outline" label={t('tasks.emptyToday')} palette={palette} />

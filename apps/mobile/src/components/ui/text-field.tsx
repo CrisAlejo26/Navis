@@ -46,7 +46,7 @@ export function TextField({
       <View
         className={cn(
           'gap-2 px-3 flex-row items-center rounded-lg border-2 bg-card',
-          multiline ? 'py-3' : 'h-11',
+          multiline ? 'py-3' : 'py-2',
           error ? 'border-destructive' : focused ? 'border-ring' : 'border-input',
         )}
       >
