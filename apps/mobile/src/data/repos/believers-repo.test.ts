@@ -97,6 +97,83 @@ describe('los creyentes en local (RFC 0003)', () => {
     expect(page.total).toBe(2);
   });
 
+  it('los filtros se apilan: búsqueda, estado, sede, don, labor y etiqueta juntos', async () => {
+    const congregations = await listCongregations(churchId);
+    const sede = congregations[0];
+    const gifts = await listGifts(churchId);
+    const don = gifts[1];
+    const labor = (await listMinistries(churchId)).find((one) => one.slug === 'pulpito');
+    const etiqueta = (await listTags(churchId))[0];
+    const vinculos = {
+      congregationId: sede?.id ?? null,
+      ministries: labor ? [labor.slug] : [],
+      giftIds: don ? [don.id] : [],
+      tagIds: etiqueta ? [etiqueta.id] : [],
+    };
+
+    // Ana reúne **todo**; Anabel corta por estado y Cara por sede, para que
+    // ningún filtro del lote sobre otra persona pase sin decir nada.
+    const ana = await addBeliever({ firstName: 'Ana', lastName: 'Vera', status: 'activo' });
+    await updateBeliever(ana, churchId, vinculos);
+    const anabel = await addBeliever({ firstName: 'Anabel', lastName: 'Rojas', status: 'nuevo' });
+    await updateBeliever(anabel, churchId, vinculos);
+    const cara = await addBeliever({ firstName: 'Cara', lastName: 'López', status: 'activo' });
+    await updateBeliever(cara, churchId, {
+      ministries: vinculos.ministries,
+      giftIds: vinculos.giftIds,
+      tagIds: vinculos.tagIds,
+    });
+
+    const found = await listBelievers({
+      churchId,
+      search: 'ana',
+      status: ['activo'],
+      congregationId: sede?.id,
+      giftId: don?.id,
+      ministry: labor?.slug,
+      tagId: etiqueta?.id,
+    });
+    expect(found.items.map((one) => one.id)).toEqual([ana]);
+    expect(found.items[0]?.ministries).toContain('pulpito');
+  });
+
+  it('los filtros se apilan también con el aviso de atención', async () => {
+    const labor = (await listMinistries(churchId)).find((one) => one.slug === 'microfono');
+    const id = await addBeliever({
+      firstName: 'Elder',
+      lastName: 'Mora',
+      createdDaysAgo: 40,
+      alertAfterDays: 10,
+    });
+    if (labor) await updateBeliever(id, churchId, { ministries: [labor.slug] });
+    await createNote(id, churchId, ownerId, {
+      kind: 'seguimiento',
+      occurredAt: addDays(today, -20),
+      told: 'Llamada que salió tarde',
+    });
+
+    // 20 días desde la última nota contra un margen de 10: el filtro de
+    // atención lo encuentra solo a él, combinado con búsqueda y labor.
+    const found = await listBelievers({
+      churchId,
+      search: 'elder',
+      attention: true,
+      ministry: 'microfono',
+    });
+    expect(found.items.map((one) => one.id)).toEqual([id]);
+    expect(found.items[0]?.needsAttention).toBe(true);
+
+    // Otra con la misma labor y sin margen agotado queda fuera del lote.
+    const fresca = await addBeliever({
+      firstName: 'Fresca',
+      createdDaysAgo: 20,
+      alertAfterDays: 30,
+    });
+    if (labor) await updateBeliever(fresca, churchId, { ministries: [labor.slug] });
+    const solo = await listBelievers({ churchId, attention: true, ministry: 'microfono' });
+    expect(solo.items.map((one) => one.id)).toEqual([id]);
+  });
+
   it('el que agota su margen pide atención y el filtro lo encuentra', async () => {
     const id = await addBeliever({ firstName: 'Andrés', alertAfterDays: 10 });
     await createNote(id, churchId, ownerId, {

@@ -1,6 +1,15 @@
-import { ALL_LOCAL_TABLES, LOCAL_INDEXES, createIndexSql, createTableSql } from '@navis/shared';
+import {
+  ACCENT_PALETTE,
+  ALL_LOCAL_TABLES,
+  LOCAL_INDEXES,
+  SYSTEM_GIFTS,
+  SYSTEM_MINISTRIES,
+  createIndexSql,
+  createTableSql,
+} from '@navis/shared';
 import { randomUUID } from 'expo-crypto';
 import * as SQLite from 'expo-sqlite';
+import type { SQLiteVariadicBindParams, SQLiteRunResult } from 'expo-sqlite';
 
 /**
  * La base de datos **local del teléfono** (RFC 0024, Fase 1).
@@ -12,17 +21,90 @@ import * as SQLite from 'expo-sqlite';
  * transacción: o entra entera o no entra nada.
  */
 
-export type LocalDb = SQLite.SQLiteDatabase;
+/**
+ * Las firmas que usan los repositorios (todas con parámetros posicionales).
+ * Tipo propio y no la clase entera a propósito: así el adaptador de tests
+ * (`test-support.js`) satisface el mismo contrato.
+ */
+export type LocalDb = {
+  getAllAsync<T>(source: string, ...params: SQLiteVariadicBindParams): Promise<T[]>;
+  getFirstAsync<T>(source: string, ...params: SQLiteVariadicBindParams): Promise<T | null>;
+  runAsync(source: string, ...params: SQLiteVariadicBindParams): Promise<SQLiteRunResult>;
+  execAsync(source: string): Promise<void>;
+  withTransactionAsync(fn: () => Promise<void>): Promise<void>;
+};
 
-let instance: LocalDb | null = null;
+/**
+ * Sobre Android, dos llamadas que se cruzan sobre la misma conexión revientan
+ * con «Call to function 'NativeDatabase.prepareAsync' has been rejected»
+ * (NullPointerException) — y una vez muerta, **todas** las consultas siguientes
+ * fallan: se vio al escribir en el buscador de creyentes. React Query lanza
+ * consultas concurrentes a propósito (listado, resumen, catálogos), así que el
+ * retardo del buscador no basta: toda operación pasa por una **cola**, de una
+ * en una. Dentro de una transacción el acceso ya es exclusivo, y los pasos del
+ * callback corren en línea sin pasar por la cola.
+ */
+function serialize(db: SQLite.SQLiteDatabase): LocalDb {
+  let tail: Promise<unknown> = Promise.resolve();
+  let inTransaction = false;
+
+  const enqueue = <T>(op: () => Promise<T>): Promise<T> => {
+    if (inTransaction) return op();
+    const run = tail.then(op, op);
+    tail = run.catch(() => undefined);
+    return run;
+  };
+
+  return {
+    async getAllAsync<T>(source: string, ...params: SQLiteVariadicBindParams): Promise<T[]> {
+      return enqueue(() => db.getAllAsync<T>(source, ...params));
+    },
+    async getFirstAsync<T>(source: string, ...params: SQLiteVariadicBindParams): Promise<T | null> {
+      return enqueue(() => db.getFirstAsync<T>(source, ...params));
+    },
+    async runAsync(source: string, ...params: SQLiteVariadicBindParams): Promise<SQLiteRunResult> {
+      return enqueue(() => db.runAsync(source, ...params));
+    },
+    async execAsync(source: string): Promise<void> {
+      return enqueue(() => db.execAsync(source));
+    },
+    withTransactionAsync(fn: () => Promise<void>): Promise<void> {
+      return enqueue(async () => {
+        inTransaction = true;
+        try {
+          await db.execAsync('BEGIN');
+          try {
+            await fn();
+            await db.execAsync('COMMIT');
+          } catch (error) {
+            await db.execAsync('ROLLBACK');
+            throw error;
+          }
+        } finally {
+          inTransaction = false;
+        }
+      });
+    },
+  };
+}
+
+/**
+ * La promesa de apertura y no la instancia abierta: si varios hooks piden la
+ * base mientras la primera apertura sigue en marcha, cada uno abriría **su
+ * propia conexión** (con su propia cola) y las consultas de unos y otros se
+ * cruzarían — el NullPointerException de `NativeDatabase.prepareAsync` que
+ * rompía el buscador de creyentes. Encadenadas a la misma promesa, abren
+ * una sola conexión con una sola cola.
+ */
+let instancePromise: Promise<LocalDb> | null = null;
 
 /** Inyecta la base en los tests: un fake con la misma interfaz mínima. */
 export function setDbForTests(fake: LocalDb | null): void {
-  instance = fake;
+  instancePromise = fake ? Promise.resolve(fake) : null;
 }
 
 /** Versión actual del esquema local. Cada cambio añade un caso a `migrations`. */
-const SCHEMA_VERSION = 2;
+const SCHEMA_VERSION = 3;
 
 type Migration = (db: LocalDb) => Promise<void>;
 
@@ -63,26 +145,79 @@ const migrations: Record<number, Migration> = {
       await db.execAsync('ALTER TABLE believers ADD COLUMN "featured_tag_id" TEXT');
     }
   },
+  // Las iglesias creadas **antes** del catálogo de serie quedaron sin dones ni
+  // labores — se vio en el buscador de creyentes: las hojas de filtros salían
+  // vacías porque esta base era anterior a lo que `createChurch` siembra hoy
+  // (igual que el «SeedMinistryRoles» de la API: la migración que arregla
+  // datos). Idempotente: solo repone cuando el catálogo está **vacío**; si la
+  // iglesia tiene algo propio no se toca, y las de serie no se pueden borrar.
+  3: async (db) => {
+    const churches = await db.getAllAsync<{ id: string }>(
+      'SELECT id FROM churches WHERE deleted_at IS NULL',
+    );
+    const now = nowIso();
+    for (const church of churches) {
+      const gifts = await db.getFirstAsync<{ total: number }>(
+        'SELECT COUNT(*) AS total FROM gifts WHERE church_id = ? AND deleted_at IS NULL',
+        church.id,
+      );
+      if ((gifts?.total ?? 0) === 0) {
+        for (const [index, name] of SYSTEM_GIFTS.entries()) {
+          await db.runAsync(
+            'INSERT INTO gifts (id, created_at, updated_at, deleted_at, church_id, name, accent, position, is_system, is_active) VALUES (?, ?, ?, NULL, ?, ?, ?, ?, 1, 1)',
+            newId(),
+            now,
+            now,
+            church.id,
+            name,
+            ACCENT_PALETTE[index % ACCENT_PALETTE.length],
+            index,
+          );
+        }
+      }
+      const ministries = await db.getFirstAsync<{ total: number }>(
+        'SELECT COUNT(*) AS total FROM ministries WHERE church_id = ? AND deleted_at IS NULL',
+        church.id,
+      );
+      if ((ministries?.total ?? 0) === 0) {
+        for (const [index, ministry] of SYSTEM_MINISTRIES.entries()) {
+          await db.runAsync(
+            'INSERT INTO ministries (id, created_at, updated_at, deleted_at, church_id, slug, name, accent, position, is_system, is_active) VALUES (?, ?, ?, NULL, ?, ?, ?, ?, ?, 1, 1)',
+            newId(),
+            now,
+            now,
+            church.id,
+            ministry.slug,
+            ministry.name,
+            ACCENT_PALETTE[index % ACCENT_PALETTE.length],
+            index,
+          );
+        }
+      }
+    }
+  },
 };
 
-export async function getDb(): Promise<LocalDb> {
-  if (instance) return instance;
-
-  const db = await SQLite.openDatabaseAsync('navis.db');
-  const row = await db.getFirstAsync<{ user_version: number }>('PRAGMA user_version');
+async function openDb(): Promise<LocalDb> {
+  const raw = await SQLite.openDatabaseAsync('navis.db');
+  const row = await raw.getFirstAsync<{ user_version: number }>('PRAGMA user_version');
   const current = row?.user_version ?? 0;
 
   for (let version = current + 1; version <= SCHEMA_VERSION; version++) {
     const migration = migrations[version];
     if (!migration) continue;
-    await db.withTransactionAsync(async () => {
-      await migration(db);
+    await raw.withTransactionAsync(async () => {
+      await migration(raw);
     });
   }
-  await db.execAsync(`PRAGMA user_version = ${SCHEMA_VERSION}`);
+  await raw.execAsync(`PRAGMA user_version = ${SCHEMA_VERSION}`);
 
-  instance = db;
-  return db;
+  return serialize(raw);
+}
+
+export async function getDb(): Promise<LocalDb> {
+  if (!instancePromise) instancePromise = openDb();
+  return instancePromise;
 }
 
 /** Para el `created_at`/`updated_at` de cada fila: ISO completo, comparable como texto. */

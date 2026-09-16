@@ -1,4 +1,5 @@
 import { NOTE_KIND_ACCENTS, todayIn, type NoteDay, type NoteKind } from '@navis/shared';
+import { themeColorsHex } from '@navis/theme';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
@@ -7,11 +8,15 @@ import { IconButton } from '@/components/ui/icon-button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useNoteDays } from '@/hooks/use-believers';
 import { buildDateGrid, isInMonth } from '@/lib/ui/date-grid';
+import { hexAlpha } from '@/lib/color';
+import { useThemeStore } from '@/lib/theme';
 
 /**
- * La vista «calendario» de la bitácora (§7.5): el año en cuadraditos, uno por
- * día, del color del tipo — la única que enseña **los huecos**. Cada mes es la
- * misma cuadrícula del calendario, en miniatura y sin días de fuera.
+ * La vista «calendario» de la bitácora (§7.5): los doce meses del año en
+ * tarjetas, la cuadrícula de cada uno en miniatura, con **un cuadradito por
+ * día**. Los días sin conversación van apenas insinuados — el vacío es lo
+ * que la vista enseña, y sin cuadro la retícula no se ve — y los hablados
+ * se pintan del color de su tipo, más cargado cuanto más notas ese día.
  */
 export function NotesCalendarView({ believerId }: { believerId: string }) {
   const { t } = useTranslation();
@@ -56,7 +61,7 @@ export function NotesCalendarView({ believerId }: { believerId: string }) {
           ))}
         </View>
       ) : (
-        <View className="gap-3 flex-row flex-wrap justify-between">
+        <View className="gap-2 flex-row flex-wrap justify-between">
           {months.map((month) => (
             <MiniMonth key={month} month={month} byDay={byDay} />
           ))}
@@ -70,6 +75,8 @@ export function NotesCalendarView({ believerId }: { believerId: string }) {
 
 function MiniMonth({ month, byDay }: { month: string; byDay: Map<string, NoteDay> }) {
   const { t } = useTranslation();
+  const palette = themeColorsHex[useThemeStore((state) => state.resolvedTheme)];
+  const vacio = hexAlpha(palette.mutedForeground, 0.15);
   const grid = buildDateGrid(month);
   const label = new Intl.DateTimeFormat(undefined, { month: 'short', timeZone: 'UTC' }).format(
     new Date(`${month}T00:00:00Z`),
@@ -95,8 +102,11 @@ function MiniMonth({ month, byDay }: { month: string; byDay: Map<string, NoteDay
                     className="h-3.5 w-3.5 rounded-[3px]"
                     style={{
                       backgroundColor: entry
-                        ? NOTE_KIND_ACCENTS[entry.kinds[0] ?? 'seguimiento']
-                        : 'transparent',
+                        ? hexAlpha(
+                            NOTE_KIND_ACCENTS[entry.kinds[0] ?? 'seguimiento'],
+                            entry.total > 2 ? 1 : entry.total === 2 ? 0.7 : 0.45,
+                          )
+                        : vacio,
                     }}
                   />
                 </View>

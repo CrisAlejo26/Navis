@@ -9,7 +9,9 @@ import {
   journeyInput,
   type JourneyValues,
 } from '@/components/believers/journey-fields';
+import { PhotoField } from '@/components/believers/photo-field';
 import type { WriteBelieverInput } from '@/data/repos/believers-repo';
+import { believerPhotoUri } from '@/data/photo-storage';
 import { BottomSheet } from '@/components/ui/bottom-sheet';
 import { Button } from '@/components/ui/button';
 import { Chip } from '@/components/ui/chip';
@@ -34,6 +36,12 @@ export interface BelieverFormValues {
   giftIds: string[];
   tagIds: string[];
   journey: JourneyValues;
+  /**
+   * La fotografía, con su bandera: `changed` distingue «no la toco» de
+   * «la acabo de cambiar o quitar», porque quitar la foto es poner `null`
+   * y sin la bandera sería indistinguible de «nunca tuvo».
+   */
+  photo: { uri: string | null; changed: boolean };
 }
 
 export function emptyForm(): BelieverFormValues {
@@ -56,6 +64,7 @@ export function emptyForm(): BelieverFormValues {
       vivenciasReadings: '',
       bibleInstituteTimes: '',
     },
+    photo: { uri: null, changed: false },
   };
 }
 
@@ -79,6 +88,10 @@ export function formFromBeliever(believer: BelieverListItem): BelieverFormValues
       vivenciasReadings: believer.vivenciasReadings?.toString() ?? '',
       bibleInstituteTimes: believer.bibleInstituteTimes?.toString() ?? '',
     },
+    photo: {
+      uri: believer.hasPhoto ? believerPhotoUri(believer.id) : null,
+      changed: false,
+    },
   };
 }
 
@@ -97,6 +110,8 @@ export function toInput(values: BelieverFormValues): WriteBelieverInput {
     giftIds: values.giftIds,
     tagIds: values.tagIds,
     ...journeyInput(values.journey),
+    // Solo viaja si cambió: sin eso, «editar el nombre» borraría la foto.
+    ...(values.photo.changed ? { photoUri: values.photo.uri } : {}),
   };
 }
 
@@ -169,6 +184,10 @@ function BelieverFormBody({ onClose, believer, onSave }: BelieverFormSheetProps)
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
+        <PhotoField
+          uri={values.photo.uri}
+          onChange={(uri) => setValues({ ...values, photo: { uri, changed: true } })}
+        />
         <View className="gap-4 flex-row">
           <View className="flex-1">
             <TextField

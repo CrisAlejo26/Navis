@@ -20,6 +20,11 @@ interface AppBarProps {
   /** Lo que hay detrás: si falta, la flecha vuelve con `router.back()`. */
   backLabel?: string;
   actions?: AppBarAction[];
+  /**
+   * Sobre una escena de fondo (la cabecera de la ficha): fondo transparente
+   * y glifos claros — los del tema se pierden contra el degradado.
+   */
+  onScene?: boolean;
 }
 
 const ACTION_HIT = 44;
@@ -35,14 +40,15 @@ const ACTION_HIT = 44;
  * es el de la pantalla (`bg-background`), la flecha vuelve de verdad y las
  * acciones son `IconButton` de 44 px. Va pegada arriba con su safe area.
  */
-export function AppBar({ title, backLabel, actions = [] }: AppBarProps) {
+export function AppBar({ title, backLabel, actions = [], onScene = false }: AppBarProps) {
   const { t } = useTranslation();
   const palette = themeColorsHex[useThemeStore((state) => state.resolvedTheme)];
+  const claro = palette.primaryForeground;
   const insets = useSafeAreaInsets();
 
   return (
     <View
-      className="gap-1 px-1.5 pb-2 bg-background"
+      className={`gap-1 px-1.5 pb-2 ${onScene ? '' : 'bg-background'}`}
       style={{ paddingTop: insets.top + 4 }}
       accessibilityRole="header"
     >
@@ -53,7 +59,7 @@ export function AppBar({ title, backLabel, actions = [] }: AppBarProps) {
           onPress={() => router.back()}
           className="h-11 w-11 items-center justify-center rounded-full active:opacity-60"
         >
-          <Ionicons name="chevron-back" size={24} color={palette.foreground} />
+          <Ionicons name="chevron-back" size={24} color={onScene ? claro : palette.foreground} />
         </Pressable>
 
         <Text
@@ -70,6 +76,7 @@ export function AppBar({ title, backLabel, actions = [] }: AppBarProps) {
               icon={action.icon}
               accessibilityLabel={action.label}
               onPress={action.onPress}
+              iconColor={onScene ? claro : undefined}
             />
           ))}
         </View>

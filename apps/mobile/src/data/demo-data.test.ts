@@ -26,7 +26,7 @@ describe('los datos de prueba, sembrados de verdad', () => {
   afterAll(() => {
     db.close();
   });
-  it('siembra doce hermanos con notas, dones, labores y etiquetas', async () => {
+  it('siembra veinte hermanos con notas, dones, labores y etiquetas', async () => {
     const account = await createAccount({
       name: 'Cristian',
       email: 'demo@navis.app',
@@ -47,22 +47,29 @@ describe('los datos de prueba, sembrados de verdad', () => {
     expect(await hasDemoData(church.id)).toBe(true);
 
     const summary = await believersSummary(church.id);
-    expect(summary.total).toBe(12);
-    expect(summary.byStatus.activo).toBe(7);
-    expect(summary.byStatus.nuevo).toBe(3);
+    expect(summary.total).toBe(20);
+    expect(summary.byStatus.activo).toBe(12);
+    expect(summary.byStatus.nuevo).toBe(5);
     expect(summary.needsAttention).toBeGreaterThan(0);
     expect(summary.newThisMonth).toBeGreaterThan(0);
 
-    // La página entera: sonda, etiquetas y labores por persona.
+    // La página entera: sonda, etiquetas y labores por persona. Los
+    // inactivos quedan fuera salvo que el filtro de estado los pida.
     const page = await listBelievers({ churchId: church.id, limit: 20 });
-    expect(page.items).toHaveLength(12);
+    expect(page.items).toHaveLength(18);
+    const inactivos = await listBelievers({
+      churchId: church.id,
+      status: ['inactivo'],
+      limit: 20,
+    });
+    expect(inactivos.items).toHaveLength(2);
 
     const conNotas = page.items.filter((one) => one.notesCount > 0);
-    expect(conNotas.length).toBeGreaterThanOrEqual(9);
+    expect(conNotas.length).toBe(15);
     const desbordados = page.items.filter((one) => one.needsAttention);
     expect(desbordados.length).toBeGreaterThanOrEqual(2);
     const conEtiquetas = page.items.filter((one) => one.tags.length > 0);
-    expect(conEtiquetas.length).toBe(6);
+    expect(conEtiquetas.length).toBe(9);
 
     // La ficha de Juan Carlos: labor de púlpito y etiqueta destacada.
     const juanCarlos = page.items.find((one) => one.firstName === 'Juan Carlos');
@@ -94,8 +101,8 @@ describe('los datos de prueba, sembrados de verdad', () => {
     await seedDemoData(llena.id, account.user.id);
 
     const vacia = await createChurch({ name: 'Vacía', city: 'Elda', ownerId: account.user.id });
-    // La comprobación es por iglesia: la vacía se siembra aunque la otra tenga doce.
+    // La comprobación es por iglesia: la vacía se siembra aunque la otra tenga veinte.
     expect(await seedDemoData(vacia.id, account.user.id)).toBe(true);
-    expect((await believersSummary(vacia.id)).total).toBe(12);
+    expect((await believersSummary(vacia.id)).total).toBe(20);
   });
 });

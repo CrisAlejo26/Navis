@@ -10,44 +10,85 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { formatNumber, formatShortDate } from '@/lib/format';
 import { useLocalSession } from '@/stores/local-session';
 import { findUser } from '@/data/repos/account-repo';
+import { LogoBoat } from '@/components/home/logo-boat';
 
 /**
  * El hero ilustrado del panel (RFC 0001, rediseño): la estampa náutica de
- * Navis — cielo degradado por la hora del saludo, olas en capas y el velero —
- * con la cifra grande de creyentes encima, como la temperatura del tiempo.
+ * Navis — cielo degradado por la hora del saludo, olas en capas y el barco
+ * del logo — con la cifra grande de creyentes encima, como la temperatura
+ * del tiempo.
  *
  * La escena es **SVG propio** (react-native-svg), no una imagen: es la misma
  * familia vectorial plana de la estela de `ActivityCard` y se tiñe con la
  * hora sin mantener ficheros. Los degradados viven solo aquí, en la
  * ilustración — nunca como fondo de un control (Regla 9 §7).
+ *
+ * El barco es el del logo (`LogoBoat`), siempre en su sitio —tamaño y
+ * emplazamiento fijos— y la hora le da el color: dorado como el sol de día,
+ * plateado como la luna de noche. La escena acompaña: de día cielo alto,
+ * disco cálido y olas claras; de noche azul de fondo, estrellas y luna.
  */
 
-type Scene = {
+export type Scene = {
   sky: readonly [string, string, string];
   sea: readonly [string, string];
   /** Disco del sol o la luna; `crescent` recorta con el color del cielo. */
-  disc: { cx: number; cy: number; r: number; fill: string; crescent?: boolean };
+  disc: {
+    cx: number;
+    cy: number;
+    r: number;
+    fill: string;
+    crescent?: boolean;
+    /** Halo cálido alrededor del disco: solo de día, es la luz del sol. */
+    halo?: string;
+  };
   stars: boolean;
+  boat: 'day' | 'night';
+  /** La espuma bajo el barco: más luz de día que de noche. */
+  espuma: number;
+  /** La ola más cercana, la que entra por debajo de todo. */
+  ola: string;
 };
 
-const SCENES: Record<'morning' | 'afternoon' | 'evening', Scene> = {
+export const SCENES: Record<'morning' | 'afternoon' | 'evening', Scene> = {
   morning: {
-    sky: ['#16309b', '#2a55d6', '#6ea0f5'],
-    sea: ['#123087', '#0e2461'],
-    disc: { cx: 296, cy: 86, r: 36, fill: 'rgba(255,255,255,0.35)' },
+    sky: ['#2a55d6', '#4d7bec', '#8fb4f2'],
+    sea: ['#1e42b8', '#17358f'],
+    disc: {
+      cx: 296,
+      cy: 86,
+      r: 36,
+      fill: 'rgba(255,224,150,0.75)',
+      halo: 'rgba(255,224,150,0.25)',
+    },
     stars: false,
+    boat: 'day',
+    espuma: 0.22,
+    ola: '#122a75',
   },
   afternoon: {
-    sky: ['#2140cf', '#3a68e0', '#9cc0f5'],
-    sea: ['#183696', '#0f245f'],
-    disc: { cx: 300, cy: 66, r: 30, fill: 'rgba(255,255,255,0.5)' },
+    sky: ['#3a68e0', '#6b96ef', '#b4cdf7'],
+    sea: ['#2450c8', '#1d44a8'],
+    disc: {
+      cx: 300,
+      cy: 66,
+      r: 30,
+      fill: 'rgba(255,240,200,0.95)',
+      halo: 'rgba(255,226,160,0.32)',
+    },
     stars: false,
+    boat: 'day',
+    espuma: 0.26,
+    ola: '#16348f',
   },
   evening: {
-    sky: ['#0b1847', '#1c3d94', '#4a72cf'],
-    sea: ['#0d1c4c', '#081231'],
-    disc: { cx: 84, cy: 74, r: 26, fill: '#f0a35e' },
+    sky: ['#050b26', '#0b1847', '#1c3d94'],
+    sea: ['#0a1438', '#040a20'],
+    disc: { cx: 84, cy: 74, r: 26, fill: '#dfe6f5', crescent: true },
     stars: true,
+    boat: 'night',
+    espuma: 0.08,
+    ola: '#030818',
   },
 };
 
@@ -59,6 +100,9 @@ const STARS: readonly (readonly [number, number])[] = [
   [258, 38],
   [334, 128],
 ];
+
+/** El velero de la primera versión, ocultado pero a un gesto de volver. */
+const LEGACY_BOAT_VISIBLE = false;
 
 function SceneArt({ scene }: { scene: Scene }) {
   return (
@@ -80,7 +124,17 @@ function SceneArt({ scene }: { scene: Scene }) {
           />
         </>
       ) : (
-        <Circle cx={scene.disc.cx} cy={scene.disc.cy} r={scene.disc.r} fill={scene.disc.fill} />
+        <>
+          {scene.disc.halo && (
+            <Circle
+              cx={scene.disc.cx}
+              cy={scene.disc.cy}
+              r={scene.disc.r * 1.9}
+              fill={scene.disc.halo}
+            />
+          )}
+          <Circle cx={scene.disc.cx} cy={scene.disc.cy} r={scene.disc.r} fill={scene.disc.fill} />
+        </>
       )}
 
       {scene.stars &&
@@ -107,39 +161,48 @@ function SceneArt({ scene }: { scene: Scene }) {
         fill={scene.sea[1]}
         fillOpacity={0.85}
       />
-      <Path d="M0 262 C 80 250, 140 272, 220 262 C 300 252, 340 268, 375 260 L 375 320 L 0 320 Z" />
+      <Path
+        d="M0 262 C 80 250, 140 272, 220 262 C 300 252, 340 268, 375 260 L 375 320 L 0 320 Z"
+        fill={scene.ola}
+      />
 
-      {/* El velero de Navis, grande y claro: velas y casco en crema con
-          contorno navy — la pareja contraste bien tanto sobre el mar del día
-          como sobre el del atardecer. La pennant lleva el ámbar del acento. */}
-      <G>
-        <Ellipse cx={178} cy={276} rx={54} ry={5} fill="white" fillOpacity={0.14} />
-        <Path d="M180 162 L180 246" stroke="#0c1e4e" strokeWidth={2.5} strokeOpacity={0.4} />
-        <Path d="M180 158 L195 163 L180 169 Z" fill="#f1bf5b" />
-        <Path
-          d="M176 168 L176 240 L132 240 Z"
-          fill="#fdf6e6"
-          stroke="#0c1e4e"
-          strokeWidth={1.5}
-          strokeOpacity={0.22}
-        />
-        <Path
-          d="M184 178 L184 240 L216 236 Z"
-          fill="#f3e2b8"
-          fillOpacity={0.92}
-          stroke="#0c1e4e"
-          strokeWidth={1.5}
-          strokeOpacity={0.22}
-        />
-        <Path
-          d="M124 246 L232 246 L212 272 L144 272 Z"
-          fill="#f6e8c8"
-          stroke="#0c1e4e"
-          strokeWidth={1.5}
-          strokeOpacity={0.25}
-        />
-        <Path d="M124 246 L232 246 L227 254 L129 254 Z" fill="#0c1e4e" fillOpacity={0.18} />
-      </G>
+      {/* El barco del logo, del color de su astro: sol de día, luna de noche. */}
+      <Ellipse cx={178} cy={274} rx={66} ry={5} fill="white" fillOpacity={scene.espuma} />
+      <LogoBoat variant={scene.boat} />
+
+      {/* El velero propio de la primera versión. Se **oculta**, no se borra:
+          sigue siendo una buena pieza y `LEGACY_BOAT_VISIBLE` lo devuelve a
+          la escena cuando se quiera alternar. */}
+      {LEGACY_BOAT_VISIBLE && (
+        <G>
+          <Ellipse cx={178} cy={276} rx={54} ry={5} fill="white" fillOpacity={0.14} />
+          <Path d="M180 162 L180 246" stroke="#0c1e4e" strokeWidth={2.5} strokeOpacity={0.4} />
+          <Path d="M180 158 L195 163 L180 169 Z" fill="#f1bf5b" />
+          <Path
+            d="M176 168 L176 240 L132 240 Z"
+            fill="#fdf6e6"
+            stroke="#0c1e4e"
+            strokeWidth={1.5}
+            strokeOpacity={0.22}
+          />
+          <Path
+            d="M184 178 L184 240 L216 236 Z"
+            fill="#f3e2b8"
+            fillOpacity={0.92}
+            stroke="#0c1e4e"
+            strokeWidth={1.5}
+            strokeOpacity={0.22}
+          />
+          <Path
+            d="M124 246 L232 246 L212 272 L144 272 Z"
+            fill="#f6e8c8"
+            stroke="#0c1e4e"
+            strokeWidth={1.5}
+            strokeOpacity={0.25}
+          />
+          <Path d="M124 246 L232 246 L227 254 L129 254 Z" fill="#0c1e4e" fillOpacity={0.18} />
+        </G>
+      )}
     </Svg>
   );
 }

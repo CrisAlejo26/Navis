@@ -40,7 +40,7 @@ export function FieldButton({
         disabled={disabled}
         onPress={onPress}
         className={cn(
-          'h-11 px-3 flex-row items-center justify-between rounded-lg border-2 bg-card',
+          'h-11 px-3 rounded-2xl flex-row items-center justify-between border-2 bg-card',
           error ? 'border-destructive' : 'border-input',
           disabled && 'opacity-50',
         )}

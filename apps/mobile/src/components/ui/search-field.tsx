@@ -15,6 +15,13 @@ type SearchFieldProps = Omit<
   onChangeText: (text: string) => void;
   /** Si no se pasa, limpiar es `onChangeText('')`. */
   onClear?: () => void;
+  /** Clases para el contenedor: la variante de vidrio sobre una escena. */
+  containerClassName?: string;
+  /**
+   * Color explícito de la lupa y del botón de limpiar: sobre una escena de
+   * fondo el tono por defecto no se lee.
+   */
+  iconColor?: string;
 };
 
 /**
@@ -22,7 +29,15 @@ type SearchFieldProps = Omit<
  * decorativa (Regla 2: sin `accessibilityLabel`, `Icon` la oculta sola del
  * lector de pantalla); el botón de limpiar solo aparece con texto escrito.
  */
-export function SearchField({ label, value, onChangeText, onClear, ...props }: SearchFieldProps) {
+export function SearchField({
+  label,
+  value,
+  onChangeText,
+  onClear,
+  containerClassName,
+  iconColor,
+  ...props
+}: SearchFieldProps) {
   const { t } = useTranslation();
 
   return (
@@ -30,15 +45,15 @@ export function SearchField({ label, value, onChangeText, onClear, ...props }: S
       {...props}
       label={label ?? t('common.search')}
       hideLabel
-      value={value}
-      onChangeText={onChangeText}
-      leadingIcon={<Icon name="search" size="sm" />}
+      containerClassName={containerClassName}
+      leadingIcon={<Icon name="search" size="sm" color={iconColor} />}
       trailingIcon={
         value.length > 0 ? (
           <IconButton
             icon="close-circle"
             accessibilityLabel={t('common.clearSearch')}
             size="sm"
+            iconColor={iconColor}
             onPress={() => (onClear ? onClear() : onChangeText(''))}
           />
         ) : null

@@ -23,6 +23,11 @@ interface IconProps {
   shape?: Shape;
   className?: string;
   /**
+   * Color explícito del glifo, para los casos sobre una ilustración de fondo
+   * donde ningún tono del tema es el que toca. Con él, el tono se ignora.
+   */
+  color?: string;
+  /**
    * Solo hace falta cuando el icono va solo, sin texto al lado (Regla 2):
    * con etiqueta se anuncia; sin ella, se oculta del lector de pantalla en
    * vez de leerse dos veces junto al texto que ya lo acompaña.
@@ -45,10 +50,11 @@ export function Icon({
   background = 'none',
   shape = 'circle',
   className,
+  color,
   accessibilityLabel,
 }: IconProps) {
   const palette = themeColorsHex[useThemeStore((state) => state.resolvedTheme)];
-  const toneHex = tone === 'default' ? palette.mutedForeground : palette[tone];
+  const toneHex = color ?? (tone === 'default' ? palette.mutedForeground : palette[tone]);
 
   const glyph = (
     <Ionicons

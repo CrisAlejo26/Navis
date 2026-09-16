@@ -9,8 +9,9 @@ import { createCatalogEntry } from './repos/catalog-repo';
 
 /**
  * Datos de **prueba** para ver la aplicación llena (Regla 11): una iglesia,
- * doce hermanos con estados y margenes distintos —para que la sonda se vea en
- * sus tres colores—, notas de varios tipos y etiquetas propias.
+ * veinte hermanos —los primeros con la ficha completa y los últimos con
+ * campos que faltan, para que se vea tanto el listado lleno como las fichas
+ * cojas—, notas de varios tipos y etiquetas propias.
  *
  * Se siembra una sola vez: si ya hay creyentes en la base, no toca nada. El
  * botón vive en Ajustes y desaparece cuando ya hay datos.
@@ -19,8 +20,8 @@ import { createCatalogEntry } from './repos/catalog-repo';
 const HERMANOS: {
   firstName: string;
   lastName: string;
-  phone: string;
-  email: string;
+  phone: string | null;
+  email: string | null;
   status: 'activo' | 'nuevo' | 'inactivo' | 'trasladado';
   /** Días desde la última nota: el color de la sonda sale de aquí. */
   daysAgo: number | null;
@@ -160,6 +161,94 @@ const HERMANOS: {
     alertAfterDays: 30,
     ministries: [],
     tags: [],
+  },
+  {
+    firstName: 'Gabriel',
+    lastName: 'Herrera',
+    phone: '+34 602 456 789',
+    email: 'gabriel@example.com',
+    status: 'activo',
+    daysAgo: 10,
+    alertAfterDays: 30,
+    ministries: ['microfono'],
+    tags: [2],
+  },
+  {
+    firstName: 'Rocío',
+    lastName: 'Vargas',
+    phone: null,
+    email: 'rocio@example.com',
+    status: 'activo',
+    daysAgo: 18,
+    alertAfterDays: 30,
+    ministries: ['ofrenda'],
+    tags: [],
+  },
+  {
+    firstName: 'Tomás',
+    lastName: 'Ibarra',
+    phone: '+34 602 567 890',
+    email: null,
+    status: 'nuevo',
+    daysAgo: 5,
+    alertAfterDays: 20,
+    ministries: [],
+    tags: [1],
+  },
+  {
+    firstName: 'Valeria',
+    lastName: 'Serrano',
+    phone: null,
+    email: null,
+    status: 'activo',
+    daysAgo: 40,
+    alertAfterDays: 30,
+    ministries: ['biblias'],
+    tags: [],
+  },
+  {
+    firstName: 'Nicolás',
+    lastName: 'Fuentes',
+    phone: '+34 602 678 901',
+    email: 'nicolas@example.com',
+    status: 'activo',
+    daysAgo: 60,
+    alertAfterDays: null,
+    ministries: [],
+    tags: [],
+  },
+  {
+    firstName: 'Alicia',
+    lastName: 'Campos',
+    phone: null,
+    email: 'alicia@example.com',
+    status: 'inactivo',
+    daysAgo: 120,
+    alertAfterDays: null,
+    ministries: [],
+    tags: [],
+  },
+  {
+    firstName: 'Samuel',
+    lastName: 'Peña',
+    phone: null,
+    email: null,
+    status: 'nuevo',
+    daysAgo: null,
+    alertAfterDays: null,
+    ministries: [],
+    tags: [],
+  },
+  {
+    firstName: 'Daniela',
+    lastName: 'Lozano',
+    phone: '+34 602 789 012',
+    email: 'daniela@example.com',
+    status: 'activo',
+    daysAgo: 1,
+    alertAfterDays: 30,
+    ministries: ['recepcion', 'vigilancia'],
+    tags: [0, 2],
   },
 ];
 
@@ -311,28 +400,62 @@ const DEMO_CHURCH_NAME = 'Iglesia Navis Demo';
  * existente—, **su** iglesia demo y los datos sembrados en ella, en una sola
  * llamada. La sesión que devuelve apunta exactamente a la iglesia donde
  * acaban de caer los datos, sin depender de cuál fuera la primera del dueño.
+ *
+ * Va bajo **una promesa compartida**: la siembra automática del arranque y el
+ * botón de la bienvenida pueden cruzarse, y dos `prepareDemoSession` a la vez
+ * se pisan en el alta de la cuenta — que solo uno corra es lo que hace que el
+ * segundo reciba lo sembrado en vez de un choque de claves únicas.
  */
-export async function prepareDemoSession(): Promise<{ userId: string; churchId: string }> {
-  const created = await createAccount({
-    name: 'Demo Navis',
-    email: DEMO_EMAIL,
-    password: DEMO_PASSWORD,
-  });
-  const user =
-    'error' in created
-      ? await (async () => {
-          const logged = await login({ email: DEMO_EMAIL, password: DEMO_PASSWORD });
-          if ('error' in logged) throw new Error('La cuenta demo existe pero no entra');
-          return logged.user;
-        })()
-      : created.user;
+let demoSession: Promise<{ userId: string; churchId: string }> | null = null;
 
-  // La iglesia demo del dueño, o una nueva si no tiene ninguna. La primera
-  // por fecha de creación vale: este usuario solo tiene (o solo quiere) esta.
-  const church =
-    (await findChurchByOwner(user.id)) ??
-    (await createChurch({ name: DEMO_CHURCH_NAME, city: 'Elda', ownerId: user.id }));
+export function prepareDemoSession(): Promise<{ userId: string; churchId: string }> {
+  demoSession ??= (async () => {
+    const created = await createAccount({
+      name: 'Demo Navis',
+      email: DEMO_EMAIL,
+      password: DEMO_PASSWORD,
+    });
+    const user =
+      'error' in created
+        ? await (async () => {
+            const logged = await login({ email: DEMO_EMAIL, password: DEMO_PASSWORD });
+            if ('error' in logged) throw new Error('La cuenta demo existe pero no entra');
+            return logged.user;
+          })()
+        : created.user;
 
-  await seedDemoData(church.id, user.id);
-  return { userId: user.id, churchId: church.id };
+    // La iglesia demo del dueño, o una nueva si no tiene ninguna. La primera
+    // por fecha de creación vale: este usuario solo tiene (o solo quiere) esta.
+    const church =
+      (await findChurchByOwner(user.id)) ??
+      (await createChurch({ name: DEMO_CHURCH_NAME, city: 'Elda', ownerId: user.id }));
+
+    await seedDemoData(church.id, user.id);
+    return { userId: user.id, churchId: church.id };
+  })();
+  return demoSession;
+}
+
+/**
+ * El usuario de prueba, **sembrado solo al arrancar** (como el
+ * `initializeTestUser` de Dreamkeeper): cuenta `demo@navis.app` /
+ * `navis-demo-1234`, su iglesia y los veinte registros con todo y a faltas,
+ * listos para entrar por el login de siempre sin pulsar nada.
+ *
+ * Idempotente —si la cuenta ya existe, no toca nada— y **silencioso**: es un
+ * usuario de prueba; si la siembra falla o choca con otra en marcha, ni se
+ * avisa ni se lanza — el arranque de la app no se entera de que hubo demo.
+ */
+export async function initializeTestUser(): Promise<void> {
+  try {
+    const db = await getDb();
+    const existing = await db.getFirstAsync<{ id: string }>(
+      'SELECT id FROM local_user WHERE email = ?',
+      DEMO_EMAIL,
+    );
+    if (existing) return;
+    await prepareDemoSession();
+  } catch {
+    // En silencio: que la demo fallida no tape el arranque de verdad.
+  }
 }

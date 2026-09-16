@@ -7,10 +7,11 @@ import {
   Roboto_700Bold,
 } from '@expo-google-fonts/roboto';
 import { themeColorsHex } from '@navis/theme';
+import { AppBackdrop } from '@/components/navigation/app-backdrop';
 import { MORE_MENU_ENTRIES } from '@/lib/nav-mobile';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
+import { Stack, ThemeProvider } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
@@ -21,6 +22,9 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 // Importar este módulo inicializa i18next; tiene que ocurrir antes del primer
 // render para que no se vea un parpadeo con las claves sin traducir.
 import { i18n } from '@/lib/i18n';
+import { initializeTestUser } from '@/data/demo-data';
+import { useNavigationTheme } from '@/lib/navigation-theme';
+import { PUSHED_SCREEN_ANIMATION } from '@/lib/pushed-screens';
 import { queryClient } from '@/lib/query-client';
 import { useThemeStore } from '@/lib/theme';
 
@@ -36,16 +40,20 @@ function RootNavigator() {
   const { t } = useTranslation();
   const resolvedTheme = useThemeStore((state) => state.resolvedTheme);
   const palette = themeColorsHex[resolvedTheme];
+  const navigationTheme = useNavigationTheme();
 
   return (
-    <>
+    <ThemeProvider value={navigationTheme}>
       <StatusBar style={resolvedTheme === 'dark' ? 'light' : 'dark'} />
+      <AppBackdrop />
       <Stack
         screenOptions={{
           headerShown: false,
           headerStyle: { backgroundColor: palette.card },
           headerTintColor: palette.foreground,
-          contentStyle: { backgroundColor: palette.background },
+          // Transparente a propósito: el fondo lo pinta `AppBackdrop`, montado
+          // una sola vez detrás del Stack (como en Dreamkeeper).
+          contentStyle: { backgroundColor: 'transparent' },
         }}
       >
         <Stack.Screen name="index" />
@@ -55,21 +63,31 @@ function RootNavigator() {
           <Stack.Screen
             key={name}
             name={name}
-            options={{ headerShown: true, title: t(titleKey) }}
+            options={{ headerShown: true, title: t(titleKey), animation: PUSHED_SCREEN_ANIMATION }}
           />
         ))}
         <Stack.Screen
           name="components"
-          options={{ headerShown: true, title: t('catalog.title') }}
+          options={{
+            headerShown: true,
+            title: t('catalog.title'),
+            animation: PUSHED_SCREEN_ANIMATION,
+          }}
         />
-        <Stack.Screen name="believers/[id]" options={{ headerShown: false }} />
-        <Stack.Screen name="believers/catalog" options={{ headerShown: false }} />
+        <Stack.Screen
+          name="believers/[id]"
+          options={{ headerShown: false, animation: PUSHED_SCREEN_ANIMATION }}
+        />
+        <Stack.Screen
+          name="believers/catalog"
+          options={{ headerShown: false, animation: PUSHED_SCREEN_ANIMATION }}
+        />
         <Stack.Screen
           name="+not-found"
           options={{ headerShown: true, title: t('errors.notFound') }}
         />
       </Stack>
-    </>
+    </ThemeProvider>
   );
 }
 
@@ -91,6 +109,10 @@ export default function RootLayout() {
     if (fontsLoaded) {
       void SplashScreen.hideAsync();
     }
+    // El usuario de prueba se siembra **al arrancar**, como en Dreamkeeper:
+    // `demo@navis.app` con sus veinte registros, si no estaba ya. No espera ni
+    // lanza: cuando termine, la cuenta simplemente estará en el login.
+    void initializeTestUser();
   }, [fontsLoaded]);
 
   if (!fontsLoaded) {

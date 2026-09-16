@@ -14,6 +14,12 @@ export interface TextFieldProps extends TextInputProps {
   leadingIcon?: ReactNode;
   trailingIcon?: ReactNode;
   className?: string;
+  /**
+   * Clases para el contenedor, además de las suyas: la variante de vidrio de
+   * la cabecera de creyentes lo usa para flotar translúcido sobre la escena.
+   * Va antes que los bordes de estado, que siempre ganan.
+   */
+  containerClassName?: string;
 }
 
 /**
@@ -33,6 +39,7 @@ export function TextField({
   leadingIcon,
   trailingIcon,
   className,
+  containerClassName,
   multiline,
   onFocus,
   onBlur,
@@ -45,7 +52,8 @@ export function TextField({
       {hideLabel ? null : <Text className="text-sm font-sans-medium text-foreground">{label}</Text>}
       <View
         className={cn(
-          'gap-2 px-3 flex-row items-center rounded-lg border-2 bg-card',
+          'gap-2 px-3 rounded-2xl flex-row items-center border-2 bg-card',
+          containerClassName,
           multiline ? 'py-3' : 'py-2',
           error ? 'border-destructive' : focused ? 'border-ring' : 'border-input',
         )}

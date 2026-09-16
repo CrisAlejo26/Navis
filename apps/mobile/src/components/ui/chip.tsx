@@ -33,6 +33,12 @@ interface ChipProps {
   color?: string;
   disabled?: boolean;
   className?: string;
+  /**
+   * Sobre una escena de fondo (la cabecera de creyentes): pastilla de vidrio
+   * con texto en blanco. Marcada, la pastilla se vuelve blanca sólida con el
+   * texto en el tono — sobre el azul, la pastilla tintada no se leería.
+   */
+  onScene?: boolean;
 }
 
 /**
@@ -53,9 +59,11 @@ export function Chip({
   color,
   disabled = false,
   className,
+  onScene = false,
 }: ChipProps) {
   const palette = themeColorsHex[useThemeStore((state) => state.resolvedTheme)];
   const toneHex = color ?? palette[TONE_KEY[tone]];
+  const claro = palette.primaryForeground;
 
   return (
     <View className={cn('flex-row items-center rounded-full', disabled && 'opacity-60', className)}>
@@ -70,22 +78,38 @@ export function Chip({
           paddingLeft: 12,
           paddingRight: onRemove ? 22 : 12,
           borderWidth: 1,
-          borderColor: selected ? hexAlpha(toneHex, 0.35) : palette.border,
-          backgroundColor: selected ? hexAlpha(toneHex, 0.14) : 'transparent',
+          borderColor: onScene
+            ? selected
+              ? 'transparent'
+              : 'rgba(255,255,255,0.35)'
+            : selected
+              ? hexAlpha(toneHex, 0.35)
+              : palette.border,
+          backgroundColor: onScene
+            ? selected
+              ? 'rgba(255,255,255,0.92)'
+              : 'rgba(255,255,255,0.16)'
+            : selected
+              ? hexAlpha(toneHex, 0.14)
+              : 'transparent',
         }}
       >
         {icon ? (
           <Ionicons
             name={icon}
             size={14}
-            color={selected ? toneHex : palette.mutedForeground}
+            color={
+              onScene ? (selected ? toneHex : claro) : selected ? toneHex : palette.mutedForeground
+            }
             accessibilityElementsHidden
             importantForAccessibility="no-hide-descendants"
           />
         ) : null}
         <Text
           className="text-xs font-sans-medium"
-          style={{ color: selected ? toneHex : palette.foreground }}
+          style={{
+            color: onScene ? (selected ? toneHex : claro) : selected ? toneHex : palette.foreground,
+          }}
         >
           {label}
         </Text>

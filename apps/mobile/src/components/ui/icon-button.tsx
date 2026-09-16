@@ -27,6 +27,12 @@ interface IconButtonProps extends Omit<PressableProps, 'children' | 'hitSlop'> {
   variant?: ButtonVariant;
   size?: Size;
   className?: string;
+  /**
+   * Color explícito del glifo, para los casos sobre una ilustración de fondo
+   * donde el tono de la variante se pierde. Con él, el tono de la variante
+   * se ignora.
+   */
+  iconColor?: string;
 }
 
 /**
@@ -39,12 +45,13 @@ export function IconButton({
   accessibilityLabel,
   variant = 'ghost',
   size = 'md',
+  iconColor,
   disabled,
   className,
   ...props
 }: IconButtonProps) {
   const palette = themeColorsHex[useThemeStore((state) => state.resolvedTheme)];
-  const iconColor = palette[BUTTON_ICON_TONE[variant]];
+  const iconColorResuelto = iconColor ?? palette[BUTTON_ICON_TONE[variant]];
   const box = BOX[size];
 
   return (
@@ -63,7 +70,7 @@ export function IconButton({
       )}
       {...props}
     >
-      <Ionicons name={icon} size={GLYPH[size]} color={iconColor} />
+      <Ionicons name={icon} size={GLYPH[size]} color={iconColorResuelto} />
     </Pressable>
   );
 }

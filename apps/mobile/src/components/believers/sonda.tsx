@@ -15,10 +15,10 @@ import { useTranslation } from 'react-i18next';
 
 import { formatDay } from '@/lib/format';
 import { useThemeStore } from '@/lib/theme';
+import { hexAlpha } from '@/lib/color';
 
 type Tone = 'primary' | 'warning' | 'destructive';
 
-const TRACK_HEIGHT = 4;
 const FILL_MS = 420;
 
 interface SondaProps {
@@ -42,6 +42,12 @@ interface SondaProps {
  * resuelve, y solo en la primera pintura— y quien ha agotado su margen
  * respira: opacidad en bucle, escalonada por fila, apagada con movimiento
  * reducido. El color nunca informa solo: el icono y el texto acompañan.
+ *
+ * En `full` (la ficha) la sonda va **en su tarjeta**, al modo de las fichas
+ * de progreso de Kann o Waterllama: pista gruesa con el fondo tintado del
+ * propio estado — la barra se lee antes de mirar el número — y el valor con
+ * su unidad («7 d») al lado del rótulo, para que ningún «3» quede a
+ * interpretación.
  */
 export function Sonda({
   daysWithoutNote,
@@ -98,6 +104,75 @@ export function Sonda({
     : hasNotes
       ? palette.mutedForeground
       : palette.warning;
+  const enTarjeta = variant === 'full';
+
+  const pista =
+    alertAfterDays !== null ? (
+      <View
+        accessible={false}
+        importantForAccessibility="no-hide-descendants"
+        className="flex-1 overflow-hidden rounded-full"
+        style={{
+          height: enTarjeta ? 8 : 5,
+          backgroundColor: hexAlpha(color, 0.14),
+        }}
+      >
+        <Animated.View
+          style={[
+            {
+              height: '100%',
+              borderRadius: 999,
+              backgroundColor: color,
+              width: `${Math.max(ratio * 100, daysWithoutNote > 0 ? 6 : 0)}%`,
+              transformOrigin: 'left center',
+            },
+            fillStyle,
+            beatStyle,
+          ]}
+        />
+      </View>
+    ) : null;
+
+  if (variant === 'full') {
+    return (
+      <View
+        className="gap-2.5 rounded-2xl p-3.5 border border-border bg-card"
+        accessibilityLabel={readerText(t, daysWithoutNote, alertAfterDays, hasNotes)}
+      >
+        <View className="gap-2 flex-row items-center justify-between">
+          <View className="gap-2 flex-row items-center">
+            <Ionicons
+              name={hasNotes ? 'time-outline' : 'sparkles-outline'}
+              size={15}
+              color={overdue ? palette.destructive : textColor}
+              accessibilityElementsHidden
+              importantForAccessibility="no-hide-descendants"
+            />
+            <Text
+              className="text-sm font-sans-medium flex-1"
+              style={{
+                color: overdue ? palette.destructive : hasNotes ? textColor : palette.warning,
+              }}
+            >
+              {label}
+            </Text>
+            {alertAfterDays !== null ? (
+              <Text className="text-sm font-sans-semibold tabular-nums" style={{ color }}>
+                {daysWithoutNote} d
+              </Text>
+            ) : null}
+          </View>
+        </View>
+        {pista}
+        <Text className="text-xs text-muted-foreground">
+          {hasNotes && lastNoteAt
+            ? `${t('believers.alert.lastNote', { date: formatDay(lastNoteAt) })} · `
+            : ''}
+          {t('believers.alert.margin', { days: alertAfterDays ?? 0 })}
+        </Text>
+      </View>
+    );
+  }
 
   return (
     <View
@@ -105,28 +180,7 @@ export function Sonda({
       accessibilityLabel={readerText(t, daysWithoutNote, alertAfterDays, hasNotes)}
     >
       <View className="gap-2 flex-row items-center">
-        {alertAfterDays !== null ? (
-          <View
-            accessible={false}
-            importantForAccessibility="no-hide-descendants"
-            className="flex-1 overflow-hidden rounded-full bg-muted"
-            style={{ height: TRACK_HEIGHT }}
-          >
-            <Animated.View
-              style={[
-                {
-                  height: TRACK_HEIGHT,
-                  borderRadius: TRACK_HEIGHT / 2,
-                  backgroundColor: color,
-                  width: `${Math.max(ratio * 100, daysWithoutNote > 0 ? 6 : 0)}%`,
-                  transformOrigin: 'left center',
-                },
-                fillStyle,
-                beatStyle,
-              ]}
-            />
-          </View>
-        ) : null}
+        {pista}
         <View className="gap-1 flex-row items-center">
           {overdue ? (
             <Ionicons
@@ -142,14 +196,6 @@ export function Sonda({
           </Text>
         </View>
       </View>
-      {variant === 'full' ? (
-        <Text className="text-xs text-muted-foreground">
-          {hasNotes && lastNoteAt
-            ? `${t('believers.alert.lastNote', { date: formatDay(lastNoteAt) })} · `
-            : ''}
-          {t('believers.alert.margin', { days: alertAfterDays ?? 0 })}
-        </Text>
-      ) : null}
     </View>
   );
 }

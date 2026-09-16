@@ -1,4 +1,3 @@
-import type { ReactNode } from 'react';
 import type { ViewStyle } from 'react-native';
 import { View } from 'react-native';
 

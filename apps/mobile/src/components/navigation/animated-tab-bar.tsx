@@ -34,6 +34,16 @@ const PILL_SHADOW = {
   elevation: 4,
 } as const;
 
+/** La barra ya no es una banda de borde a borde: flota separada de los
+ * bordes y de la franja del sistema, con su sombra propia. */
+const BAR_SHADOW = {
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 4 },
+  shadowOpacity: 0.14,
+  shadowRadius: 14,
+  elevation: 8,
+} as const;
+
 interface AnimatedTabBarProps extends BottomTabBarProps {
   menuOpen: boolean;
   onToggleMenu: () => void;
@@ -171,7 +181,15 @@ export function AnimatedTabBar({
   }
 
   return (
-    <View className="border-t border-border bg-card" style={{ paddingBottom: insets.bottom }}>
+    <View
+      className="mx-4 rounded-3xl overflow-hidden border border-border bg-card"
+      style={{
+        // Sobre la franja del sistema: la barra flota entera encima del
+        // indicador de inicio, no lo tapa.
+        marginBottom: insets.bottom + 10,
+        ...BAR_SHADOW,
+      }}
+    >
       <View className="relative flex-row" onLayout={onLayout}>
         <Animated.View
           style={[

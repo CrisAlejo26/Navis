@@ -1,9 +1,13 @@
 import { Ionicons } from '@expo/vector-icons';
 import { themeColorsHex } from '@navis/theme';
+import { StatusBar } from 'expo-status-bar';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, RefreshControl, ScrollView, Text, View } from 'react-native';
+import { useState } from 'react';
+import { ActivityIndicator, RefreshControl, Text, View } from 'react-native';
 import Animated, {
   FadeInDown,
+  runOnJS,
+  useAnimatedReaction,
   useAnimatedScrollHandler,
   useAnimatedStyle,
   useSharedValue,
@@ -31,6 +35,14 @@ import { useThemeStore } from '@/lib/theme';
  * tareas): es el acceso rápido que pide la portada, sin duplicar el menú
  * «Más» con una rejilla de atajos aparte.
  */
+
+/**
+ * El alto fijo del hero (`DashboardHero` suma su `insets.top`): la barra de
+ * estado deja de estar sobre la escena cuando el hero —que sube a **mitad**
+ * de velocidad por el parallax— ya no llega a la zona segura superior, y
+ * eso ocurre tras recorrer el doble de su alto sin insets.
+ */
+const HERO_ALTO_FIJO = 300;
 export default function DashboardScreen() {
   const { t } = useTranslation();
   const palette = themeColorsHex[useThemeStore((state) => state.resolvedTheme)];
@@ -51,6 +63,18 @@ export default function DashboardScreen() {
   const heroStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: Math.max(0, scrollY.value * 0.5) }],
   }));
+
+  // La barra de estado: clara mientras flota sobre la escena náutica —que es
+  // oscura en las tres horas, tema al tema— y oscura en cuanto el fondo
+  // blanco le pasa por debajo al hacer scroll. El corte lo decide el
+  // parallax, no el ojo: misma fórmula que el `translateY` de arriba.
+  const [barraClara, setBarraClara] = useState(true);
+  useAnimatedReaction(
+    () => scrollY.value > 2 * HERO_ALTO_FIJO,
+    (sobreBlanco) => {
+      runOnJS(setBarraClara)(!sobreBlanco);
+    },
+  );
 
   // «Pendiente» cubre también la consulta deshabilitada mientras AsyncStorage
   // hidrata la sesión: no es un error, es «aún no ha empezado». Tratarlo como
@@ -80,6 +104,7 @@ export default function DashboardScreen() {
 
   return (
     <View className="flex-1 bg-background">
+      <StatusBar style={barraClara ? 'light' : 'dark'} />
       <Animated.ScrollView
         onScroll={scrollHandler}
         scrollEventThrottle={16}

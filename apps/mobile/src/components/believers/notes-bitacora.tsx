@@ -3,11 +3,11 @@ import { NOTE_KINDS, type NoteKind } from '@navis/shared';
 import type { LocalNote } from '@/data/repos/notes-repo';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FlatList, Pressable, SectionList, Text, View } from 'react-native';
+import { FlatList, Pressable, ScrollView, SectionList, Text, View } from 'react-native';
 
 import { NoteFormSheet } from '@/components/believers/note-form-sheet';
 import { NotesCalendarView } from '@/components/believers/notes-calendar-view';
-import { NoteRow } from '@/components/believers/note-row';
+import { NoteCard } from '@/components/believers/note-card';
 import { Button } from '@/components/ui/button';
 import { Chip } from '@/components/ui/chip';
 import { EmptyState } from '@/components/ui/empty-state';
@@ -108,6 +108,7 @@ export function NotesBitacora({
           data={flat}
           keyExtractor={(note) => note.id}
           scrollEnabled={false}
+          contentContainerClassName="gap-3"
           renderItem={({ item }) => (
             <Pressable
               onPress={() => {
@@ -115,7 +116,7 @@ export function NotesBitacora({
                 setFormOpen(true);
               }}
             >
-              <NoteRow
+              <NoteCard
                 note={item}
                 onToggleReminder={(note, done) =>
                   void updateNote.mutateAsync({ id: note.id, input: { remindDone: done } })
@@ -130,8 +131,9 @@ export function NotesBitacora({
           sections={sections}
           keyExtractor={(note) => note.id}
           scrollEnabled={false}
+          contentContainerClassName="gap-2"
           renderSectionHeader={({ section }) => (
-            <Text className="py-1.5 font-sans-semibold tracking-widest text-[11px] text-muted-foreground uppercase">
+            <Text className="pt-2 pb-1 font-sans-semibold tracking-widest text-[11px] text-muted-foreground uppercase">
               {section.title}
             </Text>
           )}
@@ -142,7 +144,7 @@ export function NotesBitacora({
                 setFormOpen(true);
               }}
             >
-              <NoteRow
+              <NoteCard
                 note={item}
                 onToggleReminder={(note, done) =>
                   void updateNote.mutateAsync({ id: note.id, input: { remindDone: done } })
@@ -215,8 +217,10 @@ function KindChips({
   onSelect: (kind: NoteKind | undefined) => void;
 }) {
   const { t } = useTranslation();
+  // De lado, como los filtros del listado de creyentes: con siete tipos, el
+  // ajuste de línea movía la fila entera cada vez que llegaba una nota nueva.
   return (
-    <View className="gap-2 flex-row flex-wrap">
+    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerClassName="gap-2">
       <Chip
         label={`${t('notes.all')} (${counts?.total ?? 0})`}
         selected={!selected}
@@ -231,7 +235,7 @@ function KindChips({
           onPress={() => onSelect(selected === one ? undefined : one)}
         />
       ))}
-    </View>
+    </ScrollView>
   );
 }
 

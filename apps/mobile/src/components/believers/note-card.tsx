@@ -1,23 +1,32 @@
 import { Ionicons } from '@expo/vector-icons';
 import { NOTE_KIND_ACCENTS, isReminderDue } from '@navis/shared';
+import { themeColorsHex } from '@navis/theme';
 import { useAudioPlayer } from 'expo-audio';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
 import type { LocalNote } from '@/data/repos/notes-repo';
-import { Icon } from '@/components/ui/icon';
+import { NOTE_KIND_ICONS } from '@/components/believers/note-kind-icons';
 import { formatDay } from '@/lib/format';
 import { useThemeStore } from '@/lib/theme';
-import { themeColorsHex } from '@navis/theme';
+import { hexAlpha } from '@/lib/color';
 
 /**
- * Una entrada de la bitácora (§7.5): filete vertical del color del tipo, el
- * tipo en versalitas, lo que contó y **la indicación sangrada debajo** para
- * que se distingan de un vistazo (D15). Después el recordatorio, si lo hay, y
- * los audios con su reproductor.
+ * Una nota de la bitácora, **como una tarjetita** — la anatomía de las notas
+ * pastorales de Dreamkeeper asimilada al lenguaje de Navis: una pastilla de
+ * vidrio tenue arriba dice **el tipo con su icono y su color** (seguimiento,
+ * sueño, testimonio… cada tipo el suyo, tomado de `NOTE_KIND_ACCENTS`, la
+ * paleta compartida con la web), la fecha y el recordatorio a la derecha, y
+ * debajo lo que contó, la indicación en su cajita y los audios.
+ *
+ * **Toda la tarjeta se tiñe con el color del tipo** — fondo al 8 % y borde
+ * al 30 % de su acento, la pastilla un paso más cargada encima (§7.5: el
+ * color nunca informa solo, junto a él va siempre el tipo escrito). El
+ * cuerpo se recorta a tres líneas — la tarjeta abre el formulario completo
+ * al tocarla.
  */
-export function NoteRow({
+export function NoteCard({
   note,
   onToggleReminder,
   onDeleteAudio,
@@ -27,35 +36,75 @@ export function NoteRow({
   onDeleteAudio: (audioId: string) => void;
 }) {
   const { t } = useTranslation();
+  const palette = themeColorsHex[useThemeStore((state) => state.resolvedTheme)];
   const accent = NOTE_KIND_ACCENTS[note.kind];
   const due = isReminderDue(note);
 
   return (
     <View
-      className="gap-1.5 py-3 pl-3"
-      style={{ borderLeftWidth: 2, borderLeftColor: accent }}
+      className="gap-2 rounded-2xl p-3.5 border bg-card"
+      style={{
+        backgroundColor: hexAlpha(accent, 0.08),
+        borderColor: hexAlpha(accent, 0.3),
+      }}
       accessibilityLabel={`${t(`notes.kinds.${note.kind}`)} · ${formatDay(note.occurredAt, 'short')}`}
     >
-      <View className="gap-1.5 flex-row items-center">
-        <Text
-          className="font-sans-semibold tracking-widest text-[11px] uppercase"
-          style={{ color: accent }}
+      <View className="gap-2 flex-row items-center justify-between">
+        <View
+          className="gap-1.5 flex-row items-center rounded-full"
+          style={{
+            paddingLeft: 8,
+            paddingRight: 10,
+            paddingVertical: 3,
+            backgroundColor: hexAlpha(accent, 0.12),
+          }}
         >
-          {t(`notes.kinds.${note.kind}`)}
-        </Text>
-        <Text className="text-[11px] text-muted-foreground">
-          · {formatDay(note.occurredAt, 'short')}
-        </Text>
-        {note.giftName ? (
-          <Text className="text-[11px] text-muted-foreground" numberOfLines={1}>
-            · {note.giftName}
+          <Ionicons name={NOTE_KIND_ICONS[note.kind]} size={12} color={accent} aria-hidden />
+          <Text className="font-sans-semibold text-[11px]" style={{ color: accent }}>
+            {t(`notes.kinds.${note.kind}`)}
           </Text>
-        ) : null}
+          {note.giftName ? (
+            <Text
+              className="font-sans-medium text-[11px]"
+              style={{ color: accent }}
+              numberOfLines={1}
+            >
+              · {note.giftName}
+            </Text>
+          ) : null}
+        </View>
+        <View className="gap-1.5 flex-row items-center">
+          {note.remindAt && !note.remindDoneAt ? (
+            <Ionicons
+              name="alarm-outline"
+              size={13}
+              color={due ? palette.warning : palette.mutedForeground}
+              aria-hidden
+            />
+          ) : null}
+          <Text className="text-xs text-muted-foreground tabular-nums">
+            {formatDay(note.occurredAt, 'short')}
+          </Text>
+        </View>
       </View>
 
-      <Text className="text-sm leading-relaxed text-foreground">{note.told}</Text>
+      <Text className="text-sm leading-relaxed text-foreground" numberOfLines={3}>
+        {note.told}
+      </Text>
+
       {note.advice ? (
-        <Text className="pl-3 text-sm leading-relaxed text-muted-foreground">{note.advice}</Text>
+        <View
+          className="gap-2 p-2.5 flex-row items-start rounded-xl"
+          style={{ backgroundColor: hexAlpha(palette.mutedForeground, 0.08) }}
+        >
+          <Ionicons name="bookmark" size={12} color={palette.mutedForeground} aria-hidden />
+          <Text
+            className="min-w-0 text-xs leading-relaxed flex-1 text-muted-foreground"
+            numberOfLines={2}
+          >
+            {note.advice}
+          </Text>
+        </View>
       ) : null}
 
       {note.remindAt && !note.remindDoneAt ? (
@@ -92,7 +141,12 @@ function ReminderLine({
   const palette = themeColorsHex[useThemeStore((state) => state.resolvedTheme)];
   return (
     <View className="gap-2 flex-row items-center">
-      <Icon name="notifications-outline" size="sm" tone={due ? 'warning' : 'default'} />
+      <Ionicons
+        name="notifications-outline"
+        size={14}
+        color={due ? palette.warning : palette.mutedForeground}
+        aria-hidden
+      />
       <Text className="text-xs flex-1 text-muted-foreground" numberOfLines={1}>
         {note.remindAt
           ? due && note.remindText
@@ -105,7 +159,7 @@ function ReminderLine({
         accessibilityLabel={t('notes.reminder.markDone')}
         onPress={() => onToggleReminder(note, true)}
         className="h-8 px-2 items-center justify-center rounded-lg"
-        style={{ backgroundColor: hexTint(palette.primary) }}
+        style={{ backgroundColor: hexAlpha(palette.primary, 0.14) }}
       >
         <Text className="text-xs font-sans-medium" style={{ color: palette.primary }}>
           {t('notes.reminder.markDone')}
@@ -144,7 +198,7 @@ function AudioLine({
         accessibilityLabel={t('common.audio.title')}
         onPress={toggle}
         className="h-8 w-8 items-center justify-center rounded-full"
-        style={{ backgroundColor: hexTint(palette.primary) }}
+        style={{ backgroundColor: hexAlpha(palette.primary, 0.12) }}
       >
         <Ionicons name={playing ? 'pause' : 'play'} size={14} color={palette.primary} />
       </Pressable>
@@ -164,8 +218,4 @@ function AudioLine({
       </Pressable>
     </View>
   );
-}
-
-function hexTint(color: string): string {
-  return `${color}24`;
 }

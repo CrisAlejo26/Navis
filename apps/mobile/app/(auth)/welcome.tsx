@@ -3,7 +3,7 @@ import { themeColorsHex } from '@navis/theme';
 import { Link, router } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 
 import { BrandHeader } from '@/components/auth/brand-header';
@@ -35,9 +35,10 @@ export default function WelcomeScreen() {
       const session = await prepareDemoSession();
       setSession(session);
       router.replace('/(tabs)');
-    } catch (error) {
-      // Un fallo de la siembra no se traga: si no entra, hay que saber por qué.
-      Alert.alert(t('errors.generic'), error instanceof Error ? error.message : String(error));
+    } catch {
+      // Silencio: es la demo. Si la siembra tropezó, el botón simplemente
+      // vuelve a estar disponible y el segundo intento encuentra todo ya
+      // hecho (la promesa compartida de `prepareDemoSession` se lo trae).
     } finally {
       setDemoLoading(false);
     }

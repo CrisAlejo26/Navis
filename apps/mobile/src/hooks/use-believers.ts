@@ -42,18 +42,40 @@ import { useLocalSession } from '@/stores/local-session';
 const listKey = (churchId: string, query: BelieversQuery) =>
   ['believers', churchId, 'list', query] as const;
 
-/** El listado, de veinte en veinte: la paginación la hace el repositorio. */
+/**
+ * La primera carga trae cincuenta —llena la pantalla de una iglesia mediana
+ * de golpe— y el scroll va añadiendo de veinte en veinte: peticiones cortas
+ * que SQLite resuelve en milisegundos aunque haya miles de filas.
+ */
+export const BELIEVERS_FIRST_PAGE = 50;
+export const BELIEVERS_PAGE_SIZE = 20;
+
+/** Límite y salto de cada página, con la primera más grande que el resto. */
+function metadatosDePagina(pagina: number) {
+  if (pagina === 1) return { limit: BELIEVERS_FIRST_PAGE, offset: 0 };
+  return {
+    limit: BELIEVERS_PAGE_SIZE,
+    offset: BELIEVERS_FIRST_PAGE + (pagina - 2) * BELIEVERS_PAGE_SIZE,
+  };
+}
+
+/** El listado, paginado en el repositorio: 50 al abrir y de 20 en 20 al hacer scroll. */
 export function useBelievers(query: BelieversQuery) {
   const churchId = useLocalSession((state) => state.session?.churchId);
   return useInfiniteQuery({
     queryKey: listKey(churchId ?? '', query),
     queryFn: ({ pageParam }) => {
       if (!churchId) throw new Error('Sin iglesia activa no hay listado');
-      return listBelievers({ ...query, page: pageParam, churchId });
+      const { limit, offset } = metadatosDePagina(pageParam);
+      return listBelievers({ ...query, limit, offset, page: pageParam, churchId });
     },
     initialPageParam: 1,
-    getNextPageParam: (last: Paginated<BelieverListItem>) =>
-      last.page < last.totalPages ? last.page + 1 : undefined,
+    // La página está llena cuando devuelve justo lo que se pidió: si trae
+    // menos, no hay más. Así la primera página de 50 y las de 20 coexisten.
+    getNextPageParam: (last: Paginated<BelieverListItem>, _all, lastPageParam) => {
+      const { limit } = metadatosDePagina(lastPageParam);
+      return last.items.length >= limit ? lastPageParam + 1 : undefined;
+    },
     enabled: Boolean(churchId),
   });
 }

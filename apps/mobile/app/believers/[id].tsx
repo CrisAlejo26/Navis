@@ -4,12 +4,10 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, ScrollView, View } from 'react-native';
 
-import { AppBar } from '@/components/ui/app-bar';
-
 import { BelieverFormSheet, toInput } from '@/components/believers/believer-form-sheet';
 import { BelieverHeader } from '@/components/believers/believer-header';
 import { NotesBitacora } from '@/components/believers/notes-bitacora';
-import { Button } from '@/components/ui/button';
+import { AppBar } from '@/components/ui/app-bar';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useCongregations } from '@/hooks/use-catalog';
@@ -74,26 +72,19 @@ export default function BelieverDetailScreen() {
 
   return (
     <View className="flex-1 bg-background">
-      <AppBar title={name} />
-      <ScrollView contentContainerClassName="gap-5 px-4 pb-16">
+      <ScrollView contentContainerClassName="gap-5 pb-16">
         <BelieverHeader
           believer={believer}
           congregationName={
             congregations.data?.find((one) => one.id === believer.congregationId)?.name ?? null
           }
+          onEdit={() => setEditOpen(true)}
+          onDelete={confirmDelete}
         />
 
-        <View className="gap-2 flex-row">
-          <Button
-            title={t('believers.editPerson')}
-            variant="secondary"
-            className="flex-1"
-            onPress={() => setEditOpen(true)}
-          />
-          <Button title={t('common.delete')} variant="ghost" onPress={confirmDelete} />
+        <View className="px-4">
+          <NotesBitacora believerId={believerId} believerName={name} />
         </View>
-
-        <NotesBitacora believerId={believerId} believerName={name} />
       </ScrollView>
 
       <BelieverFormSheet

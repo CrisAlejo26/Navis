@@ -1,4 +1,4 @@
-import type { BelieverNote, NoteKind } from '@navis/shared';
+import type { BelieverNote } from '@navis/shared';
 import { NOTE_KINDS } from '@navis/shared';
 import { themeColorsHex } from '@navis/theme';
 import { ScrollView, Text, View, useWindowDimensions } from 'react-native';
@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { AudioRecorder } from '@/components/believers/audio-recorder';
+import { NOTE_KIND_ICONS } from '@/components/believers/note-kind-icons';
 import {
   emptyNoteForm,
   noteFormFrom,
@@ -23,15 +24,7 @@ import { TextField } from '@/components/ui/text-field';
 import { useGifts } from '@/hooks/use-catalog';
 import { useThemeStore } from '@/lib/theme';
 
-const KIND_ICONS: Record<NoteKind, Parameters<typeof Chip>[0]['icon']> = {
-  seguimiento: 'chatbubble-outline',
-  testimonio: 'chatbox-outline',
-  sueno: 'moon-outline',
-  vision: 'eye-outline',
-  experiencia: 'flame-outline',
-  don: 'sparkles-outline',
-  correccion: 'alert-circle-outline',
-};
+const KIND_ICONS = NOTE_KIND_ICONS;
 
 interface NoteFormSheetProps {
   visible: boolean;

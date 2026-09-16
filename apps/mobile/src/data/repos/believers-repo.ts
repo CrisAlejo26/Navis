@@ -12,6 +12,7 @@ import {
 import type { SQLiteBindValue } from 'expo-sqlite';
 
 import { getDb, newId, nowIso } from '../db';
+import { removeBelieverPhotoAt, storeBelieverPhoto } from '../photo-storage';
 import { listGifts } from './catalog-repo';
 import {
   believerColumns,
@@ -31,6 +32,12 @@ const PAGE_DEFAULT = 20;
 
 interface ListQuery extends BelieversQuery {
   churchId: string;
+  /**
+   * Salto explícito, para paginar con páginas de tamaño desigual (primera
+   * carga más grande y luego de veinte en veinte): sin él, el salto sale de
+   * `(page - 1) * limit`, que solo vale con páginas del mismo tamaño.
+   */
+  offset?: number;
 }
 
 function orderBy(sort: BelieversQuery['sort'], order: BelieversQuery['order']): string {
@@ -63,6 +70,11 @@ function whereFilters(
   if (statuses.length > 0) {
     clauses.push(`b.status IN (${statuses.map(() => '?').join(', ')})`);
     params.push(...statuses);
+  } else {
+    // Sin filtro de estado, los inactivos no estorban el listado: vuelven
+    // cuando la pastilla «Inactivo» los pide. Los trasladados siguen —
+    // aún pertenecen.
+    clauses.push(`b.status != 'inactivo'`);
   }
   if (query.congregationId) {
     clauses.push('b.congregation_id = ?');
@@ -219,7 +231,7 @@ export async function listBelievers(query: ListQuery): Promise<Paginated<Believe
     today,
     ...params,
     limit,
-    (page - 1) * limit,
+    query.offset ?? (page - 1) * limit,
   );
 
   const ids = rows.map((row) => row.id);
@@ -425,6 +437,13 @@ export interface WriteBelieverInput {
   bibleReadings?: number | null;
   vivenciasReadings?: number | null;
   bibleInstituteTimes?: number | null;
+  /**
+   * La fotografía. `undefined` no la toca; `null` la quita; un URI —el del
+   * fichero temporal que eligió quien escribe— la copia a su sitio definitivo
+   * (`photos/<id>`) y apunta `photo_key` a él, como hacen las notas con sus
+   * audios. El borrado del fichero viejo va dentro: reponer no deja huérfanos.
+   */
+  photoUri?: string | null;
 }
 
 export async function createBeliever(churchId: string, input: WriteBelieverInput): Promise<string> {
@@ -457,6 +476,15 @@ export async function createBeliever(churchId: string, input: WriteBelieverInput
       input.bibleInstituteTimes ?? null,
     );
     await applyLinks(db, id, input);
+    if (input.photoUri) {
+      const stored = await storeBelieverPhoto(id, input.photoUri);
+      await db.runAsync(
+        'UPDATE believers SET photo_key = ?, updated_at = ? WHERE id = ?',
+        stored,
+        nowIso(),
+        id,
+      );
+    }
   });
   return id;
 }
@@ -467,8 +495,12 @@ export async function updateBeliever(
   input: Partial<WriteBelieverInput>,
 ): Promise<void> {
   const db = await getDb();
-  const existing = await db.getFirstAsync<{ first_name: string; last_name: string | null }>(
-    'SELECT first_name, last_name FROM believers WHERE id = ? AND church_id = ? AND deleted_at IS NULL',
+  const existing = await db.getFirstAsync<{
+    first_name: string;
+    last_name: string | null;
+    photo_key: string | null;
+  }>(
+    'SELECT first_name, last_name, photo_key FROM believers WHERE id = ? AND church_id = ? AND deleted_at IS NULL',
     id,
     churchId,
   );
@@ -502,6 +534,17 @@ export async function updateBeliever(
   if (input.bibleInstituteTimes !== undefined)
     set('bible_institute_times', input.bibleInstituteTimes);
   if (input.featuredTagId !== undefined) set('featured_tag_id', input.featuredTagId);
+
+  // La foto: reponer borra el fichero que había —una fila con una URI muerta
+  // solo vale para que la imagen no cargue—, y quitar limpia ambos lados.
+  if (input.photoUri === null) {
+    removeBelieverPhotoAt(existing.photo_key ?? '');
+    set('photo_key', null);
+  } else if (input.photoUri !== undefined) {
+    const stored = await storeBelieverPhoto(id, input.photoUri);
+    if (existing.photo_key) removeBelieverPhotoAt(existing.photo_key);
+    set('photo_key', stored);
+  }
 
   await db.withTransactionAsync(async () => {
     if (fields.length > 0) {

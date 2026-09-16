@@ -30,6 +30,18 @@ export function aPng(svg, size) {
 }
 
 /**
+ * Añade al SVG una regla para el modo oscuro: el navegador la aplica según el
+ * tema del sistema. Sin ella, el trazo azul desaparece contra un fondo oscuro
+ * en la pestaña.
+ */
+function conModoOscuro(svg) {
+  return svg.replace(
+    '</svg>',
+    '  <style>@media (prefers-color-scheme: dark) { .cls-1 { fill: #fff; } }</style>\n</svg>',
+  );
+}
+
+/**
  * Qué se genera, con qué variante y con cuánto aire.
  *
  * `ocupacion` es la fracción del lado que ocupa el barco:
@@ -42,7 +54,7 @@ export function aPng(svg, size) {
 export const DESTINOS = [
   // Al 100 %, como el favicon de GitHub: el dibujo toca los bordes del cuadro.
   // A 16 px cualquier margen se nota, y aquí no hay fondo que dé presencia.
-  ['apps/web/public/favicon.svg', { variante: 'azul', ocupacion: 1, svg: true }],
+  ['apps/web/public/favicon.svg', { variante: 'azul', ocupacion: 1, svg: true, modoOscuro: true }],
 
   // Versiones encuadradas y transparentes que consume la interfaz. Van en un
   // subdirectorio `encuadrado/` para que quede claro que son salida, no las
@@ -89,12 +101,14 @@ export const DESTINOS = [
 
 /** Contenido que le corresponde a un destino, sin escribir nada. */
 export function contenidoDe([, opciones]) {
-  const svg = encuadrar(leerVariante(opciones.variante), {
+  let svg = encuadrar(leerVariante(opciones.variante), {
     ocupacion: opciones.ocupacion,
     fondo: opciones.fondo ?? null,
     radio: opciones.radio ?? 0,
     proporcion: opciones.alto ? opciones.size / opciones.alto : 1,
   });
+
+  if (opciones.modoOscuro) svg = conModoOscuro(svg);
 
   return opciones.svg ? Buffer.from(svg, 'utf8') : aPng(svg, opciones.size);
 }
