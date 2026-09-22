@@ -1,6 +1,9 @@
 import { useState, type ReactNode } from 'react';
 import { Text, TextInput, View, type TextInputProps } from 'react-native';
 
+import { themeColorsHex } from '@navis/theme';
+
+import { useThemeStore } from '@/lib/theme';
 import { FieldError } from '@/components/ui/field-error';
 import { cn } from '@/lib/cn';
 
@@ -43,9 +46,11 @@ export function TextField({
   multiline,
   onFocus,
   onBlur,
+  placeholderTextColor,
   ...props
 }: TextFieldProps) {
   const [focused, setFocused] = useState(false);
+  const palette = themeColorsHex[useThemeStore((state) => state.resolvedTheme)];
 
   return (
     <View className="gap-1.5">
@@ -63,6 +68,10 @@ export function TextField({
           accessibilityLabel={label}
           multiline={multiline}
           textAlignVertical={multiline ? 'top' : undefined}
+          // Sin él, Android pinta el placeholder con su gris por defecto y en
+          // dark mode apenas se lee contra `bg-card`. El que pase quien llame
+          // (la variante de vidrio de creyentes, p. ej.) gana.
+          placeholderTextColor={placeholderTextColor ?? palette.mutedForeground}
           onFocus={(event) => {
             setFocused(true);
             onFocus?.(event);

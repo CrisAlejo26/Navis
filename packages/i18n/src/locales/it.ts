@@ -346,7 +346,11 @@ export const it = {
     title: 'Calendario',
     subtitle: 'Chi guida ogni momento, giorno per giorno',
     holidayNational: 'Festivo nazionale',
+    agendaEmpty: 'Il periodo è vuoto',
     holidayRegional: 'Festivo in {{region}}',
+    /* Le iniziali da lunedì a domenica, dalla traduzione e non da «Intl»:
+       Hermes su mobile non garantisce i dati di ogni lingua (Regola 2). */
+    weekdayInitials: ['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'],
     viewMonth: 'Mese',
     viewWeek: 'Settimana',
     viewAgenda: 'Agenda',

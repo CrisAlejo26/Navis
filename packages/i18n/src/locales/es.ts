@@ -355,8 +355,12 @@ export const es = {
   calendar: {
     title: 'Calendario',
     subtitle: 'Quién lleva cada tramo, día a día',
+    agendaEmpty: 'El tramo está en blanco',
     holidayNational: 'Festivo nacional',
     holidayRegional: 'Festivo en {{region}}',
+    /* Las iniciales de lunes a domingo, de la traducción y no de `Intl`:
+       Hermes en móvil no garantiza los datos de todos los idiomas (Regla 2). */
+    weekdayInitials: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
     viewMonth: 'Mes',
     viewWeek: 'Semana',
     viewAgenda: 'Agenda',

@@ -34,9 +34,18 @@ import {
   useUpdateBeliever,
 } from '@/hooks/use-believers';
 import { useDebouncedValue } from '@/hooks/use-debounced-value';
+import { useStatusBarClaim } from '@/lib/status-bar';
 import { useThemeStore } from '@/lib/theme';
 
 const PAGE_SIZE = 20;
+
+/**
+ * **Interruptor de prueba** (el flash blanco al volver de una ficha): a
+ * `false` el listado queda todo sobre fondo blanco, sin la escena de arcos
+ * de la cabecera. Volver a la escena es cambiarlo a `true`: con ella vuelven
+ * la barra translúcida, el buscador en vidrio y los filtros `onScene`.
+ */
+const CON_ESCENA = false;
 
 /**
  * El listado de creyentes (RFC 0003 §7.2): la pregunta de la pantalla es
@@ -61,6 +70,12 @@ export default function BelieversScreen() {
   useEffect(() => {
     primeraCarga.current = false;
   }, []);
+  // La barra de estado la reclama aquí mientras la pantalla tiene el foco:
+  // blanca sobre la escena azul de la cabecera y, sin escena, según el tema —
+  // reclamar iconos oscuros en modo dark los deja sobre fondo oscuro y la
+  // barra desaparece.
+  const resolvedTheme = useThemeStore((state) => state.resolvedTheme);
+  useStatusBarClaim(CON_ESCENA || resolvedTheme === 'dark' ? 'light' : 'dark');
   const [search, setSearch] = useState('');
   const [query, setQuery] = useState<BelieversQuery>({});
   const [selected, setSelected] = useState<string[]>([]);
@@ -134,10 +149,10 @@ export default function BelieversScreen() {
 
   return (
     <View className="flex-1 bg-background" style={{ paddingTop: insets.top + 8 }}>
-      <BelieversScene scrollY={scrollY} />
+      {CON_ESCENA ? <BelieversScene scrollY={scrollY} /> : null}
       <View className="gap-3 px-4 pb-2">
         <TopBar
-          onScene
+          onScene={CON_ESCENA}
           title={t('believers.title')}
           subtitle={t('believers.total', { count: totalCount })}
           actions={[
@@ -159,13 +174,17 @@ export default function BelieversScreen() {
           onChangeText={changeSearch}
           placeholder={t('believers.search')}
           accessibilityLabel={t('believers.search')}
-          containerClassName="bg-white/20 border-white/30"
-          iconColor={claro}
-          placeholderTextColor={claro}
-          className="text-white"
+          {...(CON_ESCENA
+            ? {
+                containerClassName: 'bg-white/20 border-white/30',
+                iconColor: claro,
+                placeholderTextColor: claro,
+                className: 'text-white',
+              }
+            : {})}
         />
         <BelieversFilters
-          onScene
+          onScene={CON_ESCENA}
           query={query}
           onChange={changeFilters}
           summary={summary.data}

@@ -7,9 +7,9 @@ import {
   createIndexSql,
   createTableSql,
 } from '@navis/shared';
-import { randomUUID } from 'expo-crypto';
 import * as SQLite from 'expo-sqlite';
-import type { SQLiteVariadicBindParams, SQLiteRunResult } from 'expo-sqlite';
+
+import { seedCalendarScaffold } from './repos/calendar-seed';
 
 /**
  * La base de datos **local del teléfono** (RFC 0024, Fase 1).
@@ -21,18 +21,13 @@ import type { SQLiteVariadicBindParams, SQLiteRunResult } from 'expo-sqlite';
  * transacción: o entra entera o no entra nada.
  */
 
-/**
- * Las firmas que usan los repositorios (todas con parámetros posicionales).
- * Tipo propio y no la clase entera a propósito: así el adaptador de tests
- * (`test-support.js`) satisface el mismo contrato.
- */
-export type LocalDb = {
-  getAllAsync<T>(source: string, ...params: SQLiteVariadicBindParams): Promise<T[]>;
-  getFirstAsync<T>(source: string, ...params: SQLiteVariadicBindParams): Promise<T | null>;
-  runAsync(source: string, ...params: SQLiteVariadicBindParams): Promise<SQLiteRunResult>;
-  execAsync(source: string): Promise<void>;
-  withTransactionAsync(fn: () => Promise<void>): Promise<void>;
-};
+// El contrato y las utilidades viven en `local-db.ts`, un módulo sin
+// dependencias: es lo que evita el ciclo de importación que Metro avisaba
+// (`db.ts → calendar-seed.ts → db.ts`). Aquí se reexportan, que es de donde
+// los repositorios las seguían tomando.
+import { newId, nowIso, type LocalDb } from './local-db';
+import type { SQLiteRunResult, SQLiteVariadicBindParams } from 'expo-sqlite';
+export { nowIso, newId, type LocalDb } from './local-db';
 
 /**
  * Sobre Android, dos llamadas que se cruzan sobre la misma conexión revientan
@@ -104,7 +99,7 @@ export function setDbForTests(fake: LocalDb | null): void {
 }
 
 /** Versión actual del esquema local. Cada cambio añade un caso a `migrations`. */
-const SCHEMA_VERSION = 3;
+const SCHEMA_VERSION = 5;
 
 type Migration = (db: LocalDb) => Promise<void>;
 
@@ -196,7 +191,83 @@ const migrations: Record<number, Migration> = {
       }
     }
   },
+  // El calendario de programaciones en móvil (docs/calendario-movil-plan.md,
+  // paso 1): cuatro tablas nuevas —calendars, meeting_patterns,
+  // pattern_phases, meeting_slots— y su siembra: los cuatro calendarios de
+  // serie y la semana por defecto de cada pareja calendario–sede. En una base
+  // **nueva** la migración 1 ya las crea, así que aquí solo se crea lo que
+  // falte; el andamiaje es idempotente (calendar-seed.ts). Los índices nuevos
+  // van por su nombre con `IF NOT EXISTS`: recrear los que la migración 1 ya
+  // puso moriría con «index already exists» — la trampa de los dropColumn de
+  // la API, al revés.
+  4: async (db) => {
+    const CALENDAR_TABLES = ['calendars', 'meeting_patterns', 'pattern_phases', 'meeting_slots'];
+
+    const existing = new Set(
+      (
+        await db.getAllAsync<{ name: string }>(
+          "SELECT name FROM sqlite_master WHERE type = 'table'",
+        )
+      ).map((row) => row.name),
+    );
+    for (const one of ALL_LOCAL_TABLES) {
+      if (!CALENDAR_TABLES.includes(one.name)) continue;
+      if (existing.has(one.name)) continue;
+      await db.execAsync(createTableSql(one));
+    }
+
+    for (const one of LOCAL_INDEXES) {
+      if (!CALENDAR_TABLES.includes(one.table)) continue;
+      const where = 'where' in one && one.where ? ` WHERE ${one.where}` : '';
+      await db.execAsync(
+        `CREATE INDEX IF NOT EXISTS "${one.name}" ON "${one.table}" (${one.columns.map((column) => `"${column}"`).join(', ')})${where}`,
+      );
+    }
+
+    const now = nowIso();
+    const churches = await db.getAllAsync<{ id: string }>(
+      'SELECT id FROM churches WHERE deleted_at IS NULL',
+    );
+    for (const church of churches) {
+      await seedCalendarScaffold(db, church.id, now);
+    }
+  },
+  // Paridad con la API (RFC 0024): `believer_tag_links.featured` —la única
+  // etiqueta que sale en la tabla del listado, antes vivía en
+  // `believers.featured_tag_id`—, y `note_audios` pasa a la forma de la API:
+  // `church_id` + `storage_key`, que es el nombre que comparte con el
+  // servidor (en local guarda la URI del fichero del teléfono).
+  5: async (db) => {
+    if (!(await columnOf('believer_tag_links', 'featured', db))) {
+      await db.execAsync(
+        'ALTER TABLE believer_tag_links ADD COLUMN "featured" INTEGER NOT NULL DEFAULT 0',
+      );
+    }
+
+    if (!(await columnOf('note_audios', 'storage_key', db))) {
+      await db.execAsync('ALTER TABLE note_audios ADD COLUMN "storage_key" TEXT');
+      await db.runAsync('UPDATE note_audios SET storage_key = file_uri WHERE storage_key IS NULL');
+    }
+    if (await columnOf('note_audios', 'file_uri', db)) {
+      await db.execAsync('ALTER TABLE note_audios RENAME COLUMN file_uri TO file_uri_old');
+      await db.execAsync('ALTER TABLE note_audios DROP COLUMN file_uri_old');
+    }
+
+    if (!(await columnOf('note_audios', 'church_id', db))) {
+      await db.execAsync(
+        'ALTER TABLE note_audios ADD COLUMN "church_id" TEXT NOT NULL DEFAULT \'\'',
+      );
+      await db.runAsync(
+        'UPDATE note_audios SET church_id = (SELECT church_id FROM believer_notes WHERE believer_notes.id = note_audios.note_id)',
+      );
+    }
+  },
 };
+
+async function columnOf(table: string, column: string, db: LocalDb): Promise<boolean> {
+  const columns = await db.getAllAsync<{ name: string }>(`PRAGMA table_info(${table})`);
+  return columns.some((one) => one.name === column);
+}
 
 async function openDb(): Promise<LocalDb> {
   const raw = await SQLite.openDatabaseAsync('navis.db');
@@ -218,14 +289,4 @@ async function openDb(): Promise<LocalDb> {
 export async function getDb(): Promise<LocalDb> {
   if (!instancePromise) instancePromise = openDb();
   return instancePromise;
-}
-
-/** Para el `created_at`/`updated_at` de cada fila: ISO completo, comparable como texto. */
-export function nowIso(): string {
-  return new Date().toISOString();
-}
-
-/** Un identificador con la misma forma que los uuid de la API (texto v4). */
-export function newId(): string {
-  return randomUUID();
 }

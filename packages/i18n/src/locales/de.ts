@@ -351,7 +351,11 @@ export const de = {
     title: 'Kalender',
     subtitle: 'Wer welchen Abschnitt übernimmt, Tag für Tag',
     holidayNational: 'Bundesweiter Feiertag',
+    agendaEmpty: 'Der Zeitraum ist leer',
     holidayRegional: 'Feiertag in {{region}}',
+    /* Die Initialen von Montag bis Sonntag, aus der Übersetzung statt aus
+       „Intl“: Hermes auf dem Handy liefert nicht jede Sprachdaten garantiert. */
+    weekdayInitials: ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'],
     viewMonth: 'Monat',
     viewWeek: 'Woche',
     viewAgenda: 'Agenda',

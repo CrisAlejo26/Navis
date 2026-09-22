@@ -9,21 +9,25 @@ import {
   believerName,
   startOfWeek,
   type DashboardBucket,
+  type DashboardEvent,
   type DashboardSummary,
   type IsoDate,
 } from '@navis/shared';
 
 import { getDb } from '../db';
+import { calendarRange } from './calendar-schedule';
 
 /**
  * El panel de inicio **en local** (RFC 0024, Fase 1): calcula la misma
  * `DashboardSummary` que `DashboardService` en la API, pero sobre SQLite del
  * teléfono y con consultas directas.
  *
- * Lo que en la API expanden servicios propios del calendario y de tareas
- * (`WeekSeederService`, `TasksExpansionService`) aquí se lee de las filas ya
- * materializadas: sin módulo de calendario ni de tareas en móvil todavía, no
- * hay patrones que expandir. Cuando esas pantallas lleguen, se retoma.
+ * Los próximos eventos sí expanden los patrones —reutilizando `calendarRange`,
+ * el mismo módulo del calendario— porque `DashboardEventsService` de la API
+ * también lo hace: una iglesia recién creada (o cualquier semana que nadie
+ * haya tocado todavía) tiene que proponer su culto igual que en la web, no
+ * solo lo que ya se ha asignado a mano. Las tareas siguen leyéndose de las
+ * filas materializadas: no hay módulo de tareas en móvil todavía.
  */
 
 /** Días hacia atrás que mira la racha, como el `STREAK_LOOKBACK_DAYS` de la API. */
@@ -121,37 +125,50 @@ async function attentionPeople(churchId: string, today: IsoDate) {
   }));
 }
 
-async function upcomingEvents(churchId: string, today: IsoDate) {
+/**
+ * Solo el calendario de púlpito, como en `DashboardEventsService` de la API:
+ * sonido, recepción y biblias siembran reuniones al mismo día y hora del
+ * mismo servicio, y sin este filtro la portada las repetía una por calendario.
+ *
+ * Reutiliza `calendarRange` —el mismo módulo que usa la pantalla del
+ * calendario— para que una reunión **propuesta** (la del patrón, sin fila
+ * propia todavía porque nadie la ha tocado, D3) también cuente: es lo que
+ * hace que una iglesia recién creada, o una semana que nadie ha asignado
+ * todavía, ya tenga algo que enseñar en la portada, igual que en la web.
+ */
+async function upcomingEvents(churchId: string, today: IsoDate): Promise<DashboardEvent[]> {
   const db = await getDb();
-  const rows = await db.getAllAsync<{
-    meeting_id: string | null;
-    date: string;
-    start_time: string;
-    name: string;
-    congregation_name: string | null;
-    accent: string;
-  }>(
-    `SELECT m.id AS meeting_id, m.date, m.start_time, m.name, c.name AS congregation_name, m.accent
-     FROM meetings m
-     LEFT JOIN congregations c ON c.id = m.congregation_id
-     WHERE m.church_id = ? AND m.deleted_at IS NULL
-       AND m.date >= ? AND m.date <= ? AND m.status != 'cancelada'
-     ORDER BY m.date ASC, m.start_time ASC
-     LIMIT ?`,
+  const calendar = await db.getFirstAsync<{ id: string }>(
+    "SELECT id FROM calendars WHERE church_id = ? AND slug = 'pulpito' AND deleted_at IS NULL",
     churchId,
+  );
+  if (!calendar) return [];
+
+  const range = await calendarRange(
+    churchId,
+    calendar.id,
     today,
     addDays(today, DASHBOARD_EVENTS_WINDOW_DAYS),
-    DASHBOARD_EVENTS_PREVIEW,
   );
+  const congregationName = new Map(range.congregations.map((one) => [one.id, one.name]));
 
-  return rows.map((row) => ({
-    meetingId: row.meeting_id,
-    date: row.date,
-    startTime: row.start_time,
-    name: row.name,
-    congregationName: row.congregation_name ?? '-',
-    accent: row.accent,
-  }));
+  const events: DashboardEvent[] = [];
+  for (const day of range.days) {
+    for (const meeting of day.meetings) {
+      if (meeting.status === 'cancelada') continue;
+
+      events.push({
+        meetingId: meeting.id,
+        date: day.date,
+        startTime: meeting.startTime,
+        name: meeting.name,
+        congregationName: congregationName.get(meeting.congregationId) ?? '—',
+        accent: meeting.accent,
+      });
+      if (events.length >= DASHBOARD_EVENTS_PREVIEW) return events;
+    }
+  }
+  return events;
 }
 
 async function recentNotes(churchId: string) {

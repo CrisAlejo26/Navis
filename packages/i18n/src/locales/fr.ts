@@ -347,7 +347,11 @@ export const fr = {
     title: 'Calendrier',
     subtitle: 'Qui assure chaque temps, jour après jour',
     holidayNational: 'Jour férié national',
+    agendaEmpty: 'La période est vide',
     holidayRegional: 'Jour férié en {{region}}',
+    /* Les initiales du lundi au dimanche, depuis la traduction et pas depuis
+       « Intl » : Hermes sur mobile ne garantit pas les données de chaque langue. */
+    weekdayInitials: ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'],
     viewMonth: 'Mois',
     viewWeek: 'Semaine',
     viewAgenda: 'Agenda',

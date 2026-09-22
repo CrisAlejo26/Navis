@@ -86,6 +86,13 @@ export const LOCAL_TABLES: LocalTable[] = [
     { name: 'user_id', type: 'text', nullable: true },
     { name: 'photo_key', type: 'text', nullable: true },
   ]),
+  table('calendars', 'Calendar', [
+    { name: 'church_id', type: 'text' },
+    { name: 'name', type: 'text' },
+    { name: 'slug', type: 'text' },
+    { name: 'ministry', type: 'text', nullable: true },
+    { name: 'position', type: 'int', default: 0 },
+  ]),
   table('believer_notes', 'BelieverNote', [
     { name: 'church_id', type: 'text' },
     { name: 'believer_id', type: 'text' },
@@ -110,14 +117,33 @@ export const LOCAL_TABLES: LocalTable[] = [
   table('believer_tag_links', 'BelieverTagLink', [
     { name: 'believer_id', type: 'text' },
     { name: 'tag_id', type: 'text' },
+    { name: 'featured', type: 'bool', default: false },
   ]),
   table('note_audios', 'NoteAudio', [
+    { name: 'church_id', type: 'text' },
     { name: 'note_id', type: 'text' },
     { name: 'mime_type', type: 'text' },
     { name: 'size_bytes', type: 'int' },
     { name: 'duration_seconds', type: 'int', nullable: true },
-    { name: 'recorded', type: 'bool', default: true },
-    { name: 'file_uri', type: 'text' },
+    { name: 'recorded', type: 'bool', default: false },
+    { name: 'storage_key', type: 'text' },
+  ]),
+  table('meeting_patterns', 'MeetingPattern', [
+    { name: 'church_id', type: 'text' },
+    { name: 'calendar_id', type: 'text' },
+    { name: 'congregation_id', type: 'text' },
+    { name: 'name', type: 'text' },
+    { name: 'weekday', type: 'int' },
+    { name: 'start_time', type: 'text' },
+    { name: 'accent', type: 'text' },
+    { name: 'is_active', type: 'bool', default: true },
+    { name: 'valid_from', type: 'text', nullable: true },
+    { name: 'valid_to', type: 'text', nullable: true },
+  ]),
+  table('pattern_phases', 'PatternPhase', [
+    { name: 'pattern_id', type: 'text' },
+    { name: 'name', type: 'text' },
+    { name: 'position', type: 'int' },
   ]),
   table('meetings', 'Meeting', [
     { name: 'church_id', type: 'text' },
@@ -130,6 +156,13 @@ export const LOCAL_TABLES: LocalTable[] = [
     { name: 'accent', type: 'text' },
     { name: 'status', type: 'text', default: 'programada' },
     { name: 'notes', type: 'text', nullable: true },
+  ]),
+  table('meeting_slots', 'MeetingSlot', [
+    { name: 'meeting_id', type: 'text' },
+    { name: 'name', type: 'text' },
+    { name: 'position', type: 'int' },
+    { name: 'believer_id', type: 'text', nullable: true },
+    { name: 'note', type: 'text', nullable: true },
   ]),
   table('ministries', 'Ministry', [
     { name: 'church_id', type: 'text' },
@@ -215,44 +248,92 @@ export const LOCAL_USER_TABLE: LocalTable = {
 export const ALL_LOCAL_TABLES: LocalTable[] = [...LOCAL_TABLES, LOCAL_USER_TABLE];
 
 /** Índices de la base local. Los únicos, para no chocar con recreos de SQLite. */
-export const LOCAL_INDEXES: { name: string; table: string; columns: string[]; unique?: boolean }[] =
-  [
-    { name: 'UQ_local_user_email', table: 'local_user', columns: ['email'], unique: true },
-    {
-      name: 'IDX_believers_church_search',
-      table: 'believers',
-      columns: ['church_id', 'search_name'],
-    },
-    {
-      name: 'IDX_believer_notes_church',
-      table: 'believer_notes',
-      columns: ['church_id', 'occurred_at'],
-    },
-    { name: 'IDX_meetings_church_date', table: 'meetings', columns: ['church_id', 'date'] },
-    {
-      name: 'IDX_tasks_church_owner_date',
-      table: 'tasks',
-      columns: ['church_id', 'owner_id', 'date'],
-    },
-    {
-      name: 'UQ_task_occurrences',
-      table: 'task_occurrences',
-      columns: ['task_id', 'date'],
-      unique: true,
-    },
-    { name: 'UQ_task_tags', table: 'task_tags', columns: ['task_id', 'tag_id'], unique: true },
-    {
-      name: 'IDX_believer_tag_links_believer',
-      table: 'believer_tag_links',
-      columns: ['believer_id'],
-    },
-    {
-      name: 'IDX_believer_tags_church',
-      table: 'believer_tags',
-      columns: ['church_id', 'position'],
-    },
-    { name: 'IDX_note_audios_note', table: 'note_audios', columns: ['note_id'] },
-  ];
+export const LOCAL_INDEXES: {
+  name: string;
+  table: string;
+  columns: string[];
+  unique?: boolean;
+  /** Literal para el `WHERE` de un índice **parcial** (SQLite lo admite). */
+  where?: string;
+}[] = [
+  { name: 'UQ_local_user_email', table: 'local_user', columns: ['email'], unique: true },
+  {
+    name: 'IDX_believers_church_search',
+    table: 'believers',
+    columns: ['church_id', 'search_name'],
+  },
+  {
+    name: 'IDX_believer_notes_church',
+    table: 'believer_notes',
+    columns: ['church_id', 'occurred_at'],
+  },
+  {
+    name: 'UQ_calendars_slug',
+    table: 'calendars',
+    columns: ['church_id', 'slug'],
+    unique: true,
+    where: '"deleted_at" IS NULL',
+  },
+  {
+    name: 'IDX_meetings_calendar_date',
+    table: 'meetings',
+    columns: ['calendar_id', 'date'],
+  },
+  { name: 'IDX_meetings_church_date', table: 'meetings', columns: ['church_id', 'date'] },
+  // La contrapartida local del índice único parcial de la API (RFC 0002 §5.4):
+  // sin el WHERE, dos reuniones puntuales del mismo día chocarían al
+  // materializarse.
+  {
+    name: 'UQ_meetings_pattern_date',
+    table: 'meetings',
+    columns: ['pattern_id', 'date'],
+    unique: true,
+    where: '"pattern_id" IS NOT NULL AND "deleted_at" IS NULL',
+  },
+  {
+    name: 'IDX_meeting_slots_order',
+    table: 'meeting_slots',
+    columns: ['meeting_id', 'position'],
+  },
+  {
+    name: 'IDX_meeting_slots_believer',
+    table: 'meeting_slots',
+    columns: ['believer_id'],
+  },
+  {
+    name: 'IDX_pattern_phases_order',
+    table: 'pattern_phases',
+    columns: ['pattern_id', 'position'],
+  },
+  {
+    name: 'IDX_meeting_patterns_calendar',
+    table: 'meeting_patterns',
+    columns: ['calendar_id'],
+  },
+  {
+    name: 'IDX_tasks_church_owner_date',
+    table: 'tasks',
+    columns: ['church_id', 'owner_id', 'date'],
+  },
+  {
+    name: 'UQ_task_occurrences',
+    table: 'task_occurrences',
+    columns: ['task_id', 'date'],
+    unique: true,
+  },
+  { name: 'UQ_task_tags', table: 'task_tags', columns: ['task_id', 'tag_id'], unique: true },
+  {
+    name: 'IDX_believer_tag_links_believer',
+    table: 'believer_tag_links',
+    columns: ['believer_id'],
+  },
+  {
+    name: 'IDX_believer_tags_church',
+    table: 'believer_tags',
+    columns: ['church_id', 'position'],
+  },
+  { name: 'IDX_note_audios_note', table: 'note_audios', columns: ['note_id'] },
+];
 
 const DDL_TYPE: Record<LocalColumnType, string> = {
   text: 'TEXT',
@@ -279,7 +360,8 @@ export function createTableSql(one: LocalTable): string {
 }
 
 export function createIndexSql(one: (typeof LOCAL_INDEXES)[number]): string {
+  const where = one.where ? ` WHERE ${one.where}` : '';
   return `CREATE ${one.unique ? 'UNIQUE ' : ''}INDEX "${one.name}" ON "${one.table}" (${one.columns
     .map((name) => `"${name}"`)
-    .join(', ')})`;
+    .join(', ')})${where}`;
 }

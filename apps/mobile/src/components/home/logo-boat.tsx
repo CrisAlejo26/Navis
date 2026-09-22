@@ -32,6 +32,46 @@ const SOMBRA_DERECHA =
 const SOMBRA_IZQUIERDA =
   'M547.44,718.81h-218.49c-10.58-21.58-20.4-43.55-29.02-66.13-1.55-4.04-3.61-7.97-4.53-12.15-1.54-6.98-3.69-13.41-6.34-19.39l213.23,80.6,45.12,17.06h.03Z';
 
+/** Las seis piezas del barco, en el orden del dibujo original. */
+export const BOAT_PATHS = [
+  ROTA,
+  VELA_MAYOR,
+  VELA_MENOR,
+  GALLARDETE,
+  SOMBRA_DERECHA,
+  SOMBRA_IZQUIERDA,
+] as const;
+
+/**
+ * El barco en **un solo color**, a cualquier tamaño y posición: la caja del
+ * dibujo mide 757 de ancha y arranca en (156, 142) dentro del lienzo de 1080.
+ * La lámina del calendario lo usa en blanco sobre la banda de marca.
+ */
+export function BoatGlyph({
+  size,
+  x,
+  y,
+  fill,
+}: {
+  size: number;
+  x: number;
+  y: number;
+  fill: string;
+}) {
+  const escala = size / 757;
+  const colocacion = `translate(${(x - 156 * escala).toFixed(2)} ${(y - 142 * escala).toFixed(
+    2,
+  )}) scale(${escala.toFixed(5)})`;
+
+  return (
+    <G transform={colocacion}>
+      {BOAT_PATHS.map((d) => (
+        <Path key={d.slice(0, 12)} d={d} fill={fill} />
+      ))}
+    </G>
+  );
+}
+
 /**
  * De dónde a dónde: la caja del dibujo dentro del lienzo de 1080 (medida por
  * `scripts/brand-logo.mjs`) y el mismo trazo a escala dentro de la escena,

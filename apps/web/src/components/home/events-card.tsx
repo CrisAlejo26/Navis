@@ -33,7 +33,7 @@ export function EventsCard({ events }: { events: readonly DashboardEvent[] }) {
         <ul className="divide-y">
           {events.map((event) => (
             <li
-              key={`${event.date}-${event.startTime}-${event.name}`}
+              key={`${event.date}-${event.startTime}-${event.name}-${event.congregationName}`}
               style={accentVars(event.accent)}
               className="px-5 py-2.5 pl-4 border-l-[3px] border-l-[var(--acento)]"
             >

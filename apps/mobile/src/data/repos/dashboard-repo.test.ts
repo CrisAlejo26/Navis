@@ -147,6 +147,17 @@ describe('el panel de inicio en local', () => {
     expect(summary.recentNotes[1].excerpt).toHaveLength(141);
   });
 
+  it('una iglesia recién creada ya propone su próximo culto en la portada, sin que nadie lo haya tocado (regresión: leer solo lo materializado la dejaba vacía)', async () => {
+    const summary = await localDashboardRepository.summary(churchId, ownerId);
+
+    // El patrón de púlpito de serie cubre los siete días de la semana
+    // (`DEFAULT_WEEK`), así que la ventana de 30 días tiene que proponer algo
+    // aunque nadie haya asignado ni creado una sola reunión a mano.
+    expect(summary.upcomingEvents.length).toBeGreaterThan(0);
+    // Propuesta, no materializada: sin fila propia todavía (D3).
+    expect(summary.upcomingEvents[0]?.meetingId).toBeNull();
+  });
+
   it('lista las reuniones programadas de la ventana y salta las canceladas', async () => {
     const today = todayIso();
     const congregation = await db.adapter.getFirstAsync<{ id: string }>(
@@ -154,6 +165,17 @@ describe('el panel de inicio en local', () => {
       churchId,
     );
     if (!congregation) throw new Error('la iglesia de prueba no tiene sede');
+    const calendar = await db.adapter.getFirstAsync<{ id: string }>(
+      "SELECT id FROM calendars WHERE church_id = ? AND slug = 'pulpito'",
+      churchId,
+    );
+    if (!calendar) throw new Error('la iglesia de prueba no tiene calendario de púlpito');
+    // Se apaga el patrón sembrado de serie: esta prueba mira lo materializado
+    // y lo cancelado, no la expansión de propuestas (ya probada arriba).
+    await db.adapter.runAsync(
+      'UPDATE meeting_patterns SET is_active = 0 WHERE calendar_id = ?',
+      calendar.id,
+    );
     const seed = [
       { id: 'm-1', date: today, startTime: '10:00', name: 'Culto mañana', status: 'programada' },
       { id: 'm-2', date: today, startTime: '20:00', name: 'Culto noche', status: 'cancelada' },
@@ -161,11 +183,12 @@ describe('el panel de inicio en local', () => {
     for (const one of seed) {
       await db.adapter.runAsync(
         `INSERT INTO meetings (id, created_at, updated_at, deleted_at, church_id, calendar_id, congregation_id, pattern_id, date, start_time, name, accent, status, notes)
-         VALUES (?, ?, ?, NULL, ?, 'cal', ?, NULL, ?, ?, ?, 'primary', ?, NULL)`,
+         VALUES (?, ?, ?, NULL, ?, ?, ?, NULL, ?, ?, ?, 'primary', ?, NULL)`,
         one.id,
         new Date().toISOString(),
         new Date().toISOString(),
         churchId,
+        calendar.id,
         congregation.id,
         one.date,
         one.startTime,
@@ -248,6 +271,11 @@ describe('el panel de inicio en local', () => {
   });
 
   it('con todo vacío devuelve ceros y listas vacías, no errores', async () => {
+    // Los patrones de serie seguirían proponiendo su culto (se prueba
+    // aparte, arriba): aquí se apagan para comprobar el resto de la portada
+    // en un vacío de verdad.
+    db.memory.exec('UPDATE meeting_patterns SET is_active = 0');
+
     const summary = await localDashboardRepository.summary(churchId, ownerId);
 
     expect(summary.believers).toEqual({ total: 0, newThisMonth: 0 });

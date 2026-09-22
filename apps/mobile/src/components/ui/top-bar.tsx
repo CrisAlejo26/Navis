@@ -6,10 +6,15 @@ import { BodyText } from '@/components/ui/text';
 import { Title } from '@/components/ui/title';
 import type { IoniconName } from '@/lib/nav-mobile';
 import { useThemeStore } from '@/lib/theme';
+import { cn } from '@/lib/cn';
 
 interface TopBarProps {
   title: string;
   subtitle?: string;
+  /** Clases extra para el subtítulo: una pantalla puede querer más pequeño. */
+  subtitleClassName?: string;
+  /** Líneas máximas del subtítulo (una sola línea, truncado, por ejemplo). */
+  subtitleLines?: number;
   action?: {
     icon: IoniconName;
     label: string;
@@ -37,7 +42,15 @@ interface TopBarProps {
  * duplicaría en vez de sustituirla, porque esa cabecera no se apaga por
  * pantalla, sino para todo el grupo `(tabs)`.
  */
-export function TopBar({ title, subtitle, action, actions, onScene = false }: TopBarProps) {
+export function TopBar({
+  title,
+  subtitle,
+  subtitleClassName,
+  subtitleLines,
+  action,
+  actions,
+  onScene = false,
+}: TopBarProps) {
   const claro = themeColorsHex[useThemeStore((state) => state.resolvedTheme)].primaryForeground;
   const all = [...(actions ?? []), ...(action ? [action] : [])];
   return (
@@ -47,7 +60,10 @@ export function TopBar({ title, subtitle, action, actions, onScene = false }: To
           {title}
         </Title>
         {subtitle ? (
-          <BodyText className={onScene ? 'text-white/75' : 'text-muted-foreground'}>
+          <BodyText
+            numberOfLines={subtitleLines}
+            className={cn(onScene ? 'text-white/75' : 'text-muted-foreground', subtitleClassName)}
+          >
             {subtitle}
           </BodyText>
         ) : null}

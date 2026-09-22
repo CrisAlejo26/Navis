@@ -41,7 +41,7 @@ export function EventsCard({
         <View className="gap-2.5">
           {events.map((event) => (
             <View
-              key={`${event.date}-${event.startTime}-${event.name}`}
+              key={`${event.date}-${event.startTime}-${event.name}-${event.congregationName}`}
               className="pl-3 border-l-[3px]"
               style={{ borderLeftColor: accentHex(event.accent, theme) }}
             >

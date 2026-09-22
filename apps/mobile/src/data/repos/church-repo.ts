@@ -7,6 +7,7 @@ import {
 } from '@navis/shared';
 
 import { getDb, newId, nowIso } from '../db';
+import { seedCalendarScaffold } from './calendar-seed';
 
 /**
  * La iglesia **local** (RFC 0024, Fase 1): los mismos datos que crea
@@ -128,6 +129,12 @@ export async function createChurch(input: {
         index,
       );
     }
+
+    // El andamiaje del calendario (RFC 0002 D15): los cuatro calendarios de
+    // serie y la semana de cada uno en la sede recién creada. Sin ella, el
+    // tab de Calendario nacería vacío y habría que escribir siete reuniones
+    // antes de programar la primera.
+    await seedCalendarScaffold(db, church.id, now);
   });
 
   return church;

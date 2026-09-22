@@ -1,11 +1,22 @@
-import { addDays, type NoteKind } from '@navis/shared';
+import {
+  addDays,
+  addMonths,
+  eachDay,
+  endOfMonth,
+  startOfMonth,
+  weekdayOf,
+  type NoteKind,
+} from '@navis/shared';
 
 import { getDb, nowIso } from './db';
 import { createAccount, login } from './repos/account-repo';
 import { createChurch, findChurchByOwner } from './repos/church-repo';
-import { createBeliever, updateBeliever } from './repos/believers-repo';
+import { createBeliever, listBelievers, updateBeliever } from './repos/believers-repo';
 import { createNote } from './repos/notes-repo';
 import { createCatalogEntry } from './repos/catalog-repo';
+import { listCalendars, createCongregation, listCongregations } from './repos/calendar-repo';
+import { listPatterns } from './repos/calendar-settings';
+import { assignSlot } from './repos/calendar-assignments';
 
 /**
  * Datos de **prueba** para ver la aplicación llena (Regla 11): una iglesia,
@@ -375,6 +386,58 @@ export async function seedDemoData(churchId: string, userId: string): Promise<bo
         told: note.told,
         advice: note.advice,
       });
+    }
+  }
+
+  // Calendario: reuniones materializadas con asignaciones repartidas en los
+  // cuatro calendarios de serie y en dos sedes —viernes en Benidorm, el resto
+  // en la principal—, con fases sin asignar a propósito para ver la línea de
+  // puntos que pide que la rellenen (RFC 0002 §8.1).
+  try {
+    await createCongregation(churchId, { name: 'Benidorm', accent: '#0891b2' });
+  } catch {
+    // Ya estaba: la siembra es idempotente.
+  }
+  const calendarios = await listCalendars(churchId);
+  const sedes = await listCongregations(churchId);
+  const candidatos = (await listBelievers({ churchId, limit: 100 })).items;
+  const hoy = nowIso().slice(0, 10);
+  const dias = eachDay(startOfMonth(hoy), endOfMonth(addMonths(startOfMonth(hoy), 2)));
+
+  for (const calendario of calendarios) {
+    const labor = calendario.ministry;
+    const enLabor = candidatos.filter((one) =>
+      labor ? (one.ministries ?? []).includes(labor) : true,
+    );
+    if (enLabor.length === 0) continue;
+    const patrones = await listPatterns(calendario.id);
+    let turno = 0;
+
+    for (const day of dias) {
+      // El viernes cae en la segunda sede, si la hay: el día con dos cintas.
+      const weekday = weekdayOf(day);
+      const sede = weekday === 5 ? (sedes[1] ?? sedes[0]) : sedes[0];
+      if (!sede) continue;
+      const patron = (await listPatterns(calendario.id)).find(
+        (one) => one.weekday === weekday && one.congregationId === sede.id && one.isActive,
+      );
+      if (!patron) continue;
+
+      // La primera fase lleva a quien le toca; el resto, hueco o persona
+      // rotando — nunca todo lleno, que es como se ve un mes real.
+      for (const [position, fase] of patron.phases.entries()) {
+        const asignar = position === 0 || (position === 1 && turno % 3 === 0);
+        if (!asignar) continue;
+        const persona = enLabor[turno % enLabor.length];
+        if (!persona) continue;
+        await assignSlot(churchId, {
+          date: day,
+          patternId: patron.id,
+          position,
+          believerId: persona.id,
+        });
+        turno += 1;
+      }
     }
   }
 

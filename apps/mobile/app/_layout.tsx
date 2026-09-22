@@ -26,6 +26,7 @@ import { initializeTestUser } from '@/data/demo-data';
 import { useNavigationTheme } from '@/lib/navigation-theme';
 import { PUSHED_SCREEN_ANIMATION } from '@/lib/pushed-screens';
 import { queryClient } from '@/lib/query-client';
+import { useStatusBarStore } from '@/lib/status-bar';
 import { useThemeStore } from '@/lib/theme';
 
 void SplashScreen.preventAutoHideAsync();
@@ -41,10 +42,14 @@ function RootNavigator() {
   const resolvedTheme = useThemeStore((state) => state.resolvedTheme);
   const palette = themeColorsHex[resolvedTheme];
   const navigationTheme = useNavigationTheme();
+  // El estilo que pide la pantalla enfocada (hero del panel, escena de
+  // creyentes, ficha); sin reclamante, el del tema. Las pantallas con fondo
+  // propio en la zona segura reclaman vía `useStatusBarClaim`.
+  const reclamado = useStatusBarStore((state) => state.style);
 
   return (
     <ThemeProvider value={navigationTheme}>
-      <StatusBar style={resolvedTheme === 'dark' ? 'light' : 'dark'} />
+      <StatusBar style={reclamado ?? (resolvedTheme === 'dark' ? 'light' : 'dark')} />
       <AppBackdrop />
       <Stack
         screenOptions={{
@@ -76,6 +81,14 @@ function RootNavigator() {
         />
         <Stack.Screen
           name="believers/[id]"
+          options={{ headerShown: false, animation: PUSHED_SCREEN_ANIMATION }}
+        />
+        <Stack.Screen
+          name="calendar/settings"
+          options={{ headerShown: false, animation: PUSHED_SCREEN_ANIMATION }}
+        />
+        <Stack.Screen
+          name="calendar/balance"
           options={{ headerShown: false, animation: PUSHED_SCREEN_ANIMATION }}
         />
         <Stack.Screen

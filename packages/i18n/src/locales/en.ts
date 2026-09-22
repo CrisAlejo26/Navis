@@ -344,7 +344,11 @@ export const en = {
     title: 'Calendar',
     subtitle: 'Who takes each slot, day by day',
     holidayNational: 'National holiday',
+    agendaEmpty: 'The range is empty',
     holidayRegional: 'Holiday in {{region}}',
+    /* The Monday-to-Sunday initials, from the translation and not from `Intl`:
+       Hermes on mobile does not guarantee the data for every language (Rule 2). */
+    weekdayInitials: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
     viewMonth: 'Month',
     viewWeek: 'Week',
     viewAgenda: 'Agenda',

@@ -11,11 +11,15 @@ import { Believer } from '../believers/believer.entity';
 import { BelieverGift } from '../believers/believer-gift.entity';
 import { BelieverMinistry } from '../believers/believer-ministry.entity';
 import { BelieverNote } from '../believers/believer-note.entity';
+import { BelieverTag } from '../believers/believer-tag.entity';
 import { BelieverTagLink } from '../believers/believer-tag-link.entity';
 import { Gift } from '../believers/gift.entity';
 import { Ministry } from '../believers/ministry.entity';
+import { Calendar } from '../calendar/calendar.entity';
 import { Congregation } from '../calendar/congregation.entity';
 import { Meeting } from '../calendar/meeting.entity';
+import { MeetingPattern } from '../calendar/meeting-pattern.entity';
+import { PatternPhase } from '../calendar/pattern-phase.entity';
 import { Church } from '../churches/church.entity';
 import { MeetingSlot } from '../calendar/meeting-slot.entity';
 import { NoteAudio } from '../believers/note-audio.entity';
@@ -40,9 +44,14 @@ import { TaskTag } from '../tasks/task-tag.entity';
 const ENTITIES = [
   Church,
   Congregation,
+  Calendar,
+  MeetingPattern,
+  PatternPhase,
+  Meeting,
+  MeetingSlot,
   Believer,
   BelieverNote,
-  Meeting,
+  BelieverTag,
   Ministry,
   Gift,
   BelieverMinistry,
@@ -55,7 +64,6 @@ const ENTITIES = [
   // Objetivos de relación: TypeORM las exige en el registro de entidades para
   // poder construir los metadatos, aunque no se comparen.
   NoteAudio,
-  MeetingSlot,
   TaskReminder,
   TaskReminderTag,
 ];

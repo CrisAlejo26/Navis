@@ -1,6 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
 import { themeColorsHex } from '@navis/theme';
-import { StatusBar } from 'expo-status-bar';
 import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
 import { ActivityIndicator, RefreshControl, Text, View } from 'react-native';
@@ -22,6 +21,7 @@ import { TodayTasksCard } from '@/components/home/today-tasks-card';
 import { CompositionSection } from '@/components/home/composition-section';
 import { Button } from '@/components/ui/button';
 import { useDashboardSummary, useRegisteredBelievers } from '@/hooks/use-dashboard';
+import { useStatusBarClaim } from '@/lib/status-bar';
 import { useThemeStore } from '@/lib/theme';
 
 /**
@@ -75,6 +75,10 @@ export default function DashboardScreen() {
       runOnJS(setBarraClara)(!sobreBlanco);
     },
   );
+  // La barra de estado la reclama aquí mientras la pantalla tiene el foco:
+  // clara sobre la escena náutica y oscura en cuanto el blanco le pasa por
+  // debajo. Vuelve a reclamarse con cada cambio de `barraClara`.
+  useStatusBarClaim(barraClara ? 'light' : 'dark');
 
   // «Pendiente» cubre también la consulta deshabilitada mientras AsyncStorage
   // hidrata la sesión: no es un error, es «aún no ha empezado». Tratarlo como
@@ -104,7 +108,6 @@ export default function DashboardScreen() {
 
   return (
     <View className="flex-1 bg-background">
-      <StatusBar style={barraClara ? 'light' : 'dark'} />
       <Animated.ScrollView
         onScroll={scrollHandler}
         scrollEventThrottle={16}

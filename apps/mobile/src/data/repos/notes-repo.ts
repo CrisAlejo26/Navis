@@ -62,10 +62,10 @@ async function audiosOf(noteId: string): Promise<LocalNoteAudio[]> {
     size_bytes: number;
     duration_seconds: number | null;
     recorded: number;
-    file_uri: string;
+    storage_key: string;
     created_at: string;
   }>(
-    'SELECT id, mime_type, size_bytes, duration_seconds, recorded, file_uri, created_at FROM note_audios WHERE note_id = ? ORDER BY created_at ASC',
+    'SELECT id, mime_type, size_bytes, duration_seconds, recorded, storage_key, created_at FROM note_audios WHERE note_id = ? ORDER BY created_at ASC',
     noteId,
   );
   return rows.map((row) => ({
@@ -76,7 +76,7 @@ async function audiosOf(noteId: string): Promise<LocalNoteAudio[]> {
     durationSeconds: row.duration_seconds,
     recorded: row.recorded === 1,
     createdAt: row.created_at,
-    uri: row.file_uri || audioUri(row.id),
+    uri: row.storage_key || audioUri(row.id),
   }));
 }
 
@@ -318,11 +318,17 @@ export async function addAudio(
   const db = await getDb();
   const id = newId();
   const fileUri = await storeAudio(id, audio.sourceUri);
+  // El `church_id` viaja con la nota (paridad con la API); se lee de ella.
+  const nota = await db.getFirstAsync<{ church_id: string }>(
+    'SELECT church_id FROM believer_notes WHERE id = ?',
+    noteId,
+  );
   await db.runAsync(
-    'INSERT INTO note_audios (id, created_at, updated_at, deleted_at, note_id, mime_type, size_bytes, duration_seconds, recorded, file_uri) VALUES (?, ?, ?, NULL, ?, ?, ?, ?, ?, ?)',
+    'INSERT INTO note_audios (id, created_at, updated_at, deleted_at, church_id, note_id, mime_type, size_bytes, duration_seconds, recorded, storage_key) VALUES (?, ?, ?, NULL, ?, ?, ?, ?, ?, ?, ?)',
     id,
     nowIso(),
     nowIso(),
+    nota?.church_id ?? '',
     noteId,
     audio.mimeType,
     audio.sizeBytes,
@@ -334,13 +340,13 @@ export async function addAudio(
 
 export async function deleteAudio(audioId: string): Promise<void> {
   const db = await getDb();
-  const row = await db.getFirstAsync<{ file_uri: string }>(
-    'SELECT file_uri FROM note_audios WHERE id = ?',
+  const row = await db.getFirstAsync<{ storage_key: string }>(
+    'SELECT storage_key FROM note_audios WHERE id = ?',
     audioId,
   );
   if (row) {
     try {
-      removeAudioAt(row.file_uri);
+      removeAudioAt(row.storage_key);
     } catch {
       // Un fichero que ya no está no impide borrar su fila.
     }

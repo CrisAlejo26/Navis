@@ -12,6 +12,7 @@ import { EmptyState } from '@/components/ui/empty-state';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useCongregations } from '@/hooks/use-catalog';
 import { useBeliever, useDeleteBeliever, useUpdateBeliever } from '@/hooks/use-believers';
+import { useStatusBarClaim } from '@/lib/status-bar';
 
 /**
  * La ficha de un hermano (§7.5): quién es arriba —con la sonda a lo ancho y
@@ -26,6 +27,10 @@ export default function BelieverDetailScreen() {
   const updateBeliever = useUpdateBeliever();
   const deleteBeliever = useDeleteBeliever();
   const [editOpen, setEditOpen] = useState(false);
+  // La cabecera con datos va sobre el degradado azul: iconos blancos. El
+  // esqueleto de carga y el error van sobre blanco: oscuros. Se reclama por
+  // foco y se reevalúa cuando llega (o se va) el dato.
+  useStatusBarClaim(isPending || isError || !believer ? 'dark' : 'light');
 
   if (isPending) {
     return (

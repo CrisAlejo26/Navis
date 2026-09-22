@@ -2,6 +2,9 @@
 node_modules/
 .pnpm-store/
 
+# JDK portátil para builds nativos locales (no es parte del proyecto)
+.tools/
+
 # Builds
 dist/
 build/

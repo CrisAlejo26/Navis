@@ -345,7 +345,11 @@ export const pt = {
     title: 'Calendário',
     subtitle: 'Quem leva cada momento, dia a dia',
     holidayNational: 'Feriado nacional',
+    agendaEmpty: 'O período está em branco',
     holidayRegional: 'Feriado em {{region}}',
+    /* As iniciais de segunda a domingo, da tradução e não de «Intl»:
+       Hermes no telemóvel não garante os dados de cada idioma (Regra 2). */
+    weekdayInitials: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'],
     viewMonth: 'Mês',
     viewWeek: 'Semana',
     viewAgenda: 'Agenda',
