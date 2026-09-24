@@ -818,6 +818,7 @@ export const de = {
     edit: 'Prophetie bearbeiten',
     open: 'Meine Prophetien ansehen',
     search: 'In deinen Prophetien suchen',
+    loadMore: 'Mehr anzeigen',
     filters: 'Filter',
     filtersTotal: 'Filter ({{total}})',
     clearFilters: 'Filter zurücksetzen',
@@ -843,6 +844,7 @@ export const de = {
     views: {
       travesia: 'Überfahrt',
       table: 'Tabelle',
+      list: 'Liste',
       cards: 'Karten',
       year: 'Jahr',
     },
@@ -873,6 +875,7 @@ export const de = {
     fulfillments: 'Erfüllungen',
     fulfillmentsTotal: '{{total}} Erfüllungen',
     addFulfillment: 'Eine Erfüllung festhalten',
+    swipeFulfillment: 'Festhalten',
     editFulfillment: 'Erfüllung bearbeiten',
     fulfillmentText: 'Welcher Teil sich erfüllt hat',
     fulfillmentTextPlaceholder: 'Der Teil über… hat sich erfüllt',

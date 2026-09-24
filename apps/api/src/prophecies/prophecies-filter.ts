@@ -1,10 +1,9 @@
 import {
-  addDays,
   toSearchName,
+  windowStart,
   type PropheciesQuery,
   type ProphecySortField,
   type ProphecyState,
-  type ProphecyWindow,
 } from '@navis/shared';
 import type { SelectQueryBuilder } from 'typeorm';
 
@@ -31,14 +30,6 @@ const SORT_SQL: Record<ProphecySortField, string> = {
   title: 'prophecy.title',
   lastMovement: 'COALESCE(prophecy.last_fulfillment_at, prophecy.received_at)',
 };
-
-/** El primer día de la ventana, o `null` si es «todo» (D12). */
-export function windowStart(window: ProphecyWindow, today: string): string | null {
-  if (window === '7d') return addDays(today, -7);
-  if (window === '30d') return addDays(today, -30);
-  if (window === 'year') return `${today.slice(0, 4)}-01-01`;
-  return null;
-}
 
 /** Búsqueda, estados y ventana de tiempo, sobre un constructor ya acotado al dueño. */
 export function applyFilters(

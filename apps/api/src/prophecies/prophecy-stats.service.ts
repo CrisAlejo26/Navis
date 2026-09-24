@@ -1,9 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import type { PropheciesStats } from '@navis/shared';
+import { summarize, type PropheciesStats, type StatsRow } from '@navis/shared';
 
 import { toIsoDay } from '../database/iso-day';
 import { PropheciesRepository } from './prophecies.repository';
-import { summarize, type StatsRow } from './prophecy-stats';
 
 /**
  * Las cuentas de la portada (RFC 0004 §6.2).

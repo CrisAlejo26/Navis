@@ -226,6 +226,25 @@ export const LOCAL_TABLES: LocalTable[] = [
     { name: 'status', type: 'text' },
     { name: 'completed_at', type: 'text', nullable: true },
   ]),
+  // La primera tabla local sin `church_id`, y a propósito (RFC 0004 D1): una
+  // profecía es de quien la recibe, no de una iglesia. La única barrera de
+  // acceso es el filtro por `owner_id` en el repositorio — igual que en la
+  // API (docs/profecias-movil-plan.md).
+  table('prophecies', 'Prophecy', [
+    { name: 'owner_id', type: 'text' },
+    { name: 'title', type: 'text' },
+    { name: 'body', type: 'text' },
+    { name: 'search_text', type: 'text' },
+    { name: 'received_at', type: 'text' },
+    { name: 'fulfilled_at', type: 'text', nullable: true },
+    { name: 'last_fulfillment_at', type: 'text', nullable: true },
+  ]),
+  table('prophecy_fulfillments', 'ProphecyFulfillment', [
+    { name: 'prophecy_id', type: 'text' },
+    { name: 'owner_id', type: 'text' },
+    { name: 'text', type: 'text' },
+    { name: 'occurred_at', type: 'text' },
+  ]),
 ];
 
 /**
@@ -333,6 +352,26 @@ export const LOCAL_INDEXES: {
     columns: ['church_id', 'position'],
   },
   { name: 'IDX_note_audios_note', table: 'note_audios', columns: ['note_id'] },
+  {
+    name: 'IDX_prophecies_owner_received',
+    table: 'prophecies',
+    columns: ['owner_id', 'received_at'],
+  },
+  {
+    name: 'IDX_prophecies_owner_fulfilled',
+    table: 'prophecies',
+    columns: ['owner_id', 'fulfilled_at'],
+  },
+  {
+    name: 'IDX_prophecies_owner_search',
+    table: 'prophecies',
+    columns: ['owner_id', 'search_text'],
+  },
+  {
+    name: 'IDX_prophecy_fulfillments_prophecy',
+    table: 'prophecy_fulfillments',
+    columns: ['prophecy_id', 'occurred_at'],
+  },
 ];
 
 const DDL_TYPE: Record<LocalColumnType, string> = {

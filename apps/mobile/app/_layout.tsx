@@ -96,6 +96,14 @@ function RootNavigator() {
           options={{ headerShown: false, animation: PUSHED_SCREEN_ANIMATION }}
         />
         <Stack.Screen
+          name="prophecies/list"
+          options={{ headerShown: false, animation: PUSHED_SCREEN_ANIMATION }}
+        />
+        <Stack.Screen
+          name="prophecies/[id]"
+          options={{ headerShown: false, animation: PUSHED_SCREEN_ANIMATION }}
+        />
+        <Stack.Screen
           name="+not-found"
           options={{ headerShown: true, title: t('errors.notFound') }}
         />

@@ -1,5 +1,6 @@
 import {
   prophecyState,
+  toExcerpt,
   waitingDays,
   type Prophecy as ProphecyView,
   type ProphecyExportRow,
@@ -7,7 +8,6 @@ import {
   type ProphecyListItem,
 } from '@navis/shared';
 
-import { toExcerpt } from '../common/excerpt';
 import { toIsoDay } from '../database/iso-day';
 import type { ProphecyFulfillment } from './prophecy-fulfillment.entity';
 import type { Prophecy } from './prophecy.entity';

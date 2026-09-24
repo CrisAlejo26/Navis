@@ -66,6 +66,8 @@ const ALL_TABLES = [
   'tags',
   'task_tags',
   'task_occurrences',
+  'prophecies',
+  'prophecy_fulfillments',
   'local_user',
 ];
 

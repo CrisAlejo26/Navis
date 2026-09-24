@@ -809,6 +809,7 @@ export const pt = {
     edit: 'Editar a profecia',
     open: 'Ver as minhas profecias',
     search: 'Procurar nas tuas profecias',
+    loadMore: 'Ver mais',
     filters: 'Filtros',
     filtersTotal: 'Filtros ({{total}})',
     clearFilters: 'Limpar os filtros',
@@ -834,6 +835,7 @@ export const pt = {
     views: {
       travesia: 'Travessia',
       table: 'Tabela',
+      list: 'Lista',
       cards: 'Fichas',
       year: 'Ano',
     },
@@ -864,6 +866,7 @@ export const pt = {
     fulfillments: 'Cumprimentos',
     fulfillmentsTotal: '{{total}} cumprimentos',
     addFulfillment: 'Anotar um cumprimento',
+    swipeFulfillment: 'Anotar',
     editFulfillment: 'Editar o cumprimento',
     fulfillmentText: 'Que parte se cumpriu',
     fulfillmentTextPlaceholder: 'Cumpriu-se a parte sobre…',

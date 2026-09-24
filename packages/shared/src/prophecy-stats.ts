@@ -1,11 +1,12 @@
-import {
-  addMonths,
-  prophecyState,
-  waitingDays,
-  type PropheciesStats,
-  type ProphecyMonth,
-  type ProphecyState,
-} from '@navis/shared';
+import { addMonths } from './dates';
+import { prophecyState, waitingDays, type ProphecyState } from './prophecy-state';
+import type { PropheciesStats, ProphecyMonth } from './schemas/prophecy-queries';
+
+/**
+ * Las cuentas de la portada de profecías (RFC 0004 §6.2), compartidas entre la
+ * API y el repositorio local del móvil (docs/profecias-movil-plan.md §4.3):
+ * no toca TypeORM ni SQLite, así que es la misma función en los dos sitios.
+ */
 
 /** Lo mínimo que hace falta de cada fila para las cuentas. Sin cuerpo ni búsqueda. */
 export interface StatsRow {

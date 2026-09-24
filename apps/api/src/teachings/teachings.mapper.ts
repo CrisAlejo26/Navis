@@ -1,11 +1,11 @@
 import {
   extractTeachingBodyText,
   teachingBodySchema,
+  toExcerpt,
   type Teaching as TeachingView,
   type TeachingListItem,
 } from '@navis/shared';
 
-import { toExcerpt } from '../common/excerpt';
 import { toIsoDay } from '../database/iso-day';
 import type { Teaching } from './teaching.entity';
 

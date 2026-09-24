@@ -27,11 +27,15 @@ const TEXT_KEY: Record<ChangeTone, keyof ThemeColors> = {
   default: 'mutedForeground',
 };
 
+type StatTone = 'default' | 'primary' | 'success' | 'warning' | 'destructive' | 'accent';
+
 interface StatCardProps {
   label: string;
   /** El valor ya formateado (número, unidad…): la tarjeta no sabe de formato. */
   value: string;
   icon?: IoniconName;
+  /** El tono del icono: qué significa esta cifra, no solo qué la ilustra. */
+  tone?: StatTone;
   /** Indicador de cambio: dirección + texto. Nunca solo color (Regla 3 §7). */
   change?: { direction: ChangeDirection; text: string };
   className?: string;
@@ -44,13 +48,20 @@ interface StatCardProps {
  * Dock/Copilot que enseña Refero (número grande, etiqueta pequeña, variación
  * debajo).
  */
-export function StatCard({ label, value, icon, change, className }: StatCardProps) {
+export function StatCard({
+  label,
+  value,
+  icon,
+  tone = 'default',
+  change,
+  className,
+}: StatCardProps) {
   const palette = themeColorsHex[useThemeStore((state) => state.resolvedTheme)];
 
   return (
     <View className={cn('gap-2 p-4 rounded-xl border border-border bg-card', className)}>
       <View className="gap-2 flex-row items-center">
-        {icon ? <Icon name={icon} size="sm" background="soft" /> : null}
+        {icon ? <Icon name={icon} size="sm" tone={tone} background="soft" /> : null}
         <Text className="text-sm font-sans text-muted-foreground" numberOfLines={1}>
           {label}
         </Text>

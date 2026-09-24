@@ -118,12 +118,12 @@ export function BelieverCard({
           accessibilityLabel={t('believers.selectOne', { name })}
           onPress={() => (selecting ? onToggleSelect?.(believer.id) : onPress(believer.id))}
           onLongPress={() => onToggleSelect?.(believer.id)}
-          className="gap-2 rounded-2xl p-4 border border-border bg-card active:opacity-90"
-          style={
-            believer.needsAttention
-              ? { borderLeftWidth: 3, borderLeftColor: palette.destructive }
-              : null
-          }
+          className="gap-2 rounded-2xl p-4 border bg-card active:opacity-90"
+          style={{
+            borderColor: believer.needsAttention
+              ? hexAlpha(palette.destructive, 0.35)
+              : palette.border,
+          }}
         >
           <View className="gap-2.5 flex-row items-center">
             {showCheckbox ? (

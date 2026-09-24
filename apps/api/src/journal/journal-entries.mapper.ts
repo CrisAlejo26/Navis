@@ -1,11 +1,11 @@
-import type {
-  JournalEntry as JournalEntryView,
-  JournalEntryAudio as JournalAudioView,
-  JournalEntryListItem,
-  JournalExportRow,
+import {
+  toExcerpt,
+  type JournalEntry as JournalEntryView,
+  type JournalEntryAudio as JournalAudioView,
+  type JournalEntryListItem,
+  type JournalExportRow,
 } from '@navis/shared';
 
-import { toExcerpt } from '../common/excerpt';
 import { toIsoDay } from '../database/iso-day';
 import type { JournalEntryAudio } from './journal-entry-audio.entity';
 import type { JournalEntry } from './journal-entry.entity';

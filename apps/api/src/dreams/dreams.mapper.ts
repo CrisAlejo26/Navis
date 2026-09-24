@@ -1,5 +1,6 @@
 import {
   dreamState,
+  toExcerpt,
   type Dream as DreamView,
   type DreamAudio as DreamAudioView,
   type DreamExportRow,
@@ -7,7 +8,6 @@ import {
   type Emotion as EmotionView,
 } from '@navis/shared';
 
-import { toExcerpt } from '../common/excerpt';
 import { toIsoDay } from '../database/iso-day';
 import type { DreamAudio } from './dream-audio.entity';
 import type { Dream } from './dream.entity';

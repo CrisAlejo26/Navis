@@ -99,7 +99,7 @@ export function setDbForTests(fake: LocalDb | null): void {
 }
 
 /** Versión actual del esquema local. Cada cambio añade un caso a `migrations`. */
-const SCHEMA_VERSION = 5;
+const SCHEMA_VERSION = 6;
 
 type Migration = (db: LocalDb) => Promise<void>;
 
@@ -259,6 +259,32 @@ const migrations: Record<number, Migration> = {
       );
       await db.runAsync(
         'UPDATE note_audios SET church_id = (SELECT church_id FROM believer_notes WHERE believer_notes.id = note_audios.note_id)',
+      );
+    }
+  },
+  // Profecías en móvil (docs/profecias-movil-plan.md §4.2): las dos tablas
+  // nuevas, las primeras sin `church_id` (D1). En una base **nueva** la
+  // migración 1 ya las crea; aquí solo se crea lo que falte.
+  6: async (db) => {
+    const PROPHECY_TABLES = ['prophecies', 'prophecy_fulfillments'];
+
+    const existing = new Set(
+      (
+        await db.getAllAsync<{ name: string }>(
+          "SELECT name FROM sqlite_master WHERE type = 'table'",
+        )
+      ).map((row) => row.name),
+    );
+    for (const one of ALL_LOCAL_TABLES) {
+      if (!PROPHECY_TABLES.includes(one.name)) continue;
+      if (existing.has(one.name)) continue;
+      await db.execAsync(createTableSql(one));
+    }
+
+    for (const one of LOCAL_INDEXES) {
+      if (!PROPHECY_TABLES.includes(one.table)) continue;
+      await db.execAsync(
+        `CREATE INDEX IF NOT EXISTS "${one.name}" ON "${one.table}" (${one.columns.map((column) => `"${column}"`).join(', ')})`,
       );
     }
   },
