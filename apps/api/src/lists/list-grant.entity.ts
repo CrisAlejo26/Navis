@@ -19,19 +19,19 @@ import { TIMESTAMP, UUID } from '../database/column-types';
  */
 @Entity('list_grants')
 export class ListGrant {
-  @ApiProperty()
-  @PrimaryColumn({ name: 'viewer_id', type: UUID })
-  viewerId: string;
+    @ApiProperty()
+    @PrimaryColumn({ name: 'viewer_id', type: UUID })
+    viewerId: string;
 
-  @ApiProperty()
-  @Index('IDX_list_grants_list')
-  @PrimaryColumn({ name: 'list_id', type: UUID })
-  listId: string;
+    @ApiProperty()
+    @Index('IDX_list_grants_list')
+    @PrimaryColumn({ name: 'list_id', type: UUID })
+    listId: string;
 
-  @CreateDateColumn({ name: 'granted_at', type: TIMESTAMP })
-  grantedAt: Date;
+    @CreateDateColumn({ name: 'granted_at', type: TIMESTAMP })
+    grantedAt: Date;
 
-  /** El identificador de Better Auth es texto, no uuid (ver `CreateProfiles`). */
-  @Column({ name: 'granted_by', type: 'text' })
-  grantedBy: string;
+    /** El identificador de Better Auth es texto, no uuid (ver `CreateProfiles`). */
+    @Column({ name: 'granted_by', type: 'text' })
+    grantedBy: string;
 }

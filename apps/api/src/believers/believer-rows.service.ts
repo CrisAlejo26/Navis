@@ -9,10 +9,10 @@ import { BelieverNote } from './believer-note.entity';
 import { BelieverTagLink } from './believer-tag-link.entity';
 import type { Believer } from './believer.entity';
 import {
-  featuredByBeliever,
-  giftsByBeliever,
-  tagsByBeliever,
-  toListItem,
+    featuredByBeliever,
+    giftsByBeliever,
+    tagsByBeliever,
+    toListItem,
 } from './believers.mapper';
 import { BelieverTagsService } from './believer-tags.service';
 import { GiftsService } from './gifts.service';
@@ -28,91 +28,92 @@ import { GiftsService } from './gifts.service';
  */
 @Injectable()
 export class BelieverRowsService {
-  constructor(
-    @InjectRepository(BelieverMinistry) private readonly ministries: Repository<BelieverMinistry>,
-    @InjectRepository(BelieverGift) private readonly links: Repository<BelieverGift>,
-    @InjectRepository(BelieverTagLink) private readonly tagLinks: Repository<BelieverTagLink>,
-    @InjectRepository(BelieverNote) private readonly notes: Repository<BelieverNote>,
-    private readonly gifts: GiftsService,
-    private readonly tags: BelieverTagsService,
-  ) {}
+    constructor(
+        @InjectRepository(BelieverMinistry)
+        private readonly ministries: Repository<BelieverMinistry>,
+        @InjectRepository(BelieverGift) private readonly links: Repository<BelieverGift>,
+        @InjectRepository(BelieverTagLink) private readonly tagLinks: Repository<BelieverTagLink>,
+        @InjectRepository(BelieverNote) private readonly notes: Repository<BelieverNote>,
+        private readonly gifts: GiftsService,
+        private readonly tags: BelieverTagsService,
+    ) {}
 
-  async of(
-    churchId: string,
-    people: readonly Believer[],
-    today: IsoDate,
-  ): Promise<BelieverListItem[]> {
-    const ids = people.map((person) => person.id);
+    async of(
+        churchId: string,
+        people: readonly Believer[],
+        today: IsoDate,
+    ): Promise<BelieverListItem[]> {
+        const ids = people.map((person) => person.id);
 
-    const [catalog, ministries, links, tagCatalog, tagLinkRows, counts] = await Promise.all([
-      this.gifts.ensureFor(churchId),
-      this.ministriesOf(ids),
-      this.giftLinksOf(ids),
-      this.tags.list(churchId),
-      this.tagLinksOf(ids),
-      this.countNotes(ids),
-    ]);
+        const [catalog, ministries, links, tagCatalog, tagLinkRows, counts] = await Promise.all([
+            this.gifts.ensureFor(churchId),
+            this.ministriesOf(ids),
+            this.giftLinksOf(ids),
+            this.tags.list(churchId),
+            this.tagLinksOf(ids),
+            this.countNotes(ids),
+        ]);
 
-    const giftsOf = giftsByBeliever(links, catalog);
-    const tagsOf = tagsByBeliever(tagLinkRows, tagCatalog);
-    const featuredOf = featuredByBeliever(tagLinkRows);
+        const giftsOf = giftsByBeliever(links, catalog);
+        const tagsOf = tagsByBeliever(tagLinkRows, tagCatalog);
+        const featuredOf = featuredByBeliever(tagLinkRows);
 
-    return people.map((person) =>
-      toListItem({
-        believer: person,
-        ministries: ministries.get(person.id) ?? [],
-        gifts: giftsOf.get(person.id) ?? [],
-        tags: tagsOf.get(person.id) ?? [],
-        featuredTagId: featuredOf.get(person.id) ?? null,
-        notesCount: counts.get(person.id) ?? 0,
-        today,
-      }),
-    );
-  }
-
-  /** Las labores del lote, agrupadas por persona. */
-  private async ministriesOf(ids: readonly string[]): Promise<Map<string, string[]>> {
-    const unique = usable(ids);
-    if (unique.length === 0) return new Map();
-
-    const rows = await this.ministries.find({ where: { believerId: In(unique) } });
-    const grouped = new Map<string, string[]>();
-    for (const row of rows) {
-      grouped.set(row.believerId, [...(grouped.get(row.believerId) ?? []), row.ministry]);
+        return people.map((person) =>
+            toListItem({
+                believer: person,
+                ministries: ministries.get(person.id) ?? [],
+                gifts: giftsOf.get(person.id) ?? [],
+                tags: tagsOf.get(person.id) ?? [],
+                featuredTagId: featuredOf.get(person.id) ?? null,
+                notesCount: counts.get(person.id) ?? 0,
+                today,
+            }),
+        );
     }
 
-    return grouped;
-  }
+    /** Las labores del lote, agrupadas por persona. */
+    private async ministriesOf(ids: readonly string[]): Promise<Map<string, string[]>> {
+        const unique = usable(ids);
+        if (unique.length === 0) return new Map();
 
-  private giftLinksOf(ids: readonly string[]): Promise<BelieverGift[]> {
-    const unique = usable(ids);
-    return unique.length === 0
-      ? Promise.resolve([])
-      : this.links.find({ where: { believerId: In(unique) } });
-  }
+        const rows = await this.ministries.find({ where: { believerId: In(unique) } });
+        const grouped = new Map<string, string[]>();
+        for (const row of rows) {
+            grouped.set(row.believerId, [...(grouped.get(row.believerId) ?? []), row.ministry]);
+        }
 
-  private tagLinksOf(ids: readonly string[]): Promise<BelieverTagLink[]> {
-    const unique = usable(ids);
-    return unique.length === 0
-      ? Promise.resolve([])
-      : this.tagLinks.find({ where: { believerId: In(unique) } });
-  }
+        return grouped;
+    }
 
-  /** Cuántas notas tiene cada uno, de una consulta agrupada y no de N. */
-  private async countNotes(ids: readonly string[]): Promise<Map<string, number>> {
-    const unique = usable(ids);
-    if (unique.length === 0) return new Map();
+    private giftLinksOf(ids: readonly string[]): Promise<BelieverGift[]> {
+        const unique = usable(ids);
+        return unique.length === 0
+            ? Promise.resolve([])
+            : this.links.find({ where: { believerId: In(unique) } });
+    }
 
-    const rows = await this.notes
-      .createQueryBuilder('note')
-      .select('note.believer_id', 'believerId')
-      .addSelect('COUNT(*)', 'total')
-      .where('note.believerId IN (:...ids)', { ids: unique })
-      .groupBy('note.believer_id')
-      .getRawMany<{ believerId: string; total: string | number }>();
+    private tagLinksOf(ids: readonly string[]): Promise<BelieverTagLink[]> {
+        const unique = usable(ids);
+        return unique.length === 0
+            ? Promise.resolve([])
+            : this.tagLinks.find({ where: { believerId: In(unique) } });
+    }
 
-    return new Map(rows.map((row) => [row.believerId, Number(row.total)]));
-  }
+    /** Cuántas notas tiene cada uno, de una consulta agrupada y no de N. */
+    private async countNotes(ids: readonly string[]): Promise<Map<string, number>> {
+        const unique = usable(ids);
+        if (unique.length === 0) return new Map();
+
+        const rows = await this.notes
+            .createQueryBuilder('note')
+            .select('note.believer_id', 'believerId')
+            .addSelect('COUNT(*)', 'total')
+            .where('note.believerId IN (:...ids)', { ids: unique })
+            .groupBy('note.believer_id')
+            .getRawMany<{ believerId: string; total: string | number }>();
+
+        return new Map(rows.map((row) => [row.believerId, Number(row.total)]));
+    }
 }
 
 /**
@@ -123,5 +124,5 @@ export class BelieverRowsService {
  * de la consulta y no después.
  */
 function usable(ids: readonly string[]): string[] {
-  return [...new Set(ids)].filter(Boolean);
+    return [...new Set(ids)].filter(Boolean);
 }

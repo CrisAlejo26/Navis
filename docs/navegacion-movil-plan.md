@@ -208,8 +208,8 @@ nada todavía.
   `nav.groupChurch`, `common.comingSoon`.
 - **Claves nuevas** (añadir PRIMERO a `es.ts`, que tipa al resto — no compila
   hasta traducir las seis):
-  - `nav.allSections`: «Todo» (subtítulo del sheet «Más»).
-  - `nav.closeMenu`: «Cerrar el menú» (accessibilityLabel del backdrop/cierre).
+    - `nav.allSections`: «Todo» (subtítulo del sheet «Más»).
+    - `nav.closeMenu`: «Cerrar el menú» (accessibilityLabel del backdrop/cierre).
 - `PlaceholderScreen` y los `stackScreens` del `_layout` ya usan `t(labelKey)`;
   los nuevos screens se registran igual.
 
@@ -221,10 +221,10 @@ nada todavía.
   fallan tipos hasta traducir los seis idiomas, a propósito).
 - Tests Jest de móvil con `@testing-library/react-native` (render/fireEvent
   **asíncronos**, nota de CLAUDE.md; NativeWind desactivado → comportamiento):
-  - `MoreMenu`/`MoreMenuContent`: al pulsar una entrada navega a la ruta
-    correcta; al pulsar el backdrop cierra; las 13 entradas presentes.
-  - `AnimatedTabBar`: pulsar una pestaña llama a `navigation.navigate`; «Más»
-    abre el menú en vez de navegar.
+    - `MoreMenu`/`MoreMenuContent`: al pulsar una entrada navega a la ruta
+      correcta; al pulsar el backdrop cierra; las 13 entradas presentes.
+    - `AnimatedTabBar`: pulsar una pestaña llama a `navigation.navigate`; «Más»
+      abre el menú en vez de navegar.
 - `pnpm --filter @navis/mobile exec expo-doctor`.
 - Verificación manual: **dos temas** (claro y oscuro forzados y sistema) y
   **al menos dos idiomas** (es + en o fr), en Android e iOS (simulador o Expo Go).
@@ -249,10 +249,10 @@ nada todavía.
   (`expo-haptics`, nueva dependencia). El botón «Más» abre el menú en vez de
   navegar; cuando está abierto, el icono se resalta sobre el acento.
 - **Menú «Más»**: `MoreMenu` (bottom sheet con backdrop y lámina con spring)
-  - `MoreMenuContent` (filas en cascada a 40 ms, agrupadas General / La
-    iglesia). `(tabs)/more.tsx` reutiliza el contenido como pantalla de respaldo.
+    - `MoreMenuContent` (filas en cascada a 40 ms, agrupadas General / La
+      iglesia). `(tabs)/more.tsx` reutiliza el contenido como pantalla de respaldo.
 - **13 entradas**: `src/lib/nav-mobile.ts` es la fuente única (ruta + labelKey
-  - icono + RFC); el `<Stack>` raíz deriva sus pantallas de ahí.
+    - icono + RFC); el `<Stack>` raíz deriva sus pantallas de ahí.
 - **Pantallas puente nuevas**: `lists`, `tables`, `journal`, `tasks`, `users`;
   `PlaceholderScreen` acepta todas las claves `nav.*`.
 - **i18n**: claves nuevas `nav.allSections` y `nav.closeMenu` en los seis

@@ -326,11 +326,11 @@ son datos de la iglesia.
   anchos), a 375 px: sin scroll horizontal en la agenda, la cinta legible, y
   la lámina mandada por la hoja nativa se lee en un móvil ajeno.
 
-  ```bash
-  pnpm check                                  # + los tests del release script
-  pnpm --filter @navis/mobile test
-  pnpm --filter @navis/mobile exec expo-doctor
-  ```
+    ```bash
+    pnpm check                                  # + los tests del release script
+    pnpm --filter @navis/mobile test
+    pnpm --filter @navis/mobile exec expo-doctor
+    ```
 
 ## Riesgos y trampas que ya conocemos (CLAUDE.md)
 

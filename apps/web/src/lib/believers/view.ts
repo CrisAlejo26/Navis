@@ -6,8 +6,8 @@ export const BELIEVERS_VIEW_STORAGE_KEY = 'navis.believersView';
 export type BelieversView = 'table' | 'cards';
 
 interface ViewState {
-  view: BelieversView;
-  setView: (view: BelieversView) => void;
+    view: BelieversView;
+    setView: (view: BelieversView) => void;
 }
 
 /**
@@ -18,16 +18,16 @@ interface ViewState {
  * piden atención en Elda» está compartiendo eso, no su gusto por las tablas.
  */
 export const useBelieversViewStore = create<ViewState>()(
-  persist(
-    (set) => ({
-      view: 'table',
-      setView: (view) => {
-        set({ view });
-      },
-    }),
-    {
-      name: BELIEVERS_VIEW_STORAGE_KEY,
-      storage: createJSONStorage(() => globalThis.localStorage),
-    },
-  ),
+    persist(
+        (set) => ({
+            view: 'table',
+            setView: (view) => {
+                set({ view });
+            },
+        }),
+        {
+            name: BELIEVERS_VIEW_STORAGE_KEY,
+            storage: createJSONStorage(() => globalThis.localStorage),
+        },
+    ),
 );

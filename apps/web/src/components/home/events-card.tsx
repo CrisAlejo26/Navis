@@ -19,39 +19,40 @@ import { ACCENT_TONE } from '@/lib/stat-tones';
  * primera fila, no una tarjeta de lista aparte.
  */
 export function EventsCard({ events }: { events: readonly DashboardEvent[] }) {
-  const { t } = useTranslation();
+    const { t } = useTranslation();
 
-  return (
-    <Card className={cn('p-0 gap-0 flex flex-col overflow-hidden', ACCENT_TONE.primary.edge)}>
-      <div className="p-5 pb-3">
-        <TileHeader icon={CalendarClock} label={t('home.upcomingEvents')} tone="primary" />
-      </div>
+    return (
+        <Card className={cn('p-0 gap-0 flex flex-col overflow-hidden', ACCENT_TONE.primary.edge)}>
+            <div className="p-5 pb-3">
+                <TileHeader icon={CalendarClock} label={t('home.upcomingEvents')} tone="primary" />
+            </div>
 
-      {events.length === 0 ? (
-        <EmptyState icon={CalendarClock} title={t('home.noUpcomingEvents')} />
-      ) : (
-        <ul className="divide-y">
-          {events.map((event) => (
-            <li
-              key={`${event.date}-${event.startTime}-${event.name}-${event.congregationName}`}
-              style={accentVars(event.accent)}
-              className="px-5 py-2.5 pl-4 border-l-[3px] border-l-[var(--acento)]"
+            {events.length === 0 ? (
+                <EmptyState icon={CalendarClock} title={t('home.noUpcomingEvents')} />
+            ) : (
+                <ul className="divide-y">
+                    {events.map((event) => (
+                        <li
+                            key={`${event.date}-${event.startTime}-${event.name}-${event.congregationName}`}
+                            style={accentVars(event.accent)}
+                            className="px-5 py-2.5 pl-4 border-l-[3px] border-l-[var(--acento)]"
+                        >
+                            <p className="text-sm font-medium">{event.name}</p>
+                            <p className="text-xs text-muted-foreground">
+                                {formatDay(event.date, 'short')} · {event.startTime} ·{' '}
+                                {event.congregationName}
+                            </p>
+                        </li>
+                    ))}
+                </ul>
+            )}
+
+            <Link
+                to="/calendar"
+                className="p-5 pt-3 text-xs font-medium mt-auto text-primary underline-offset-4 hover:underline"
             >
-              <p className="text-sm font-medium">{event.name}</p>
-              <p className="text-xs text-muted-foreground">
-                {formatDay(event.date, 'short')} · {event.startTime} · {event.congregationName}
-              </p>
-            </li>
-          ))}
-        </ul>
-      )}
-
-      <Link
-        to="/calendar"
-        className="p-5 pt-3 text-xs font-medium mt-auto text-primary underline-offset-4 hover:underline"
-      >
-        {t('home.calendarLink')}
-      </Link>
-    </Card>
-  );
+                {t('home.calendarLink')}
+            </Link>
+        </Card>
+    );
 }

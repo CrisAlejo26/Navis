@@ -18,23 +18,23 @@ import { BaseEntity } from '../common/entities/base.entity';
 @Index('IDX_teachings_owner_received', ['ownerId', 'receivedAt'])
 @Index('IDX_teachings_owner_search', ['ownerId', 'searchText'])
 export class Teaching extends BaseEntity {
-  @ApiProperty({ description: 'De quién es. La única barrera de acceso que hay' })
-  @Column({ name: 'owner_id', type: 'text' })
-  ownerId: string;
+    @ApiProperty({ description: 'De quién es. La única barrera de acceso que hay' })
+    @Column({ name: 'owner_id', type: 'text' })
+    ownerId: string;
 
-  @ApiProperty()
-  @Column({ type: 'text' })
-  title: string;
+    @ApiProperty()
+    @Column({ type: 'text' })
+    title: string;
 
-  @ApiProperty({ description: 'El documento del editor, JSON.stringify' })
-  @Column({ name: 'body_json', type: 'text' })
-  bodyJson: string;
+    @ApiProperty({ description: 'El documento del editor, JSON.stringify' })
+    @Column({ name: 'body_json', type: 'text' })
+    bodyJson: string;
 
-  @ApiProperty({ description: 'Título y texto del cuerpo, en minúsculas y sin acentos' })
-  @Column({ name: 'search_text', type: 'text' })
-  searchText: string;
+    @ApiProperty({ description: 'Título y texto del cuerpo, en minúsculas y sin acentos' })
+    @Column({ name: 'search_text', type: 'text' })
+    searchText: string;
 
-  @ApiProperty({ description: 'Cuándo se recibió', example: '2026-03-14' })
-  @Column({ name: 'received_at', type: 'date' })
-  receivedAt: string;
+    @ApiProperty({ description: 'Cuándo se recibió', example: '2026-03-14' })
+    @Column({ name: 'received_at', type: 'date' })
+    receivedAt: string;
 }

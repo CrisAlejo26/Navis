@@ -9,30 +9,32 @@ import { IsIn, IsInt, IsOptional, IsString, Length, Max, Min } from 'class-valid
  * que cambia entre uno y otro.
  */
 export abstract class PaginationQueryDto {
-  @ApiPropertyOptional({ default: 1 })
-  @IsOptional()
-  @Type(() => Number)
-  @IsInt()
-  @Min(1)
-  page: number = 1;
+    @ApiPropertyOptional({ default: 1 })
+    @IsOptional()
+    @Type(() => Number)
+    @IsInt()
+    @Min(1)
+    page: number = 1;
 
-  @ApiPropertyOptional({ default: DEFAULT_PAGE_SIZE, maximum: MAX_PAGE_SIZE })
-  @IsOptional()
-  @Type(() => Number)
-  @IsInt()
-  @Min(1)
-  @Max(MAX_PAGE_SIZE)
-  limit: number = DEFAULT_PAGE_SIZE;
+    @ApiPropertyOptional({ default: DEFAULT_PAGE_SIZE, maximum: MAX_PAGE_SIZE })
+    @IsOptional()
+    @Type(() => Number)
+    @IsInt()
+    @Min(1)
+    @Max(MAX_PAGE_SIZE)
+    limit: number = DEFAULT_PAGE_SIZE;
 
-  @ApiPropertyOptional({ description: 'Texto libre' })
-  @IsOptional()
-  @IsString()
-  @Length(0, 120)
-  @Transform(({ value }: { value: unknown }) => (typeof value === 'string' ? value.trim() : value))
-  search?: string;
+    @ApiPropertyOptional({ description: 'Texto libre' })
+    @IsOptional()
+    @IsString()
+    @Length(0, 120)
+    @Transform(({ value }: { value: unknown }) =>
+        typeof value === 'string' ? value.trim() : value,
+    )
+    search?: string;
 
-  @ApiPropertyOptional({ enum: ['asc', 'desc'] })
-  @IsOptional()
-  @IsIn(['asc', 'desc'])
-  order: 'asc' | 'desc' = 'desc';
+    @ApiPropertyOptional({ enum: ['asc', 'desc'] })
+    @IsOptional()
+    @IsIn(['asc', 'desc'])
+    order: 'asc' | 'desc' = 'desc';
 }

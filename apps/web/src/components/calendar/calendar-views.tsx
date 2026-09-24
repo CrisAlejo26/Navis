@@ -15,36 +15,36 @@ import type { CalendarView } from '@/lib/calendar/view-range';
  * un teléfono no se lee (Regla 5).
  */
 export function CalendarViews({
-  view,
-  range,
-  anchor,
-  narrow,
-  selectedDate,
-  filters,
-  congregationName,
-  onOpenDay,
-  onPick,
-  onPickPerson,
+    view,
+    range,
+    anchor,
+    narrow,
+    selectedDate,
+    filters,
+    congregationName,
+    onOpenDay,
+    onPick,
+    onPickPerson,
 }: {
-  view: CalendarView;
-  range: CalendarRange;
-  anchor: string;
-  narrow: boolean;
-  selectedDate: string | null;
-  filters: DisplayFilters;
-  congregationName: (id: string) => string | undefined;
-  onOpenDay: (date: string) => void;
-  onPick?: (slot: MeetingSlot, meeting: Meeting, date: string) => void;
-  onPickPerson: (believerId: string) => void;
+    view: CalendarView;
+    range: CalendarRange;
+    anchor: string;
+    narrow: boolean;
+    selectedDate: string | null;
+    filters: DisplayFilters;
+    congregationName: (id: string) => string | undefined;
+    onOpenDay: (date: string) => void;
+    onPick?: (slot: MeetingSlot, meeting: Meeting, date: string) => void;
+    onPickPerson: (believerId: string) => void;
 }) {
-  const shared = { range, congregationName, onOpenDay, onPick, filters };
+    const shared = { range, congregationName, onOpenDay, onPick, filters };
 
-  if (view === 'people' && !narrow) {
-    return <PeopleView range={range} onPickPerson={onPickPerson} />;
-  }
+    if (view === 'people' && !narrow) {
+        return <PeopleView range={range} onPickPerson={onPickPerson} />;
+    }
 
-  if (narrow || view === 'agenda') return <AgendaView {...shared} />;
-  if (view === 'week') return <WeekView {...shared} />;
+    if (narrow || view === 'agenda') return <AgendaView {...shared} />;
+    if (view === 'week') return <WeekView {...shared} />;
 
-  return <MonthGrid {...shared} anchorMonth={anchor} selectedDate={selectedDate} />;
+    return <MonthGrid {...shared} anchorMonth={anchor} selectedDate={selectedDate} />;
 }

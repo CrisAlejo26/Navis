@@ -5,17 +5,17 @@ import { TextLink } from '@/components/ui/text-link';
  * mismo par en login y en alta, así que vive aquí y no copiado en las dos.
  */
 export function AuthSwitch({
-  question,
-  to,
-  action,
+    question,
+    to,
+    action,
 }: {
-  question: string;
-  to: string;
-  action: string;
+    question: string;
+    to: string;
+    action: string;
 }) {
-  return (
-    <p className="text-sm text-muted-foreground">
-      {question} <TextLink to={to}>{action}</TextLink>
-    </p>
-  );
+    return (
+        <p className="text-sm text-muted-foreground">
+            {question} <TextLink to={to}>{action}</TextLink>
+        </p>
+    );
 }

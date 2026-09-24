@@ -4,7 +4,7 @@
  * códigos, la misma clave.
  */
 export function errorFor(status: number, t: (key: string) => string): string {
-  if (status === 409) return t('auth.emailTaken');
-  if (status === 403) return t('roles.roleCeilingError');
-  return t('errors.generic');
+    if (status === 409) return t('auth.emailTaken');
+    if (status === 403) return t('roles.roleCeilingError');
+    return t('errors.generic');
 }

@@ -97,10 +97,10 @@ otra `fulfillmentRate`; en la copia, la tasa lleva siempre la palabra «tasa».
   alguien entra en otra iglesia, o en ninguna, sus profecías siguen siendo las
   suyas y las mismas.
 
-  El filtro por `owner_id` va **en el repositorio, no en el controlador**: un
-  endpoint nuevo que se olvide del filtro no debe poder existir. En la práctica,
-  un único `ProphecyRepository` con métodos que **exigen el `ownerId` como
-  primer parámetro**, y ningún acceso a `Repository<Prophecy>` fuera de él.
+    El filtro por `owner_id` va **en el repositorio, no en el controlador**: un
+    endpoint nuevo que se olvide del filtro no debe poder existir. En la práctica,
+    un único `ProphecyRepository` con métodos que **exigen el `ownerId` como
+    primer parámetro**, y ningún acceso a `Repository<Prophecy>` fuera de él.
 
 - **D2 — Se retiran los permisos `prophecies.*` de los roles de iglesia.** Hoy
   existen `prophecies.view` y `prophecies.manage` en
@@ -112,28 +112,28 @@ otra `fulfillmentRate`; en la copia, la tasa lleva siempre la palabra «tasa».
   entrada de navegación pierde su `permission` —basta con tener sesión— y una
   migración los quita de los roles que ya los tuvieran.
 
-  No se sustituyen por otros. La autorización aquí es una sola regla y no es
-  configurable: **eres el dueño o no lo eres**.
+    No se sustituyen por otros. La autorización aquí es una sola regla y no es
+    configurable: **eres el dueño o no lo eres**.
 
 - **D3 — El estado se deriva; no hay columna `status`.** Se guarda
   `fulfilled_at` y se guardan los cumplimientos; el estado sale de los dos:
 
-  ```
-  cumplida    si fulfilled_at != null
-  en camino   si fulfilled_at == null y tiene al menos un cumplimiento
-  en espera   en cualquier otro caso
-  ```
+    ```
+    cumplida    si fulfilled_at != null
+    en camino   si fulfilled_at == null y tiene al menos un cumplimiento
+    en espera   en cualquier otro caso
+    ```
 
-  Una columna de estado **además** de esos datos serían dos fuentes de verdad
-  que se desincronizan a la primera —es la misma decisión que la D2 de la RFC
-  0003 con `is_active` y `status`—. Marcar como cumplida es poner una fecha, y
-  desmarcarla es quitarla; no hay un tercer sitio que actualizar. El estado se
-  calcula en `shared` y se comparte:
+    Una columna de estado **además** de esos datos serían dos fuentes de verdad
+    que se desincronizan a la primera —es la misma decisión que la D2 de la RFC
+    0003 con `is_active` y `status`—. Marcar como cumplida es poner una fecha, y
+    desmarcarla es quitarla; no hay un tercer sitio que actualizar. El estado se
+    calcula en `shared` y se comparte:
 
-  ```ts
-  export function prophecyState(p: Prophecy): ProphecyState;
-  export function waitingDays(p: Prophecy, today: Date): number;
-  ```
+    ```ts
+    export function prophecyState(p: Prophecy): ProphecyState;
+    export function waitingDays(p: Prophecy, today: Date): number;
+    ```
 
 - **D4 — Los cumplimientos parciales son una tabla hija, no un campo de
   texto.** Cada uno tiene su texto y su fecha propia, y hacen falta separados
@@ -169,22 +169,22 @@ otra `fulfillmentRate`; en la copia, la tasa lleva siempre la palabra «tasa».
   reconocen a distancia**, y esta es la pantalla donde la Regla 9 se juega más.
   Se compensa con tres cosas, que no son opcionales:
 
-  1. **Ninguna pantalla importa `recharts`.** Se importa solo dentro de
-     `apps/web/src/components/prophecies/charts/`, que expone componentes
-     propios (`<CumplimientoMensual>`, `<AnilloDeTasa>`, `<Sparkline>`). Es un
-     solo sitio donde cambiarlo si algún día se cambia (Regla 1).
-  2. **Nada de los valores por defecto**: sin `CartesianGrid`, sin `Legend`
-     automática, sin tooltip de la librería —`content={<TooltipPropio />}`—,
-     ejes sin línea, ticks a 11 px en `muted` y con `tabular-nums`.
-  3. **Los colores salen de `themeColorsHex`** (Regla 3 §5): recharts no
-     entiende `oklch`, así que ni una clase de Tailwind ni un hexadecimal a ojo.
-     Y se vuelven a leer al cambiar de tema, o los gráficos se quedan con los
-     colores del tema anterior.
+    1. **Ninguna pantalla importa `recharts`.** Se importa solo dentro de
+       `apps/web/src/components/prophecies/charts/`, que expone componentes
+       propios (`<CumplimientoMensual>`, `<AnilloDeTasa>`, `<Sparkline>`). Es un
+       solo sitio donde cambiarlo si algún día se cambia (Regla 1).
+    2. **Nada de los valores por defecto**: sin `CartesianGrid`, sin `Legend`
+       automática, sin tooltip de la librería —`content={<TooltipPropio />}`—,
+       ejes sin línea, ticks a 11 px en `muted` y con `tabular-nums`.
+    3. **Los colores salen de `themeColorsHex`** (Regla 3 §5): recharts no
+       entiende `oklch`, así que ni una clase de Tailwind ni un hexadecimal a ojo.
+       Y se vuelven a leer al cambiar de tema, o los gráficos se quedan con los
+       colores del tema anterior.
 
-  Además, **carga diferida**: `React.lazy` sobre el módulo de gráficos, para que
-  los ~100 kB de recharts no entren en el bundle inicial de una aplicación en la
-  que la mayoría de las pantallas no tienen ni un gráfico. Mientras carga, el
-  esqueleto que ya existe.
+    Además, **carga diferida**: `React.lazy` sobre el módulo de gráficos, para que
+    los ~100 kB de recharts no entren en el bundle inicial de una aplicación en la
+    que la mayoría de las pantallas no tienen ni un gráfico. Mientras carga, el
+    esqueleto que ya existe.
 
 - **D9 — La portada y el listado son dos rutas.** `/prophecies` es la portada
   con las estadísticas; `/prophecies/list` es el listado con sus cuatro vistas;
@@ -359,15 +359,15 @@ interfaz no vuelva a pedir nada:
 
 ```ts
 interface ProphecyListItem {
-  id: string;
-  title: string;
-  excerpt: string; // las primeras ~160 letras del cuerpo, cortadas en palabra
-  receivedAt: string; // AAAA-MM-DD
-  fulfilledAt: string | null;
-  lastFulfillmentAt: string | null;
-  state: ProphecyState;
-  waitingDays: number; // días entre recibida y cumplida (o hasta hoy)
-  fulfillmentsCount: number;
+    id: string;
+    title: string;
+    excerpt: string; // las primeras ~160 letras del cuerpo, cortadas en palabra
+    receivedAt: string; // AAAA-MM-DD
+    fulfilledAt: string | null;
+    lastFulfillmentAt: string | null;
+    state: ProphecyState;
+    waitingDays: number; // días entre recibida y cumplida (o hasta hoy)
+    fulfillmentsCount: number;
 }
 ```
 
@@ -383,17 +383,17 @@ de 20 profecías largas serían cientos de kilobytes para pintar tres líneas.
 
 ```json
 {
-  "total": 47,
-  "byState": { "espera": 22, "camino": 9, "cumplida": 16 },
-  "fulfilledThisYear": 5,
-  "receivedThisYear": 11,
-  "fulfillmentRate": 0.34,
-  "medianWaitingDays": 214,
-  "monthly": [
-    { "month": "2026-01", "received": 2, "fulfilled": 1 },
-    { "month": "2026-02", "received": 0, "fulfilled": 2 }
-  ],
-  "longestWaiting": { "id": "…", "title": "…", "waitingDays": 1840 }
+    "total": 47,
+    "byState": { "espera": 22, "camino": 9, "cumplida": 16 },
+    "fulfilledThisYear": 5,
+    "receivedThisYear": 11,
+    "fulfillmentRate": 0.34,
+    "medianWaitingDays": 214,
+    "monthly": [
+        { "month": "2026-01", "received": 2, "fulfilled": 1 },
+        { "month": "2026-02", "received": 0, "fulfilled": 2 }
+    ],
+    "longestWaiting": { "id": "…", "title": "…", "waitingDays": 1840 }
 }
 ```
 
@@ -518,22 +518,22 @@ cuántos hay puestos — igual que en creyentes (RFC 0003 §7.7).
 1. **Travesía** — la de serie, y el elemento firma. Un eje de tiempo compartido
    arriba (años o meses según el rango) y una línea por profecía:
 
-   ```
-   2019          2021          2023          2025      hoy
-     ├────●─────────●───────────────────────────▶  Sanidad de mi madre
-     ├──────────────────────────────◆              La casa
-     ├────●────────────────────────────────────▶  El ministerio de …
-   ```
+    ```
+    2019          2021          2023          2025      hoy
+      ├────●─────────●───────────────────────────▶  Sanidad de mi madre
+      ├──────────────────────────────◆              La casa
+      ├────●────────────────────────────────────▶  El ministerio de …
+    ```
 
-   El punto de salida es la fecha en que se recibió; los `●` son cumplimientos
-   parciales; el `◆` cierra la que se cumplió; la flecha desvanecida al borde
-   derecho es la que sigue esperando. Se ordena por fecha de recepción y se
-   puede invertir. **Es la única vista que enseña la espera como longitud**, que
-   es la tesis de la sección.
+    El punto de salida es la fecha en que se recibió; los `●` son cumplimientos
+    parciales; el `◆` cierra la que se cumplió; la flecha desvanecida al borde
+    derecho es la que sigue esperando. Se ordena por fecha de recepción y se
+    puede invertir. **Es la única vista que enseña la espera como longitud**, que
+    es la tesis de la sección.
 
-   Accesibilidad: el trazado va `aria-hidden` y cada fila lleva su texto real,
-   ampliado con `sr-only`: «Recibida el 3 de marzo de 2019, dos cumplimientos
-   parciales, todavía en espera; 2.617 días».
+    Accesibilidad: el trazado va `aria-hidden` y cada fila lleva su texto real,
+    ampliado con `sr-only`: «Recibida el 3 de marzo de 2019, dos cumplimientos
+    parciales, todavía en espera; 2.617 días».
 
 2. **Tabla** — `DataTable` tal cual (D15). Columnas: Título (enlace a la
    ficha) · Recibida · Estado · Cumplimientos · Espera · Acciones. Ordenable

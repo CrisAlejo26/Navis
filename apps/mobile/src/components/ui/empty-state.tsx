@@ -8,11 +8,11 @@ import { cn } from '@/lib/cn';
 import type { IoniconName } from '@/lib/nav-mobile';
 
 interface EmptyStateProps {
-  icon?: IoniconName;
-  title: string;
-  description?: string;
-  action?: { label: string; onPress: () => void };
-  className?: string;
+    icon?: IoniconName;
+    title: string;
+    description?: string;
+    action?: { label: string; onPress: () => void };
+    className?: string;
 }
 
 /**
@@ -23,16 +23,18 @@ interface EmptyStateProps {
  * `PlaceholderScreen`, que anuncia una sección sin implementar.
  */
 export function EmptyState({ icon, title, description, action, className }: EmptyStateProps) {
-  return (
-    <View className={cn('gap-2 py-10 items-center', className)}>
-      {icon ? <Icon name={icon} size="lg" tone="primary" background="soft" shape="square" /> : null}
-      <Title size="md" className="text-center">
-        {title}
-      </Title>
-      {description ? (
-        <BodyText className="text-center text-muted-foreground">{description}</BodyText>
-      ) : null}
-      {action ? <Button title={action.label} size="sm" onPress={action.onPress} /> : null}
-    </View>
-  );
+    return (
+        <View className={cn('gap-2 py-10 items-center', className)}>
+            {icon ? (
+                <Icon name={icon} size="lg" tone="primary" background="soft" shape="square" />
+            ) : null}
+            <Title size="md" className="text-center">
+                {title}
+            </Title>
+            {description ? (
+                <BodyText className="text-center text-muted-foreground">{description}</BodyText>
+            ) : null}
+            {action ? <Button title={action.label} size="sm" onPress={action.onPress} /> : null}
+        </View>
+    );
 }

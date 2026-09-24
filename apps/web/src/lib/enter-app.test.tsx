@@ -10,12 +10,12 @@ import { i18n } from '@/lib/i18n';
 import { useEnterApp } from './enter-app';
 
 const { signInEmail, refetchSession } = vi.hoisted(() => ({
-  signInEmail: vi.fn(),
-  refetchSession: vi.fn().mockResolvedValue(undefined),
+    signInEmail: vi.fn(),
+    refetchSession: vi.fn().mockResolvedValue(undefined),
 }));
 vi.mock('./auth-client', () => ({
-  signIn: { email: signInEmail },
-  useSession: () => ({ refetch: refetchSession }),
+    signIn: { email: signInEmail },
+    useSession: () => ({ refetch: refetchSession }),
 }));
 
 /**
@@ -29,49 +29,51 @@ vi.mock('./auth-client', () => ({
  * miraba, y devolvía al login con la cuenta recién creada.
  */
 describe('useEnterApp', () => {
-  it('refresca la sesión y vacía la caché de TanStack Query al entrar', async () => {
-    signInEmail.mockResolvedValue({ error: null });
-    const queryClient = new QueryClient();
-    queryClient.setQueryData(['churches'], { items: [{ id: 'iglesia-ajena' }] });
+    it('refresca la sesión y vacía la caché de TanStack Query al entrar', async () => {
+        signInEmail.mockResolvedValue({ error: null });
+        const queryClient = new QueryClient();
+        queryClient.setQueryData(['churches'], { items: [{ id: 'iglesia-ajena' }] });
 
-    const wrapper = ({ children }: { children: ReactNode }) => (
-      <I18nextProvider i18n={i18n}>
-        <QueryClientProvider client={queryClient}>
-          <MemoryRouter>{children}</MemoryRouter>
-        </QueryClientProvider>
-      </I18nextProvider>
-    );
+        const wrapper = ({ children }: { children: ReactNode }) => (
+            <I18nextProvider i18n={i18n}>
+                <QueryClientProvider client={queryClient}>
+                    <MemoryRouter>{children}</MemoryRouter>
+                </QueryClientProvider>
+            </I18nextProvider>
+        );
 
-    const { result } = renderHook(() => useEnterApp(), { wrapper });
-    await act(async () => {
-      await result.current('pastor@iglesia.es', 'contraseñaSegura2026');
+        const { result } = renderHook(() => useEnterApp(), { wrapper });
+        await act(async () => {
+            await result.current('pastor@iglesia.es', 'contraseñaSegura2026');
+        });
+
+        expect(refetchSession).toHaveBeenCalledOnce();
+        await waitFor(() => {
+            expect(queryClient.getQueryData(['churches'])).toBeUndefined();
+        });
     });
 
-    expect(refetchSession).toHaveBeenCalledOnce();
-    await waitFor(() => {
-      expect(queryClient.getQueryData(['churches'])).toBeUndefined();
+    it('no toca la sesión ni la caché cuando el servidor rechaza la entrada', async () => {
+        signInEmail.mockResolvedValue({ error: { message: 'credenciales inválidas' } });
+        refetchSession.mockClear();
+        const queryClient = new QueryClient();
+        queryClient.setQueryData(['churches'], { items: [{ id: 'iglesia-propia' }] });
+
+        const wrapper = ({ children }: { children: ReactNode }) => (
+            <I18nextProvider i18n={i18n}>
+                <QueryClientProvider client={queryClient}>
+                    <MemoryRouter>{children}</MemoryRouter>
+                </QueryClientProvider>
+            </I18nextProvider>
+        );
+
+        const { result } = renderHook(() => useEnterApp(), { wrapper });
+        const error = await act(async () => result.current('pastor@iglesia.es', 'mala'));
+
+        expect(error).toBe(i18n.t('errors.generic'));
+        expect(refetchSession).not.toHaveBeenCalled();
+        expect(queryClient.getQueryData(['churches'])).toEqual({
+            items: [{ id: 'iglesia-propia' }],
+        });
     });
-  });
-
-  it('no toca la sesión ni la caché cuando el servidor rechaza la entrada', async () => {
-    signInEmail.mockResolvedValue({ error: { message: 'credenciales inválidas' } });
-    refetchSession.mockClear();
-    const queryClient = new QueryClient();
-    queryClient.setQueryData(['churches'], { items: [{ id: 'iglesia-propia' }] });
-
-    const wrapper = ({ children }: { children: ReactNode }) => (
-      <I18nextProvider i18n={i18n}>
-        <QueryClientProvider client={queryClient}>
-          <MemoryRouter>{children}</MemoryRouter>
-        </QueryClientProvider>
-      </I18nextProvider>
-    );
-
-    const { result } = renderHook(() => useEnterApp(), { wrapper });
-    const error = await act(async () => result.current('pastor@iglesia.es', 'mala'));
-
-    expect(error).toBe(i18n.t('errors.generic'));
-    expect(refetchSession).not.toHaveBeenCalled();
-    expect(queryClient.getQueryData(['churches'])).toEqual({ items: [{ id: 'iglesia-propia' }] });
-  });
 });

@@ -20,22 +20,22 @@ export type Sheet = Map<number, Record<string, string>>;
  * qué columna es una fecha (ver `serialToDay`).
  */
 export function readWorkbook(path: string): Map<string, Sheet> {
-  const dir = mkdtempSync(join(tmpdir(), 'navis-xlsx-'));
+    const dir = mkdtempSync(join(tmpdir(), 'navis-xlsx-'));
 
-  try {
-    execFileSync('unzip', ['-o', '-q', path, '-d', dir], { stdio: 'pipe' });
+    try {
+        execFileSync('unzip', ['-o', '-q', path, '-d', dir], { stdio: 'pipe' });
 
-    const shared = readSharedStrings(dir);
-    const sheets = new Map<string, Sheet>();
+        const shared = readSharedStrings(dir);
+        const sheets = new Map<string, Sheet>();
 
-    for (const { name, file } of sheetFiles(dir)) {
-      sheets.set(name, readSheet(join(dir, 'xl', file), shared));
+        for (const { name, file } of sheetFiles(dir)) {
+            sheets.set(name, readSheet(join(dir, 'xl', file), shared));
+        }
+
+        return sheets;
+    } finally {
+        rmSync(dir, { recursive: true, force: true });
     }
-
-    return sheets;
-  } finally {
-    rmSync(dir, { recursive: true, force: true });
-  }
 }
 
 /**
@@ -44,89 +44,91 @@ export function readWorkbook(path: string): Map<string, Sheet> {
  * el escritor de `.xlsx` de la web, y por el mismo motivo.
  */
 export function serialToDay(value: string | undefined): string | null {
-  const n = Number(value);
-  if (!Number.isFinite(n) || n < 1) return null;
+    const n = Number(value);
+    if (!Number.isFinite(n) || n < 1) return null;
 
-  const ms = Math.round(n) * 86_400_000 + Date.UTC(1899, 11, 30);
+    const ms = Math.round(n) * 86_400_000 + Date.UTC(1899, 11, 30);
 
-  return new Date(ms).toISOString().slice(0, 10);
+    return new Date(ms).toISOString().slice(0, 10);
 }
 
 function decode(value: string): string {
-  return value
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    .replace(/&apos;/g, "'")
-    .replace(/&amp;/g, '&');
+    return value
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&quot;/g, '"')
+        .replace(/&#39;/g, "'")
+        .replace(/&apos;/g, "'")
+        .replace(/&amp;/g, '&');
 }
 
 function readSharedStrings(dir: string): string[] {
-  // Un libro cuyas celdas sean todas números o texto en línea no lleva esta
-  // parte, y no tenerla no es un error.
-  const xml = maybeRead(join(dir, 'xl/sharedStrings.xml'));
-  if (xml === null) return [];
+    // Un libro cuyas celdas sean todas números o texto en línea no lleva esta
+    // parte, y no tenerla no es un error.
+    const xml = maybeRead(join(dir, 'xl/sharedStrings.xml'));
+    if (xml === null) return [];
 
-  // Un `<si>` puede venir partido en varios `<t>` cuando lleva formato dentro.
-  return xml
-    .split('<si>')
-    .slice(1)
-    .map((si) => decode([...si.matchAll(/<t[^>]*>([\s\S]*?)<\/t>/g)].map((m) => m[1]).join('')));
+    // Un `<si>` puede venir partido en varios `<t>` cuando lleva formato dentro.
+    return xml
+        .split('<si>')
+        .slice(1)
+        .map((si) =>
+            decode([...si.matchAll(/<t[^>]*>([\s\S]*?)<\/t>/g)].map((m) => m[1]).join('')),
+        );
 }
 
 function maybeRead(path: string): string | null {
-  try {
-    return readFileSync(path, 'utf8');
-  } catch {
-    return null;
-  }
+    try {
+        return readFileSync(path, 'utf8');
+    } catch {
+        return null;
+    }
 }
 
 function sheetFiles(dir: string): { name: string; file: string }[] {
-  const wb = readFileSync(join(dir, 'xl/workbook.xml'), 'utf8');
-  const rels = readFileSync(join(dir, 'xl/_rels/workbook.xml.rels'), 'utf8');
+    const wb = readFileSync(join(dir, 'xl/workbook.xml'), 'utf8');
+    const rels = readFileSync(join(dir, 'xl/_rels/workbook.xml.rels'), 'utf8');
 
-  const target = new Map(
-    [...rels.matchAll(/Id="(rId\d+)"[^>]*Target="([^"]*)"/g)].map((m) => [m[1], m[2]]),
-  );
+    const target = new Map(
+        [...rels.matchAll(/Id="(rId\d+)"[^>]*Target="([^"]*)"/g)].map((m) => [m[1], m[2]]),
+    );
 
-  return [...wb.matchAll(/<sheet[^>]*name="([^"]*)"[^>]*r:id="(rId\d+)"/g)].flatMap((m) => {
-    const file = target.get(m[2]);
-    return file ? [{ name: decode(m[1]), file: file.replace(/^\/?xl\//, '') }] : [];
-  });
+    return [...wb.matchAll(/<sheet[^>]*name="([^"]*)"[^>]*r:id="(rId\d+)"/g)].flatMap((m) => {
+        const file = target.get(m[2]);
+        return file ? [{ name: decode(m[1]), file: file.replace(/^\/?xl\//, '') }] : [];
+    });
 }
 
 function readSheet(path: string, shared: readonly string[]): Sheet {
-  const xml = readFileSync(path, 'utf8');
-  const rows: Sheet = new Map();
+    const xml = readFileSync(path, 'utf8');
+    const rows: Sheet = new Map();
 
-  for (const row of xml.split('<row').slice(1)) {
-    for (const cell of row.split('<c ').slice(1)) {
-      const ref = /r="([A-Z]+\d+)"/.exec(cell)?.[1];
-      if (!ref) continue;
+    for (const row of xml.split('<row').slice(1)) {
+        for (const cell of row.split('<c ').slice(1)) {
+            const ref = /r="([A-Z]+\d+)"/.exec(cell)?.[1];
+            if (!ref) continue;
 
-      const value = cellValue(cell, shared);
-      if (value === null || value === '') continue;
+            const value = cellValue(cell, shared);
+            if (value === null || value === '') continue;
 
-      const line = Number(ref.replace(/\D/g, ''));
-      const column = ref.replace(/\d/g, '');
-      rows.set(line, { ...rows.get(line), [column]: value });
+            const line = Number(ref.replace(/\D/g, ''));
+            const column = ref.replace(/\d/g, '');
+            rows.set(line, { ...rows.get(line), [column]: value });
+        }
     }
-  }
 
-  return rows;
+    return rows;
 }
 
 function cellValue(cell: string, shared: readonly string[]): string | null {
-  const type = /t="([^"]*)"/.exec(cell)?.[1];
+    const type = /t="([^"]*)"/.exec(cell)?.[1];
 
-  if (type === 'inlineStr') {
-    return decode([...cell.matchAll(/<t[^>]*>([\s\S]*?)<\/t>/g)].map((m) => m[1]).join(''));
-  }
+    if (type === 'inlineStr') {
+        return decode([...cell.matchAll(/<t[^>]*>([\s\S]*?)<\/t>/g)].map((m) => m[1]).join(''));
+    }
 
-  const raw = /<v>([\s\S]*?)<\/v>/.exec(cell)?.[1];
-  if (raw === undefined) return null;
+    const raw = /<v>([\s\S]*?)<\/v>/.exec(cell)?.[1];
+    if (raw === undefined) return null;
 
-  return type === 's' ? (shared[Number(raw)] ?? null) : decode(raw);
+    return type === 's' ? (shared[Number(raw)] ?? null) : decode(raw);
 }

@@ -7,10 +7,10 @@ import { Icon } from '@/components/ui/icon';
  * §7). Lo compartían `TextField`, `FieldButton` y `RadioGroup` — Fase 7.
  */
 export function FieldError({ message }: { message: string }) {
-  return (
-    <View className="gap-1 flex-row items-center">
-      <Icon name="alert-circle" tone="destructive" size="sm" />
-      <Text className="text-sm font-sans text-destructive">{message}</Text>
-    </View>
-  );
+    return (
+        <View className="gap-1 flex-row items-center">
+            <Icon name="alert-circle" tone="destructive" size="sm" />
+            <Text className="text-sm font-sans text-destructive">{message}</Text>
+        </View>
+    );
 }

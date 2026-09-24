@@ -21,106 +21,119 @@ import { useLocalSession } from '@/stores/local-session';
  * `church-setup`.
  */
 export default function LoginScreen() {
-  const { t } = useTranslation();
-  const setSession = useLocalSession((state) => state.setSession);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+    const { t } = useTranslation();
+    const setSession = useLocalSession((state) => state.setSession);
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState<string | null>(null);
+    const [loading, setLoading] = useState(false);
 
-  async function onSubmit(): Promise<void> {
-    setError(null);
+    async function onSubmit(): Promise<void> {
+        setError(null);
 
-    // El mismo esquema zod que usa la web y que validaba la API.
-    const parsed = loginSchema.safeParse({ email, password, rememberMe: true });
-    if (!parsed.success) {
-      setError(parsed.error.issues[0]?.message ?? t('errors.validation'));
-      return;
+        // El mismo esquema zod que usa la web y que validaba la API.
+        const parsed = loginSchema.safeParse({ email, password, rememberMe: true });
+        if (!parsed.success) {
+            setError(parsed.error.issues[0]?.message ?? t('errors.validation'));
+            return;
+        }
+
+        setLoading(true);
+        const result = await login({
+            email: parsed.data.email,
+            password: parsed.data.password,
+        });
+        setLoading(false);
+
+        if ('error' in result) {
+            setError(
+                result.error === 'no-account'
+                    ? t('auth.noLocalAccount')
+                    : t('auth.invalidCredentials'),
+            );
+            return;
+        }
+
+        const church = await findChurchByOwner(result.user.id);
+        setSession({ userId: result.user.id, churchId: church?.id ?? null });
+        router.replace(church ? '/(tabs)' : '/(auth)/church-setup');
     }
 
-    setLoading(true);
-    const result = await login({
-      email: parsed.data.email,
-      password: parsed.data.password,
-    });
-    setLoading(false);
-
-    if ('error' in result) {
-      setError(
-        result.error === 'no-account' ? t('auth.noLocalAccount') : t('auth.invalidCredentials'),
-      );
-      return;
-    }
-
-    const church = await findChurchByOwner(result.user.id);
-    setSession({ userId: result.user.id, churchId: church?.id ?? null });
-    router.replace(church ? '/(tabs)' : '/(auth)/church-setup');
-  }
-
-  return (
-    <KeyboardAvoidingView
-      className="flex-1 bg-background"
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-    >
-      <ScrollView contentContainerClassName="grow" keyboardShouldPersistTaps="handled">
-        <BrandHeader />
-
-        <Animated.View
-          entering={FadeInUp.delay(80).duration(420).springify().damping(18)}
-          className="gap-6 rounded-t-3xl p-6 pt-8 grow justify-between bg-background"
-          style={{ marginTop: -20 }}
+    return (
+        <KeyboardAvoidingView
+            className="flex-1 bg-background"
+            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         >
-          <View className="gap-6">
-            <View className="gap-1">
-              <Text className="text-xl font-semibold text-foreground">{t('auth.signInTitle')}</Text>
-              <Text className="text-sm text-muted-foreground">{t('auth.signInSubtitle')}</Text>
-            </View>
+            <ScrollView contentContainerClassName="grow" keyboardShouldPersistTaps="handled">
+                <BrandHeader />
 
-            <View className="gap-4">
-              <TextField
-                label={t('auth.email')}
-                value={email}
-                onChangeText={setEmail}
-                autoCapitalize="none"
-                autoComplete="email"
-                keyboardType="email-address"
-                textContentType="emailAddress"
-              />
-              <TextField
-                label={t('auth.password')}
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry
-                autoComplete="current-password"
-                textContentType="password"
-              />
+                <Animated.View
+                    entering={FadeInUp.delay(80).duration(420).springify().damping(18)}
+                    className="gap-6 rounded-t-3xl p-6 pt-8 grow justify-between bg-background"
+                    style={{ marginTop: -20 }}
+                >
+                    <View className="gap-6">
+                        <View className="gap-1">
+                            <Text className="text-xl font-semibold text-foreground">
+                                {t('auth.signInTitle')}
+                            </Text>
+                            <Text className="text-sm text-muted-foreground">
+                                {t('auth.signInSubtitle')}
+                            </Text>
+                        </View>
 
-              {error ? <Text className="text-sm text-destructive">{error}</Text> : null}
+                        <View className="gap-4">
+                            <TextField
+                                label={t('auth.email')}
+                                value={email}
+                                onChangeText={setEmail}
+                                autoCapitalize="none"
+                                autoComplete="email"
+                                keyboardType="email-address"
+                                textContentType="emailAddress"
+                            />
+                            <TextField
+                                label={t('auth.password')}
+                                value={password}
+                                onChangeText={setPassword}
+                                secureTextEntry
+                                autoComplete="current-password"
+                                textContentType="password"
+                            />
 
-              <Button
-                title={loading ? t('auth.signingIn') : t('auth.signIn')}
-                loading={loading}
-                size="lg"
-                onPress={() => {
-                  void onSubmit();
-                }}
-              />
-            </View>
+                            {error ? (
+                                <Text className="text-sm text-destructive">{error}</Text>
+                            ) : null}
 
-            <View className="gap-1 flex-row items-center justify-center">
-              <Text className="text-sm text-muted-foreground">{t('auth.noAccount')}</Text>
-              <Link href="/(auth)/register" className="text-sm font-medium text-primary">
-                {t('auth.signUp')}
-              </Link>
-            </View>
-          </View>
+                            <Button
+                                title={loading ? t('auth.signingIn') : t('auth.signIn')}
+                                loading={loading}
+                                size="lg"
+                                onPress={() => {
+                                    void onSubmit();
+                                }}
+                            />
+                        </View>
 
-          <View className="gap-4 pt-4 flex-row items-center justify-center">
-            <ThemeToggle />
-            <LanguageSelect />
-          </View>
-        </Animated.View>
-      </ScrollView>
-    </KeyboardAvoidingView>
-  );
+                        <View className="gap-1 flex-row items-center justify-center">
+                            <Text className="text-sm text-muted-foreground">
+                                {t('auth.noAccount')}
+                            </Text>
+                            <Link
+                                href="/(auth)/register"
+                                className="text-sm font-medium text-primary"
+                            >
+                                {t('auth.signUp')}
+                            </Link>
+                        </View>
+                    </View>
+
+                    <View className="gap-4 pt-4 flex-row items-center justify-center">
+                        <ThemeToggle />
+                        <LanguageSelect />
+                    </View>
+                </Animated.View>
+            </ScrollView>
+        </KeyboardAvoidingView>
+    );
 }

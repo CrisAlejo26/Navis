@@ -12,12 +12,12 @@ export const taskIconSchema = z.string().refine(isTaskIconKey, 'Icono no reconoc
  * D6): se crea, se edita y se lista igual, sin filas de serie.
  */
 export const tagSchema = z.object({
-  id: z.uuid(),
-  name: z.string(),
-  icon: z.string(),
-  /** Un token o un hexadecimal de `accentSchema` (D13). */
-  accent: z.string(),
-  position: z.number().int(),
+    id: z.uuid(),
+    name: z.string(),
+    icon: z.string(),
+    /** Un token o un hexadecimal de `accentSchema` (D13). */
+    accent: z.string(),
+    position: z.number().int(),
 });
 
 export type Tag = z.infer<typeof tagSchema>;
@@ -33,9 +33,9 @@ export const tagRefSchema = tagSchema.pick({ id: true, name: true, icon: true, a
 export type TagRef = z.infer<typeof tagRefSchema>;
 
 export const createTagSchema = z.object({
-  name: z.string().trim().min(1, 'La etiqueta necesita un nombre').max(40),
-  icon: taskIconSchema,
-  accent: accentSchema,
+    name: z.string().trim().min(1, 'La etiqueta necesita un nombre').max(40),
+    icon: taskIconSchema,
+    accent: accentSchema,
 });
 
 export type CreateTagInput = z.infer<typeof createTagSchema>;

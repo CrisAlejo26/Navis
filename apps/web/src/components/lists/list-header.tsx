@@ -15,53 +15,55 @@ import { accentVars } from '@/lib/accents';
  * bordes; en un teléfono es donde más se nota.
  */
 export function ListHeader({
-  list,
-  onEdit,
-  onDelete,
+    list,
+    onEdit,
+    onDelete,
 }: {
-  list: List;
-  onEdit?: () => void;
-  onDelete?: () => void;
+    list: List;
+    onEdit?: () => void;
+    onDelete?: () => void;
 }) {
-  const { t } = useTranslation();
+    const { t } = useTranslation();
 
-  return (
-    <header
-      style={accentVars(list.accent)}
-      className="px-4 py-8 md:px-8 md:py-10 gap-5 -mx-4 -mt-4 md:-mx-8 md:-mt-8 flex flex-wrap items-end justify-between bg-[var(--acento)] text-[var(--acento-fg)]"
-    >
-      <div className="min-w-0">
-        <VisibilityBadge visibility={list.visibility} onPanel />
-        <h1 className="mt-2 text-3xl md:text-4xl font-semibold tracking-[-0.03em]">{list.name}</h1>
-        {list.description && (
-          <p className="mt-2 max-w-prose text-sm opacity-85">{list.description}</p>
-        )}
-      </div>
+    return (
+        <header
+            style={accentVars(list.accent)}
+            className="px-4 py-8 md:px-8 md:py-10 gap-5 -mx-4 -mt-4 md:-mx-8 md:-mt-8 flex flex-wrap items-end justify-between bg-[var(--acento)] text-[var(--acento-fg)]"
+        >
+            <div className="min-w-0">
+                <VisibilityBadge visibility={list.visibility} onPanel />
+                <h1 className="mt-2 text-3xl md:text-4xl font-semibold tracking-[-0.03em]">
+                    {list.name}
+                </h1>
+                {list.description && (
+                    <p className="mt-2 max-w-prose text-sm opacity-85">{list.description}</p>
+                )}
+            </div>
 
-      {(onEdit ?? onDelete) && (
-        <div className="gap-2 flex">
-          {onEdit && (
-            <Button
-              variant="ghost"
-              onClick={onEdit}
-              className="text-[var(--acento-fg)] hover:bg-[var(--acento-fg)]/15"
-            >
-              <Pencil size={15} aria-hidden />
-              {t('common.edit')}
-            </Button>
-          )}
-          {onDelete && (
-            <Button
-              variant="ghost"
-              onClick={onDelete}
-              aria-label={t('lists.delete')}
-              className="text-[var(--acento-fg)] hover:bg-[var(--acento-fg)]/15"
-            >
-              <Trash2 size={15} aria-hidden />
-            </Button>
-          )}
-        </div>
-      )}
-    </header>
-  );
+            {(onEdit ?? onDelete) && (
+                <div className="gap-2 flex">
+                    {onEdit && (
+                        <Button
+                            variant="ghost"
+                            onClick={onEdit}
+                            className="text-[var(--acento-fg)] hover:bg-[var(--acento-fg)]/15"
+                        >
+                            <Pencil size={15} aria-hidden />
+                            {t('common.edit')}
+                        </Button>
+                    )}
+                    {onDelete && (
+                        <Button
+                            variant="ghost"
+                            onClick={onDelete}
+                            aria-label={t('lists.delete')}
+                            className="text-[var(--acento-fg)] hover:bg-[var(--acento-fg)]/15"
+                        >
+                            <Trash2 size={15} aria-hidden />
+                        </Button>
+                    )}
+                </div>
+            )}
+        </header>
+    );
 }

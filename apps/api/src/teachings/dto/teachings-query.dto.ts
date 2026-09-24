@@ -6,8 +6,8 @@ import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
 
 /** Filtros del listado de enseñanzas (RFC 0022 §4.4). */
 export class TeachingsQueryDto extends PaginationQueryDto {
-  @ApiPropertyOptional({ enum: TEACHING_SORT_FIELDS, default: DEFAULT_TEACHING_SORT })
-  @IsOptional()
-  @IsIn(TEACHING_SORT_FIELDS)
-  sort: TeachingSortField = DEFAULT_TEACHING_SORT;
+    @ApiPropertyOptional({ enum: TEACHING_SORT_FIELDS, default: DEFAULT_TEACHING_SORT })
+    @IsOptional()
+    @IsIn(TEACHING_SORT_FIELDS)
+    sort: TeachingSortField = DEFAULT_TEACHING_SORT;
 }

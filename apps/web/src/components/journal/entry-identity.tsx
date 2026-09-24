@@ -24,88 +24,92 @@ import { slugify } from '@/lib/share/files';
  * poniendo el color, no la pantalla (§7.1.1 de RFC 0005, reutilizado aquí).
  */
 export function EntryIdentity({
-  entry,
-  onEdit,
-  onDelete,
+    entry,
+    onEdit,
+    onDelete,
 }: {
-  entry: JournalEntry;
-  onEdit: () => void;
-  onDelete: () => void;
+    entry: JournalEntry;
+    onEdit: () => void;
+    onDelete: () => void;
 }) {
-  const { t } = useTranslation();
-  const { accent } = ENTRY_KIND_STYLES[entry.kind];
-  const { active: church } = useChurches();
+    const { t } = useTranslation();
+    const { accent } = ENTRY_KIND_STYLES[entry.kind];
+    const { active: church } = useChurches();
 
-  const poster = useRef<HTMLDivElement>(null);
-  const image = useEntryImageExport(poster);
-  const downloadMarkdown = useEntryMarkdownDownload();
+    const poster = useRef<HTMLDivElement>(null);
+    const image = useEntryImageExport(poster);
+    const downloadMarkdown = useEntryMarkdownDownload();
 
-  return (
-    <header
-      style={accentVars(accent)}
-      className="gap-4 p-5 sm:p-6 animate-rise-in flex flex-col rounded-xl border bg-gradient-to-br from-[var(--acento)]/22 to-[var(--acento)]/8"
-    >
-      <div className="min-w-0">
-        <p className="text-xs tracking-wide text-muted-foreground uppercase tabular-nums">
-          {formatDay(entry.occurredAt)}
-          {entry.authorName && ` · ${t('journal.authorLabel', { name: entry.authorName })}`}
-        </p>
-        <h1 className="mt-1 text-2xl font-semibold leading-snug tracking-[-0.02em]">
-          {entry.title}
-        </h1>
-      </div>
+    return (
+        <header
+            style={accentVars(accent)}
+            className="gap-4 p-5 sm:p-6 animate-rise-in flex flex-col rounded-xl border bg-gradient-to-br from-[var(--acento)]/22 to-[var(--acento)]/8"
+        >
+            <div className="min-w-0">
+                <p className="text-xs tracking-wide text-muted-foreground uppercase tabular-nums">
+                    {formatDay(entry.occurredAt)}
+                    {entry.authorName &&
+                        ` · ${t('journal.authorLabel', { name: entry.authorName })}`}
+                </p>
+                <h1 className="mt-1 text-2xl font-semibold leading-snug tracking-[-0.02em]">
+                    {entry.title}
+                </h1>
+            </div>
 
-      <EntryKindBadge kind={entry.kind} className="self-start" />
+            <EntryKindBadge kind={entry.kind} className="self-start" />
 
-      <div className="gap-2 flex flex-wrap">
-        <Button size="lg" onClick={onEdit}>
-          <Pencil size={18} aria-hidden />
-          {t('journal.edit')}
-        </Button>
+            <div className="gap-2 flex flex-wrap">
+                <Button size="lg" onClick={onEdit}>
+                    <Pencil size={18} aria-hidden />
+                    {t('journal.edit')}
+                </Button>
 
-        <MenuButton
-          label={t('common.actions')}
-          variant="secondary"
-          size="lg"
-          icon={<MoreVertical size={16} aria-hidden />}
-          options={[
-            {
-              id: 'markdown',
-              label: t('export.markdown'),
-              icon: <FileText size={15} aria-hidden />,
-              onSelect: () => {
-                downloadMarkdown(entry);
-              },
-            },
-            {
-              id: 'image',
-              label: t('journal.export.shareImage'),
-              icon: <Image size={15} aria-hidden />,
-              onSelect: () => {
-                void image.share(`${slugify(entry.title) || 'entrada'}.png`, entry.title);
-              },
-            },
-            {
-              id: 'delete',
-              label: t('common.delete'),
-              icon: <Trash2 size={15} aria-hidden />,
-              onSelect: onDelete,
-            },
-          ]}
-        />
-      </div>
+                <MenuButton
+                    label={t('common.actions')}
+                    variant="secondary"
+                    size="lg"
+                    icon={<MoreVertical size={16} aria-hidden />}
+                    options={[
+                        {
+                            id: 'markdown',
+                            label: t('export.markdown'),
+                            icon: <FileText size={15} aria-hidden />,
+                            onSelect: () => {
+                                downloadMarkdown(entry);
+                            },
+                        },
+                        {
+                            id: 'image',
+                            label: t('journal.export.shareImage'),
+                            icon: <Image size={15} aria-hidden />,
+                            onSelect: () => {
+                                void image.share(
+                                    `${slugify(entry.title) || 'entrada'}.png`,
+                                    entry.title,
+                                );
+                            },
+                        },
+                        {
+                            id: 'delete',
+                            label: t('common.delete'),
+                            icon: <Trash2 size={15} aria-hidden />,
+                            onSelect: onDelete,
+                        },
+                    ]}
+                />
+            </div>
 
-      {/* La lámina que se rasteriza, fuera de la pantalla: no es una vista
+            {/* La lámina que se rasteriza, fuera de la pantalla: no es una vista
           previa, es autocontenida a propósito (`rasterize.ts`). */}
-      <div aria-hidden className="top-0 pointer-events-none absolute -left-[9999px]">
-        <JournalEntryCard
-          ref={poster}
-          entry={entry}
-          churchName={church?.name ?? ''}
-          continuesLabel={t('journal.export.continuesInNavis')}
-          reminderLabel={t('journal.reminderPending')}
-        />
-      </div>
-    </header>
-  );
+            <div aria-hidden className="top-0 pointer-events-none absolute -left-[9999px]">
+                <JournalEntryCard
+                    ref={poster}
+                    entry={entry}
+                    churchName={church?.name ?? ''}
+                    continuesLabel={t('journal.export.continuesInNavis')}
+                    reminderLabel={t('journal.reminderPending')}
+                />
+            </div>
+        </header>
+    );
 }

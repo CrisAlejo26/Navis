@@ -20,55 +20,55 @@ const cache = new Map<string, Record<string, string>>();
  * vacío, no un error — el selector cae al código escrito a mano.
  */
 export async function loadRegions(country: string): Promise<Record<string, string>> {
-  if (country === 'ES') return ES_REGIONS;
+    if (country === 'ES') return ES_REGIONS;
 
-  const cached = cache.get(country);
-  if (cached) return cached;
+    const cached = cache.get(country);
+    if (cached) return cached;
 
-  const loader = modules[`./regions/${country}.json`];
-  if (!loader) return {};
+    const loader = modules[`./regions/${country}.json`];
+    if (!loader) return {};
 
-  const data = (await loader()).default;
-  cache.set(country, data);
-  return data;
+    const data = (await loader()).default;
+    cache.set(country, data);
+    return data;
 }
 
 function toOptions(data: Record<string, string>): ComboboxOption[] {
-  return Object.entries(data)
-    .map(([code, name]) => ({ value: code, label: name }))
-    .sort((a, b) => a.label.localeCompare(b.label));
+    return Object.entries(data)
+        .map(([code, name]) => ({ value: code, label: name }))
+        .sort((a, b) => a.label.localeCompare(b.label));
 }
 
 /** Las opciones del selector de comunidad, cascada del país elegido. */
 export function useRegionOptions(country: string): {
-  options: ComboboxOption[];
-  loading: boolean;
+    options: ComboboxOption[];
+    loading: boolean;
 } {
-  const [entry, setEntry] = useState<{ country: string; data: Record<string, string> } | null>(
-    null,
-  );
+    const [entry, setEntry] = useState<{ country: string; data: Record<string, string> } | null>(
+        null,
+    );
 
-  useEffect(() => {
-    if (!country) return;
-    let alive = true;
+    useEffect(() => {
+        if (!country) return;
+        let alive = true;
 
-    void loadRegions(country)
-      .then((data) => {
-        if (alive) setEntry({ country, data });
-      })
-      .catch(() => {
-        if (alive) setEntry({ country, data: {} });
-      });
+        void loadRegions(country)
+            .then((data) => {
+                if (alive) setEntry({ country, data });
+            })
+            .catch(() => {
+                if (alive) setEntry({ country, data: {} });
+            });
 
-    return () => {
-      alive = false;
-    };
-  }, [country]);
+        return () => {
+            alive = false;
+        };
+    }, [country]);
 
-  if (!country) return { options: [], loading: false };
+    if (!country) return { options: [], loading: false };
 
-  const ready = entry?.country === country;
-  return { options: ready ? toOptions(entry.data) : [], loading: !ready };
+    const ready = entry?.country === country;
+    return { options: ready ? toOptions(entry.data) : [], loading: !ready };
 }
 
 /**
@@ -79,30 +79,30 @@ export function useRegionOptions(country: string): {
  * cuanto llega su fichero — el mismo país no se vuelve a pedir.
  */
 export function useRegionNames(codes: readonly string[]): Record<string, string> {
-  const [, forceRender] = useState(0);
+    const [, forceRender] = useState(0);
 
-  useEffect(() => {
-    const countries = [...new Set(codes.map((code) => code.split('-')[0] ?? code))];
-    const pending = countries.filter((country) => country !== 'ES' && !cache.has(country));
-    if (pending.length === 0) return;
+    useEffect(() => {
+        const countries = [...new Set(codes.map((code) => code.split('-')[0] ?? code))];
+        const pending = countries.filter((country) => country !== 'ES' && !cache.has(country));
+        if (pending.length === 0) return;
 
-    let alive = true;
-    void Promise.all(pending.map((country) => loadRegions(country)))
-      .then(() => {
-        if (alive) forceRender((n) => n + 1);
-      })
-      .catch(() => undefined);
+        let alive = true;
+        void Promise.all(pending.map((country) => loadRegions(country)))
+            .then(() => {
+                if (alive) forceRender((n) => n + 1);
+            })
+            .catch(() => undefined);
 
-    return () => {
-      alive = false;
-    };
-  }, [codes]);
+        return () => {
+            alive = false;
+        };
+    }, [codes]);
 
-  const names: Record<string, string> = {};
-  for (const code of codes) {
-    const country = code.split('-')[0] ?? code;
-    const table = country === 'ES' ? ES_REGIONS : (cache.get(country) ?? {});
-    names[code] = table[code] ?? code;
-  }
-  return names;
+    const names: Record<string, string> = {};
+    for (const code of codes) {
+        const country = code.split('-')[0] ?? code;
+        const table = country === 'ES' ? ES_REGIONS : (cache.get(country) ?? {});
+        names[code] = table[code] ?? code;
+    }
+    return names;
 }

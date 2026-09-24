@@ -20,32 +20,32 @@ import { UUID } from '../database/column-types';
 @Entity('congregations')
 @Index('UQ_congregations_name', ['churchId', 'name'], { unique: true })
 export class Congregation extends BaseEntity {
-  @ApiProperty()
-  @Index()
-  @Column({ name: 'church_id', type: UUID })
-  churchId: string;
+    @ApiProperty()
+    @Index()
+    @Column({ name: 'church_id', type: UUID })
+    churchId: string;
 
-  @ApiProperty({ example: 'Elda' })
-  @Column({ type: 'text' })
-  name: string;
+    @ApiProperty({ example: 'Elda' })
+    @Column({ type: 'text' })
+    name: string;
 
-  @ApiPropertyOptional()
-  @Column({ type: 'text', nullable: true })
-  city: string | null;
+    @ApiPropertyOptional()
+    @Column({ type: 'text', nullable: true })
+    city: string | null;
 
-  @ApiProperty({ description: 'Token de color con el que se distingue', example: 'success' })
-  @Column({ type: 'text', default: DEFAULT_CONGREGATION_ACCENT })
-  accent: string;
+    @ApiProperty({ description: 'Token de color con el que se distingue', example: 'success' })
+    @Column({ type: 'text', default: DEFAULT_CONGREGATION_ACCENT })
+    accent: string;
 
-  @ApiProperty({ description: 'El orden en que se listan y se pintan' })
-  @Column({ type: 'int', default: 0 })
-  position: number;
+    @ApiProperty({ description: 'El orden en que se listan y se pintan' })
+    @Column({ type: 'int', default: 0 })
+    position: number;
 
-  @ApiProperty({ description: 'La que se propone al crear algo' })
-  @Column({ name: 'is_default', type: 'boolean', default: false })
-  isDefault: boolean;
+    @ApiProperty({ description: 'La que se propone al crear algo' })
+    @Column({ name: 'is_default', type: 'boolean', default: false })
+    isDefault: boolean;
 
-  @ApiProperty({ description: 'Una sede apagada deja de proponerse, sin perder su historial' })
-  @Column({ name: 'is_active', type: 'boolean', default: true })
-  isActive: boolean;
+    @ApiProperty({ description: 'Una sede apagada deja de proponerse, sin perder su historial' })
+    @Column({ name: 'is_active', type: 'boolean', default: true })
+    isActive: boolean;
 }

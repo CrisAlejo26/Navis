@@ -16,13 +16,13 @@ import { commaList } from './comma-list';
  * `uuid` revienta en Postgres y a SQLite le da igual (CLAUDE.md).
  */
 export class ExportSelectionDto {
-  @ApiPropertyOptional({
-    type: [String],
-    description: 'Solo estas filas. Si vienen, manda la selección sobre los filtros',
-  })
-  @IsOptional()
-  @Transform(commaList)
-  @IsArray()
-  @IsUUID(undefined, { each: true })
-  ids?: string[];
+    @ApiPropertyOptional({
+        type: [String],
+        description: 'Solo estas filas. Si vienen, manda la selección sobre los filtros',
+    })
+    @IsOptional()
+    @Transform(commaList)
+    @IsArray()
+    @IsUUID(undefined, { each: true })
+    ids?: string[];
 }

@@ -12,24 +12,24 @@ import type { ListViewer } from './list-viewer.entity';
  * ninguna más.
  */
 export function toListViewerView(
-  viewer: ListViewer,
-  listIds: readonly string[],
-  believer?: Believer,
+    viewer: ListViewer,
+    listIds: readonly string[],
+    believer?: Believer,
 ): ListViewerView {
-  return {
-    id: viewer.id,
-    churchId: viewer.churchId,
-    believerId: viewer.believerId,
-    believerName: believer ? believerName(believer) : null,
-    believerHasPhoto: Boolean(believer?.photoKey),
-    username: viewer.username,
-    label: viewer.label,
-    isActive: viewer.isActive,
-    expiresAt: viewer.expiresAt?.toISOString() ?? null,
-    lastSeenAt: viewer.lastSeenAt?.toISOString() ?? null,
-    createdAt: viewer.createdAt.toISOString(),
-    listIds: [...listIds],
-  };
+    return {
+        id: viewer.id,
+        churchId: viewer.churchId,
+        believerId: viewer.believerId,
+        believerName: believer ? believerName(believer) : null,
+        believerHasPhoto: Boolean(believer?.photoKey),
+        username: viewer.username,
+        label: viewer.label,
+        isActive: viewer.isActive,
+        expiresAt: viewer.expiresAt?.toISOString() ?? null,
+        lastSeenAt: viewer.lastSeenAt?.toISOString() ?? null,
+        createdAt: viewer.createdAt.toISOString(),
+        listIds: [...listIds],
+    };
 }
 
 /**
@@ -39,6 +39,6 @@ export function toListViewerView(
  * las dos que llegue**.
  */
 export function isViewerUsable(viewer: ListViewer, now: Date = new Date()): boolean {
-  if (!viewer.isActive || viewer.deletedAt) return false;
-  return !viewer.expiresAt || viewer.expiresAt.getTime() > now.getTime();
+    if (!viewer.isActive || viewer.deletedAt) return false;
+    return !viewer.expiresAt || viewer.expiresAt.getTime() > now.getTime();
 }

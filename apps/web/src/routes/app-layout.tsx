@@ -25,53 +25,53 @@ import { useSidebarCrud } from '@/lib/use-sidebar-crud';
  * barra** vive en `useSidebarCrud` + `SidebarDialogs`: aquí solo se pintan.
  */
 export function AppLayout() {
-  const { t } = useTranslation();
-  const { can } = usePermissions();
-  const [menuOpen, setMenuOpen] = useState(false);
+    const { t } = useTranslation();
+    const { can } = usePermissions();
+    const [menuOpen, setMenuOpen] = useState(false);
 
-  // Las entradas dependen de los permisos del rol: cada una se pinta solo si su
-  // pantalla se puede abrir (ver `navItemsFor`).
-  const navItems = navItemsFor(can);
-  const closeMenu = () => {
-    setMenuOpen(false);
-  };
+    // Las entradas dependen de los permisos del rol: cada una se pinta solo si su
+    // pantalla se puede abrir (ver `navItemsFor`).
+    const navItems = navItemsFor(can);
+    const closeMenu = () => {
+        setMenuOpen(false);
+    };
 
-  const crud = useSidebarCrud(closeMenu);
+    const crud = useSidebarCrud(closeMenu);
 
-  return (
-    <div className="md:flex-row flex min-h-dvh flex-col">
-      <AppSidebar items={navItems} branches={crud.branches} />
+    return (
+        <div className="md:flex-row flex min-h-dvh flex-col">
+            <AppSidebar items={navItems} branches={crud.branches} />
 
-      <header className="h-14 px-3 gap-3 md:hidden top-0 sticky z-20 flex shrink-0 items-center border-b bg-card">
-        <button
-          type="button"
-          onClick={() => {
-            setMenuOpen(true);
-          }}
-          aria-label={t('nav.menu')}
-          aria-expanded={menuOpen}
-          className="h-10 w-10 inline-flex cursor-pointer items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground"
-        >
-          <Menu size={20} aria-hidden />
-        </button>
-        <Logo className="h-6 w-6" />
-        <p className="font-semibold">{t('common.appName')}</p>
-      </header>
+            <header className="h-14 px-3 gap-3 md:hidden top-0 sticky z-20 flex shrink-0 items-center border-b bg-card">
+                <button
+                    type="button"
+                    onClick={() => {
+                        setMenuOpen(true);
+                    }}
+                    aria-label={t('nav.menu')}
+                    aria-expanded={menuOpen}
+                    className="h-10 w-10 inline-flex cursor-pointer items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground"
+                >
+                    <Menu size={20} aria-hidden />
+                </button>
+                <Logo className="h-6 w-6" />
+                <p className="font-semibold">{t('common.appName')}</p>
+            </header>
 
-      <Drawer open={menuOpen} onClose={closeMenu} title={t('nav.menu')}>
-        <div className="p-3 flex min-h-full flex-col">
-          <AppNav items={navItems} onNavigate={closeMenu} branches={crud.branches} />
-          <SessionFooter />
+            <Drawer open={menuOpen} onClose={closeMenu} title={t('nav.menu')}>
+                <div className="p-3 flex min-h-full flex-col">
+                    <AppNav items={navItems} onNavigate={closeMenu} branches={crud.branches} />
+                    <SessionFooter />
+                </div>
+            </Drawer>
+
+            <SidebarDialogs crud={crud} />
+
+            <main className="p-4 md:p-8 min-w-0 w-full flex-1">
+                <PageTransition>
+                    <Outlet />
+                </PageTransition>
+            </main>
         </div>
-      </Drawer>
-
-      <SidebarDialogs crud={crud} />
-
-      <main className="p-4 md:p-8 min-w-0 w-full flex-1">
-        <PageTransition>
-          <Outlet />
-        </PageTransition>
-      </main>
-    </div>
-  );
+    );
 }

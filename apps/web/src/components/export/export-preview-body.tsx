@@ -16,69 +16,71 @@ const PREVIEW_COLUMNS = 5;
  * ir. La imagen usa la tabla, porque la imagen **es** la lámina.
  */
 export function ExportPreviewBody({ doc, format }: { doc: ExportDocument; format: ExportFormat }) {
-  const headers = doc.headers.slice(0, PREVIEW_COLUMNS);
-  const rows = doc.rows.slice(0, PREVIEW_ROWS).map((row) => row.slice(0, PREVIEW_COLUMNS));
+    const headers = doc.headers.slice(0, PREVIEW_COLUMNS);
+    const rows = doc.rows.slice(0, PREVIEW_ROWS).map((row) => row.slice(0, PREVIEW_COLUMNS));
 
-  if (format === 'markdown' || format === 'csv') {
+    if (format === 'markdown' || format === 'csv') {
+        return (
+            <pre className="px-3 py-2 leading-relaxed font-mono overflow-hidden text-[9px] whitespace-pre text-muted-foreground">
+                {[headers, ...rows.map((row) => row.map(plainText))]
+                    .map((cells) =>
+                        format === 'csv' ? cells.join(',') : `| ${cells.join(' | ')} |`,
+                    )
+                    .join('\n')}
+            </pre>
+        );
+    }
+
     return (
-      <pre className="px-3 py-2 leading-relaxed font-mono overflow-hidden text-[9px] whitespace-pre text-muted-foreground">
-        {[headers, ...rows.map((row) => row.map(plainText))]
-          .map((cells) => (format === 'csv' ? cells.join(',') : `| ${cells.join(' | ')} |`))
-          .join('\n')}
-      </pre>
+        <table className="w-full table-fixed text-[9px]">
+            <thead>
+                <tr>
+                    {headers.map((header) => (
+                        <th
+                            key={header}
+                            className="px-2 py-1.5 font-semibold truncate bg-primary text-left text-primary-foreground"
+                        >
+                            {header}
+                        </th>
+                    ))}
+                </tr>
+            </thead>
+            <tbody>
+                {rows.map((row, index) => (
+                    <tr key={index} className={cn(index % 2 === 1 && 'bg-muted/50')}>
+                        {row.map((cell, column) => (
+                            <td
+                                key={headers[column] ?? column}
+                                className={cn(
+                                    'px-2 py-1 truncate border-b',
+                                    doc.aligns[column] === 'right' && 'text-right tabular-nums',
+                                )}
+                            >
+                                <Cell cell={cell} />
+                            </td>
+                        ))}
+                    </tr>
+                ))}
+            </tbody>
+        </table>
     );
-  }
-
-  return (
-    <table className="w-full table-fixed text-[9px]">
-      <thead>
-        <tr>
-          {headers.map((header) => (
-            <th
-              key={header}
-              className="px-2 py-1.5 font-semibold truncate bg-primary text-left text-primary-foreground"
-            >
-              {header}
-            </th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {rows.map((row, index) => (
-          <tr key={index} className={cn(index % 2 === 1 && 'bg-muted/50')}>
-            {row.map((cell, column) => (
-              <td
-                key={headers[column] ?? column}
-                className={cn(
-                  'px-2 py-1 truncate border-b',
-                  doc.aligns[column] === 'right' && 'text-right tabular-nums',
-                )}
-              >
-                <Cell cell={cell} />
-              </td>
-            ))}
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  );
 }
 
 /** Las etiquetas llevan su color también en la muestra: es lo que se va a ver. */
 function Cell({ cell }: { cell: ExportCell }) {
-  if (cell.kind !== 'tags') return <>{plainText(cell)}</>;
+    if (cell.kind !== 'tags') return <>{plainText(cell)}</>;
 
-  return (
-    <span className="gap-1 flex flex-wrap">
-      {cell.tags.map((tag) => (
-        <span
-          key={tag.text}
-          style={{ color: accentColor(tag.accent) }}
-          className="px-1 rounded-full bg-current/12"
-        >
-          {tag.text}
+    return (
+        <span className="gap-1 flex flex-wrap">
+            {cell.tags.map((tag) => (
+                <span
+                    key={tag.text}
+                    style={{ color: accentColor(tag.accent) }}
+                    className="px-1 rounded-full bg-current/12"
+                >
+                    {tag.text}
+                </span>
+            ))}
         </span>
-      ))}
-    </span>
-  );
+    );
 }

@@ -18,30 +18,33 @@ export type TileTone = 'filled' | StatAccent;
  * nuevo (Regla 1).
  */
 export function TileHeader({
-  icon: Icon,
-  label,
-  tone,
+    icon: Icon,
+    label,
+    tone,
 }: {
-  icon: LucideIcon;
-  label: string;
-  tone: TileTone;
+    icon: LucideIcon;
+    label: string;
+    tone: TileTone;
 }) {
-  const filled = tone === 'filled';
-  const chip = filled ? FILLED_TONE.chip : ACCENT_TONE[tone].chip;
+    const filled = tone === 'filled';
+    const chip = filled ? FILLED_TONE.chip : ACCENT_TONE[tone].chip;
 
-  return (
-    <div className="gap-2 flex items-center">
-      <span
-        aria-hidden
-        className={cn('size-7 inline-flex items-center justify-center rounded-lg', chip)}
-      >
-        <Icon size={15} />
-      </span>
-      <p
-        className={cn('text-sm font-medium', filled ? FILLED_TONE.label : 'text-muted-foreground')}
-      >
-        {label}
-      </p>
-    </div>
-  );
+    return (
+        <div className="gap-2 flex items-center">
+            <span
+                aria-hidden
+                className={cn('size-7 inline-flex items-center justify-center rounded-lg', chip)}
+            >
+                <Icon size={15} />
+            </span>
+            <p
+                className={cn(
+                    'text-sm font-medium',
+                    filled ? FILLED_TONE.label : 'text-muted-foreground',
+                )}
+            >
+                {label}
+            </p>
+        </div>
+    );
 }

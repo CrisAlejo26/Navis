@@ -1,8 +1,8 @@
 /** Las tres claves del saludo, en el orden del día. */
 export const GREETING_KEY = {
-  morning: 'home.goodMorning',
-  afternoon: 'home.goodAfternoon',
-  evening: 'home.goodEvening',
+    morning: 'home.goodMorning',
+    afternoon: 'home.goodAfternoon',
+    evening: 'home.goodEvening',
 } as const;
 
 export type GreetingKey = (typeof GREETING_KEY)[keyof typeof GREETING_KEY];
@@ -19,9 +19,9 @@ export type GreetingKey = (typeof GREETING_KEY)[keyof typeof GREETING_KEY];
  * en `shared` porque el panel de inicio saluda igual en web y en móvil (RFC 0001).
  */
 export function greetingKeyFor(date: Date): GreetingKey {
-  const hour = date.getHours();
+    const hour = date.getHours();
 
-  if (hour >= 6 && hour < 12) return GREETING_KEY.morning;
-  if (hour >= 12 && hour < 20) return GREETING_KEY.afternoon;
-  return GREETING_KEY.evening;
+    if (hour >= 6 && hour < 12) return GREETING_KEY.morning;
+    if (hour >= 12 && hour < 20) return GREETING_KEY.afternoon;
+    return GREETING_KEY.evening;
 }

@@ -20,48 +20,48 @@ import { matchesQuery } from '@/lib/geo/match';
  * esta ampliación.
  */
 export function RegionField({
-  country,
-  defaultValue,
+    country,
+    defaultValue,
 }: {
-  country: string;
-  defaultValue: string | null;
+    country: string;
+    defaultValue: string | null;
 }) {
-  const { t } = useTranslation();
-  const { options, loading } = useRegionOptions(country);
-  const [value, setValue] = useState(defaultValue ?? '');
-  const [query, setQuery] = useState('');
+    const { t } = useTranslation();
+    const { options, loading } = useRegionOptions(country);
+    const [value, setValue] = useState(defaultValue ?? '');
+    const [query, setQuery] = useState('');
 
-  const withNone = [{ value: '', label: t('church.regionNone') }, ...options];
-  const filtered = withNone.filter((option) => matchesQuery(option.label, undefined, query));
+    const withNone = [{ value: '', label: t('church.regionNone') }, ...options];
+    const filtered = withNone.filter((option) => matchesQuery(option.label, undefined, query));
 
-  if (!loading && country && options.length === 0) {
+    if (!loading && country && options.length === 0) {
+        return (
+            <Input
+                name="region"
+                label={t('church.region')}
+                hint={t('church.regionCode')}
+                defaultValue={defaultValue ?? ''}
+                maxLength={10}
+                autoComplete="off"
+                className="uppercase"
+            />
+        );
+    }
+
     return (
-      <Input
-        name="region"
-        label={t('church.region')}
-        hint={t('church.regionCode')}
-        defaultValue={defaultValue ?? ''}
-        maxLength={10}
-        autoComplete="off"
-        className="uppercase"
-      />
+        <Combobox
+            name="region"
+            label={t('church.region')}
+            hint={t('church.regionHint')}
+            placeholder={t('church.searchPlaceholder')}
+            disabled={!country}
+            value={value}
+            options={filtered}
+            query={query}
+            onQueryChange={setQuery}
+            onSelect={setValue}
+            loading={loading}
+            emptyLabel={t('church.regionNoResults')}
+        />
     );
-  }
-
-  return (
-    <Combobox
-      name="region"
-      label={t('church.region')}
-      hint={t('church.regionHint')}
-      placeholder={t('church.searchPlaceholder')}
-      disabled={!country}
-      value={value}
-      options={filtered}
-      query={query}
-      onQueryChange={setQuery}
-      onSelect={setValue}
-      loading={loading}
-      emptyLabel={t('church.regionNoResults')}
-    />
-  );
 }

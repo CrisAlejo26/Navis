@@ -20,105 +20,105 @@ import { toast } from '@/lib/toast';
  * fusión del servidor la que conserva lo que ya había.
  */
 export function RowForm({
-  open,
-  onClose,
-  tableId,
-  columns,
-  row,
-  initialData,
+    open,
+    onClose,
+    tableId,
+    columns,
+    row,
+    initialData,
 }: {
-  open: boolean;
-  onClose: () => void;
-  tableId: string;
-  columns: readonly CustomTableColumn[];
-  /** Si viene, se edita; si no, se crea. */
-  row?: CustomTableRow;
-  /** Valores con los que nace un alta — la fecha del día pulsado, por ejemplo. */
-  initialData?: RowData;
+    open: boolean;
+    onClose: () => void;
+    tableId: string;
+    columns: readonly CustomTableColumn[];
+    /** Si viene, se edita; si no, se crea. */
+    row?: CustomTableRow;
+    /** Valores con los que nace un alta — la fecha del día pulsado, por ejemplo. */
+    initialData?: RowData;
 }) {
-  const { t } = useTranslation();
-  const create = useCreateTableRow(api);
-  const update = useUpdateTableRow(api);
-  const [values, setValues] = useState<RowData>(() => ({
-    ...initial(columns, row),
-    ...(row ? {} : initialData),
-  }));
-  const [error, setError] = useState<string | null>(null);
+    const { t } = useTranslation();
+    const create = useCreateTableRow(api);
+    const update = useUpdateTableRow(api);
+    const [values, setValues] = useState<RowData>(() => ({
+        ...initial(columns, row),
+        ...(row ? {} : initialData),
+    }));
+    const [error, setError] = useState<string | null>(null);
 
-  const submit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setError(null);
+    const submit = (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        setError(null);
 
-    const onError = () => {
-      setError(t('errors.generic'));
+        const onError = () => {
+            setError(t('errors.generic'));
+        };
+        const onSuccess = () => {
+            toast.success(row ? t('tables.rowSaved') : t('tables.rowAdded'));
+            onClose();
+        };
+
+        if (row) {
+            update.mutate({ tableId, id: row.id, data: values }, { onSuccess, onError });
+        } else {
+            create.mutate({ tableId, data: values }, { onSuccess, onError });
+        }
     };
-    const onSuccess = () => {
-      toast.success(row ? t('tables.rowSaved') : t('tables.rowAdded'));
-      onClose();
-    };
 
-    if (row) {
-      update.mutate({ tableId, id: row.id, data: values }, { onSuccess, onError });
-    } else {
-      create.mutate({ tableId, data: values }, { onSuccess, onError });
-    }
-  };
-
-  return (
-    <Dialog
-      open={open}
-      onClose={onClose}
-      title={row ? t('tables.editRow') : t('tables.newRow')}
-      width="min(32rem, calc(100vw - 2rem))"
-    >
-      <form onSubmit={submit} className="gap-4 flex flex-col" noValidate>
-        {columns.map((column) =>
-          column.type === 'password' && row ? (
-            <PasswordRowField
-              key={column.key}
-              tableId={tableId}
-              rowId={row.id}
-              column={column}
-              hasValue={row.data[column.key] === true}
-              onEdit={(value) => {
-                setValues((prev) => ({ ...prev, [column.key]: value }));
-              }}
-            />
-          ) : (
-            <RowField
-              key={column.key}
-              column={column}
-              value={values[column.key]}
-              onChange={(value) => {
-                setValues((prev) => ({ ...prev, [column.key]: value }));
-              }}
-            />
-          ),
-        )}
-
-        <FormError message={error} />
-
-        <Button
-          type="submit"
-          size="lg"
-          className="w-full"
-          isLoading={create.isPending || update.isPending}
+    return (
+        <Dialog
+            open={open}
+            onClose={onClose}
+            title={row ? t('tables.editRow') : t('tables.newRow')}
+            width="min(32rem, calc(100vw - 2rem))"
         >
-          {t('common.save')}
-        </Button>
-      </form>
-    </Dialog>
-  );
+            <form onSubmit={submit} className="gap-4 flex flex-col" noValidate>
+                {columns.map((column) =>
+                    column.type === 'password' && row ? (
+                        <PasswordRowField
+                            key={column.key}
+                            tableId={tableId}
+                            rowId={row.id}
+                            column={column}
+                            hasValue={row.data[column.key] === true}
+                            onEdit={(value) => {
+                                setValues((prev) => ({ ...prev, [column.key]: value }));
+                            }}
+                        />
+                    ) : (
+                        <RowField
+                            key={column.key}
+                            column={column}
+                            value={values[column.key]}
+                            onChange={(value) => {
+                                setValues((prev) => ({ ...prev, [column.key]: value }));
+                            }}
+                        />
+                    ),
+                )}
+
+                <FormError message={error} />
+
+                <Button
+                    type="submit"
+                    size="lg"
+                    className="w-full"
+                    isLoading={create.isPending || update.isPending}
+                >
+                    {t('common.save')}
+                </Button>
+            </form>
+        </Dialog>
+    );
 }
 
 /** El punto de partida: los valores ya escritos, sin las contraseñas —esas se piden aparte (D22). */
 function initial(columns: readonly CustomTableColumn[], row?: CustomTableRow): RowData {
-  if (!row) return {};
+    if (!row) return {};
 
-  const data: RowData = {};
-  for (const column of columns) {
-    if (column.type === 'password') continue;
-    if (column.key in row.data) data[column.key] = row.data[column.key];
-  }
-  return data;
+    const data: RowData = {};
+    for (const column of columns) {
+        if (column.type === 'password') continue;
+        if (column.key in row.data) data[column.key] = row.data[column.key];
+    }
+    return data;
 }

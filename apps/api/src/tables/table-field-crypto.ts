@@ -19,31 +19,31 @@ const KEY = Buffer.from(hkdfSync('sha256', env.BETTER_AUTH_SECRET, '', 'table-fi
 
 /** `iv.tag.ciphertext`, cada parte en base64url: es lo que se guarda en el JSON de la fila. */
 export function encryptTableField(plain: string): string {
-  const iv = randomBytes(IV_LENGTH);
-  const cipher = createCipheriv(ALGORITHM, KEY, iv);
-  const ciphertext = Buffer.concat([cipher.update(plain, 'utf8'), cipher.final()]);
-  const tag = cipher.getAuthTag();
+    const iv = randomBytes(IV_LENGTH);
+    const cipher = createCipheriv(ALGORITHM, KEY, iv);
+    const ciphertext = Buffer.concat([cipher.update(plain, 'utf8'), cipher.final()]);
+    const tag = cipher.getAuthTag();
 
-  return [iv, tag, ciphertext].map((part) => part.toString('base64url')).join('.');
+    return [iv, tag, ciphertext].map((part) => part.toString('base64url')).join('.');
 }
 
 /** El texto claro de un valor cifrado con `encryptTableField`. */
 export function decryptTableField(value: string): string {
-  const [ivPart, tagPart, ciphertextPart] = value.split('.');
-  if (!ivPart || !tagPart || !ciphertextPart) {
-    throw new Error('Valor cifrado de tabla con formato inválido');
-  }
+    const [ivPart, tagPart, ciphertextPart] = value.split('.');
+    if (!ivPart || !tagPart || !ciphertextPart) {
+        throw new Error('Valor cifrado de tabla con formato inválido');
+    }
 
-  const decipher = createDecipheriv(ALGORITHM, KEY, Buffer.from(ivPart, 'base64url'));
-  decipher.setAuthTag(Buffer.from(tagPart, 'base64url'));
+    const decipher = createDecipheriv(ALGORITHM, KEY, Buffer.from(ivPart, 'base64url'));
+    decipher.setAuthTag(Buffer.from(tagPart, 'base64url'));
 
-  return Buffer.concat([
-    decipher.update(Buffer.from(ciphertextPart, 'base64url')),
-    decipher.final(),
-  ]).toString('utf8');
+    return Buffer.concat([
+        decipher.update(Buffer.from(ciphertextPart, 'base64url')),
+        decipher.final(),
+    ]).toString('utf8');
 }
 
 /** Si un valor ya está cifrado (tres partes en base64url), y no texto claro sin tocar. */
 export function isEncryptedTableField(value: unknown): value is string {
-  return typeof value === 'string' && value.split('.').length === 3;
+    return typeof value === 'string' && value.split('.').length === 3;
 }

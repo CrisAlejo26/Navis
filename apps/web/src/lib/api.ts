@@ -8,12 +8,12 @@ import { getLocale } from './i18n';
  * NO pasan por aquí: los gestiona `auth-client.ts`.
  */
 export const api = createApiClient({
-  baseUrl: env.VITE_API_URL,
-  getLocale,
-  onUnauthorized: () => {
-    // Evita bucles: solo redirige si no estamos ya en el login.
-    if (!globalThis.location.pathname.startsWith('/login')) {
-      globalThis.location.assign('/login');
-    }
-  },
+    baseUrl: env.VITE_API_URL,
+    getLocale,
+    onUnauthorized: () => {
+        // Evita bucles: solo redirige si no estamos ya en el login.
+        if (!globalThis.location.pathname.startsWith('/login')) {
+            globalThis.location.assign('/login');
+        }
+    },
 });

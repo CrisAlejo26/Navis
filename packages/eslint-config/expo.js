@@ -14,29 +14,29 @@ import { baseConfig } from './index.js';
  * @param {{ tsconfigRootDir: string }} options
  */
 export function expoConfig({ tsconfigRootDir }) {
-  return tseslint.config(
-    ...baseConfig({ tsconfigRootDir }),
-    ...expo,
-    {
-      // Sin `files`: se aplica a TODO, también a los .js de configuración.
-      // La versión de React va fija a propósito: el `detect` de
-      // eslint-plugin-react usa una API de contexto que ESLint 10 ya no expone
-      // y revienta al cargar cualquiera de sus reglas.
-      settings: { react: { version: '19.2' } },
-    },
-    {
-      files: ['**/*.{ts,tsx}'],
-      rules: {
-        // Metro resuelve `@/...` vía tsconfig paths.
-        'import/no-unresolved': 'off',
-      },
-    },
-    {
-      // Única app del monorepo con Jest: sus globales no están en la base.
-      files: ['**/*.test.{ts,tsx}', 'jest.setup.js', 'jest.config.js'],
-      languageOptions: { globals: globals.jest },
-    },
-  );
+    return tseslint.config(
+        ...baseConfig({ tsconfigRootDir }),
+        ...expo,
+        {
+            // Sin `files`: se aplica a TODO, también a los .js de configuración.
+            // La versión de React va fija a propósito: el `detect` de
+            // eslint-plugin-react usa una API de contexto que ESLint 10 ya no expone
+            // y revienta al cargar cualquiera de sus reglas.
+            settings: { react: { version: '19.2' } },
+        },
+        {
+            files: ['**/*.{ts,tsx}'],
+            rules: {
+                // Metro resuelve `@/...` vía tsconfig paths.
+                'import/no-unresolved': 'off',
+            },
+        },
+        {
+            // Única app del monorepo con Jest: sus globales no están en la base.
+            files: ['**/*.test.{ts,tsx}', 'jest.setup.js', 'jest.config.js'],
+            languageOptions: { globals: globals.jest },
+        },
+    );
 }
 
 export default expoConfig;

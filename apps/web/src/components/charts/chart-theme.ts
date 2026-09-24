@@ -3,13 +3,13 @@ import { themeColorsHex } from '@navis/theme';
 import { useThemeStore } from '@/lib/theme';
 
 export interface ChartTheme {
-  /** El azul de los controles. Nombres de token y no de dato: esta carpeta la
+    /** El azul de los controles. Nombres de token y no de dato: esta carpeta la
       comparten profecías y sueños, y «recibidas» no significaba nada aquí. */
-  primary: string;
-  success: string;
-  axis: string;
-  track: string;
-  surface: string;
+    primary: string;
+    success: string;
+    axis: string;
+    track: string;
+    surface: string;
 }
 
 /**
@@ -24,14 +24,14 @@ export interface ChartTheme {
  * cambiar de claro a oscuro.
  */
 export function useChartTheme(): ChartTheme {
-  const resolved = useThemeStore((state) => state.resolvedTheme);
-  const palette = themeColorsHex[resolved];
+    const resolved = useThemeStore((state) => state.resolvedTheme);
+    const palette = themeColorsHex[resolved];
 
-  return {
-    primary: palette.primary,
-    success: palette.success,
-    axis: palette.mutedForeground,
-    track: palette.border,
-    surface: palette.card,
-  };
+    return {
+        primary: palette.primary,
+        success: palette.success,
+        axis: palette.mutedForeground,
+        track: palette.border,
+        surface: palette.card,
+    };
 }

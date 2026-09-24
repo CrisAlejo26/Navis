@@ -10,10 +10,10 @@ import { NOTE_STYLES } from '@/lib/believers/note-kinds';
 import { formatAgo, formatDay } from '@/lib/format';
 
 export interface NoteHandlers {
-  canManage: boolean;
-  onEdit: () => void;
-  onDelete: () => void;
-  onToggleDone: () => void;
+    canManage: boolean;
+    onEdit: () => void;
+    onDelete: () => void;
+    onToggleDone: () => void;
 }
 
 /**
@@ -27,87 +27,98 @@ export interface NoteHandlers {
  * El color del filete no informa solo: al lado va el tipo escrito y su icono.
  */
 export function NoteEntry({
-  note,
-  today,
-  canManage,
-  onEdit,
-  onDelete,
-  onToggleDone,
+    note,
+    today,
+    canManage,
+    onEdit,
+    onDelete,
+    onToggleDone,
 }: NoteHandlers & { note: BelieverNote; today: IsoDate }) {
-  const { t } = useTranslation();
-  const { Icon, accent, labelKey } = NOTE_STYLES[note.kind];
+    const { t } = useTranslation();
+    const { Icon, accent, labelKey } = NOTE_STYLES[note.kind];
 
-  return (
-    <article
-      style={accentVars(accent)}
-      className="gap-3 py-3 pl-4 group relative flex border-l-2 border-l-[var(--acento)]"
-    >
-      <div className="min-w-0 flex-1">
-        <p className="gap-2 flex flex-wrap items-center">
-          <span className="gap-1.5 font-semibold inline-flex items-center text-[11px] tracking-[0.1em] text-[var(--acento)] uppercase">
-            <Icon size={12} aria-hidden />
-            {t(labelKey)}
-          </span>
-          <span aria-hidden className="text-[11px] text-muted-foreground">
-            ·
-          </span>
-          <span className="text-[11px] text-muted-foreground tabular-nums">
-            {formatDay(note.occurredAt)}
-          </span>
-          {note.giftName && (
-            <span className="px-2 py-0.5 rounded-full bg-muted text-[11px] text-muted-foreground">
-              {note.giftName}
-            </span>
-          )}
-        </p>
+    return (
+        <article
+            style={accentVars(accent)}
+            className="gap-3 py-3 pl-4 group relative flex border-l-2 border-l-[var(--acento)]"
+        >
+            <div className="min-w-0 flex-1">
+                <p className="gap-2 flex flex-wrap items-center">
+                    <span className="gap-1.5 font-semibold inline-flex items-center text-[11px] tracking-[0.1em] text-[var(--acento)] uppercase">
+                        <Icon size={12} aria-hidden />
+                        {t(labelKey)}
+                    </span>
+                    <span aria-hidden className="text-[11px] text-muted-foreground">
+                        ·
+                    </span>
+                    <span className="text-[11px] text-muted-foreground tabular-nums">
+                        {formatDay(note.occurredAt)}
+                    </span>
+                    {note.giftName && (
+                        <span className="px-2 py-0.5 rounded-full bg-muted text-[11px] text-muted-foreground">
+                            {note.giftName}
+                        </span>
+                    )}
+                </p>
 
-        {/* El ancho de lectura va aquí, en el texto: la tarjeta llena la
+                {/* El ancho de lectura va aquí, en el texto: la tarjeta llena la
             pantalla, pero una línea que la cruza entera no se lee (Regla 5 §3). */}
-        <p className="mt-1 max-w-prose text-sm leading-relaxed whitespace-pre-line">{note.told}</p>
+                <p className="mt-1 max-w-prose text-sm leading-relaxed whitespace-pre-line">
+                    {note.told}
+                </p>
 
-        {note.advice && (
-          <p className="mt-2 pl-3 max-w-prose text-sm leading-relaxed border-l-2 border-border whitespace-pre-line text-muted-foreground">
-            <span className="font-medium text-foreground/70">{t('notes.advice')}: </span>
-            {note.advice}
-          </p>
-        )}
+                {note.advice && (
+                    <p className="mt-2 pl-3 max-w-prose text-sm leading-relaxed border-l-2 border-border whitespace-pre-line text-muted-foreground">
+                        <span className="font-medium text-foreground/70">
+                            {t('notes.advice')}:{' '}
+                        </span>
+                        {note.advice}
+                    </p>
+                )}
 
-        <NoteReminder note={note} canManage={canManage} onToggleDone={onToggleDone} />
+                <NoteReminder note={note} canManage={canManage} onToggleDone={onToggleDone} />
 
-        {note.audios.length > 0 && (
-          <ul className="gap-1.5 mt-2 flex flex-col">
-            {note.audios.map((audio) => (
-              <li key={audio.id}>
-                <AudioPlayer audio={audio} path={noteAudioPath} />
-              </li>
-            ))}
-          </ul>
-        )}
+                {note.audios.length > 0 && (
+                    <ul className="gap-1.5 mt-2 flex flex-col">
+                        {note.audios.map((audio) => (
+                            <li key={audio.id}>
+                                <AudioPlayer audio={audio} path={noteAudioPath} />
+                            </li>
+                        ))}
+                    </ul>
+                )}
 
-        <p className="mt-2 text-[11px] text-muted-foreground">
-          {t('notes.byAuthor', {
-            author: note.authorName ?? t('notes.unknownAuthor'),
-            when: formatAgo(Math.max(0, daysBetween(note.createdAt.slice(0, 10), today))),
-          })}
-        </p>
-      </div>
+                <p className="mt-2 text-[11px] text-muted-foreground">
+                    {t('notes.byAuthor', {
+                        author: note.authorName ?? t('notes.unknownAuthor'),
+                        when: formatAgo(
+                            Math.max(0, daysBetween(note.createdAt.slice(0, 10), today)),
+                        ),
+                    })}
+                </p>
+            </div>
 
-      {canManage && (
-        <span className="gap-0.5 flex shrink-0 opacity-0 transition-opacity duration-200 group-focus-within:opacity-100 group-hover:opacity-100">
-          <Button variant="ghost" size="icon" aria-label={t('notes.edit')} onClick={onEdit}>
-            <Pencil size={14} aria-hidden />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            aria-label={t('notes.deleteTitle')}
-            className="hover:bg-destructive/10 hover:text-destructive"
-            onClick={onDelete}
-          >
-            <Trash2 size={14} aria-hidden />
-          </Button>
-        </span>
-      )}
-    </article>
-  );
+            {canManage && (
+                <span className="gap-0.5 flex shrink-0 opacity-0 transition-opacity duration-200 group-focus-within:opacity-100 group-hover:opacity-100">
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        aria-label={t('notes.edit')}
+                        onClick={onEdit}
+                    >
+                        <Pencil size={14} aria-hidden />
+                    </Button>
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        aria-label={t('notes.deleteTitle')}
+                        className="hover:bg-destructive/10 hover:text-destructive"
+                        onClick={onDelete}
+                    >
+                        <Trash2 size={14} aria-hidden />
+                    </Button>
+                </span>
+            )}
+        </article>
+    );
 }

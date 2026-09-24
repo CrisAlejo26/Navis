@@ -2,11 +2,11 @@ import { applyDecorators } from '@nestjs/common';
 import { LIST_PASSWORD_MIN_LENGTH, normalizeListPassword } from '@navis/shared';
 import { Transform } from 'class-transformer';
 import {
-  IsString,
-  MaxLength,
-  Validate,
-  ValidatorConstraint,
-  type ValidatorConstraintInterface,
+    IsString,
+    MaxLength,
+    Validate,
+    ValidatorConstraint,
+    type ValidatorConstraintInterface,
 } from 'class-validator';
 
 /**
@@ -18,15 +18,16 @@ import {
  */
 @ValidatorConstraint({ name: 'listPasswordLength' })
 export class ListPasswordLength implements ValidatorConstraintInterface {
-  validate(value: unknown): boolean {
-    return (
-      typeof value === 'string' && normalizeListPassword(value).length >= LIST_PASSWORD_MIN_LENGTH
-    );
-  }
+    validate(value: unknown): boolean {
+        return (
+            typeof value === 'string' &&
+            normalizeListPassword(value).length >= LIST_PASSWORD_MIN_LENGTH
+        );
+    }
 
-  defaultMessage(): string {
-    return `La contraseña necesita al menos ${String(LIST_PASSWORD_MIN_LENGTH)} caracteres`;
-  }
+    defaultMessage(): string {
+        return `La contraseña necesita al menos ${String(LIST_PASSWORD_MIN_LENGTH)} caracteres`;
+    }
 }
 
 /**
@@ -36,11 +37,11 @@ export class ListPasswordLength implements ValidatorConstraintInterface {
  * aplicación y esta es para leer un cartel desde un teléfono prestado.
  */
 export const IsListPassword = (): PropertyDecorator =>
-  applyDecorators(
-    IsString(),
-    MaxLength(200),
-    Transform(({ value }: { value: unknown }): unknown =>
-      typeof value === 'string' ? value.trim() : value,
-    ),
-    Validate(ListPasswordLength),
-  );
+    applyDecorators(
+        IsString(),
+        MaxLength(200),
+        Transform(({ value }: { value: unknown }): unknown =>
+            typeof value === 'string' ? value.trim() : value,
+        ),
+        Validate(ListPasswordLength),
+    );

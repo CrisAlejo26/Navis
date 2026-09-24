@@ -5,13 +5,13 @@ import type { Translation } from './resources';
  * inexistente es un error de compilación en web y en móvil.
  */
 declare module 'i18next' {
-  interface CustomTypeOptions {
-    defaultNS: 'translation';
-    resources: {
-      translation: Translation;
-    };
-    returnNull: false;
-  }
+    interface CustomTypeOptions {
+        defaultNS: 'translation';
+        resources: {
+            translation: Translation;
+        };
+        returnNull: false;
+    }
 }
 
 export {};

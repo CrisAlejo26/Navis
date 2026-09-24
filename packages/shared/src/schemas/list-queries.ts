@@ -8,18 +8,18 @@ import { listPublicFieldsSchema, listVisibilitySchema } from './lists';
  * la misma transacción (D9).
  */
 export const shareListSchema = z.object({
-  visibility: listVisibilitySchema,
-  /** Nulo ⇒ sin caducidad. La del acceso va aparte y manda la primera (D13). */
-  expiresAt: z.string().nullable().optional(),
-  publicFields: listPublicFieldsSchema.partial().optional(),
-  /**
-   * Si la página pública ofrece llevarse la lista en PDF o en imagen.
-   *
-   * Nace **apagado**, como la foto: ver una lista en una página es una cosa y
-   * dejar que se guarde y se reenvíe un fichero con los nombres de la
-   * congregación es otra, y se decide a conciencia.
-   */
-  allowDownload: z.boolean().optional(),
+    visibility: listVisibilitySchema,
+    /** Nulo ⇒ sin caducidad. La del acceso va aparte y manda la primera (D13). */
+    expiresAt: z.string().nullable().optional(),
+    publicFields: listPublicFieldsSchema.partial().optional(),
+    /**
+     * Si la página pública ofrece llevarse la lista en PDF o en imagen.
+     *
+     * Nace **apagado**, como la foto: ver una lista en una página es una cosa y
+     * dejar que se guarde y se reenvíe un fichero con los nombres de la
+     * congregación es otra, y se decide a conciencia.
+     */
+    allowDownload: z.boolean().optional(),
 });
 
 export type ShareListInput = z.infer<typeof shareListSchema>;
@@ -33,11 +33,11 @@ export type ShareListInput = z.infer<typeof shareListSchema>;
  * antes y lo recuerda después: hay que volver a repartirlo.
  */
 export const listShareStateSchema = z.object({
-  visibility: listVisibilitySchema,
-  shareToken: z.string().nullable(),
-  sharedAt: z.string().nullable(),
-  shareExpiresAt: z.string().nullable(),
-  tokenRotated: z.boolean(),
+    visibility: listVisibilitySchema,
+    shareToken: z.string().nullable(),
+    sharedAt: z.string().nullable(),
+    shareExpiresAt: z.string().nullable(),
+    tokenRotated: z.boolean(),
 });
 
 export type ListShareState = z.infer<typeof listShareStateSchema>;
@@ -49,14 +49,14 @@ export type ListShareState = z.infer<typeof listShareStateSchema>;
  * hubiera necesitado un sexto escritor, el juego de allí estaba mal puesto.
  */
 export interface ListExportRow {
-  position: number;
-  name: string;
-  congregation: string | null;
-  congregationAccent: string | null;
-  ministries: string[];
-  note: string | null;
-  /** Si esa persona tiene además acceso a esta lista (D21). */
-  hasAccess: boolean;
+    position: number;
+    name: string;
+    congregation: string | null;
+    congregationAccent: string | null;
+    ministries: string[];
+    note: string | null;
+    /** Si esa persona tiene además acceso a esta lista (D21). */
+    hasAccess: boolean;
 }
 
 /**
@@ -66,7 +66,7 @@ export interface ListExportRow {
  * fichero, y es la alternativa a teclear treinta a mano: se manda y se borra.
  */
 export interface ListCredentialSheetRow {
-  name: string;
-  username: string;
-  password: string;
+    name: string;
+    username: string;
+    password: string;
 }

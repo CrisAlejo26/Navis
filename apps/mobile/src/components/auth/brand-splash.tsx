@@ -16,21 +16,21 @@ import navisIcon from '../../../assets/icon.png';
  * (Regla 9 §5, «la animación confirma la acción, no disimula lentitud»).
  */
 export function BrandSplash() {
-  const { t } = useTranslation();
+    const { t } = useTranslation();
 
-  return (
-    <View className="flex-1 items-center justify-center bg-brand">
-      <ChartLines height={400} />
+    return (
+        <View className="flex-1 items-center justify-center bg-brand">
+            <ChartLines height={400} />
 
-      <Animated.View entering={ZoomIn.duration(420).springify().damping(14)}>
-        <Image source={navisIcon} className="h-20 w-20 rounded-3xl" />
-      </Animated.View>
+            <Animated.View entering={ZoomIn.duration(420).springify().damping(14)}>
+                <Image source={navisIcon} className="h-20 w-20 rounded-3xl" />
+            </Animated.View>
 
-      <Animated.View entering={FadeIn.delay(160).duration(400)}>
-        <Text className="mt-4 text-xs font-semibold tracking-[6px] text-brand-foreground uppercase">
-          {t('common.appName')}
-        </Text>
-      </Animated.View>
-    </View>
-  );
+            <Animated.View entering={FadeIn.delay(160).duration(400)}>
+                <Text className="mt-4 text-xs font-semibold tracking-[6px] text-brand-foreground uppercase">
+                    {t('common.appName')}
+                </Text>
+            </Animated.View>
+        </View>
+    );
 }

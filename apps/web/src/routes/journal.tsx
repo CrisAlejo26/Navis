@@ -23,78 +23,80 @@ import { formatNumber } from '@/lib/format';
  * pantalla de acceso (D14, §7.6).
  */
 export function JournalPage() {
-  const { t } = useTranslation();
-  const { data: stats, isLoading } = useJournalStats(api);
-  const [creating, setCreating] = useState(false);
+    const { t } = useTranslation();
+    const { data: stats, isLoading } = useJournalStats(api);
+    const [creating, setCreating] = useState(false);
 
-  if (isLoading || !stats) return <PageSkeleton />;
+    if (isLoading || !stats) return <PageSkeleton />;
 
-  return (
-    <section className="gap-6 animate-page-in flex flex-col">
-      <header className="gap-3 sm:flex-row sm:items-end sm:justify-between flex flex-col">
-        <div className="min-w-0">
-          <h1 className="text-2xl font-semibold tracking-[-0.02em]">{t('journal.title')}</h1>
-          <p className="mt-1 text-sm text-muted-foreground tabular-nums">
-            {t('journal.lead', {
-              total: formatNumber(stats.total),
-              pending: formatNumber(stats.pendingReminders),
-            })}
-          </p>
-        </div>
+    return (
+        <section className="gap-6 animate-page-in flex flex-col">
+            <header className="gap-3 sm:flex-row sm:items-end sm:justify-between flex flex-col">
+                <div className="min-w-0">
+                    <h1 className="text-2xl font-semibold tracking-[-0.02em]">
+                        {t('journal.title')}
+                    </h1>
+                    <p className="mt-1 text-sm text-muted-foreground tabular-nums">
+                        {t('journal.lead', {
+                            total: formatNumber(stats.total),
+                            pending: formatNumber(stats.pendingReminders),
+                        })}
+                    </p>
+                </div>
 
-        <Button
-          size="lg"
-          onClick={() => {
-            setCreating(true);
-          }}
-        >
-          {t('journal.add')}
-        </Button>
-      </header>
+                <Button
+                    size="lg"
+                    onClick={() => {
+                        setCreating(true);
+                    }}
+                >
+                    {t('journal.add')}
+                </Button>
+            </header>
 
-      <Oleaje />
+            <Oleaje />
 
-      {stats.total === 0 ? (
-        <EmptyState
-          icon={NotebookPen}
-          title={t('journal.emptyTitle')}
-          action={
-            <Button
-              size="lg"
-              onClick={() => {
-                setCreating(true);
-              }}
-            >
-              {t('journal.add')}
-            </Button>
-          }
-        >
-          {t('journal.emptyBody')}
-        </EmptyState>
-      ) : (
-        <>
-          <JournalStatGrid stats={stats} />
+            {stats.total === 0 ? (
+                <EmptyState
+                    icon={NotebookPen}
+                    title={t('journal.emptyTitle')}
+                    action={
+                        <Button
+                            size="lg"
+                            onClick={() => {
+                                setCreating(true);
+                            }}
+                        >
+                            {t('journal.add')}
+                        </Button>
+                    }
+                >
+                    {t('journal.emptyBody')}
+                </EmptyState>
+            ) : (
+                <>
+                    <JournalStatGrid stats={stats} />
 
-          <section
-            style={{ animationDelay: '380ms' }}
-            className="gap-3 p-4 sm:p-5 animate-rise-in flex flex-col rounded-xl border bg-card"
-          >
-            <h2 className="text-sm font-medium">{t('journal.stats.monthly')}</h2>
-            <Suspense fallback={<Skeleton className="h-56 w-full" />}>
-              <JournalMonthlyChart months={stats.monthly} />
-            </Suspense>
-          </section>
-        </>
-      )}
+                    <section
+                        style={{ animationDelay: '380ms' }}
+                        className="gap-3 p-4 sm:p-5 animate-rise-in flex flex-col rounded-xl border bg-card"
+                    >
+                        <h2 className="text-sm font-medium">{t('journal.stats.monthly')}</h2>
+                        <Suspense fallback={<Skeleton className="h-56 w-full" />}>
+                            <JournalMonthlyChart months={stats.monthly} />
+                        </Suspense>
+                    </section>
+                </>
+            )}
 
-      {creating && (
-        <EntryForm
-          open
-          onClose={() => {
-            setCreating(false);
-          }}
-        />
-      )}
-    </section>
-  );
+            {creating && (
+                <EntryForm
+                    open
+                    onClose={() => {
+                        setCreating(false);
+                    }}
+                />
+            )}
+        </section>
+    );
 }

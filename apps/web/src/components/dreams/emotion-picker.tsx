@@ -20,68 +20,72 @@ import { cn } from '@/lib/cn';
  * solo cambiase de tono no diría nada a quien no lo distingue (Regla 3 §7).
  */
 export function EmotionPicker({
-  value,
-  onChange,
+    value,
+    onChange,
 }: {
-  value: readonly string[];
-  onChange: (ids: string[]) => void;
+    value: readonly string[];
+    onChange: (ids: string[]) => void;
 }) {
-  const { t } = useTranslation();
-  const { data: emotions = [] } = useEmotions(api);
-  const [managing, setManaging] = useState(false);
+    const { t } = useTranslation();
+    const { data: emotions = [] } = useEmotions(api);
+    const [managing, setManaging] = useState(false);
 
-  return (
-    <fieldset className="gap-2 flex flex-col">
-      <legend className="text-sm font-medium">{t('dreams.emotionsLabel')}</legend>
-      <p className="text-xs text-muted-foreground">{t('dreams.emotionsHint')}</p>
+    return (
+        <fieldset className="gap-2 flex flex-col">
+            <legend className="text-sm font-medium">{t('dreams.emotionsLabel')}</legend>
+            <p className="text-xs text-muted-foreground">{t('dreams.emotionsHint')}</p>
 
-      <div className="gap-1.5 flex flex-wrap">
-        {emotions.map((emotion) => {
-          const picked = value.includes(emotion.id);
+            <div className="gap-1.5 flex flex-wrap">
+                {emotions.map((emotion) => {
+                    const picked = value.includes(emotion.id);
 
-          return (
-            <button
-              key={emotion.id}
-              type="button"
-              aria-pressed={picked}
-              onClick={() => {
-                onChange(picked ? value.filter((id) => id !== emotion.id) : [...value, emotion.id]);
-              }}
-              className="rounded-full focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-            >
-              <EmotionChip
-                emotion={emotion}
-                className={cn(
-                  'py-1 transition-colors',
-                  picked
-                    ? 'border-[var(--acento)] bg-[var(--acento)]/25'
-                    : 'opacity-70 hover:opacity-100',
-                )}
-              />
-            </button>
-          );
-        })}
+                    return (
+                        <button
+                            key={emotion.id}
+                            type="button"
+                            aria-pressed={picked}
+                            onClick={() => {
+                                onChange(
+                                    picked
+                                        ? value.filter((id) => id !== emotion.id)
+                                        : [...value, emotion.id],
+                                );
+                            }}
+                            className="rounded-full focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                        >
+                            <EmotionChip
+                                emotion={emotion}
+                                className={cn(
+                                    'py-1 transition-colors',
+                                    picked
+                                        ? 'border-[var(--acento)] bg-[var(--acento)]/25'
+                                        : 'opacity-70 hover:opacity-100',
+                                )}
+                            />
+                        </button>
+                    );
+                })}
 
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => {
-            setManaging(true);
-          }}
-        >
-          <Settings2 size={14} aria-hidden />
-          {t('dreams.emotionsManage')}
-        </Button>
-      </div>
+                <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                        setManaging(true);
+                    }}
+                >
+                    <Settings2 size={14} aria-hidden />
+                    {t('dreams.emotionsManage')}
+                </Button>
+            </div>
 
-      {managing && (
-        <EmotionsManager
-          open
-          onClose={() => {
-            setManaging(false);
-          }}
-        />
-      )}
-    </fieldset>
-  );
+            {managing && (
+                <EmotionsManager
+                    open
+                    onClose={() => {
+                        setManaging(false);
+                    }}
+                />
+            )}
+        </fieldset>
+    );
 }

@@ -7,33 +7,33 @@
  * cuántas opciones tenga la columna, no quien la crea.
  */
 export const TABLE_COLUMN_TYPES = [
-  'text',
-  'long_text',
-  'number',
-  'currency',
-  'checkbox',
-  'date',
-  'single_select',
-  'multi_select',
-  'email',
-  'phone',
-  'url',
-  'password',
+    'text',
+    'long_text',
+    'number',
+    'currency',
+    'checkbox',
+    'date',
+    'single_select',
+    'multi_select',
+    'email',
+    'phone',
+    'url',
+    'password',
 ] as const;
 
 export type TableColumnType = (typeof TABLE_COLUMN_TYPES)[number];
 
 export function isTableColumnType(value: string): value is TableColumnType {
-  return (TABLE_COLUMN_TYPES as readonly string[]).includes(value);
+    return (TABLE_COLUMN_TYPES as readonly string[]).includes(value);
 }
 
 /** Tipos cuyo valor es texto libre, filtrado con «contiene» (D28). */
 export const TEXT_LIKE_COLUMN_TYPES: readonly TableColumnType[] = [
-  'text',
-  'long_text',
-  'email',
-  'phone',
-  'url',
+    'text',
+    'long_text',
+    'email',
+    'phone',
+    'url',
 ];
 
 /** Tipos numéricos, filtrados y ordenados con `CAST` (D15). */

@@ -200,22 +200,22 @@ Journey logic:
 
 ```css
 :root {
-  --font-sans: 'Inter', system-ui, sans-serif;
-  --color-bg: #ffffff;
-  --color-text: #171717;
-  --color-muted: #6b7280;
-  --color-line: #e5e7eb;
-  --color-accent: #1f8a5b;
-  --color-accent-soft: #e8f5ee;
-  --radius-card: 8px;
-  --space-1: 4px;
-  --space-2: 8px;
-  --space-3: 12px;
-  --space-4: 16px;
-  --space-6: 24px;
-  --space-8: 32px;
-  --space-12: 48px;
-  --space-16: 64px;
+    --font-sans: 'Inter', system-ui, sans-serif;
+    --color-bg: #ffffff;
+    --color-text: #171717;
+    --color-muted: #6b7280;
+    --color-line: #e5e7eb;
+    --color-accent: #1f8a5b;
+    --color-accent-soft: #e8f5ee;
+    --radius-card: 8px;
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-6: 24px;
+    --space-8: 32px;
+    --space-12: 48px;
+    --space-16: 64px;
 }
 ```
 

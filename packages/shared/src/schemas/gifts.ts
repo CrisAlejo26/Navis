@@ -12,13 +12,13 @@ import { accentSchema } from './congregations';
  * sede. Lo que sí va en los seis idiomas es todo lo que lo rodea.
  */
 export const SYSTEM_GIFTS = [
-  'Profecía',
-  'Imposición de manos',
-  'Bautismo con el Espíritu Santo',
-  'Sanidad',
-  'Echar fuera demonios',
-  'Sabiduría',
-  'Discernimiento',
+    'Profecía',
+    'Imposición de manos',
+    'Bautismo con el Espíritu Santo',
+    'Sanidad',
+    'Echar fuera demonios',
+    'Sabiduría',
+    'Discernimiento',
 ] as const;
 
 /**
@@ -27,29 +27,29 @@ export const SYSTEM_GIFTS = [
  * vistazo (RFC 0002 §5.1).
  */
 export const giftSchema = z.object({
-  id: z.uuid(),
-  churchId: z.uuid(),
-  name: z.string(),
-  /** Token de la paleta o `#rrggbb`, como las sedes. */
-  accent: z.string(),
-  position: z.number().int(),
-  /** De serie: se renombra y se desactiva, no se borra (D5). */
-  isSystem: z.boolean(),
-  /** Apagado deja de proponerse, sin perder el historial de quien lo tiene. */
-  isActive: z.boolean(),
+    id: z.uuid(),
+    churchId: z.uuid(),
+    name: z.string(),
+    /** Token de la paleta o `#rrggbb`, como las sedes. */
+    accent: z.string(),
+    position: z.number().int(),
+    /** De serie: se renombra y se desactiva, no se borra (D5). */
+    isSystem: z.boolean(),
+    /** Apagado deja de proponerse, sin perder el historial de quien lo tiene. */
+    isActive: z.boolean(),
 });
 
 export type Gift = z.infer<typeof giftSchema>;
 
 export const createGiftSchema = z.object({
-  name: z.string().trim().min(2, 'El nombre del don es obligatorio').max(60),
-  accent: accentSchema.optional(),
+    name: z.string().trim().min(2, 'El nombre del don es obligatorio').max(60),
+    accent: accentSchema.optional(),
 });
 
 export type CreateGiftInput = z.infer<typeof createGiftSchema>;
 
 export const updateGiftSchema = createGiftSchema.partial().extend({
-  isActive: z.boolean().optional(),
+    isActive: z.boolean().optional(),
 });
 
 export type UpdateGiftInput = z.infer<typeof updateGiftSchema>;

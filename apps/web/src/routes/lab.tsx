@@ -14,39 +14,41 @@ import { Skeleton } from '@/components/ui/skeleton';
  * pantalla de taller.
  */
 export function LabPage() {
-  const { t } = useTranslation();
+    const { t } = useTranslation();
 
-  return (
-    <section className="gap-6 flex flex-col">
-      <header>
-        <h1 className="text-2xl font-semibold tracking-[-0.02em]">{t('settings.appearance')}</h1>
-        <p className="mt-1 text-sm text-muted-foreground">{t('common.loading')}</p>
-      </header>
+    return (
+        <section className="gap-6 flex flex-col">
+            <header>
+                <h1 className="text-2xl font-semibold tracking-[-0.02em]">
+                    {t('settings.appearance')}
+                </h1>
+                <p className="mt-1 text-sm text-muted-foreground">{t('common.loading')}</p>
+            </header>
 
-      <div className="gap-6 lg:grid-cols-2 grid">
-        <Card className="gap-4 flex flex-col">
-          <div>
-            <CardTitle className="text-base">PageSkeleton</CardTitle>
-            <CardDescription>página entera</CardDescription>
-          </div>
-          <PageSkeleton cards={2} />
-        </Card>
+            <div className="gap-6 lg:grid-cols-2 grid">
+                <Card className="gap-4 flex flex-col">
+                    <div>
+                        <CardTitle className="text-base">PageSkeleton</CardTitle>
+                        <CardDescription>página entera</CardDescription>
+                    </div>
+                    <PageSkeleton cards={2} />
+                </Card>
 
-        <Card className="gap-4 flex flex-col">
-          <div>
-            <CardTitle className="text-base">FormSkeleton</CardTitle>
-            <CardDescription>formulario dentro de una tarjeta</CardDescription>
-          </div>
-          <FormSkeleton fields={2} />
-        </Card>
-      </div>
+                <Card className="gap-4 flex flex-col">
+                    <div>
+                        <CardTitle className="text-base">FormSkeleton</CardTitle>
+                        <CardDescription>formulario dentro de una tarjeta</CardDescription>
+                    </div>
+                    <FormSkeleton fields={2} />
+                </Card>
+            </div>
 
-      <Card className="gap-3 flex flex-col">
-        <CardTitle className="text-base">Skeleton</CardTitle>
-        <Skeleton className="h-4 w-2/3" />
-        <Skeleton className="h-4 w-1/2" />
-        <Skeleton className="h-24 rounded-xl" />
-      </Card>
-    </section>
-  );
+            <Card className="gap-3 flex flex-col">
+                <CardTitle className="text-base">Skeleton</CardTitle>
+                <Skeleton className="h-4 w-2/3" />
+                <Skeleton className="h-4 w-1/2" />
+                <Skeleton className="h-24 rounded-xl" />
+            </Card>
+        </section>
+    );
 }

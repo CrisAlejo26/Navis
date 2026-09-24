@@ -16,16 +16,16 @@ import { create } from 'zustand';
 export type StatusBarStyle = 'light' | 'dark';
 
 interface StatusBarState {
-  /** El estilo reclamado por la pantalla enfocada, o `null` si nadie lo pide. */
-  style: StatusBarStyle | null;
-  claim: (style: StatusBarStyle) => void;
-  release: () => void;
+    /** El estilo reclamado por la pantalla enfocada, o `null` si nadie lo pide. */
+    style: StatusBarStyle | null;
+    claim: (style: StatusBarStyle) => void;
+    release: () => void;
 }
 
 export const useStatusBarStore = create<StatusBarState>()((set) => ({
-  style: null,
-  claim: (style) => set({ style }),
-  release: () => set({ style: null }),
+    style: null,
+    claim: (style) => set({ style }),
+    release: () => set({ style: null }),
 }));
 
 /**
@@ -35,13 +35,13 @@ export const useStatusBarStore = create<StatusBarState>()((set) => ({
  * quede montada debajo.
  */
 export function useStatusBarClaim(style: StatusBarStyle) {
-  const claim = useStatusBarStore((state) => state.claim);
-  const release = useStatusBarStore((state) => state.release);
+    const claim = useStatusBarStore((state) => state.claim);
+    const release = useStatusBarStore((state) => state.release);
 
-  useFocusEffect(
-    useCallback(() => {
-      claim(style);
-      return release;
-    }, [claim, release, style]),
-  );
+    useFocusEffect(
+        useCallback(() => {
+            claim(style);
+            return release;
+        }, [claim, release, style]),
+    );
 }

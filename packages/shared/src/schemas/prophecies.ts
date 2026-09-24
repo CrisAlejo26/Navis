@@ -4,12 +4,12 @@ import { isoDateSchema } from './common';
 
 /** Un cumplimiento parcial: qué parte se cumplió y cuándo (RFC 0004 D4). */
 export const prophecyFulfillmentSchema = z.object({
-  id: z.uuid(),
-  prophecyId: z.uuid(),
-  /** Qué parte se ha cumplido. Texto plano: el editor no lleva Markdown. */
-  text: z.string(),
-  occurredAt: isoDateSchema,
-  createdAt: z.string(),
+    id: z.uuid(),
+    prophecyId: z.uuid(),
+    /** Qué parte se ha cumplido. Texto plano: el editor no lleva Markdown. */
+    text: z.string(),
+    occurredAt: isoDateSchema,
+    createdAt: z.string(),
 });
 
 export type ProphecyFulfillment = z.infer<typeof prophecyFulfillmentSchema>;
@@ -21,16 +21,16 @@ export type ProphecyFulfillment = z.infer<typeof prophecyFulfillmentSchema>;
  * Es el único módulo del proyecto así, y es a propósito.
  */
 export const prophecySchema = z.object({
-  id: z.uuid(),
-  title: z.string(),
-  body: z.string(),
-  receivedAt: isoDateSchema,
-  /** El día en que se acabó de cumplir. `null` mientras siga abierta (D3). */
-  fulfilledAt: isoDateSchema.nullable(),
-  /** Derivado del último cumplimiento parcial; se escribe en un solo sitio (D4). */
-  lastFulfillmentAt: isoDateSchema.nullable(),
-  fulfillments: z.array(prophecyFulfillmentSchema),
-  createdAt: z.string(),
+    id: z.uuid(),
+    title: z.string(),
+    body: z.string(),
+    receivedAt: isoDateSchema,
+    /** El día en que se acabó de cumplir. `null` mientras siga abierta (D3). */
+    fulfilledAt: isoDateSchema.nullable(),
+    /** Derivado del último cumplimiento parcial; se escribe en un solo sitio (D4). */
+    lastFulfillmentAt: isoDateSchema.nullable(),
+    fulfillments: z.array(prophecyFulfillmentSchema),
+    createdAt: z.string(),
 });
 
 export type Prophecy = z.infer<typeof prophecySchema>;
@@ -44,16 +44,16 @@ const bodySchema = z.string().trim().min(1, 'Escribe la palabra que recibiste').
  * estar apuntando algo con la fecha del día que viene y no es asunto nuestro.
  */
 export const createProphecySchema = z
-  .object({
-    title: titleSchema,
-    body: bodySchema,
-    receivedAt: isoDateSchema,
-    fulfilledAt: isoDateSchema.optional(),
-  })
-  .refine((one) => !one.fulfilledAt || one.fulfilledAt >= one.receivedAt, {
-    message: 'No puede haberse cumplido antes de recibirse',
-    path: ['fulfilledAt'],
-  });
+    .object({
+        title: titleSchema,
+        body: bodySchema,
+        receivedAt: isoDateSchema,
+        fulfilledAt: isoDateSchema.optional(),
+    })
+    .refine((one) => !one.fulfilledAt || one.fulfilledAt >= one.receivedAt, {
+        message: 'No puede haberse cumplido antes de recibirse',
+        path: ['fulfilledAt'],
+    });
 
 export type CreateProphecyInput = z.infer<typeof createProphecySchema>;
 
@@ -63,18 +63,18 @@ export type CreateProphecyInput = z.infer<typeof createProphecySchema>;
  * tiene delante la fila entera.
  */
 export const updateProphecySchema = z.object({
-  title: titleSchema.optional(),
-  body: bodySchema.optional(),
-  receivedAt: isoDateSchema.optional(),
-  /** `null` la vuelve a abrir y la devuelve a su estado anterior (D6). */
-  fulfilledAt: isoDateSchema.nullable().optional(),
+    title: titleSchema.optional(),
+    body: bodySchema.optional(),
+    receivedAt: isoDateSchema.optional(),
+    /** `null` la vuelve a abrir y la devuelve a su estado anterior (D6). */
+    fulfilledAt: isoDateSchema.nullable().optional(),
 });
 
 export type UpdateProphecyInput = z.infer<typeof updateProphecySchema>;
 
 export const createFulfillmentSchema = z.object({
-  text: z.string().trim().min(1, 'Escribe qué parte se ha cumplido').max(4000),
-  occurredAt: isoDateSchema,
+    text: z.string().trim().min(1, 'Escribe qué parte se ha cumplido').max(4000),
+    occurredAt: isoDateSchema,
 });
 
 export type CreateFulfillmentInput = z.infer<typeof createFulfillmentSchema>;

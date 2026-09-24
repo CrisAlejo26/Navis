@@ -17,13 +17,13 @@ export type NamedEmotion = Pick<Emotion, 'slug' | 'name'>;
  * clave al vuelo de las que prohíbe la Regla 2 §3.
  */
 export function useEmotionLabel(): (emotion: NamedEmotion) => string {
-  const { t } = useTranslation();
+    const { t } = useTranslation();
 
-  return (emotion: NamedEmotion) => {
-    if (emotion.slug !== null && isSystemEmotionSlug(emotion.slug)) {
-      return t(`dreams.emotions.${emotion.slug}`);
-    }
+    return (emotion: NamedEmotion) => {
+        if (emotion.slug !== null && isSystemEmotionSlug(emotion.slug)) {
+            return t(`dreams.emotions.${emotion.slug}`);
+        }
 
-    return emotion.name ?? '';
-  };
+        return emotion.name ?? '';
+    };
 }

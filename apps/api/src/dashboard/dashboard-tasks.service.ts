@@ -11,30 +11,30 @@ import { TasksStreakService } from '../tasks/tasks-streak.service';
  */
 @Injectable()
 export class DashboardTasksService {
-  constructor(
-    private readonly expansion: TasksExpansionService,
-    private readonly streak: TasksStreakService,
-  ) {}
+    constructor(
+        private readonly expansion: TasksExpansionService,
+        private readonly streak: TasksStreakService,
+    ) {}
 
-  async today(
-    churchId: string,
-    ownerId: string,
-    today: IsoDate,
-  ): Promise<{ tasks: DashboardTask[]; streak: number }> {
-    const [items, streakResult] = await Promise.all([
-      this.expansion.day(churchId, ownerId, today),
-      this.streak.streak(churchId, ownerId, today),
-    ]);
+    async today(
+        churchId: string,
+        ownerId: string,
+        today: IsoDate,
+    ): Promise<{ tasks: DashboardTask[]; streak: number }> {
+        const [items, streakResult] = await Promise.all([
+            this.expansion.day(churchId, ownerId, today),
+            this.streak.streak(churchId, ownerId, today),
+        ]);
 
-    const tasks: DashboardTask[] = items.slice(0, DASHBOARD_TASKS_PREVIEW).map((item) => ({
-      taskId: item.taskId,
-      title: item.title,
-      time: item.time,
-      priority: item.priority,
-      completed: item.status === 'completada',
-      accent: item.tags[0]?.accent ?? 'primary',
-    }));
+        const tasks: DashboardTask[] = items.slice(0, DASHBOARD_TASKS_PREVIEW).map((item) => ({
+            taskId: item.taskId,
+            title: item.title,
+            time: item.time,
+            priority: item.priority,
+            completed: item.status === 'completada',
+            accent: item.tags[0]?.accent ?? 'primary',
+        }));
 
-    return { tasks, streak: streakResult.current };
-  }
+        return { tasks, streak: streakResult.current };
+    }
 }

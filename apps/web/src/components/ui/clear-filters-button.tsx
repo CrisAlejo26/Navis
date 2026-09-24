@@ -15,21 +15,21 @@ import { toast } from '@/lib/toast';
  * sitio y enseña a ignorarlo— y dice cuántos se lleva por delante.
  */
 export function ClearFiltersButton({ count, onClear }: { count: number; onClear: () => void }) {
-  const { t } = useTranslation();
-  if (count === 0) return null;
+    const { t } = useTranslation();
+    if (count === 0) return null;
 
-  return (
-    <Button
-      variant="ghost"
-      size="md"
-      className="shrink-0"
-      onClick={() => {
-        onClear();
-        toast.success(t('common.filterCleared'));
-      }}
-    >
-      <RotateCcw size={15} aria-hidden />
-      {t('common.clearFilters', { total: count })}
-    </Button>
-  );
+    return (
+        <Button
+            variant="ghost"
+            size="md"
+            className="shrink-0"
+            onClick={() => {
+                onClear();
+                toast.success(t('common.filterCleared'));
+            }}
+        >
+            <RotateCcw size={15} aria-hidden />
+            {t('common.clearFilters', { total: count })}
+        </Button>
+    );
 }

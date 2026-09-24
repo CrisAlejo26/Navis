@@ -14,15 +14,15 @@ import type { ComboboxOption } from '@/components/ui/combobox';
  * clave nueva por país.
  */
 export function useCountryOptions(): ComboboxOption[] {
-  const { i18n } = useTranslation();
+    const { i18n } = useTranslation();
 
-  return useMemo(() => {
-    const names = new Intl.DisplayNames([i18n.language], { type: 'region' });
+    return useMemo(() => {
+        const names = new Intl.DisplayNames([i18n.language], { type: 'region' });
 
-    return COUNTRY_CODES.map((code) => ({
-      value: code,
-      label: names.of(code) ?? code,
-      hint: code,
-    })).sort((a, b) => a.label.localeCompare(b.label, i18n.language));
-  }, [i18n.language]);
+        return COUNTRY_CODES.map((code) => ({
+            value: code,
+            label: names.of(code) ?? code,
+            hint: code,
+        })).sort((a, b) => a.label.localeCompare(b.label, i18n.language));
+    }, [i18n.language]);
 }

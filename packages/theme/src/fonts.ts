@@ -24,11 +24,11 @@
  * `themeColorsHex` y `tokens.css` se mantienen a mano en Regla 3).
  */
 export const FONT_FAMILIES = {
-  display: { native: 'Roboto_500Medium' },
-  sans: { native: 'Roboto_400Regular' },
-  sansMedium: { native: 'Roboto_500Medium' },
-  sansSemiBold: { native: 'Roboto_600SemiBold' },
-  sansBold: { native: 'Roboto_700Bold' },
+    display: { native: 'Roboto_500Medium' },
+    sans: { native: 'Roboto_400Regular' },
+    sansMedium: { native: 'Roboto_500Medium' },
+    sansSemiBold: { native: 'Roboto_600SemiBold' },
+    sansBold: { native: 'Roboto_700Bold' },
 } as const;
 
 export type FontToken = keyof typeof FONT_FAMILIES;
@@ -39,13 +39,13 @@ export type FontToken = keyof typeof FONT_FAMILIES;
  * verificar a ojo, en la Fase 0, que las cinco familias cargan bien.
  */
 export const TYPE_SCALE = {
-  display: { fontSize: 32, lineHeight: 38, font: 'display' as FontToken },
-  h1: { fontSize: 26, lineHeight: 32, font: 'display' as FontToken },
-  h2: { fontSize: 21, lineHeight: 27, font: 'sansSemiBold' as FontToken },
-  h3: { fontSize: 17, lineHeight: 23, font: 'sansSemiBold' as FontToken },
-  body: { fontSize: 15, lineHeight: 22, font: 'sans' as FontToken },
-  bodyMedium: { fontSize: 15, lineHeight: 22, font: 'sansMedium' as FontToken },
-  caption: { fontSize: 13, lineHeight: 18, font: 'sans' as FontToken },
+    display: { fontSize: 32, lineHeight: 38, font: 'display' as FontToken },
+    h1: { fontSize: 26, lineHeight: 32, font: 'display' as FontToken },
+    h2: { fontSize: 21, lineHeight: 27, font: 'sansSemiBold' as FontToken },
+    h3: { fontSize: 17, lineHeight: 23, font: 'sansSemiBold' as FontToken },
+    body: { fontSize: 15, lineHeight: 22, font: 'sans' as FontToken },
+    bodyMedium: { fontSize: 15, lineHeight: 22, font: 'sansMedium' as FontToken },
+    caption: { fontSize: 13, lineHeight: 18, font: 'sans' as FontToken },
 } as const;
 
 export type TypeLevel = keyof typeof TYPE_SCALE;

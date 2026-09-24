@@ -11,10 +11,10 @@ import { i18n } from '@/lib/i18n';
  * tests pasarían buscando textos que nadie ve.
  */
 export function renderWithI18n(ui: ReactElement, options?: RenderOptions): RenderResult {
-  return render(ui, {
-    wrapper: ({ children }: { children: ReactNode }) => (
-      <I18nextProvider i18n={i18n}>{children}</I18nextProvider>
-    ),
-    ...options,
-  });
+    return render(ui, {
+        wrapper: ({ children }: { children: ReactNode }) => (
+            <I18nextProvider i18n={i18n}>{children}</I18nextProvider>
+        ),
+        ...options,
+    });
 }

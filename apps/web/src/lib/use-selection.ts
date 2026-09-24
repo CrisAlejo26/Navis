@@ -7,20 +7,20 @@ import { useCallback, useState } from 'react';
  * se mira, y esta ya no tenía nada específico de un cuaderno).
  */
 export function useSelection() {
-  const [selected, setSelected] = useState<ReadonlySet<string>>(new Set());
+    const [selected, setSelected] = useState<ReadonlySet<string>>(new Set());
 
-  const toggle = useCallback((id: string) => {
-    setSelected((previous) => {
-      const next = new Set(previous);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
-  }, []);
+    const toggle = useCallback((id: string) => {
+        setSelected((previous) => {
+            const next = new Set(previous);
+            if (next.has(id)) next.delete(id);
+            else next.add(id);
+            return next;
+        });
+    }, []);
 
-  const clear = useCallback(() => {
-    setSelected(new Set());
-  }, []);
+    const clear = useCallback(() => {
+        setSelected(new Set());
+    }, []);
 
-  return { selected, toggle, clear, count: selected.size };
+    return { selected, toggle, clear, count: selected.size };
 }

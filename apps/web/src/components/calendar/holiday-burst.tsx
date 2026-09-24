@@ -55,9 +55,9 @@ const PALETA_CIAN = ['#2140cf', '#0284c7', '#0891b2', '#0d9488', '#4f46e5', '#57
 
 /** Los tres fogonazos: dónde, en porcentaje de la celda, con qué retardo y de qué colores. */
 const FOGONAZOS = [
-  { left: '20%', top: '32%', delay: 0, paleta: PALETA_DORADA },
-  { left: '72%', top: '58%', delay: 1500, paleta: PALETA_ROSA },
-  { left: '44%', top: '82%', delay: 3000, paleta: PALETA_CIAN },
+    { left: '20%', top: '32%', delay: 0, paleta: PALETA_DORADA },
+    { left: '72%', top: '58%', delay: 1500, paleta: PALETA_ROSA },
+    { left: '44%', top: '82%', delay: 3000, paleta: PALETA_CIAN },
 ] as const;
 
 const CHISPAS_POR_FOGONAZO = 12;
@@ -68,52 +68,52 @@ const CHISPAS_POR_FOGONAZO = 12;
  * lee orgánica en vez de un círculo perfecto y mecánico.
  */
 const CHISPAS = Array.from({ length: CHISPAS_POR_FOGONAZO }, (_, index) => {
-  const angulo = (index * Math.PI * 2) / CHISPAS_POR_FOGONAZO;
-  const radio = index % 2 === 0 ? 16 : 22;
-  return {
-    x: `${String(Math.round(Math.cos(angulo) * radio))}px`,
-    y: `${String(Math.round(Math.sin(angulo) * radio))}px`,
-  };
+    const angulo = (index * Math.PI * 2) / CHISPAS_POR_FOGONAZO;
+    const radio = index % 2 === 0 ? 16 : 22;
+    return {
+        x: `${String(Math.round(Math.cos(angulo) * radio))}px`,
+        y: `${String(Math.round(Math.sin(angulo) * radio))}px`,
+    };
 });
 
 export function HolidayBurst({ day }: { day: number }) {
-  // Un pequeño desfase por el día del mes: dos festivos del mismo mes no
-  // titilan al unísono.
-  const desfase = (day % 3) * 240;
+    // Un pequeño desfase por el día del mes: dos festivos del mismo mes no
+    // titilan al unísono.
+    const desfase = (day % 3) * 240;
 
-  return (
-    <span aria-hidden className="inset-0 pointer-events-none absolute -z-10">
-      {FOGONAZOS.map((fogonazo) => (
-        <span
-          key={fogonazo.left + fogonazo.top}
-          style={{ left: fogonazo.left, top: fogonazo.top }}
-          className="size-0 absolute"
-        >
-          {CHISPAS.map((chispa, index) => {
-            const color = fogonazo.paleta[index % fogonazo.paleta.length];
-            // Un jitter pequeño (hasta 70ms) por chispa: sin él, las doce
-            // saltan en el mismo instante y se leen como un solo parpadeo en
-            // vez de una explosión con volumen.
-            const jitter = (index * 37) % 70;
+    return (
+        <span aria-hidden className="inset-0 pointer-events-none absolute -z-10">
+            {FOGONAZOS.map((fogonazo) => (
+                <span
+                    key={fogonazo.left + fogonazo.top}
+                    style={{ left: fogonazo.left, top: fogonazo.top }}
+                    className="size-0 absolute"
+                >
+                    {CHISPAS.map((chispa, index) => {
+                        const color = fogonazo.paleta[index % fogonazo.paleta.length];
+                        // Un jitter pequeño (hasta 70ms) por chispa: sin él, las doce
+                        // saltan en el mismo instante y se leen como un solo parpadeo en
+                        // vez de una explosión con volumen.
+                        const jitter = (index * 37) % 70;
 
-            return (
-              <span
-                key={chispa.x + chispa.y}
-                style={
-                  {
-                    '--chispa-x': chispa.x,
-                    '--chispa-y': chispa.y,
-                    background: color,
-                    boxShadow: `0 0 5px ${color}`,
-                    animationDelay: `${String(desfase + fogonazo.delay + 80 + jitter)}ms`,
-                  } as React.CSSProperties
-                }
-                className="animate-chispa size-1 absolute rounded-full"
-              />
-            );
-          })}
+                        return (
+                            <span
+                                key={chispa.x + chispa.y}
+                                style={
+                                    {
+                                        '--chispa-x': chispa.x,
+                                        '--chispa-y': chispa.y,
+                                        background: color,
+                                        boxShadow: `0 0 5px ${color}`,
+                                        animationDelay: `${String(desfase + fogonazo.delay + 80 + jitter)}ms`,
+                                    } as React.CSSProperties
+                                }
+                                className="animate-chispa size-1 absolute rounded-full"
+                            />
+                        );
+                    })}
+                </span>
+            ))}
         </span>
-      ))}
-    </span>
-  );
+    );
 }

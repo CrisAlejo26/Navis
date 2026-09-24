@@ -7,22 +7,22 @@ import { NotesTimeline } from '@/components/believers/notes-timeline';
 import type { NotesView } from '@/lib/believers/note-view';
 
 interface BodyProps {
-  view: NotesView;
-  notes: readonly BelieverNote[];
-  today: IsoDate;
-  /** El nombre de pila, que es como se le llama en el estado vacío. */
-  name: string;
-  canManage: boolean;
-  isLoading: boolean;
-  searching: boolean;
-  /** Solo la vista de calendario los usa. */
-  year: number;
-  days: readonly NoteDay[];
-  onYearChange: (year: number) => void;
-  onAdd: () => void;
-  onEdit: (note: BelieverNote) => void;
-  onDelete: (note: BelieverNote) => void;
-  onToggleDone: (note: BelieverNote) => void;
+    view: NotesView;
+    notes: readonly BelieverNote[];
+    today: IsoDate;
+    /** El nombre de pila, que es como se le llama en el estado vacío. */
+    name: string;
+    canManage: boolean;
+    isLoading: boolean;
+    searching: boolean;
+    /** Solo la vista de calendario los usa. */
+    year: number;
+    days: readonly NoteDay[];
+    onYearChange: (year: number) => void;
+    onAdd: () => void;
+    onEdit: (note: BelieverNote) => void;
+    onDelete: (note: BelieverNote) => void;
+    onToggleDone: (note: BelieverNote) => void;
 }
 
 /**
@@ -33,53 +33,53 @@ interface BodyProps {
  * escrito una vez. El calendario no cae: un año sin notas **es** su contenido.
  */
 export function NotesBody({
-  view,
-  notes,
-  today,
-  name,
-  canManage,
-  isLoading,
-  searching,
-  year,
-  days,
-  onYearChange,
-  onAdd,
-  onEdit,
-  onDelete,
-  onToggleDone,
+    view,
+    notes,
+    today,
+    name,
+    canManage,
+    isLoading,
+    searching,
+    year,
+    days,
+    onYearChange,
+    onAdd,
+    onEdit,
+    onDelete,
+    onToggleDone,
 }: BodyProps) {
-  if (view === 'calendar') {
-    return <NotesCalendar year={year} days={days} onYearChange={onYearChange} />;
-  }
+    if (view === 'calendar') {
+        return <NotesCalendar year={year} days={days} onYearChange={onYearChange} />;
+    }
 
-  if (notes.length > 0 && view === 'list') {
-    return <NotesList notes={notes} canManage={canManage} onEdit={onEdit} />;
-  }
+    if (notes.length > 0 && view === 'list') {
+        return <NotesList notes={notes} canManage={canManage} onEdit={onEdit} />;
+    }
 
-  if (notes.length > 0 && view === 'cards') {
+    if (notes.length > 0 && view === 'cards') {
+        return (
+            <NotesCards
+                notes={notes}
+                today={today}
+                canManage={canManage}
+                onEdit={onEdit}
+                onToggleDone={onToggleDone}
+            />
+        );
+    }
+
     return (
-      <NotesCards
-        notes={notes}
-        today={today}
-        canManage={canManage}
-        onEdit={onEdit}
-        onToggleDone={onToggleDone}
-      />
+        <NotesTimeline
+            notes={notes}
+            today={today}
+            name={name}
+            canManage={canManage}
+            isLoading={isLoading}
+            searching={searching}
+            onAdd={onAdd}
+            onEdit={onEdit}
+            onDelete={onDelete}
+            onToggleDone={onToggleDone}
+        />
     );
-  }
-
-  return (
-    <NotesTimeline
-      notes={notes}
-      today={today}
-      name={name}
-      canManage={canManage}
-      isLoading={isLoading}
-      searching={searching}
-      onAdd={onAdd}
-      onEdit={onEdit}
-      onDelete={onDelete}
-      onToggleDone={onToggleDone}
-    />
-  );
 }

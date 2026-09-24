@@ -14,8 +14,8 @@ export const DAWN_HOUR = 6;
  * eso último da el día **UTC**, que de madrugada es justo el equivocado.
  */
 export function proposedNight(now = new Date()): IsoDate {
-  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-  const today = todayIn(timezone, now);
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const today = todayIn(timezone, now);
 
-  return now.getHours() < DAWN_HOUR ? addDays(today, -1) : today;
+    return now.getHours() < DAWN_HOUR ? addDays(today, -1) : today;
 }

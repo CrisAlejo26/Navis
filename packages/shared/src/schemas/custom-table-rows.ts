@@ -16,14 +16,14 @@ export type RowData = z.infer<typeof rowDataSchema>;
 
 /** Una fila, con sus valores ya leídos del JSON y validados por forma. */
 export const customTableRowSchema = z.object({
-  id: z.uuid(),
-  tableId: z.uuid(),
-  data: rowDataSchema,
-  /** Las claves de columna cuyo valor no encaja con el tipo actual (D9). */
-  mismatches: z.array(z.string()),
-  createdBy: z.string().nullable(),
-  createdAt: z.string(),
-  updatedAt: z.string(),
+    id: z.uuid(),
+    tableId: z.uuid(),
+    data: rowDataSchema,
+    /** Las claves de columna cuyo valor no encaja con el tipo actual (D9). */
+    mismatches: z.array(z.string()),
+    createdBy: z.string().nullable(),
+    createdAt: z.string(),
+    updatedAt: z.string(),
 });
 export type CustomTableRow = z.infer<typeof customTableRowSchema>;
 
@@ -39,9 +39,9 @@ export type FilterOperator = (typeof FILTER_OPERATORS)[number];
 
 /** Un filtro sobre una columna real de la tabla (D28, D30). */
 export const rowFilterSchema = z.object({
-  columnKey: z.string().min(1).max(80),
-  operator: z.enum(FILTER_OPERATORS),
-  value: z.unknown(),
+    columnKey: z.string().min(1).max(80),
+    operator: z.enum(FILTER_OPERATORS),
+    value: z.unknown(),
 });
 export type RowFilter = z.infer<typeof rowFilterSchema>;
 
@@ -49,10 +49,10 @@ export const rowFiltersSchema = z.array(rowFilterSchema).max(30);
 
 /** `GET /tables/:id/rows`: página, búsqueda, orden y filtros (D30). */
 export const customTableRowsQuerySchema = paginationQuerySchema.extend({
-  sort: z.string().max(80).optional(),
-  order: z.enum(['asc', 'desc']).default('desc'),
-  search: z.string().trim().max(200).optional(),
-  /** `RowFilter[]` codificado en JSON, tal y como viaja en la URL. */
-  filters: z.string().optional(),
+    sort: z.string().max(80).optional(),
+    order: z.enum(['asc', 'desc']).default('desc'),
+    search: z.string().trim().max(200).optional(),
+    /** `RowFilter[]` codificado en JSON, tal y como viaja en la URL. */
+    filters: z.string().optional(),
 });
 export type CustomTableRowsQuery = z.infer<typeof customTableRowsQuerySchema>;

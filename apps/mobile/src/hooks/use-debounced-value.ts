@@ -10,12 +10,12 @@ import { useEffect, useState } from 'react';
  * `docs/creyentes-movil-plan.md`, pero no llegó a escribirse.
  */
 export function useDebouncedValue<T>(value: T, delayMs = 300): T {
-  const [debounced, setDebounced] = useState(value);
+    const [debounced, setDebounced] = useState(value);
 
-  useEffect(() => {
-    const id = setTimeout(() => setDebounced(value), delayMs);
-    return () => clearTimeout(id);
-  }, [value, delayMs]);
+    useEffect(() => {
+        const id = setTimeout(() => setDebounced(value), delayMs);
+        return () => clearTimeout(id);
+    }, [value, delayMs]);
 
-  return debounced;
+    return debounced;
 }

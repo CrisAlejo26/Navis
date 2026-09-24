@@ -7,6 +7,7 @@ import { Dialog } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { api } from '@/lib/api';
 import { formText } from '@/lib/form';
+import { toast } from '@/lib/toast';
 
 /**
  * La nota de una persona **en esta lista**: «Solo primer domingo».
@@ -16,50 +17,58 @@ import { formText } from '@/lib/form';
  * no en la ficha de la persona.
  */
 export function MemberNoteDialog({
-  listId,
-  member,
-  onClose,
+    listId,
+    member,
+    onClose,
 }: {
-  listId: string;
-  member: ListMember | null;
-  onClose: () => void;
+    listId: string;
+    member: ListMember | null;
+    onClose: () => void;
 }) {
-  const { t } = useTranslation();
-  const update = useUpdateListMember(api);
+    const { t } = useTranslation();
+    const update = useUpdateListMember(api);
 
-  const submit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    if (!member) return;
+    const submit = (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        if (!member) return;
 
-    const note = formText(new FormData(event.currentTarget).get('note'));
+        const note = formText(new FormData(event.currentTarget).get('note'));
 
-    update.mutate(
-      { listId, believerId: member.believerId, note: note || null },
-      { onSuccess: onClose },
+        update.mutate(
+            { listId, believerId: member.believerId, note: note || null },
+            {
+                onSuccess: () => {
+                    toast.success(t('lists.noteSaved'));
+                    onClose();
+                },
+                onError: () => {
+                    toast.error(t('errors.generic'));
+                },
+            },
+        );
+    };
+
+    return (
+        <Dialog
+            open={member !== null}
+            onClose={onClose}
+            title={t('lists.noteFor', { name: member ? believerName(member) : '' })}
+            description={t('lists.noteHint')}
+        >
+            {member && (
+                <form onSubmit={submit} className="gap-4 flex flex-col" noValidate>
+                    <Input
+                        name="note"
+                        label={t('lists.note')}
+                        maxLength={120}
+                        defaultValue={member.note ?? ''}
+                    />
+
+                    <Button type="submit" size="lg" className="w-full" isLoading={update.isPending}>
+                        {t('common.save')}
+                    </Button>
+                </form>
+            )}
+        </Dialog>
     );
-  };
-
-  return (
-    <Dialog
-      open={member !== null}
-      onClose={onClose}
-      title={t('lists.noteFor', { name: member ? believerName(member) : '' })}
-      description={t('lists.noteHint')}
-    >
-      {member && (
-        <form onSubmit={submit} className="gap-4 flex flex-col" noValidate>
-          <Input
-            name="note"
-            label={t('lists.note')}
-            maxLength={120}
-            defaultValue={member.note ?? ''}
-          />
-
-          <Button type="submit" size="lg" className="w-full" isLoading={update.isPending}>
-            {t('common.save')}
-          </Button>
-        </form>
-      )}
-    </Dialog>
-  );
 }

@@ -10,19 +10,19 @@ import { ProfilesService } from './profiles.service';
 @ApiTags('perfil')
 @Controller('me/profile')
 export class ProfilesController {
-  constructor(private readonly profiles: ProfilesService) {}
+    constructor(private readonly profiles: ProfilesService) {}
 
-  @Get()
-  @ApiOperation({ summary: 'Perfil del usuario autenticado' })
-  @ApiOkResponse({ type: Profile })
-  get(@CurrentUser() user: AuthUser): Promise<Profile> {
-    return this.profiles.findOrCreate(user.id);
-  }
+    @Get()
+    @ApiOperation({ summary: 'Perfil del usuario autenticado' })
+    @ApiOkResponse({ type: Profile })
+    get(@CurrentUser() user: AuthUser): Promise<Profile> {
+        return this.profiles.findOrCreate(user.id);
+    }
 
-  @Patch()
-  @ApiOperation({ summary: 'Actualiza el perfil del usuario autenticado' })
-  @ApiOkResponse({ type: Profile })
-  update(@CurrentUser() user: AuthUser, @Body() dto: UpdateProfileDto): Promise<Profile> {
-    return this.profiles.update(user.id, dto);
-  }
+    @Patch()
+    @ApiOperation({ summary: 'Actualiza el perfil del usuario autenticado' })
+    @ApiOkResponse({ type: Profile })
+    update(@CurrentUser() user: AuthUser, @Body() dto: UpdateProfileDto): Promise<Profile> {
+        return this.profiles.update(user.id, dto);
+    }
 }

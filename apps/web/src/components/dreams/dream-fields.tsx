@@ -19,57 +19,57 @@ import { proposedNight } from '@/lib/dreams/night';
  * pensado para retocarla sin abrir este diálogo.
  */
 export function DreamFields({
-  dream,
-  bodyRef,
+    dream,
+    bodyRef,
 }: {
-  dream?: Dream;
-  bodyRef: RefObject<HTMLTextAreaElement | null>;
+    dream?: Dream;
+    bodyRef: RefObject<HTMLTextAreaElement | null>;
 }) {
-  const { t } = useTranslation();
+    const { t } = useTranslation();
 
-  return (
-    <>
-      {/* Sin `max-w-prose`: aquí se **escribe**, y un campo más estrecho que su
+    return (
+        <>
+            {/* Sin `max-w-prose`: aquí se **escribe**, y un campo más estrecho que su
           diálogo se lee como un error. El ancho de lectura es cosa de la ficha. */}
-      <Textarea
-        ref={bodyRef}
-        name="body"
-        rows={10}
-        label={t('dreams.bodyField')}
-        placeholder={t('dreams.bodyPlaceholder')}
-        defaultValue={dream?.body}
-        required
-      />
+            <Textarea
+                ref={bodyRef}
+                name="body"
+                rows={10}
+                label={t('dreams.bodyField')}
+                placeholder={t('dreams.bodyPlaceholder')}
+                defaultValue={dream?.body}
+                required
+            />
 
-      <div className="gap-3 sm:flex-row flex flex-col">
-        <div className="sm:max-w-56">
-          <Input
-            name="dreamedAt"
-            type="date"
-            label={t('dreams.dreamedAt')}
-            defaultValue={dream?.dreamedAt ?? proposedNight()}
-            required
-          />
-        </div>
+            <div className="gap-3 sm:flex-row flex flex-col">
+                <div className="sm:max-w-56">
+                    <Input
+                        name="dreamedAt"
+                        type="date"
+                        label={t('dreams.dreamedAt')}
+                        defaultValue={dream?.dreamedAt ?? proposedNight()}
+                        required
+                    />
+                </div>
 
-        <div className="flex-1">
-          <Input
-            name="title"
-            label={t('dreams.titleField')}
-            placeholder={t('dreams.titlePlaceholder')}
-            defaultValue={dream?.title ?? ''}
-          />
-        </div>
-      </div>
+                <div className="flex-1">
+                    <Input
+                        name="title"
+                        label={t('dreams.titleField')}
+                        placeholder={t('dreams.titlePlaceholder')}
+                        defaultValue={dream?.title ?? ''}
+                    />
+                </div>
+            </div>
 
-      <Textarea
-        name="interpretation"
-        rows={3}
-        label={t('dreams.interpretation')}
-        placeholder={t('dreams.interpretationPlaceholder')}
-        defaultValue={dream?.interpretation ?? ''}
-        hint={t('dreams.interpretationHint')}
-      />
-    </>
-  );
+            <Textarea
+                name="interpretation"
+                rows={3}
+                label={t('dreams.interpretation')}
+                placeholder={t('dreams.interpretationPlaceholder')}
+                defaultValue={dream?.interpretation ?? ''}
+                hint={t('dreams.interpretationHint')}
+            />
+        </>
+    );
 }

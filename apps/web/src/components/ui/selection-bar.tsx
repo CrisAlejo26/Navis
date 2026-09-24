@@ -10,33 +10,33 @@ import { Button } from '@/components/ui/button';
  * cuanto Comunicaciones la necesitó también, subió a `ui` (Regla 1 §5).
  */
 export function SelectionBar({
-  count,
-  isExporting,
-  onExport,
-  onClear,
+    count,
+    isExporting,
+    onExport,
+    onClear,
 }: {
-  count: number;
-  isExporting: boolean;
-  onExport: () => void;
-  onClear: () => void;
+    count: number;
+    isExporting: boolean;
+    onExport: () => void;
+    onClear: () => void;
 }) {
-  const { t } = useTranslation();
-  if (count === 0) return null;
+    const { t } = useTranslation();
+    if (count === 0) return null;
 
-  return (
-    <div className="gap-3 p-3 animate-page-in flex items-center justify-between rounded-xl border bg-card">
-      <p className="text-sm font-medium">{t('export.selected', { count })}</p>
+    return (
+        <div className="gap-3 p-3 animate-page-in flex items-center justify-between rounded-xl border bg-card">
+            <p className="text-sm font-medium">{t('export.selected', { count })}</p>
 
-      <div className="gap-2 flex items-center">
-        <Button variant="ghost" size="sm" onClick={onClear}>
-          <X size={15} aria-hidden />
-          {t('common.close')}
-        </Button>
-        <Button size="sm" isLoading={isExporting} onClick={onExport}>
-          <Download size={15} aria-hidden />
-          {t('export.selectedAction', { count })}
-        </Button>
-      </div>
-    </div>
-  );
+            <div className="gap-2 flex items-center">
+                <Button variant="ghost" size="sm" onClick={onClear}>
+                    <X size={15} aria-hidden />
+                    {t('common.close')}
+                </Button>
+                <Button size="sm" isLoading={isExporting} onClick={onExport}>
+                    <Download size={15} aria-hidden />
+                    {t('export.selectedAction', { count })}
+                </Button>
+            </div>
+        </div>
+    );
 }

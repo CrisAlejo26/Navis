@@ -157,16 +157,16 @@ Hover and Active should be:
 ```css
 /* Good */
 .button {
-  background: var(--primary);
+    background: var(--primary);
 }
 .button:hover {
-  background: var(--primary-hover); /* Just darker */
+    background: var(--primary-hover); /* Just darker */
 }
 
 /* Bad */
 .button:hover {
-  background: linear-gradient(135deg, #ff6b6b, #feca57);
-  box-shadow: 0 0 20px #ff6b6b;
+    background: linear-gradient(135deg, #ff6b6b, #feca57);
+    box-shadow: 0 0 20px #ff6b6b;
 }
 ```
 
@@ -213,18 +213,18 @@ Result: eye-burning contrast, amateur look.
 ```css
 /* Light */
 :root {
-  --bg: #ffffff;
-  --surface: #f7f7f7;
-  --text: #0b0b0b;
-  --text-muted: #5f6368;
+    --bg: #ffffff;
+    --surface: #f7f7f7;
+    --text: #0b0b0b;
+    --text-muted: #5f6368;
 }
 
 /* Dark — NOT just inverted */
 [data-theme='dark'] {
-  --bg: #0f0f0f; /* Not #000 */
-  --surface: #1a1a1a;
-  --text: #f0f0f0; /* Not #fff */
-  --text-muted: #a1a1a1;
+    --bg: #0f0f0f; /* Not #000 */
+    --surface: #1a1a1a;
+    --text: #f0f0f0; /* Not #fff */
+    --text-muted: #a1a1a1;
 }
 ```
 
@@ -238,8 +238,8 @@ In dark UI, surfaces and layers communicate through:
 
 ```css
 [data-theme='dark'] {
-  --surface-elevated: #242424; /* Lighter than base */
-  --border: rgba(255, 255, 255, 0.1);
+    --surface-elevated: #242424; /* Lighter than base */
+    --border: rgba(255, 255, 255, 0.1);
 }
 ```
 
@@ -253,24 +253,24 @@ Browser-level settings that most developers miss:
 
 <!-- Theme color for browser chrome, PWA, mobile address bar -->
 <meta
-  name="theme-color"
-  content="#0f0f0f"
-  media="(prefers-color-scheme: dark)"
+    name="theme-color"
+    content="#0f0f0f"
+    media="(prefers-color-scheme: dark)"
 />
 <meta
-  name="theme-color"
-  content="#ffffff"
-  media="(prefers-color-scheme: light)"
+    name="theme-color"
+    content="#ffffff"
+    media="(prefers-color-scheme: light)"
 />
 ```
 
 ```css
 /* On <html> — fixes scrollbars, form controls, system dialogs */
 :root {
-  color-scheme: light;
+    color-scheme: light;
 }
 [data-theme='dark'] {
-  color-scheme: dark;
+    color-scheme: dark;
 }
 ```
 
@@ -284,8 +284,8 @@ Browser-level settings that most developers miss:
 
 ```css
 [data-theme='dark'] select {
-  background-color: var(--surface-2);
-  color: var(--text);
+    background-color: var(--surface-2);
+    color: var(--text);
 }
 ```
 
@@ -315,31 +315,31 @@ Browser-level settings that most developers miss:
 
 ```css
 :root {
-  /* Surfaces */
-  --bg: #ffffff;
-  --surface-1: #ffffff;
-  --surface-2: #f7f7f7;
+    /* Surfaces */
+    --bg: #ffffff;
+    --surface-1: #ffffff;
+    --surface-2: #f7f7f7;
 
-  /* Text */
-  --text: #0b0b0b;
-  --text-muted: #5f6368;
-  --text-subtle: #7a7f85;
+    /* Text */
+    --text: #0b0b0b;
+    --text-muted: #5f6368;
+    --text-subtle: #7a7f85;
 
-  /* Borders */
-  --border: #e6e6e6;
-  --border-strong: #d1d1d1;
+    /* Borders */
+    --border: #e6e6e6;
+    --border-strong: #d1d1d1;
 
-  /* Primary */
-  --primary: #2563eb;
-  --on-primary: #ffffff;
-  --primary-hover: #1d4ed8;
-  --primary-active: #1e40af;
-  --primary-tint: #eff6ff;
+    /* Primary */
+    --primary: #2563eb;
+    --on-primary: #ffffff;
+    --primary-hover: #1d4ed8;
+    --primary-active: #1e40af;
+    --primary-tint: #eff6ff;
 
-  /* Semantic */
-  --success: #16a34a;
-  --warning: #f59e0b;
-  --danger: #ef4444;
+    /* Semantic */
+    --success: #16a34a;
+    --warning: #f59e0b;
+    --danger: #ef4444;
 }
 ```
 
@@ -413,12 +413,12 @@ Gradients are allowed when:
 ```css
 /* Acceptable */
 .hero-badge {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
 /* Problematic */
 .card {
-  background: linear-gradient(90deg, #ff6b6b, #feca57, #48dbfb, #ff9ff3);
+    background: linear-gradient(90deg, #ff6b6b, #feca57, #48dbfb, #ff9ff3);
 }
 ```
 
@@ -495,86 +495,86 @@ Reference implementation with all tokens:
 
 ```css
 :root {
-  /* Neutrals (cool variant) */
-  --neutral-50: #fafafa;
-  --neutral-100: #f5f5f5;
-  --neutral-200: #e5e5e5;
-  --neutral-300: #d4d4d4;
-  --neutral-400: #a3a3a3;
-  --neutral-500: #737373;
-  --neutral-600: #525252;
-  --neutral-700: #404040;
-  --neutral-800: #262626;
-  --neutral-900: #171717;
-  --neutral-950: #0a0a0a;
+    /* Neutrals (cool variant) */
+    --neutral-50: #fafafa;
+    --neutral-100: #f5f5f5;
+    --neutral-200: #e5e5e5;
+    --neutral-300: #d4d4d4;
+    --neutral-400: #a3a3a3;
+    --neutral-500: #737373;
+    --neutral-600: #525252;
+    --neutral-700: #404040;
+    --neutral-800: #262626;
+    --neutral-900: #171717;
+    --neutral-950: #0a0a0a;
 
-  /* Surfaces */
-  --bg: var(--neutral-50);
-  --surface-1: #ffffff;
-  --surface-2: var(--neutral-100);
-  --surface-3: var(--neutral-200);
+    /* Surfaces */
+    --bg: var(--neutral-50);
+    --surface-1: #ffffff;
+    --surface-2: var(--neutral-100);
+    --surface-3: var(--neutral-200);
 
-  /* Text */
-  --text: var(--neutral-900);
-  --text-muted: var(--neutral-600);
-  --text-subtle: var(--neutral-500);
-  --text-disabled: var(--neutral-400);
+    /* Text */
+    --text: var(--neutral-900);
+    --text-muted: var(--neutral-600);
+    --text-subtle: var(--neutral-500);
+    --text-disabled: var(--neutral-400);
 
-  /* Borders */
-  --border: var(--neutral-200);
-  --border-strong: var(--neutral-300);
+    /* Borders */
+    --border: var(--neutral-200);
+    --border-strong: var(--neutral-300);
 
-  /* Primary (blue) */
-  --primary-50: #eff6ff;
-  --primary-100: #dbeafe;
-  --primary-200: #bfdbfe;
-  --primary-500: #3b82f6;
-  --primary-600: #2563eb;
-  --primary-700: #1d4ed8;
-  --primary-800: #1e40af;
-  --primary-900: #1e3a8a;
+    /* Primary (blue) */
+    --primary-50: #eff6ff;
+    --primary-100: #dbeafe;
+    --primary-200: #bfdbfe;
+    --primary-500: #3b82f6;
+    --primary-600: #2563eb;
+    --primary-700: #1d4ed8;
+    --primary-800: #1e40af;
+    --primary-900: #1e3a8a;
 
-  --primary: var(--primary-600);
-  --primary-hover: var(--primary-700);
-  --primary-active: var(--primary-800);
-  --primary-tint: var(--primary-50);
-  --on-primary: #ffffff;
+    --primary: var(--primary-600);
+    --primary-hover: var(--primary-700);
+    --primary-active: var(--primary-800);
+    --primary-tint: var(--primary-50);
+    --on-primary: #ffffff;
 
-  /* Semantic */
-  --success: #16a34a;
-  --success-bg: #f0fdf4;
-  --warning: #f59e0b;
-  --warning-bg: #fffbeb;
-  --danger: #ef4444;
-  --danger-bg: #fef2f2;
-  --info: #0ea5e9;
-  --info-bg: #f0f9ff;
+    /* Semantic */
+    --success: #16a34a;
+    --success-bg: #f0fdf4;
+    --warning: #f59e0b;
+    --warning-bg: #fffbeb;
+    --danger: #ef4444;
+    --danger-bg: #fef2f2;
+    --info: #0ea5e9;
+    --info-bg: #f0f9ff;
 }
 
 /* Dark theme */
 [data-theme='dark'] {
-  --bg: #0f0f0f;
-  --surface-1: #171717;
-  --surface-2: #1f1f1f;
-  --surface-3: #262626;
+    --bg: #0f0f0f;
+    --surface-1: #171717;
+    --surface-2: #1f1f1f;
+    --surface-3: #262626;
 
-  --text: #f5f5f5;
-  --text-muted: #a3a3a3;
-  --text-subtle: #737373;
+    --text: #f5f5f5;
+    --text-muted: #a3a3a3;
+    --text-subtle: #737373;
 
-  --border: rgba(255, 255, 255, 0.1);
-  --border-strong: rgba(255, 255, 255, 0.15);
+    --border: rgba(255, 255, 255, 0.1);
+    --border-strong: rgba(255, 255, 255, 0.15);
 
-  --primary: #60a5fa;
-  --primary-hover: #3b82f6;
-  --primary-active: #2563eb;
-  --primary-tint: rgba(59, 130, 246, 0.15);
-  --on-primary: #0f0f0f;
+    --primary: #60a5fa;
+    --primary-hover: #3b82f6;
+    --primary-active: #2563eb;
+    --primary-tint: rgba(59, 130, 246, 0.15);
+    --on-primary: #0f0f0f;
 
-  --success-bg: rgba(22, 163, 74, 0.15);
-  --warning-bg: rgba(245, 158, 11, 0.15);
-  --danger-bg: rgba(239, 68, 68, 0.15);
-  --info-bg: rgba(14, 165, 233, 0.15);
+    --success-bg: rgba(22, 163, 74, 0.15);
+    --warning-bg: rgba(245, 158, 11, 0.15);
+    --danger-bg: rgba(239, 68, 68, 0.15);
+    --info-bg: rgba(14, 165, 233, 0.15);
 }
 ```
 

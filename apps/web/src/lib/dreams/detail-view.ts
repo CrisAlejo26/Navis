@@ -20,22 +20,22 @@ export const DREAM_DETAIL_VIEWS = ['completo', 'lectura', 'interpretacion', 'rec
 export type DreamDetailView = (typeof DREAM_DETAIL_VIEWS)[number];
 
 interface ViewState {
-  view: DreamDetailView;
-  setView: (view: DreamDetailView) => void;
+    view: DreamDetailView;
+    setView: (view: DreamDetailView) => void;
 }
 
 /** Como el resto de las vistas: preferencia de quien mira, no del enlace. */
 export const useDreamDetailViewStore = create<ViewState>()(
-  persist(
-    (set) => ({
-      view: 'completo',
-      setView: (view) => {
-        set({ view });
-      },
-    }),
-    {
-      name: DREAM_DETAIL_VIEW_STORAGE_KEY,
-      storage: createJSONStorage(() => globalThis.localStorage),
-    },
-  ),
+    persist(
+        (set) => ({
+            view: 'completo',
+            setView: (view) => {
+                set({ view });
+            },
+        }),
+        {
+            name: DREAM_DETAIL_VIEW_STORAGE_KEY,
+            storage: createJSONStorage(() => globalThis.localStorage),
+        },
+    ),
 );

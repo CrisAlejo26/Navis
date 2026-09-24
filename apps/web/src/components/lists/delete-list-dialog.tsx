@@ -17,37 +17,37 @@ import { toast } from '@/lib/toast';
  * barra lateral no hace falta moverse de donde se esté.
  */
 export function DeleteListDialog({
-  list,
-  onClose,
-  onDeleted,
+    list,
+    onClose,
+    onDeleted,
 }: {
-  list: Pick<List, 'id' | 'name'> | null;
-  onClose: () => void;
-  onDeleted?: () => void;
+    list: Pick<List, 'id' | 'name'> | null;
+    onClose: () => void;
+    onDeleted?: () => void;
 }) {
-  const { t } = useTranslation();
-  const remove = useDeleteList(api);
+    const { t } = useTranslation();
+    const remove = useDeleteList(api);
 
-  return (
-    <ConfirmDialog
-      open={list !== null}
-      onClose={onClose}
-      onConfirm={() => {
-        if (!list) return;
+    return (
+        <ConfirmDialog
+            open={list !== null}
+            onClose={onClose}
+            onConfirm={() => {
+                if (!list) return;
 
-        remove.mutate(list.id, {
-          onSuccess: () => {
-            onClose();
-            toast.success(t('lists.deleted', { name: list.name }));
-            onDeleted?.();
-          },
-        });
-      }}
-      title={t('lists.delete')}
-      description={t('lists.deleteExplain')}
-      confirmLabel={t('lists.delete')}
-      destructive
-      isPending={remove.isPending}
-    />
-  );
+                remove.mutate(list.id, {
+                    onSuccess: () => {
+                        onClose();
+                        toast.success(t('lists.deleted', { name: list.name }));
+                        onDeleted?.();
+                    },
+                });
+            }}
+            title={t('lists.delete')}
+            description={t('lists.deleteExplain')}
+            confirmLabel={t('lists.delete')}
+            destructive
+            isPending={remove.isPending}
+        />
+    );
 }

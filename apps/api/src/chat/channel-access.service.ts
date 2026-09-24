@@ -6,8 +6,8 @@ import { ChannelMember } from './channel-member.entity';
 import { Channel } from './channel.entity';
 
 export interface ChannelAccess {
-  channel: Channel;
-  membership: ChannelMember;
+    channel: Channel;
+    membership: ChannelMember;
 }
 
 /**
@@ -19,35 +19,35 @@ export interface ChannelAccess {
  */
 @Injectable()
 export class ChannelAccessService {
-  constructor(
-    @InjectRepository(Channel) private readonly channels: Repository<Channel>,
-    @InjectRepository(ChannelMember) private readonly members: Repository<ChannelMember>,
-  ) {}
+    constructor(
+        @InjectRepository(Channel) private readonly channels: Repository<Channel>,
+        @InjectRepository(ChannelMember) private readonly members: Repository<ChannelMember>,
+    ) {}
 
-  async requireMembership(
-    churchId: string,
-    userId: string,
-    channelId: string,
-  ): Promise<ChannelAccess> {
-    const channel = await this.channels.findOne({ where: { id: channelId, churchId } });
-    if (!channel) throw new NotFoundException('Esa conversación no existe en esta iglesia');
+    async requireMembership(
+        churchId: string,
+        userId: string,
+        channelId: string,
+    ): Promise<ChannelAccess> {
+        const channel = await this.channels.findOne({ where: { id: channelId, churchId } });
+        if (!channel) throw new NotFoundException('Esa conversación no existe en esta iglesia');
 
-    const membership = await this.members.findOne({ where: { channelId, userId } });
-    if (!membership) throw new NotFoundException('Esa conversación no existe en esta iglesia');
+        const membership = await this.members.findOne({ where: { channelId, userId } });
+        if (!membership) throw new NotFoundException('Esa conversación no existe en esta iglesia');
 
-    return { channel, membership };
-  }
-
-  /** Un canal de aviso solo admite escribir a quien modera (RFC 0016 §1). */
-  requireWriteAccess(access: ChannelAccess): void {
-    if (access.channel.kind === 'aviso' && access.membership.role !== 'moderador') {
-      throw new ForbiddenException('Solo quien modera puede escribir avisos');
+        return { channel, membership };
     }
-  }
 
-  requireModerator(access: ChannelAccess): void {
-    if (access.membership.role !== 'moderador') {
-      throw new ForbiddenException('Hace falta moderar este canal');
+    /** Un canal de aviso solo admite escribir a quien modera (RFC 0016 §1). */
+    requireWriteAccess(access: ChannelAccess): void {
+        if (access.channel.kind === 'aviso' && access.membership.role !== 'moderador') {
+            throw new ForbiddenException('Solo quien modera puede escribir avisos');
+        }
     }
-  }
+
+    requireModerator(access: ChannelAccess): void {
+        if (access.membership.role !== 'moderador') {
+            throw new ForbiddenException('Hace falta moderar este canal');
+        }
+    }
 }

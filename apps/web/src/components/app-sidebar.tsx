@@ -24,57 +24,64 @@ import { useSidebarStore } from '@/lib/sidebar';
  * bucle (Regla 9), y `prefers-reduced-motion` lo apaga desde `global.css`.
  */
 export function AppSidebar({
-  items,
-  branches,
+    items,
+    branches,
 }: {
-  items: readonly NavItem[];
-  branches?: Partial<Record<NavChildren, NavBranch>>;
+    items: readonly NavItem[];
+    branches?: Partial<Record<NavChildren, NavBranch>>;
 }) {
-  const { t } = useTranslation();
-  const collapsed = useSidebarStore((state) => state.collapsed);
-  const toggle = useSidebarStore((state) => state.toggle);
+    const { t } = useTranslation();
+    const collapsed = useSidebarStore((state) => state.collapsed);
+    const toggle = useSidebarStore((state) => state.toggle);
 
-  return (
-    <aside
-      className={cn(
-        'ease-out md:sticky md:top-0 md:flex relative hidden h-dvh shrink-0 flex-col border-r bg-card transition-[width] duration-300',
-        collapsed ? 'w-16' : 'w-64',
-      )}
-    >
-      {/* Sobre el borde y a media altura: no roba sitio a nada y queda donde la
+    return (
+        <aside
+            className={cn(
+                'ease-out md:sticky md:top-0 md:flex relative hidden h-dvh shrink-0 flex-col border-r bg-card transition-[width] duration-300',
+                collapsed ? 'w-16' : 'w-64',
+            )}
+        >
+            {/* Sobre el borde y a media altura: no roba sitio a nada y queda donde la
           vista ya está mirando al buscar el límite del panel. */}
-      <button
-        type="button"
-        onClick={toggle}
-        aria-label={collapsed ? t('nav.expand') : t('nav.collapse')}
-        aria-expanded={!collapsed}
-        className="-right-3 h-6 w-6 shadow-sm absolute top-1/2 z-20 flex -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border bg-card text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-      >
-        {collapsed ? <ChevronRight size={14} aria-hidden /> : <ChevronLeft size={14} aria-hidden />}
-      </button>
+            <button
+                type="button"
+                onClick={toggle}
+                aria-label={collapsed ? t('nav.expand') : t('nav.collapse')}
+                aria-expanded={!collapsed}
+                className="-right-3 h-6 w-6 shadow-sm absolute top-1/2 z-20 flex -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border bg-card text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+            >
+                {collapsed ? (
+                    <ChevronRight size={14} aria-hidden />
+                ) : (
+                    <ChevronLeft size={14} aria-hidden />
+                )}
+            </button>
 
-      <div
-        className={cn('h-16 gap-2.5 px-4 flex shrink-0 items-center border-b', collapsed && 'px-0')}
-      >
-        <Logo className={cn('h-7 w-7', collapsed && 'mx-auto')} />
-        {!collapsed && (
-          <span className="font-semibold truncate text-[15px] tracking-[-0.01em]">
-            {t('common.appName')}
-          </span>
-        )}
-      </div>
+            <div
+                className={cn(
+                    'h-16 gap-2.5 px-4 flex shrink-0 items-center border-b',
+                    collapsed && 'px-0',
+                )}
+            >
+                <Logo className={cn('h-7 w-7', collapsed && 'mx-auto')} />
+                {!collapsed && (
+                    <span className="font-semibold truncate text-[15px] tracking-[-0.01em]">
+                        {t('common.appName')}
+                    </span>
+                )}
+            </div>
 
-      <div className={cn('p-2 shrink-0 border-b', collapsed && 'flex justify-center')}>
-        <ChurchSwitcher collapsed={collapsed} />
-      </div>
+            <div className={cn('p-2 shrink-0 border-b', collapsed && 'flex justify-center')}>
+                <ChurchSwitcher collapsed={collapsed} />
+            </div>
 
-      <div className="min-h-0 p-2 flex flex-1 flex-col overflow-x-hidden overflow-y-auto">
-        <AppNav items={items} collapsed={collapsed} branches={branches} />
-      </div>
+            <div className="min-h-0 p-2 flex flex-1 flex-col overflow-x-hidden overflow-y-auto">
+                <AppNav items={items} collapsed={collapsed} branches={branches} />
+            </div>
 
-      <div className="p-2 shrink-0">
-        <SessionFooter collapsed={collapsed} />
-      </div>
-    </aside>
-  );
+            <div className="p-2 shrink-0">
+                <SessionFooter collapsed={collapsed} />
+            </div>
+        </aside>
+    );
 }

@@ -14,53 +14,53 @@ import { renderWithI18n } from '@/test/render';
  * acción principal de la pantalla —«Ver más» en la bitácora, por ejemplo—.
  */
 describe('el aviso de la PWA', () => {
-  beforeEach(() => {
-    resetServiceWorker();
-    useToastStore.setState({ toasts: [] });
-  });
+    beforeEach(() => {
+        resetServiceWorker();
+        useToastStore.setState({ toasts: [] });
+    });
 
-  afterEach(() => {
-    resetServiceWorker();
-  });
+    afterEach(() => {
+        resetServiceWorker();
+    });
 
-  it('cuando ya funciona sin conexión lo dice y no deja nada en pantalla', () => {
-    serviceWorker.offlineReady = true;
-    renderWithI18n(<PwaUpdatePrompt />);
+    it('cuando ya funciona sin conexión lo dice y no deja nada en pantalla', () => {
+        serviceWorker.offlineReady = true;
+        renderWithI18n(<PwaUpdatePrompt />);
 
-    // Se anuncia por el mismo camino que el resto de avisos, que se van solos.
-    expect(useToastStore.getState().toasts.map((one) => one.message)).toEqual([
-      i18n.t('pwa.offlineReady'),
-    ]);
-    // Y no queda ninguna banda tapando el final de la página.
-    expect(screen.queryByRole('status')).toBeNull();
-  });
+        // Se anuncia por el mismo camino que el resto de avisos, que se van solos.
+        expect(useToastStore.getState().toasts.map((one) => one.message)).toEqual([
+            i18n.t('pwa.offlineReady'),
+        ]);
+        // Y no queda ninguna banda tapando el final de la página.
+        expect(screen.queryByRole('status')).toBeNull();
+    });
 
-  it('cuando hay versión nueva no se va sola: es una decisión', () => {
-    serviceWorker.needRefresh = true;
-    renderWithI18n(<PwaUpdatePrompt />);
+    it('cuando hay versión nueva no se va sola: es una decisión', () => {
+        serviceWorker.needRefresh = true;
+        renderWithI18n(<PwaUpdatePrompt />);
 
-    expect(screen.getByRole('status')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: i18n.t('pwa.reload') })).toBeInTheDocument();
-    expect(useToastStore.getState().toasts).toHaveLength(0);
-  });
+        expect(screen.getByRole('status')).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: i18n.t('pwa.reload') })).toBeInTheDocument();
+        expect(useToastStore.getState().toasts).toHaveLength(0);
+    });
 
-  it('el aviso de versión nueva se puede quitar de en medio', async () => {
-    serviceWorker.needRefresh = true;
-    renderWithI18n(<PwaUpdatePrompt />);
+    it('el aviso de versión nueva se puede quitar de en medio', async () => {
+        serviceWorker.needRefresh = true;
+        renderWithI18n(<PwaUpdatePrompt />);
 
-    await userEvent.click(screen.getByRole('button', { name: i18n.t('common.close') }));
+        await userEvent.click(screen.getByRole('button', { name: i18n.t('common.close') }));
 
-    expect(screen.queryByRole('status')).toBeNull();
-    // Cerrarlo no actualiza: recargar sigue siendo una decisión aparte.
-    expect(serviceWorker.updates).toBe(0);
-  });
+        expect(screen.queryByRole('status')).toBeNull();
+        // Cerrarlo no actualiza: recargar sigue siendo una decisión aparte.
+        expect(serviceWorker.updates).toBe(0);
+    });
 
-  it('recargar solo ocurre al pulsarlo', async () => {
-    serviceWorker.needRefresh = true;
-    renderWithI18n(<PwaUpdatePrompt />);
+    it('recargar solo ocurre al pulsarlo', async () => {
+        serviceWorker.needRefresh = true;
+        renderWithI18n(<PwaUpdatePrompt />);
 
-    await userEvent.click(screen.getByRole('button', { name: i18n.t('pwa.reload') }));
+        await userEvent.click(screen.getByRole('button', { name: i18n.t('pwa.reload') }));
 
-    expect(serviceWorker.updates).toBe(1);
-  });
+        expect(serviceWorker.updates).toBe(1);
+    });
 });

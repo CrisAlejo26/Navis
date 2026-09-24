@@ -1,12 +1,12 @@
 {
-  "name": "@navis/tsconfig",
-  "version": "0.1.0",
-  "private": true,
-  "license": "MIT",
-  "files": [
-    "base.json",
-    "library.json",
-    "nest.json",
-    "react.json"
-  ]
+    "name": "@navis/tsconfig",
+    "version": "0.1.0",
+    "private": true,
+    "license": "MIT",
+    "files": [
+        "base.json",
+        "library.json",
+        "nest.json",
+        "react.json"
+    ]
 }

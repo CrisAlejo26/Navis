@@ -9,7 +9,7 @@ export type DreamSortField = (typeof DREAM_SORT_FIELDS)[number];
 export const DEFAULT_DREAM_SORT: DreamSortField = 'dreamed';
 
 export function isDreamSortField(value: string): value is DreamSortField {
-  return (DREAM_SORT_FIELDS as readonly string[]).includes(value);
+    return (DREAM_SORT_FIELDS as readonly string[]).includes(value);
 }
 
 /**
@@ -20,32 +20,32 @@ export function isDreamSortField(value: string): value is DreamSortField {
  * edición recibe el identificador y lo vuelve a pedir entero.
  */
 export interface DreamListItem {
-  id: string;
-  title: string | null;
-  excerpt: string;
-  dreamedAt: string;
-  fulfilledAt: string | null;
-  state: DreamState;
-  hasInterpretation: boolean;
-  audiosCount: number;
-  /** Las emociones enteras: son el color de la fila y llevan su acento (D20). */
-  emotions: Emotion[];
+    id: string;
+    title: string | null;
+    excerpt: string;
+    dreamedAt: string;
+    fulfilledAt: string | null;
+    state: DreamState;
+    hasInterpretation: boolean;
+    audiosCount: number;
+    /** Las emociones enteras: son el color de la fila y llevan su acento (D20). */
+    emotions: Emotion[];
 }
 
 /** Lo que acepta `GET /dreams`. Todo opcional salvo la paginación (§6.1). */
 export interface DreamsQuery {
-  page?: number;
-  limit?: number;
-  /** Busca en título, cuerpo e interpretación, en el servidor. */
-  search?: string;
-  state?: readonly DreamState[];
-  /** Varias suman: el sueño que lleve cualquiera de ellas. */
-  emotion?: readonly string[];
-  from?: string;
-  to?: string;
-  year?: number;
-  sort?: DreamSortField;
-  order?: 'asc' | 'desc';
+    page?: number;
+    limit?: number;
+    /** Busca en título, cuerpo e interpretación, en el servidor. */
+    search?: string;
+    state?: readonly DreamState[];
+    /** Varias suman: el sueño que lleve cualquiera de ellas. */
+    emotion?: readonly string[];
+    from?: string;
+    to?: string;
+    year?: number;
+    sort?: DreamSortField;
+    order?: 'asc' | 'desc';
 }
 
 /**
@@ -56,32 +56,32 @@ export interface DreamsQuery {
  * las que alguien quiere releer fuera de la aplicación.
  */
 export interface DreamExportRow extends Omit<DreamListItem, 'excerpt'> {
-  body: string;
-  interpretation: string | null;
-  fulfillmentMeaning: string | null;
-  /** Cuándo se apuntó, que no es la noche en que se soñó. */
-  createdAt: string;
+    body: string;
+    interpretation: string | null;
+    fulfillmentMeaning: string | null;
+    /** Cuándo se apuntó, que no es la noche en que se soñó. */
+    createdAt: string;
 }
 
 /** Una noche de la franja. Vienen las 84, con las vacías a cero (D19). */
 export interface DreamNight {
-  /** `AAAA-MM-DD`. */
-  day: string;
-  count: number;
+    /** `AAAA-MM-DD`. */
+    day: string;
+    count: number;
 }
 
 /** Una semana de la franja, ya sumada: el cliente no hace cuentas con fechas. */
 export interface DreamWeek {
-  /** El lunes de esa semana, `AAAA-MM-DD`. */
-  weekStart: string;
-  count: number;
+    /** El lunes de esa semana, `AAAA-MM-DD`. */
+    weekStart: string;
+    count: number;
 }
 
 /** Un mes de la línea de los últimos doce. */
 export interface DreamMonth {
-  /** `AAAA-MM`. */
-  month: string;
-  count: number;
+    /** `AAAA-MM`. */
+    month: string;
+    count: number;
 }
 
 /**
@@ -92,13 +92,13 @@ export interface DreamMonth {
  * europea, pero eso es cosa suya: el dato viaja en la convención de siempre.
  */
 export interface DreamWeekdayCount {
-  weekday: number;
-  count: number;
+    weekday: number;
+    count: number;
 }
 
 /** Una emoción del mapa, con su color, para pintar la barra apilada. */
 export interface DreamEmotionCount extends Emotion {
-  count: number;
+    count: number;
 }
 
 /**
@@ -109,17 +109,17 @@ export interface DreamEmotionCount extends Emotion {
  * que es donde se cuelan los errores de huso (D11).
  */
 export interface DreamsStats {
-  total: number;
-  thisMonth: number;
-  thisWeek: number;
-  fulfilled: number;
-  nights: DreamNight[];
-  weeks: DreamWeek[];
-  monthly: DreamMonth[];
-  byWeekday: DreamWeekdayCount[];
-  /** De más a menos. Solo las que se han usado alguna vez. */
-  byEmotion: DreamEmotionCount[];
-  /** Noches seguidas con algo apuntado, contando hacia atrás desde hoy. */
-  streak: number;
-  lastFulfilled: { id: string; title: string | null; fulfilledAt: string } | null;
+    total: number;
+    thisMonth: number;
+    thisWeek: number;
+    fulfilled: number;
+    nights: DreamNight[];
+    weeks: DreamWeek[];
+    monthly: DreamMonth[];
+    byWeekday: DreamWeekdayCount[];
+    /** De más a menos. Solo las que se han usado alguna vez. */
+    byEmotion: DreamEmotionCount[];
+    /** Noches seguidas con algo apuntado, contando hacia atrás desde hoy. */
+    streak: number;
+    lastFulfilled: { id: string; title: string | null; fulfilledAt: string } | null;
 }

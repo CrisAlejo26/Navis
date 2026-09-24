@@ -6,10 +6,10 @@ import { api } from './api';
 import { useSession } from './auth-client';
 
 export interface Permissions {
-  /** Si el rol de quien ha entrado tiene ese permiso. */
-  can: (permission: Permission) => boolean;
-  /** Mientras se sabe, no se decide: ni se pinta el menú ni se echa a nadie. */
-  isLoading: boolean;
+    /** Si el rol de quien ha entrado tiene ese permiso. */
+    can: (permission: Permission) => boolean;
+    /** Mientras se sabe, no se decide: ni se pinta el menú ni se echa a nadie. */
+    isLoading: boolean;
 }
 
 /**
@@ -23,15 +23,15 @@ export interface Permissions {
  * la API: esconder una entrada del menú es cortesía, no seguridad.
  */
 export function usePermissions(): Permissions {
-  const { data: session } = useSession();
-  const { data, isLoading } = useMyRole(api, Boolean(session));
-  const permissions = data?.permissions;
+    const { data: session } = useSession();
+    const { data, isLoading } = useMyRole(api, Boolean(session));
+    const permissions = data?.permissions;
 
-  return useMemo(
-    () => ({
-      can: (permission: Permission) => hasPermission(permissions ?? [], permission),
-      isLoading: Boolean(session) && isLoading,
-    }),
-    [permissions, session, isLoading],
-  );
+    return useMemo(
+        () => ({
+            can: (permission: Permission) => hasPermission(permissions ?? [], permission),
+            isLoading: Boolean(session) && isLoading,
+        }),
+        [permissions, session, isLoading],
+    );
 }

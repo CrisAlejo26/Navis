@@ -11,7 +11,7 @@ import { listShareUrl } from '@navis/shared';
  * la API: es el único sitio donde `/l/` contesta.
  */
 export function shareLinkFor(token: string, apiBaseUrl: string): string {
-  return listShareUrl(originOf(apiBaseUrl), token);
+    return listShareUrl(originOf(apiBaseUrl), token);
 }
 
 /**
@@ -21,26 +21,26 @@ export function shareLinkFor(token: string, apiBaseUrl: string): string {
  * manda a la API bajo el dominio del sitio, y en desarrollo solo contesta la API.
  */
 export function publicAssetOrigin(apiBaseUrl: string): string {
-  return originOf(apiBaseUrl);
+    return originOf(apiBaseUrl);
 }
 
 function originOf(apiBaseUrl: string): string {
-  const web = globalThis.location.origin;
+    const web = globalThis.location.origin;
 
-  try {
-    const api = new URL(apiBaseUrl).origin;
-    return api === web ? web : api;
-  } catch {
-    return web;
-  }
+    try {
+        const api = new URL(apiBaseUrl).origin;
+        return api === web ? web : api;
+    } catch {
+        return web;
+    }
 }
 
 /** Copiar al portapapeles, diciendo si se pudo: sin conexión segura, no se puede. */
 export async function copyToClipboard(text: string): Promise<boolean> {
-  try {
-    await navigator.clipboard.writeText(text);
-    return true;
-  } catch {
-    return false;
-  }
+    try {
+        await navigator.clipboard.writeText(text);
+        return true;
+    } catch {
+        return false;
+    }
 }

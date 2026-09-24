@@ -12,28 +12,28 @@ import { queryKeys } from './query-keys';
  * pisan sin avisar (CLAUDE.md).
  */
 export function toBelieverSearch(query: BelieversQuery): string {
-  const params = new URLSearchParams();
+    const params = new URLSearchParams();
 
-  if (query.page && query.page > 1) params.set('page', String(query.page));
-  if (query.limit) params.set('limit', String(query.limit));
-  if (query.search) params.set('search', query.search);
-  for (const status of query.status ?? []) params.append('status', status);
-  if (query.congregationId) params.set('congregationId', query.congregationId);
-  if (query.giftId) params.set('giftId', query.giftId);
-  if (query.tagId) params.set('tagId', query.tagId);
-  if (query.ministry) params.set('ministry', query.ministry);
-  if (query.listId) params.set('listId', query.listId);
-  if (query.inLists) params.set('inLists', String(query.inLists));
-  if (query.attention) params.set('attention', 'true');
-  if (query.sort) params.set('sort', query.sort);
-  if (query.order) params.set('order', query.order);
+    if (query.page && query.page > 1) params.set('page', String(query.page));
+    if (query.limit) params.set('limit', String(query.limit));
+    if (query.search) params.set('search', query.search);
+    for (const status of query.status ?? []) params.append('status', status);
+    if (query.congregationId) params.set('congregationId', query.congregationId);
+    if (query.giftId) params.set('giftId', query.giftId);
+    if (query.tagId) params.set('tagId', query.tagId);
+    if (query.ministry) params.set('ministry', query.ministry);
+    if (query.listId) params.set('listId', query.listId);
+    if (query.inLists) params.set('inLists', String(query.inLists));
+    if (query.attention) params.set('attention', 'true');
+    if (query.sort) params.set('sort', query.sort);
+    if (query.order) params.set('order', query.order);
 
-  return params.toString();
+    return params.toString();
 }
 
 /** Clave estable: el mismo filtro escrito en otro orden comparte caché. */
 function keyOf(query: BelieversQuery): object {
-  return { ...query, status: [...(query.status ?? [])].sort().join(',') };
+    return { ...query, status: [...(query.status ?? [])].sort().join(',') };
 }
 
 /**
@@ -44,42 +44,43 @@ function keyOf(query: BelieversQuery): object {
  * sin él, cambiar de página vacía la tabla y da un salto de alto.
  */
 export function useBelievers(
-  api: ApiClient,
-  query: BelieversQuery,
-  enabled = true,
+    api: ApiClient,
+    query: BelieversQuery,
+    enabled = true,
 ): UseQueryResult<Paginated<BelieverListItem>> {
-  return useQuery({
-    queryKey: queryKeys.believers.list(keyOf(query)),
-    queryFn: () => api.get<Paginated<BelieverListItem>>(`/believers?${toBelieverSearch(query)}`),
-    enabled,
-    staleTime: 30_000,
-    placeholderData: (previous) => previous,
-  });
+    return useQuery({
+        queryKey: queryKeys.believers.list(keyOf(query)),
+        queryFn: () =>
+            api.get<Paginated<BelieverListItem>>(`/believers?${toBelieverSearch(query)}`),
+        enabled,
+        staleTime: 30_000,
+        placeholderData: (previous) => previous,
+    });
 }
 
 /** Las cuentas de la cabecera: viven en las pastillas, no en un panel (§7.1). */
 export function useBelieversSummary(
-  api: ApiClient,
-  enabled = true,
+    api: ApiClient,
+    enabled = true,
 ): UseQueryResult<BelieversSummary> {
-  return useQuery({
-    queryKey: queryKeys.believers.summary,
-    queryFn: () => api.get<BelieversSummary>('/believers/summary'),
-    enabled,
-    staleTime: 30_000,
-  });
+    return useQuery({
+        queryKey: queryKeys.believers.summary,
+        queryFn: () => api.get<BelieversSummary>('/believers/summary'),
+        enabled,
+        staleTime: 30_000,
+    });
 }
 
 /** La ficha entera, que es lo que abre `/believers/:id` (D12). */
 export function useBeliever(
-  api: ApiClient,
-  id: string,
-  enabled = true,
+    api: ApiClient,
+    id: string,
+    enabled = true,
 ): UseQueryResult<BelieverListItem> {
-  return useQuery({
-    queryKey: queryKeys.believers.one(id),
-    queryFn: () => api.get<BelieverListItem>(`/believers/${id}`),
-    enabled: enabled && Boolean(id),
-    staleTime: 30_000,
-  });
+    return useQuery({
+        queryKey: queryKeys.believers.one(id),
+        queryFn: () => api.get<BelieverListItem>(`/believers/${id}`),
+        enabled: enabled && Boolean(id),
+        staleTime: 30_000,
+    });
 }

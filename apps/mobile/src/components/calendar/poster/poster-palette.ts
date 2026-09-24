@@ -6,24 +6,24 @@ import { themeColorsHex, type ResolvedTheme, type ThemeColors } from '@navis/the
  * usan la barra de estado y el splash: no se elige ningún color a ojo.
  */
 export interface PosterPalette {
-  /** La paleta entera, para `accentHex`. */
-  palette: ThemeColors;
-  background: string;
-  card: string;
-  foreground: string;
-  muted: string;
-  border: string;
+    /** La paleta entera, para `accentHex`. */
+    palette: ThemeColors;
+    background: string;
+    card: string;
+    foreground: string;
+    muted: string;
+    border: string;
 }
 
 export function posterPalette(theme: ResolvedTheme): PosterPalette {
-  const colors = themeColorsHex[theme];
+    const colors = themeColorsHex[theme];
 
-  return {
-    palette: colors,
-    background: colors.background,
-    card: colors.card,
-    foreground: colors.foreground,
-    muted: colors.mutedForeground,
-    border: colors.border,
-  };
+    return {
+        palette: colors,
+        background: colors.background,
+        card: colors.card,
+        foreground: colors.foreground,
+        muted: colors.mutedForeground,
+        border: colors.border,
+    };
 }

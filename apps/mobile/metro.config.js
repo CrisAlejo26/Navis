@@ -16,8 +16,8 @@ const config = getDefaultConfig(projectRoot);
 // donde pnpm deja los paquetes en modo hoisted (ver .npmrc).
 config.watchFolders = [workspaceRoot];
 config.resolver.nodeModulesPaths = [
-  path.resolve(projectRoot, 'node_modules'),
-  path.resolve(workspaceRoot, 'node_modules'),
+    path.resolve(projectRoot, 'node_modules'),
+    path.resolve(workspaceRoot, 'node_modules'),
 ];
 config.resolver.disableHierarchicalLookup = false;
 
@@ -37,11 +37,11 @@ config.resolver.disableHierarchicalLookup = false;
 const API_CLIENT_SOURCE = path.resolve(workspaceRoot, 'packages/api-client/src/index.ts');
 const previousResolveRequest = config.resolver.resolveRequest;
 config.resolver.resolveRequest = (context, moduleName, platform) => {
-  if (moduleName === '@navis/api-client') {
-    return { type: 'sourceFile', filePath: API_CLIENT_SOURCE };
-  }
-  if (previousResolveRequest) return previousResolveRequest(context, moduleName, platform);
-  return context.resolveRequest(context, moduleName, platform);
+    if (moduleName === '@navis/api-client') {
+        return { type: 'sourceFile', filePath: API_CLIENT_SOURCE };
+    }
+    if (previousResolveRequest) return previousResolveRequest(context, moduleName, platform);
+    return context.resolveRequest(context, moduleName, platform);
 };
 
 // --- NativeWind 5 -----------------------------------------------------------

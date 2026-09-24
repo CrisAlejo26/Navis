@@ -9,10 +9,10 @@ import type { TextStyle } from 'react-native';
  * `packages/theme/src/fonts.ts`: este fichero solo lee de ahí.
  */
 export function typeStyle(level: TypeLevel): TextStyle {
-  const scale = TYPE_SCALE[level];
-  return {
-    fontFamily: FONT_FAMILIES[scale.font].native,
-    fontSize: scale.fontSize,
-    lineHeight: scale.lineHeight,
-  };
+    const scale = TYPE_SCALE[level];
+    return {
+        fontFamily: FONT_FAMILIES[scale.font].native,
+        fontSize: scale.fontSize,
+        lineHeight: scale.lineHeight,
+    };
 }

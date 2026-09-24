@@ -13,7 +13,7 @@ export type ProphecyWindow = (typeof PROPHECY_WINDOWS)[number];
 export const DEFAULT_PROPHECY_WINDOW: ProphecyWindow = 'all';
 
 export function isProphecyWindow(value: string): value is ProphecyWindow {
-  return (PROPHECY_WINDOWS as readonly string[]).includes(value);
+    return (PROPHECY_WINDOWS as readonly string[]).includes(value);
 }
 
 /**
@@ -30,7 +30,7 @@ export type ProphecySortField = (typeof PROPHECY_SORT_FIELDS)[number];
 export const DEFAULT_PROPHECY_SORT: ProphecySortField = 'received';
 
 export function isProphecySortField(value: string): value is ProphecySortField {
-  return (PROPHECY_SORT_FIELDS as readonly string[]).includes(value);
+    return (PROPHECY_SORT_FIELDS as readonly string[]).includes(value);
 }
 
 /**
@@ -41,38 +41,38 @@ export function isProphecySortField(value: string): value is ProphecySortField {
  * cientos de kilobytes para pintar tres líneas.
  */
 export interface ProphecyListItem {
-  id: string;
-  title: string;
-  excerpt: string;
-  receivedAt: string;
-  fulfilledAt: string | null;
-  lastFulfillmentAt: string | null;
-  state: ProphecyState;
-  waitingDays: number;
-  fulfillmentsCount: number;
-  /**
-   * Los días de cada cumplimiento parcial, de más antiguo a más reciente.
-   *
-   * Viajan con la fila porque son las **marcas de la travesía** (§7.5): sin
-   * ellas, el trayecto no podría enseñar por dónde se ha ido cumpliendo y la
-   * vista firma se quedaría en una barra de progreso. Son fechas, no filas
-   * enteras — el texto de cada uno se lee en la ficha.
-   */
-  fulfillmentDays: string[];
+    id: string;
+    title: string;
+    excerpt: string;
+    receivedAt: string;
+    fulfilledAt: string | null;
+    lastFulfillmentAt: string | null;
+    state: ProphecyState;
+    waitingDays: number;
+    fulfillmentsCount: number;
+    /**
+     * Los días de cada cumplimiento parcial, de más antiguo a más reciente.
+     *
+     * Viajan con la fila porque son las **marcas de la travesía** (§7.5): sin
+     * ellas, el trayecto no podría enseñar por dónde se ha ido cumpliendo y la
+     * vista firma se quedaría en una barra de progreso. Son fechas, no filas
+     * enteras — el texto de cada uno se lee en la ficha.
+     */
+    fulfillmentDays: string[];
 }
 
 /** Lo que acepta `GET /prophecies`. Todo opcional salvo la paginación (§6.1). */
 export interface PropheciesQuery {
-  page?: number;
-  limit?: number;
-  /** Contra `search_text`, sin acentos (D13). */
-  search?: string;
-  state?: readonly ProphecyState[];
-  window?: ProphecyWindow;
-  from?: string;
-  to?: string;
-  sort?: ProphecySortField;
-  order?: 'asc' | 'desc';
+    page?: number;
+    limit?: number;
+    /** Contra `search_text`, sin acentos (D13). */
+    search?: string;
+    state?: readonly ProphecyState[];
+    window?: ProphecyWindow;
+    from?: string;
+    to?: string;
+    sort?: ProphecySortField;
+    order?: 'asc' | 'desc';
 }
 
 /**
@@ -83,17 +83,17 @@ export interface PropheciesQuery {
  * listado, y ese ya está anotado en `CLAUDE.md`.
  */
 export interface ProphecyExportRow extends Omit<ProphecyListItem, 'excerpt'> {
-  body: string;
-  /** Cuándo se apuntó, que no es cuándo se recibió. */
-  createdAt: string;
+    body: string;
+    /** Cuándo se apuntó, que no es cuándo se recibió. */
+    createdAt: string;
 }
 
 /** Un mes del gráfico. Vienen los doce, con los vacíos a cero (§6.2). */
 export interface ProphecyMonth {
-  /** `AAAA-MM`. */
-  month: string;
-  received: number;
-  fulfilled: number;
+    /** `AAAA-MM`. */
+    month: string;
+    received: number;
+    fulfilled: number;
 }
 
 /**
@@ -103,13 +103,13 @@ export interface ProphecyMonth {
  * ciento y «todavía no hay nada» son cosas distintas y se pintan distinto.
  */
 export interface PropheciesStats {
-  total: number;
-  byState: Record<ProphecyState, number>;
-  fulfilledThisYear: number;
-  receivedThisYear: number;
-  fulfillmentRate: number | null;
-  /** La mediana, no la media: una profecía de quince años desplazaría la media. */
-  medianWaitingDays: number | null;
-  monthly: ProphecyMonth[];
-  longestWaiting: { id: string; title: string; waitingDays: number } | null;
+    total: number;
+    byState: Record<ProphecyState, number>;
+    fulfilledThisYear: number;
+    receivedThisYear: number;
+    fulfillmentRate: number | null;
+    /** La mediana, no la media: una profecía de quince años desplazaría la media. */
+    medianWaitingDays: number | null;
+    monthly: ProphecyMonth[];
+    longestWaiting: { id: string; title: string; waitingDays: number } | null;
 }

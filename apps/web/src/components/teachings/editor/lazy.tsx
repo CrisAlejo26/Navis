@@ -8,5 +8,5 @@ import { lazy } from 'react';
  * esta sección. Mismo patrón que `components/charts/lazy.tsx`.
  */
 export const TeachingEditor = lazy(() =>
-  import('./teaching-editor').then((module) => ({ default: module.TeachingEditor })),
+    import('./teaching-editor').then((module) => ({ default: module.TeachingEditor })),
 );

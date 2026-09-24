@@ -5,6 +5,7 @@ import { useQueryClient } from '@tanstack/react-query';
 
 import { Switch } from '@/components/ui/switch';
 import { api } from '@/lib/api';
+import { toast } from '@/lib/toast';
 
 /**
  * El interruptor de alcance, solo para el superadministrador (RFC 0014).
@@ -14,36 +15,40 @@ import { api } from '@/lib/api';
  * cambiar de iglesia activa (RFC 0008).
  */
 export function ScopeToggle({ profile }: { profile: Profile }) {
-  const { t } = useTranslation();
-  const updateProfile = useUpdateProfile(api);
-  const queryClient = useQueryClient();
+    const { t } = useTranslation();
+    const updateProfile = useUpdateProfile(api);
+    const queryClient = useQueryClient();
 
-  const toggle = () => {
-    updateProfile.mutate(
-      { restrictOwnScope: !profile.restrictOwnScope },
-      {
-        onSuccess: () => {
-          void queryClient.invalidateQueries({ queryKey: queryKeys.churches.all });
-          void queryClient.invalidateQueries({ queryKey: queryKeys.users.all });
-        },
-      },
+    const toggle = () => {
+        updateProfile.mutate(
+            { restrictOwnScope: !profile.restrictOwnScope },
+            {
+                onSuccess: () => {
+                    toast.success(t('settings.saved'));
+                    void queryClient.invalidateQueries({ queryKey: queryKeys.churches.all });
+                    void queryClient.invalidateQueries({ queryKey: queryKeys.users.all });
+                },
+                onError: () => {
+                    toast.error(t('errors.generic'));
+                },
+            },
+        );
+    };
+
+    return (
+        <div className="gap-4 flex items-center justify-between">
+            <div className="gap-1 flex flex-col">
+                <span className="text-sm font-medium">{t('settings.restrictOwnScope')}</span>
+                <span className="max-w-prose text-xs text-pretty text-muted-foreground">
+                    {t('settings.restrictOwnScopeHint')}
+                </span>
+            </div>
+            <Switch
+                checked={profile.restrictOwnScope}
+                onChange={toggle}
+                disabled={updateProfile.isPending}
+                aria-label={t('settings.restrictOwnScope')}
+            />
+        </div>
     );
-  };
-
-  return (
-    <div className="gap-4 flex items-center justify-between">
-      <div className="gap-1 flex flex-col">
-        <span className="text-sm font-medium">{t('settings.restrictOwnScope')}</span>
-        <span className="max-w-prose text-xs text-pretty text-muted-foreground">
-          {t('settings.restrictOwnScopeHint')}
-        </span>
-      </div>
-      <Switch
-        checked={profile.restrictOwnScope}
-        onChange={toggle}
-        disabled={updateProfile.isPending}
-        aria-label={t('settings.restrictOwnScope')}
-      />
-    </div>
-  );
 }

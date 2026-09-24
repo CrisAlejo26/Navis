@@ -23,16 +23,16 @@ export const RULE = 'FFE3E6EF';
  * etiquetas.
  */
 export function collectAccents(doc: ExportDocument, summary: readonly SummaryBlock[]): string[] {
-  const found = new Set<string>();
+    const found = new Set<string>();
 
-  for (const row of doc.rows) {
-    for (const cell of row) {
-      if (cell.kind === 'tags') for (const tag of cell.tags) found.add(tag.accent);
+    for (const row of doc.rows) {
+        for (const cell of row) {
+            if (cell.kind === 'tags') for (const tag of cell.tags) found.add(tag.accent);
+        }
     }
-  }
-  for (const block of summary) for (const entry of block.entries) found.add(entry.accent);
+    for (const block of summary) for (const entry of block.entries) found.add(entry.accent);
 
-  return [...found];
+    return [...found];
 }
 
 /**
@@ -43,7 +43,7 @@ export function collectAccents(doc: ExportDocument, summary: readonly SummaryBlo
  * tiene tema, es blanca (RFC 0009 D9).
  */
 export function toArgb(accent: string): string {
-  return `FF${accentHex(accent, 'light').replace('#', '').toUpperCase()}`;
+    return `FF${accentHex(accent, 'light').replace('#', '').toUpperCase()}`;
 }
 
 /**
@@ -53,15 +53,15 @@ export function toArgb(accent: string): string {
  * texto va en el acento puro, que sobre su propio tinte claro se lee de sobra.
  */
 export function tint(accent: string, ratio = 0.15): string {
-  const hex = accentHex(accent, 'light').replace('#', '');
-  const canal = (offset: number) => {
-    const valor = Number.parseInt(hex.slice(offset, offset + 2), 16);
-    return Math.round(valor * ratio + 255 * (1 - ratio));
-  };
+    const hex = accentHex(accent, 'light').replace('#', '');
+    const canal = (offset: number) => {
+        const valor = Number.parseInt(hex.slice(offset, offset + 2), 16);
+        return Math.round(valor * ratio + 255 * (1 - ratio));
+    };
 
-  const mezcla = [canal(0), canal(2), canal(4)]
-    .map((valor) => valor.toString(16).padStart(2, '0'))
-    .join('');
+    const mezcla = [canal(0), canal(2), canal(4)]
+        .map((valor) => valor.toString(16).padStart(2, '0'))
+        .join('');
 
-  return `FF${mezcla.toUpperCase()}`;
+    return `FF${mezcla.toUpperCase()}`;
 }

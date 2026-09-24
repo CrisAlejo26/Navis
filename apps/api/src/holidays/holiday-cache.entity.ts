@@ -19,22 +19,22 @@ import { TIMESTAMP } from '../database/column-types';
 @Entity('holiday_cache')
 @Index('UQ_holiday_cache', ['country', 'year'], { unique: true })
 export class HolidayCache extends BaseEntity {
-  /** ISO 3166-1 alfa-2. */
-  @Column({ type: 'text' })
-  country: string;
+    /** ISO 3166-1 alfa-2. */
+    @Column({ type: 'text' })
+    country: string;
 
-  @Column({ type: 'int' })
-  year: number;
+    @Column({ type: 'int' })
+    year: number;
 
-  /** `Holiday[]` serializado. Se valida al leerlo, como todo lo que entra. */
-  @Column({ type: 'text' })
-  payload: string;
+    /** `Holiday[]` serializado. Se valida al leerlo, como todo lo que entra. */
+    @Column({ type: 'text' })
+    payload: string;
 
-  /**
-   * Cuándo se trajo. Es lo que decide si hay que volver a preguntar, y por eso
-   * es una columna propia y no `updatedAt`: un cambio de formato del payload
-   * tocaría `updatedAt` y haría creer que el dato está fresco.
-   */
-  @Column({ name: 'fetched_at', type: TIMESTAMP })
-  fetchedAt: Date;
+    /**
+     * Cuándo se trajo. Es lo que decide si hay que volver a preguntar, y por eso
+     * es una columna propia y no `updatedAt`: un cambio de formato del payload
+     * tocaría `updatedAt` y haría creer que el dato está fresco.
+     */
+    @Column({ name: 'fetched_at', type: TIMESTAMP })
+    fetchedAt: Date;
 }

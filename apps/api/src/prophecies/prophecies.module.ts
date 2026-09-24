@@ -21,16 +21,16 @@ import { Prophecy } from './prophecy.entity';
  * tiene por qué leer las profecías de nadie.
  */
 @Module({
-  imports: [TypeOrmModule.forFeature([Prophecy, ProphecyFulfillment])],
-  controllers: [PropheciesController, FulfillmentsController],
-  providers: [
-    PropheciesRepository,
-    PropheciesService,
-    ProphecyRowsService,
-    PropheciesPageService,
-    PropheciesExportService,
-    ProphecyStatsService,
-    FulfillmentsService,
-  ],
+    imports: [TypeOrmModule.forFeature([Prophecy, ProphecyFulfillment])],
+    controllers: [PropheciesController, FulfillmentsController],
+    providers: [
+        PropheciesRepository,
+        PropheciesService,
+        ProphecyRowsService,
+        PropheciesPageService,
+        PropheciesExportService,
+        ProphecyStatsService,
+        FulfillmentsService,
+    ],
 })
 export class PropheciesModule {}

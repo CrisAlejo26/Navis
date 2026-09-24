@@ -15,42 +15,43 @@ import { useListExportColumns } from '@/lib/lists/export-columns';
  * hace el resto.
  */
 export function ListExportDialog({
-  open,
-  onClose,
-  list,
-  churchName,
+    open,
+    onClose,
+    list,
+    churchName,
 }: {
-  open: boolean;
-  onClose: () => void;
-  list: List;
-  churchName: string;
+    open: boolean;
+    onClose: () => void;
+    list: List;
+    churchName: string;
 }) {
-  const { t } = useTranslation();
-  const columns = useListExportColumns();
-  const { data, isFetching } = useListExport(api, list.id, open);
+    const { t } = useTranslation();
+    const columns = useListExportColumns();
+    const { data, isFetching } = useListExport(api, list.id, open);
 
-  const doc = useMemo(() => {
-    if (!data) return null;
+    const doc = useMemo(() => {
+        if (!data) return null;
 
-    return buildDocument({
-      label: list.name,
-      title: list.name,
-      subtitle: [churchName, t('export.rows', { count: data.returned, total: data.total })].join(
-        ' · ',
-      ),
-      columns,
-      rows: data.rows,
-    });
-  }, [data, columns, list.name, churchName, t]);
+        return buildDocument({
+            label: list.name,
+            title: list.name,
+            subtitle: [
+                churchName,
+                t('export.rows', { count: data.returned, total: data.total }),
+            ].join(' · '),
+            columns,
+            rows: data.rows,
+        });
+    }, [data, columns, list.name, churchName, t]);
 
-  return (
-    <ExportSheet
-      open={open}
-      onClose={onClose}
-      doc={doc}
-      total={data?.total ?? 0}
-      truncated={data?.truncated ?? false}
-      isLoading={isFetching && !data}
-    />
-  );
+    return (
+        <ExportSheet
+            open={open}
+            onClose={onClose}
+            doc={doc}
+            total={data?.total ?? 0}
+            truncated={data?.truncated ?? false}
+            isLoading={isFetching && !data}
+        />
+    );
 }

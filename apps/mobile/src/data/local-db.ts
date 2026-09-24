@@ -12,19 +12,19 @@ import type { SQLiteRunResult, SQLiteVariadicBindParams } from 'expo-sqlite';
  * parámetros posicionales), ahora vivas aquí y no en `db.ts`.
  */
 export type LocalDb = {
-  getAllAsync<T>(source: string, ...params: SQLiteVariadicBindParams): Promise<T[]>;
-  getFirstAsync<T>(source: string, ...params: SQLiteVariadicBindParams): Promise<T | null>;
-  runAsync(source: string, ...params: SQLiteVariadicBindParams): Promise<SQLiteRunResult>;
-  execAsync(source: string): Promise<void>;
-  withTransactionAsync(fn: () => Promise<void>): Promise<void>;
+    getAllAsync<T>(source: string, ...params: SQLiteVariadicBindParams): Promise<T[]>;
+    getFirstAsync<T>(source: string, ...params: SQLiteVariadicBindParams): Promise<T | null>;
+    runAsync(source: string, ...params: SQLiteVariadicBindParams): Promise<SQLiteRunResult>;
+    execAsync(source: string): Promise<void>;
+    withTransactionAsync(fn: () => Promise<void>): Promise<void>;
 };
 
 /** Para el `created_at`/`updated_at` de cada fila: ISO completo, comparable como texto. */
 export function nowIso(): string {
-  return new Date().toISOString();
+    return new Date().toISOString();
 }
 
 /** Un identificador con la misma forma que los uuid de la API (texto v4). */
 export function newId(): string {
-  return randomUUID();
+    return randomUUID();
 }

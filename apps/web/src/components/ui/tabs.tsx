@@ -3,18 +3,18 @@ import type { LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/cn';
 
 export interface TabItem<TValue extends string> {
-  value: TValue;
-  label: string;
-  icon?: LucideIcon;
-  /** Número que acompaña a la pestaña; por ejemplo, cuántos elementos tiene. */
-  count?: number;
+    value: TValue;
+    label: string;
+    icon?: LucideIcon;
+    /** Número que acompaña a la pestaña; por ejemplo, cuántos elementos tiene. */
+    count?: number;
 }
 
 interface TabsProps<TValue extends string> {
-  items: readonly TabItem<TValue>[];
-  value: TValue;
-  onChange: (value: TValue) => void;
-  label: string;
+    items: readonly TabItem<TValue>[];
+    value: TValue;
+    onChange: (value: TValue) => void;
+    label: string;
 }
 
 /**
@@ -25,57 +25,59 @@ interface TabsProps<TValue extends string> {
  * Quién guarda el valor —estado local, URL…— lo decide quien la usa.
  */
 export function Tabs<TValue extends string>({ items, value, onChange, label }: TabsProps<TValue>) {
-  // `min-w-0` es lo que deja encogerse a esta tira dentro de su columna flex
-  // (Regla 5: «un hijo ancho dentro de un flex-col ensancha al padre»); sin
-  // él, tres pestañas con icono y contador empujaban la página entera a un
-  // lado en un teléfono. Si de verdad no caben, la que se desplaza es la
-  // propia tira —`overflow-x-auto`—, no la pantalla.
-  //
-  // `overflow-y-hidden` es obligatorio junto al anterior: la spec de CSS
-  // Overflow computa el eje que se deja en `visible` como `auto` en cuanto el
-  // otro eje no lo es, así que sin esto el desbordamiento vertical de un
-  // par de píxeles (el `-mb-px` de la pestaña activa) sacaba una barra de
-  // scroll vertical que no tenía nada que desplazar.
-  return (
-    <div className="min-w-0 overflow-x-auto overflow-y-hidden border-b">
-      <div role="tablist" aria-label={label} className="gap-1 flex w-max">
-        {items.map((item) => {
-          const active = item.value === value;
-          const Icon = item.icon;
+    // `min-w-0` es lo que deja encogerse a esta tira dentro de su columna flex
+    // (Regla 5: «un hijo ancho dentro de un flex-col ensancha al padre»); sin
+    // él, tres pestañas con icono y contador empujaban la página entera a un
+    // lado en un teléfono. Si de verdad no caben, la que se desplaza es la
+    // propia tira —`overflow-x-auto`—, no la pantalla.
+    //
+    // `overflow-y-hidden` es obligatorio junto al anterior: la spec de CSS
+    // Overflow computa el eje que se deja en `visible` como `auto` en cuanto el
+    // otro eje no lo es, así que sin esto el desbordamiento vertical de un
+    // par de píxeles (el `-mb-px` de la pestaña activa) sacaba una barra de
+    // scroll vertical que no tenía nada que desplazar.
+    return (
+        <div className="min-w-0 overflow-x-auto overflow-y-hidden border-b">
+            <div role="tablist" aria-label={label} className="gap-1 flex w-max">
+                {items.map((item) => {
+                    const active = item.value === value;
+                    const Icon = item.icon;
 
-          return (
-            <button
-              key={item.value}
-              type="button"
-              role="tab"
-              aria-selected={active}
-              onClick={() => {
-                onChange(item.value);
-              }}
-              className={cn(
-                'gap-2 px-4 py-3 text-sm font-medium relative -mb-px inline-flex cursor-pointer items-center',
-                'border-b-2 transition-colors duration-200',
-                active
-                  ? 'border-primary text-foreground'
-                  : 'border-transparent text-muted-foreground hover:text-foreground',
-              )}
-            >
-              {Icon && <Icon size={16} aria-hidden />}
-              {item.label}
-              {item.count !== undefined && (
-                <span
-                  className={cn(
-                    'px-1.5 py-0.5 rounded-full text-[11px] tabular-nums',
-                    active ? 'bg-primary/12 text-primary' : 'bg-muted text-muted-foreground',
-                  )}
-                >
-                  {item.count}
-                </span>
-              )}
-            </button>
-          );
-        })}
-      </div>
-    </div>
-  );
+                    return (
+                        <button
+                            key={item.value}
+                            type="button"
+                            role="tab"
+                            aria-selected={active}
+                            onClick={() => {
+                                onChange(item.value);
+                            }}
+                            className={cn(
+                                'gap-2 px-4 py-3 text-sm font-medium relative -mb-px inline-flex cursor-pointer items-center',
+                                'border-b-2 transition-colors duration-200',
+                                active
+                                    ? 'border-primary text-foreground'
+                                    : 'border-transparent text-muted-foreground hover:text-foreground',
+                            )}
+                        >
+                            {Icon && <Icon size={16} aria-hidden />}
+                            {item.label}
+                            {item.count !== undefined && (
+                                <span
+                                    className={cn(
+                                        'px-1.5 py-0.5 rounded-full text-[11px] tabular-nums',
+                                        active
+                                            ? 'bg-primary/12 text-primary'
+                                            : 'bg-muted text-muted-foreground',
+                                    )}
+                                >
+                                    {item.count}
+                                </span>
+                            )}
+                        </button>
+                    );
+                })}
+            </div>
+        </div>
+    );
 }

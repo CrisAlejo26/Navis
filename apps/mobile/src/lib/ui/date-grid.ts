@@ -7,21 +7,21 @@ import { i18n } from '@/lib/i18n';
  * lo usan (`DateRangePicker` y `DateRangePresets`) lo importen del mismo
  * sitio, sin depender una de la otra. */
 export interface DateRange {
-  from: IsoDate;
-  to: IsoDate;
+    from: IsoDate;
+    to: IsoDate;
 }
 
 export interface DateGrid {
-  /** «septiembre de 2026», en el idioma activo. */
-  monthLabel: string;
-  /** Iniciales de lunes a domingo, en el idioma activo. */
-  weekdayLabels: string[];
-  /** Semanas completas (7 días), pueden traer días de fuera del mes. */
-  weeks: IsoDate[][];
+    /** «septiembre de 2026», en el idioma activo. */
+    monthLabel: string;
+    /** Iniciales de lunes a domingo, en el idioma activo. */
+    weekdayLabels: string[];
+    /** Semanas completas (7 días), pueden traer días de fuera del mes. */
+    weeks: IsoDate[][];
 }
 
 const esLista = (valor: unknown): valor is readonly string[] =>
-  Array.isArray(valor) && valor.every((item) => typeof item === 'string');
+    Array.isArray(valor) && valor.every((item) => typeof item === 'string');
 
 /**
  * La cuadrícula de un mes para `CalendarGrid` — Fase 5. La aritmética de
@@ -31,32 +31,32 @@ const esLista = (valor: unknown): valor is readonly string[] =>
  * los datos de todos los idiomas en Hermes y salían en inglés.
  */
 export function buildDateGrid(monthIso: IsoDate): DateGrid {
-  const start = startOfMonth(monthIso);
-  const { from, to } = monthGrid(start);
-  const days = eachDay(from, to);
+    const start = startOfMonth(monthIso);
+    const { from, to } = monthGrid(start);
+    const days = eachDay(from, to);
 
-  const weeks: IsoDate[][] = [];
-  for (let index = 0; index < days.length; index += 7) {
-    weeks.push(days.slice(index, index + 7));
-  }
+    const weeks: IsoDate[][] = [];
+    for (let index = 0; index < days.length; index += 7) {
+        weeks.push(days.slice(index, index + 7));
+    }
 
-  const monthLabel = new Intl.DateTimeFormat(i18n.resolvedLanguage ?? i18n.language, {
-    month: 'long',
-    year: 'numeric',
-    timeZone: 'UTC',
-  }).format(new Date(`${start}T00:00:00Z`));
+    const monthLabel = new Intl.DateTimeFormat(i18n.resolvedLanguage ?? i18n.language, {
+        month: 'long',
+        year: 'numeric',
+        timeZone: 'UTC',
+    }).format(new Date(`${start}T00:00:00Z`));
 
-  const etiquetas = i18n.exists('calendar.weekdayInitials')
-    ? (i18n.t('calendar.weekdayInitials', { returnObjects: true }) as unknown)
-    : null;
-  const weekdayLabels = esLista(etiquetas)
-    ? [...etiquetas]
-    : ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
+    const etiquetas = i18n.exists('calendar.weekdayInitials')
+        ? (i18n.t('calendar.weekdayInitials', { returnObjects: true }) as unknown)
+        : null;
+    const weekdayLabels = esLista(etiquetas)
+        ? [...etiquetas]
+        : ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
 
-  return { monthLabel, weekdayLabels, weeks };
+    return { monthLabel, weekdayLabels, weeks };
 }
 
 /** `true` si el día pertenece al mes de referencia (no es relleno del borde). */
 export function isInMonth(day: IsoDate, monthIso: IsoDate): boolean {
-  return day.slice(0, 7) === startOfMonth(monthIso).slice(0, 7);
+    return day.slice(0, 7) === startOfMonth(monthIso).slice(0, 7);
 }

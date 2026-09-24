@@ -15,24 +15,24 @@ import type { Believer } from './believer.entity';
 @Entity('believer_ministries')
 @Index('UQ_believer_ministries', ['believerId', 'ministry'], { unique: true })
 export class BelieverMinistry extends BaseEntity {
-  @ApiProperty()
-  @Column({ name: 'believer_id', type: UUID })
-  believerId: string;
+    @ApiProperty()
+    @Column({ name: 'believer_id', type: UUID })
+    believerId: string;
 
-  /* Por nombre y con `Relation<>`: ver `calendar/pattern-phase.entity.ts`. */
-  @ManyToOne('Believer', 'ministries', { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'believer_id' })
-  believer: Relation<Believer>;
+    /* Por nombre y con `Relation<>`: ver `calendar/pattern-phase.entity.ts`. */
+    @ManyToOne('Believer', 'ministries', { onDelete: 'CASCADE' })
+    @JoinColumn({ name: 'believer_id' })
+    believer: Relation<Believer>;
 
-  @ApiProperty({ example: 'pulpito' })
-  @Column({ type: 'text' })
-  ministry: string;
+    @ApiProperty({ example: 'pulpito' })
+    @Column({ type: 'text' })
+    ministry: string;
 
-  /**
-   * Mes y año en que empezó con ella, con el día 1 (RFC 0012). Nulo es lo
-   * normal: la labor se hace igual sin saber desde cuándo.
-   */
-  @ApiPropertyOptional({ description: 'Cuándo empezó; se guarda el día 1 del mes' })
-  @Column({ name: 'started_at', type: 'date', nullable: true })
-  startedAt: string | null;
+    /**
+     * Mes y año en que empezó con ella, con el día 1 (RFC 0012). Nulo es lo
+     * normal: la labor se hace igual sin saber desde cuándo.
+     */
+    @ApiPropertyOptional({ description: 'Cuándo empezó; se guarda el día 1 del mes' })
+    @Column({ name: 'started_at', type: 'date', nullable: true })
+    startedAt: string | null;
 }

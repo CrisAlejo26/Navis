@@ -15,47 +15,56 @@ import { MessagesService } from './messages.service';
  */
 @Injectable()
 export class MessageReactionsService {
-  constructor(
-    @InjectRepository(Message) private readonly messages: Repository<Message>,
-    @InjectRepository(MessageReaction) private readonly reactions: Repository<MessageReaction>,
-    private readonly access: ChannelAccessService,
-    private readonly messagesService: MessagesService,
-    @Inject(CHAT_BROADCASTER) private readonly broadcaster: ChatBroadcaster,
-  ) {}
+    constructor(
+        @InjectRepository(Message) private readonly messages: Repository<Message>,
+        @InjectRepository(MessageReaction) private readonly reactions: Repository<MessageReaction>,
+        private readonly access: ChannelAccessService,
+        private readonly messagesService: MessagesService,
+        @Inject(CHAT_BROADCASTER) private readonly broadcaster: ChatBroadcaster,
+    ) {}
 
-  async react(churchId: string, userId: string, messageId: string, emoji: string): Promise<void> {
-    const message = await this.requireMessage(churchId, userId, messageId);
+    async react(churchId: string, userId: string, messageId: string, emoji: string): Promise<void> {
+        const message = await this.requireMessage(churchId, userId, messageId);
 
-    const exists = await this.reactions.exists({ where: { messageId: message.id, userId, emoji } });
-    if (!exists) {
-      await this.reactions.save(this.reactions.create({ messageId: message.id, userId, emoji }));
+        const exists = await this.reactions.exists({
+            where: { messageId: message.id, userId, emoji },
+        });
+        if (!exists) {
+            await this.reactions.save(
+                this.reactions.create({ messageId: message.id, userId, emoji }),
+            );
+        }
+
+        this.broadcaster.messageUpdated(await this.messagesService.getView(message.id));
     }
 
-    this.broadcaster.messageUpdated(await this.messagesService.getView(message.id));
-  }
+    async unreact(
+        churchId: string,
+        userId: string,
+        messageId: string,
+        emoji: string,
+    ): Promise<void> {
+        const message = await this.requireMessage(churchId, userId, messageId);
+        await this.reactions.delete({ messageId: message.id, userId, emoji });
 
-  async unreact(churchId: string, userId: string, messageId: string, emoji: string): Promise<void> {
-    const message = await this.requireMessage(churchId, userId, messageId);
-    await this.reactions.delete({ messageId: message.id, userId, emoji });
-
-    this.broadcaster.messageUpdated(await this.messagesService.getView(message.id));
-  }
-
-  private async requireMessage(
-    churchId: string,
-    userId: string,
-    messageId: string,
-  ): Promise<Message> {
-    const message = await this.messages.findOne({
-      where: { id: messageId },
-      relations: { channel: true },
-      withDeleted: true,
-    });
-    if (!message || message.channel.churchId !== churchId) {
-      throw new NotFoundException('Ese mensaje no existe en esta iglesia');
+        this.broadcaster.messageUpdated(await this.messagesService.getView(message.id));
     }
 
-    await this.access.requireMembership(churchId, userId, message.channelId);
-    return message;
-  }
+    private async requireMessage(
+        churchId: string,
+        userId: string,
+        messageId: string,
+    ): Promise<Message> {
+        const message = await this.messages.findOne({
+            where: { id: messageId },
+            relations: { channel: true },
+            withDeleted: true,
+        });
+        if (!message || message.channel.churchId !== churchId) {
+            throw new NotFoundException('Ese mensaje no existe en esta iglesia');
+        }
+
+        await this.access.requireMembership(churchId, userId, message.channelId);
+        return message;
+    }
 }

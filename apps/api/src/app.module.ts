@@ -33,53 +33,53 @@ import { UsersModule } from './users/users.module';
 import { WeatherModule } from './weather/weather.module';
 
 @Module({
-  imports: [
-    // El .env ya lo validó config/env.ts con zod; aquí solo lo exponemos a la DI.
-    ConfigModule.forRoot({ isGlobal: true, ignoreEnvFile: true, load: [() => env] }),
+    imports: [
+        // El .env ya lo validó config/env.ts con zod; aquí solo lo exponemos a la DI.
+        ConfigModule.forRoot({ isGlobal: true, ignoreEnvFile: true, load: [() => env] }),
 
-    LoggerModule.forRoot({
-      pinoHttp: {
-        level: env.LOG_LEVEL,
-        transport: isProduction
-          ? undefined
-          : { target: 'pino-pretty', options: { singleLine: true } },
-        redact: ['req.headers.authorization', 'req.headers.cookie'],
-        autoLogging: { ignore: (req) => req.url === '/health' },
-      },
-    }),
+        LoggerModule.forRoot({
+            pinoHttp: {
+                level: env.LOG_LEVEL,
+                transport: isProduction
+                    ? undefined
+                    : { target: 'pino-pretty', options: { singleLine: true } },
+                redact: ['req.headers.authorization', 'req.headers.cookie'],
+                autoLogging: { ignore: (req) => req.url === '/health' },
+            },
+        }),
 
-    ThrottlerModule.forRoot([{ name: 'default', ttl: 60_000, limit: 120 }]),
+        ThrottlerModule.forRoot([{ name: 'default', ttl: 60_000, limit: 120 }]),
 
-    TypeOrmModule.forRoot({ ...dataSourceOptions, autoLoadEntities: true }),
+        TypeOrmModule.forRoot({ ...dataSourceOptions, autoLoadEntities: true }),
 
-    AuthModule,
-    ProfilesModule,
-    ChurchesModule,
-    BelieversModule,
-    JournalModule,
-    TasksModule,
-    CalendarModule,
-    DashboardModule,
-    ListsModule,
-    TablesModule,
-    PropheciesModule,
-    DreamsModule,
-    TeachingsModule,
-    ChatModule,
-    RolesModule,
-    UsersModule,
-    SetupModule,
-    HealthModule,
-    AiModule,
-    WeatherModule,
-    GeocodeModule,
-  ],
-  providers: [
-    // El orden importa: primero se resuelve la sesión, después los permisos.
-    { provide: APP_GUARD, useClass: SessionGuard },
-    { provide: APP_GUARD, useClass: PermissionsGuard },
-    { provide: APP_GUARD, useClass: ThrottlerGuard },
-    { provide: APP_FILTER, useClass: AllExceptionsFilter },
-  ],
+        AuthModule,
+        ProfilesModule,
+        ChurchesModule,
+        BelieversModule,
+        JournalModule,
+        TasksModule,
+        CalendarModule,
+        DashboardModule,
+        ListsModule,
+        TablesModule,
+        PropheciesModule,
+        DreamsModule,
+        TeachingsModule,
+        ChatModule,
+        RolesModule,
+        UsersModule,
+        SetupModule,
+        HealthModule,
+        AiModule,
+        WeatherModule,
+        GeocodeModule,
+    ],
+    providers: [
+        // El orden importa: primero se resuelve la sesión, después los permisos.
+        { provide: APP_GUARD, useClass: SessionGuard },
+        { provide: APP_GUARD, useClass: PermissionsGuard },
+        { provide: APP_GUARD, useClass: ThrottlerGuard },
+        { provide: APP_FILTER, useClass: AllExceptionsFilter },
+    ],
 })
 export class AppModule {}

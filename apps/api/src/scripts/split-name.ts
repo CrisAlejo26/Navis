@@ -12,13 +12,13 @@
  * el nombre— rompe el orden alfabético del listado, que es por apellido.
  */
 export function splitName(fullName: string): { firstName: string; lastName: string } {
-  const parts = fullName.replace(/\s+/g, ' ').trim().split(' ').filter(Boolean);
+    const parts = fullName.replace(/\s+/g, ' ').trim().split(' ').filter(Boolean);
 
-  if (parts.length <= 1) return { firstName: parts[0] ?? '', lastName: '' };
-  if (parts.length === 2) return { firstName: parts[0], lastName: parts[1] };
+    if (parts.length <= 1) return { firstName: parts[0] ?? '', lastName: '' };
+    if (parts.length === 2) return { firstName: parts[0], lastName: parts[1] };
 
-  return {
-    firstName: parts.slice(0, -2).join(' '),
-    lastName: parts.slice(-2).join(' '),
-  };
+    return {
+        firstName: parts.slice(0, -2).join(' '),
+        lastName: parts.slice(-2).join(' '),
+    };
 }

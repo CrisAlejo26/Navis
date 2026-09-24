@@ -20,65 +20,65 @@ import { toast } from '@/lib/toast';
  * con su título y sus doce filas de texto, era pedir cuatro pasos para uno.
  */
 export function MarkFulfilledDialog({
-  prophecy,
-  onClose,
+    prophecy,
+    onClose,
 }: {
-  prophecy: Prophecy | null;
-  onClose: () => void;
+    prophecy: Prophecy | null;
+    onClose: () => void;
 }) {
-  const { t } = useTranslation();
-  const update = useUpdateProphecy(api);
-  const [error, setError] = useState<string | null>(null);
+    const { t } = useTranslation();
+    const update = useUpdateProphecy(api);
+    const [error, setError] = useState<string | null>(null);
 
-  const submit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    if (!prophecy) return;
+    const submit = (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        if (!prophecy) return;
 
-    const fulfilledAt = formText(new FormData(event.currentTarget).get('fulfilledAt'));
-    if (fulfilledAt < prophecy.receivedAt) {
-      setError(t('prophecies.errorOrder'));
-      return;
-    }
+        const fulfilledAt = formText(new FormData(event.currentTarget).get('fulfilledAt'));
+        if (fulfilledAt < prophecy.receivedAt) {
+            setError(t('prophecies.errorOrder'));
+            return;
+        }
 
-    setError(null);
-    update.mutate(
-      { id: prophecy.id, fulfilledAt },
-      {
-        onSuccess: () => {
-          toast.success(t('prophecies.markedFulfilled'));
-          onClose();
-        },
-        onError: () => {
-          setError(t('errors.generic'));
-        },
-      },
+        setError(null);
+        update.mutate(
+            { id: prophecy.id, fulfilledAt },
+            {
+                onSuccess: () => {
+                    toast.success(t('prophecies.markedFulfilled'));
+                    onClose();
+                },
+                onError: () => {
+                    setError(t('errors.generic'));
+                },
+            },
+        );
+    };
+
+    return (
+        <Dialog
+            open={Boolean(prophecy)}
+            onClose={onClose}
+            width="min(26rem, calc(100vw - 2rem))"
+            title={t('prophecies.markFulfilled')}
+            description={prophecy?.title}
+        >
+            <form onSubmit={submit} className="gap-4 flex flex-col" noValidate>
+                <Input
+                    name="fulfilledAt"
+                    type="date"
+                    label={t('prophecies.fulfilledAt')}
+                    defaultValue={toIsoDate(new Date())}
+                    min={prophecy?.receivedAt}
+                    required
+                />
+
+                <FormError message={error} />
+
+                <Button type="submit" size="lg" className="w-full" isLoading={update.isPending}>
+                    {t('common.save')}
+                </Button>
+            </form>
+        </Dialog>
     );
-  };
-
-  return (
-    <Dialog
-      open={Boolean(prophecy)}
-      onClose={onClose}
-      width="min(26rem, calc(100vw - 2rem))"
-      title={t('prophecies.markFulfilled')}
-      description={prophecy?.title}
-    >
-      <form onSubmit={submit} className="gap-4 flex flex-col" noValidate>
-        <Input
-          name="fulfilledAt"
-          type="date"
-          label={t('prophecies.fulfilledAt')}
-          defaultValue={toIsoDate(new Date())}
-          min={prophecy?.receivedAt}
-          required
-        />
-
-        <FormError message={error} />
-
-        <Button type="submit" size="lg" className="w-full" isLoading={update.isPending}>
-          {t('common.save')}
-        </Button>
-      </form>
-    </Dialog>
-  );
 }

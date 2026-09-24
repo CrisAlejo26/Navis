@@ -11,41 +11,41 @@ import { z } from 'zod';
  * pestaña.
  */
 export const listMemberSchema = z.object({
-  believerId: z.uuid(),
-  firstName: z.string(),
-  lastName: z.string(),
-  position: z.number().int(),
-  note: z.string().nullable(),
-  congregationId: z.uuid().nullable(),
-  congregationName: z.string().nullable(),
-  congregationAccent: z.string().nullable(),
-  ministries: z.array(z.string()),
-  hasPhoto: z.boolean(),
-  /** Si esa persona tiene además un acceso que abre **esta** lista (D21). */
-  hasAccess: z.boolean(),
-  /** La trayectoria (RFC 0012), para quien la active al publicar. */
-  arrivedAt: z.string().nullable(),
-  arrivalSite: z.string().nullable(),
-  bibleReadings: z.number().int().nullable(),
-  vivenciasReadings: z.number().int().nullable(),
-  bibleInstituteTimes: z.number().int().nullable(),
+    believerId: z.uuid(),
+    firstName: z.string(),
+    lastName: z.string(),
+    position: z.number().int(),
+    note: z.string().nullable(),
+    congregationId: z.uuid().nullable(),
+    congregationName: z.string().nullable(),
+    congregationAccent: z.string().nullable(),
+    ministries: z.array(z.string()),
+    hasPhoto: z.boolean(),
+    /** Si esa persona tiene además un acceso que abre **esta** lista (D21). */
+    hasAccess: z.boolean(),
+    /** La trayectoria (RFC 0012), para quien la active al publicar. */
+    arrivedAt: z.string().nullable(),
+    arrivalSite: z.string().nullable(),
+    bibleReadings: z.number().int().nullable(),
+    vivenciasReadings: z.number().int().nullable(),
+    bibleInstituteTimes: z.number().int().nullable(),
 });
 
 export type ListMember = z.infer<typeof listMemberSchema>;
 
 /** La ficha: la lista con sus miembros ya ordenados por `position` (D6). */
 export const listDetailSchema = z.object({
-  members: z.array(listMemberSchema),
+    members: z.array(listMemberSchema),
 });
 
 export const addListMembersSchema = z.object({
-  believerIds: z.array(z.uuid()).min(1, 'Marca al menos a una persona').max(500),
+    believerIds: z.array(z.uuid()).min(1, 'Marca al menos a una persona').max(500),
 });
 
 export type AddListMembersInput = z.infer<typeof addListMembersSchema>;
 
 export const updateListMemberSchema = z.object({
-  note: z.string().trim().max(120).nullable(),
+    note: z.string().trim().max(120).nullable(),
 });
 
 export type UpdateListMemberInput = z.infer<typeof updateListMemberSchema>;
@@ -55,7 +55,7 @@ export type UpdateListMemberInput = z.infer<typeof updateListMemberSchema>;
  * desde dos pantallas a la vez acaban en un orden que no es el de nadie.
  */
 export const reorderListSchema = z.object({
-  believerIds: z.array(z.uuid()).max(500),
+    believerIds: z.array(z.uuid()).max(500),
 });
 
 export type ReorderListInput = z.infer<typeof reorderListSchema>;

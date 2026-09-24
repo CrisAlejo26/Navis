@@ -1,22 +1,22 @@
 import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Patch,
-  Post,
-  Query,
-  UseGuards,
+    Body,
+    Controller,
+    Delete,
+    Get,
+    Param,
+    Patch,
+    Post,
+    Query,
+    UseGuards,
 } from '@nestjs/common';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import type {
-  ExportResponse,
-  JournalEntry as JournalEntryView,
-  JournalEntryListItem,
-  JournalExportRow,
-  JournalStats,
-  Paginated,
+    ExportResponse,
+    JournalEntry as JournalEntryView,
+    JournalEntryListItem,
+    JournalExportRow,
+    JournalStats,
+    Paginated,
 } from '@navis/shared';
 
 import { CurrentChurch } from '../common/decorators/current-church.decorator';
@@ -43,86 +43,89 @@ import { JournalStatsService } from './journal-stats.service';
 @Controller('journal')
 @UseGuards(ActiveChurchGuard)
 export class JournalController {
-  constructor(
-    private readonly entries: JournalEntriesService,
-    private readonly page: JournalPageService,
-    private readonly stats: JournalStatsService,
-    private readonly exports: JournalExportService,
-    private readonly view: JournalEntriesViewService,
-  ) {}
+    constructor(
+        private readonly entries: JournalEntriesService,
+        private readonly page: JournalPageService,
+        private readonly stats: JournalStatsService,
+        private readonly exports: JournalExportService,
+        private readonly view: JournalEntriesViewService,
+    ) {}
 
-  @Get()
-  @RequirePermissions('journal.view')
-  @ApiOperation({ summary: 'El listado, paginado, filtrado y buscable' })
-  @ApiOkResponse({ description: 'Página de entradas' })
-  list(
-    @CurrentChurch() churchId: string,
-    @Query() query: JournalQueryDto,
-  ): Promise<Paginated<JournalEntryListItem>> {
-    return this.page.list(churchId, query);
-  }
+    @Get()
+    @RequirePermissions('journal.view')
+    @ApiOperation({ summary: 'El listado, paginado, filtrado y buscable' })
+    @ApiOkResponse({ description: 'Página de entradas' })
+    list(
+        @CurrentChurch() churchId: string,
+        @Query() query: JournalQueryDto,
+    ): Promise<Paginated<JournalEntryListItem>> {
+        return this.page.list(churchId, query);
+    }
 
-  @Get('stats')
-  @RequirePermissions('journal.view')
-  @ApiOperation({ summary: 'Las cuentas de la portada' })
-  summary(@CurrentChurch() churchId: string): Promise<JournalStats> {
-    return this.stats.stats(churchId);
-  }
+    @Get('stats')
+    @RequirePermissions('journal.view')
+    @ApiOperation({ summary: 'Las cuentas de la portada' })
+    summary(@CurrentChurch() churchId: string): Promise<JournalStats> {
+        return this.stats.stats(churchId);
+    }
 
-  @Get('export')
-  @RequirePermissions('journal.view')
-  @ApiOperation({ summary: 'Filas completas del filtro, para exportarlas a Markdown' })
-  export(
-    @CurrentChurch() churchId: string,
-    @Query() query: JournalExportQueryDto,
-  ): Promise<ExportResponse<JournalExportRow>> {
-    return this.exports.export(churchId, { ...query, search: query.search || undefined });
-  }
+    @Get('export')
+    @RequirePermissions('journal.view')
+    @ApiOperation({ summary: 'Filas completas del filtro, para exportarlas a Markdown' })
+    export(
+        @CurrentChurch() churchId: string,
+        @Query() query: JournalExportQueryDto,
+    ): Promise<ExportResponse<JournalExportRow>> {
+        return this.exports.export(churchId, { ...query, search: query.search || undefined });
+    }
 
-  @Post()
-  @RequirePermissions('journal.manage')
-  @ApiOperation({ summary: 'Añade una entrada' })
-  async create(
-    @CurrentChurch() churchId: string,
-    @Body() dto: CreateEntryDto,
-    @CurrentUser('id') authorId: string | undefined,
-  ): Promise<JournalEntryView> {
-    const entry = await this.entries.create(
-      churchId,
-      {
-        ...dto,
-        learned: dto.learned ?? undefined,
-        remindAt: dto.remindAt ?? undefined,
-        remindText: dto.remindText ?? undefined,
-      },
-      authorId ?? null,
-    );
+    @Post()
+    @RequirePermissions('journal.manage')
+    @ApiOperation({ summary: 'Añade una entrada' })
+    async create(
+        @CurrentChurch() churchId: string,
+        @Body() dto: CreateEntryDto,
+        @CurrentUser('id') authorId: string | undefined,
+    ): Promise<JournalEntryView> {
+        const entry = await this.entries.create(
+            churchId,
+            {
+                ...dto,
+                learned: dto.learned ?? undefined,
+                remindAt: dto.remindAt ?? undefined,
+                remindText: dto.remindText ?? undefined,
+            },
+            authorId ?? null,
+        );
 
-    return this.view.one(entry);
-  }
+        return this.view.one(entry);
+    }
 
-  @Get(':id')
-  @RequirePermissions('journal.view')
-  @ApiOperation({ summary: 'La ficha, con sus audios' })
-  async get(@CurrentChurch() churchId: string, @Param('id') id: string): Promise<JournalEntryView> {
-    return this.view.one(await this.entries.require(churchId, id));
-  }
+    @Get(':id')
+    @RequirePermissions('journal.view')
+    @ApiOperation({ summary: 'La ficha, con sus audios' })
+    async get(
+        @CurrentChurch() churchId: string,
+        @Param('id') id: string,
+    ): Promise<JournalEntryView> {
+        return this.view.one(await this.entries.require(churchId, id));
+    }
 
-  @Patch(':id')
-  @RequirePermissions('journal.manage')
-  @ApiOperation({ summary: 'Edita una entrada, incluido el recordatorio' })
-  async update(
-    @CurrentChurch() churchId: string,
-    @Param('id') id: string,
-    @Body() dto: UpdateEntryDto,
-  ): Promise<JournalEntryView> {
-    return this.view.one(await this.entries.update(churchId, id, dto));
-  }
+    @Patch(':id')
+    @RequirePermissions('journal.manage')
+    @ApiOperation({ summary: 'Edita una entrada, incluido el recordatorio' })
+    async update(
+        @CurrentChurch() churchId: string,
+        @Param('id') id: string,
+        @Body() dto: UpdateEntryDto,
+    ): Promise<JournalEntryView> {
+        return this.view.one(await this.entries.update(churchId, id, dto));
+    }
 
-  @Delete(':id')
-  @RequirePermissions('journal.manage')
-  @ApiOperation({ summary: 'Borrado lógico' })
-  async remove(@CurrentChurch() churchId: string, @Param('id') id: string): Promise<void> {
-    await this.entries.remove(churchId, id);
-  }
+    @Delete(':id')
+    @RequirePermissions('journal.manage')
+    @ApiOperation({ summary: 'Borrado lógico' })
+    async remove(@CurrentChurch() churchId: string, @Param('id') id: string): Promise<void> {
+        await this.entries.remove(churchId, id);
+    }
 }

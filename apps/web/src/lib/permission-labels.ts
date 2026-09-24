@@ -12,18 +12,18 @@ import type { PermissionModule } from '@navis/shared';
  * pantalla se lee como una tabla en vez de como una lista de identificadores.
  */
 export const MODULE_LABEL_KEY = {
-  dashboard: 'nav.dashboard',
-  calendar: 'nav.calendar',
-  believers: 'nav.believers',
-  journal: 'nav.journal',
-  tasks: 'nav.tasks',
-  lists: 'nav.lists',
-  tables: 'nav.tables',
-  communications: 'nav.communications',
-  // Ni las profecías ni los sueños salen aquí: no tienen permiso de rol
-  // (RFC 0004 D2 y RFC 0005 D2).
-  users: 'nav.users',
-  roles: 'permissions.roles',
-  churches: 'permissions.churches',
-  ai: 'permissions.ai',
+    dashboard: 'nav.dashboard',
+    calendar: 'nav.calendar',
+    believers: 'nav.believers',
+    journal: 'nav.journal',
+    tasks: 'nav.tasks',
+    lists: 'nav.lists',
+    tables: 'nav.tables',
+    communications: 'nav.communications',
+    // Ni las profecías ni los sueños salen aquí: no tienen permiso de rol
+    // (RFC 0004 D2 y RFC 0005 D2).
+    users: 'nav.users',
+    roles: 'permissions.roles',
+    churches: 'permissions.churches',
+    ai: 'permissions.ai',
 } as const satisfies Record<PermissionModule, string>;

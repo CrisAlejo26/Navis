@@ -10,8 +10,8 @@ import { NEUTRAL_ACCENT } from '@/lib/export/columns';
  * llegar se marca como algo que atender, y quien ya no viene se apaga.
  */
 export const STATUS_ACCENT: Record<BelieverStatus, string> = {
-  activo: 'success',
-  nuevo: 'primary',
-  inactivo: NEUTRAL_ACCENT,
-  trasladado: NEUTRAL_ACCENT,
+    activo: 'success',
+    nuevo: 'primary',
+    inactivo: NEUTRAL_ACCENT,
+    trasladado: NEUTRAL_ACCENT,
 };

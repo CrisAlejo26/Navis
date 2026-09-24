@@ -5,9 +5,9 @@ import { toPlainDateTime } from './plain-date-time';
 
 /** Los textos, ya traducidos: función pura, no sabe de i18next (RFC 0019 §4). */
 export interface ChatTranscriptLabels {
-  deletedMessage: string;
-  forwarded: string;
-  attachmentLine: (name: string) => string;
+    deletedMessage: string;
+    forwarded: string;
+    attachmentLine: (name: string) => string;
 }
 
 /**
@@ -17,44 +17,45 @@ export interface ChatTranscriptLabels {
  * orden, se recorren en el sentido contrario al que se pidieron.
  */
 async function fetchAllMessages(api: ApiClient, channelId: string): Promise<Message[]> {
-  const pages: MessagesPage[] = [];
-  let cursor: string | undefined;
+    const pages: MessagesPage[] = [];
+    let cursor: string | undefined;
 
-  for (;;) {
-    const page = await api.get<MessagesPage>(messagesPath(channelId, cursor));
-    pages.push(page);
-    cursor = nextMessagesCursor(page);
-    if (!cursor) break;
-  }
+    for (;;) {
+        const page = await api.get<MessagesPage>(messagesPath(channelId, cursor));
+        pages.push(page);
+        cursor = nextMessagesCursor(page);
+        if (!cursor) break;
+    }
 
-  return [...pages].reverse().flatMap((page) => page.items);
+    return [...pages].reverse().flatMap((page) => page.items);
 }
 
 function messageLines(message: Message, labels: ChatTranscriptLabels): string {
-  const time = toPlainDateTime(message.createdAt);
-  const forwardedTag = !message.deletedAt && message.forwardedFrom ? `(${labels.forwarded}) ` : '';
-  const body = message.deletedAt ? labels.deletedMessage : `${forwardedTag}${message.body ?? ''}`;
+    const time = toPlainDateTime(message.createdAt);
+    const forwardedTag =
+        !message.deletedAt && message.forwardedFrom ? `(${labels.forwarded}) ` : '';
+    const body = message.deletedAt ? labels.deletedMessage : `${forwardedTag}${message.body ?? ''}`;
 
-  const attachments = message.deletedAt
-    ? []
-    : message.attachments.map((attachment) => labels.attachmentLine(attachment.originalName));
+    const attachments = message.deletedAt
+        ? []
+        : message.attachments.map((attachment) => labels.attachmentLine(attachment.originalName));
 
-  return [`[${time}] ${message.authorName}: ${body}`.trimEnd(), ...attachments].join('\n');
+    return [`[${time}] ${message.authorName}: ${body}`.trimEnd(), ...attachments].join('\n');
 }
 
 /** El texto llano de una conversación entera: mismo formato que exporta el propio WhatsApp. */
 export function buildTranscript(
-  messages: readonly Message[],
-  labels: ChatTranscriptLabels,
+    messages: readonly Message[],
+    labels: ChatTranscriptLabels,
 ): string {
-  return messages.map((message) => messageLines(message, labels)).join('\n');
+    return messages.map((message) => messageLines(message, labels)).join('\n');
 }
 
 export async function fetchChatTranscript(
-  api: ApiClient,
-  channelId: string,
-  labels: ChatTranscriptLabels,
+    api: ApiClient,
+    channelId: string,
+    labels: ChatTranscriptLabels,
 ): Promise<string> {
-  const messages = await fetchAllMessages(api, channelId);
-  return buildTranscript(messages, labels);
+    const messages = await fetchAllMessages(api, channelId);
+    return buildTranscript(messages, labels);
 }

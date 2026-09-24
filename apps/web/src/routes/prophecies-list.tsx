@@ -26,117 +26,121 @@ import { usePropheciesViewStore } from '@/lib/prophecies/view';
  * estado y el orden por fecha de recepción.
  */
 export function PropheciesListPage() {
-  const { t } = useTranslation();
-  const screen = usePropheciesScreen();
-  const view = usePropheciesViewStore((state) => state.view);
+    const { t } = useTranslation();
+    const screen = usePropheciesScreen();
+    const view = usePropheciesViewStore((state) => state.view);
 
-  const [creating, setCreating] = useState(false);
-  const [editing, setEditing] = useState<ProphecyListItem | null>(null);
-  const [fulfilling, setFulfilling] = useState<ProphecyListItem | null>(null);
-  const [deleting, setDeleting] = useState<ProphecyListItem | null>(null);
-  const [exporting, setExporting] = useState(false);
+    const [creating, setCreating] = useState(false);
+    const [editing, setEditing] = useState<ProphecyListItem | null>(null);
+    const [fulfilling, setFulfilling] = useState<ProphecyListItem | null>(null);
+    const [deleting, setDeleting] = useState<ProphecyListItem | null>(null);
+    const [exporting, setExporting] = useState(false);
 
-  /** Lo mismo alimenta la fila de la tabla y la ficha (§7.5). */
-  const cells = (prophecy: ProphecyListItem, index: number): ProphecyCells => ({
-    prophecy,
-    index,
-    onEdit: () => {
-      setEditing(prophecy);
-    },
-    onFulfill: () => {
-      setFulfilling(prophecy);
-    },
-    onDelete: () => {
-      setDeleting(prophecy);
-    },
-  });
+    /** Lo mismo alimenta la fila de la tabla y la ficha (§7.5). */
+    const cells = (prophecy: ProphecyListItem, index: number): ProphecyCells => ({
+        prophecy,
+        index,
+        onEdit: () => {
+            setEditing(prophecy);
+        },
+        onFulfill: () => {
+            setFulfilling(prophecy);
+        },
+        onDelete: () => {
+            setDeleting(prophecy);
+        },
+    });
 
-  const toolbar = (
-    <PropheciesToolbar
-      screen={screen}
-      onExport={() => {
-        setExporting(true);
-      }}
-    />
-  );
-  const items = screen.page?.items ?? [];
-
-  return (
-    <section className="gap-4 flex flex-col">
-      <BackLink to="/prophecies" label={t('prophecies.title')} />
-
-      <PropheciesHeader
-        stats={screen.stats}
-        onAdd={() => {
-          setCreating(true);
-        }}
-      >
-        <DateRangeButton
-          from={screen.filters.from}
-          to={screen.filters.to}
-          onChange={screen.filters.setRange}
+    const toolbar = (
+        <PropheciesToolbar
+            screen={screen}
+            onExport={() => {
+                setExporting(true);
+            }}
         />
-      </PropheciesHeader>
+    );
+    const items = screen.page?.items ?? [];
 
-      {/* Cambiar de vista es un fundido, sin desplazamiento: no se está yendo a
+    return (
+        <section className="gap-4 flex flex-col">
+            <BackLink to="/prophecies" label={t('prophecies.title')} />
+
+            <PropheciesHeader
+                stats={screen.stats}
+                onAdd={() => {
+                    setCreating(true);
+                }}
+            >
+                <DateRangeButton
+                    from={screen.filters.from}
+                    to={screen.filters.to}
+                    onChange={screen.filters.setRange}
+                />
+            </PropheciesHeader>
+
+            {/* Cambiar de vista es un fundido, sin desplazamiento: no se está yendo a
           otro sitio (§7.8). La clave hace que React remonte y la animación
           vuelva a lanzarse. */}
-      <div key={view} className="gap-3 animate-page-in flex flex-col">
-        {view === 'table' && <PropheciesTable screen={screen} cells={cells} toolbar={toolbar} />}
+            <div key={view} className="gap-3 animate-page-in flex flex-col">
+                {view === 'table' && (
+                    <PropheciesTable screen={screen} cells={cells} toolbar={toolbar} />
+                )}
 
-        {view === 'cards' && <PropheciesCards screen={screen} cells={cells} toolbar={toolbar} />}
+                {view === 'cards' && (
+                    <PropheciesCards screen={screen} cells={cells} toolbar={toolbar} />
+                )}
 
-        {/* La travesía y el año necesitan todas las filas de la página juntas,
+                {/* La travesía y el año necesitan todas las filas de la página juntas,
             así que llevan la barra fuera en vez de dentro de una tarjeta. */}
-        {(view === 'travesia' || view === 'year') && (
-          <>
-            <div className="p-3 rounded-xl border bg-card">{toolbar}</div>
-            {view === 'travesia' ? (
-              <Travesia items={items} today={screen.today} />
-            ) : (
-              <PropheciesYear items={items} today={screen.today} />
-            )}
-          </>
-        )}
-      </div>
+                {(view === 'travesia' || view === 'year') && (
+                    <>
+                        <div className="p-3 rounded-xl border bg-card">{toolbar}</div>
+                        {view === 'travesia' ? (
+                            <Travesia items={items} today={screen.today} />
+                        ) : (
+                            <PropheciesYear items={items} today={screen.today} />
+                        )}
+                    </>
+                )}
+            </div>
 
-      {/* Al editar viaja el identificador y el formulario carga la palabra
+            {/* Al editar viaja el identificador y el formulario carga la palabra
           entera: la fila solo trae un extracto del cuerpo. */}
-      {(creating || editing) && (
-        <ProphecyForm
-          open
-          prophecyId={editing?.id}
-          onClose={() => {
-            setCreating(false);
-            setEditing(null);
-          }}
-        />
-      )}
+            {(creating || editing) && (
+                <ProphecyForm
+                    open
+                    prophecyId={editing?.id}
+                    onClose={() => {
+                        setCreating(false);
+                        setEditing(null);
+                    }}
+                />
+            )}
 
-      {fulfilling && (
-        <FulfillmentForm
-          open
-          prophecyId={fulfilling.id}
-          onClose={() => {
-            setFulfilling(null);
-          }}
-        />
-      )}
+            {fulfilling && (
+                <FulfillmentForm
+                    open
+                    prophecyId={fulfilling.id}
+                    onClose={() => {
+                        setFulfilling(null);
+                    }}
+                />
+            )}
 
-      <DeleteProphecyDialog
-        prophecy={deleting}
-        onClose={() => {
-          setDeleting(null);
-        }}
-      />
+            <DeleteProphecyDialog
+                prophecy={deleting}
+                onClose={() => {
+                    setDeleting(null);
+                }}
+            />
 
-      <PropheciesExportDialog
-        open={exporting}
-        screen={screen}
-        onClose={() => {
-          setExporting(false);
-        }}
-      />
-    </section>
-  );
+            <PropheciesExportDialog
+                open={exporting}
+                screen={screen}
+                onClose={() => {
+                    setExporting(false);
+                }}
+            />
+        </section>
+    );
 }

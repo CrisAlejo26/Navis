@@ -16,35 +16,35 @@ import { formatDateTime } from '@/lib/format';
  * §7).
  */
 export function ReminderIndicator({
-  remindAt,
-  remindDoneAt,
-  index = 0,
-  className,
+    remindAt,
+    remindDoneAt,
+    index = 0,
+    className,
 }: {
-  remindAt: string | null;
-  remindDoneAt: string | null;
-  index?: number;
-  className?: string;
+    remindAt: string | null;
+    remindDoneAt: string | null;
+    index?: number;
+    className?: string;
 }) {
-  const { t } = useTranslation();
-  if (!remindAt) return null;
+    const { t } = useTranslation();
+    if (!remindAt) return null;
 
-  const due = isEntryReminderDue({ remindAt, remindDoneAt });
+    const due = isEntryReminderDue({ remindAt, remindDoneAt });
 
-  return (
-    <span
-      title={formatDateTime(remindAt)}
-      style={due ? { animationDelay: `${String(Math.min(index, 12) * 120)}ms` } : undefined}
-      className={cn(
-        'gap-1 inline-flex items-center',
-        due ? 'text-warning' : 'text-muted-foreground',
-        className,
-      )}
-    >
-      <Bell size={13} aria-hidden className={due ? 'animate-latido' : undefined} />
-      <span className={cn('text-[11px]', due && 'animate-latido')}>
-        {due ? t('journal.reminderField') : formatDateTime(remindAt)}
-      </span>
-    </span>
-  );
+    return (
+        <span
+            title={formatDateTime(remindAt)}
+            style={due ? { animationDelay: `${String(Math.min(index, 12) * 120)}ms` } : undefined}
+            className={cn(
+                'gap-1 inline-flex items-center',
+                due ? 'text-warning' : 'text-muted-foreground',
+                className,
+            )}
+        >
+            <Bell size={13} aria-hidden className={due ? 'animate-latido' : undefined} />
+            <span className={cn('text-[11px]', due && 'animate-latido')}>
+                {due ? t('journal.reminderField') : formatDateTime(remindAt)}
+            </span>
+        </span>
+    );
 }

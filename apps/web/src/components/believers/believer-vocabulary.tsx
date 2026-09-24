@@ -20,54 +20,54 @@ import { MinistryTags } from '@/components/believers/ministry-tags';
  * ninguna etiqueta es un dato, y esconderlo hace pensar que no se ha preguntado.
  */
 export function BelieverVocabulary({
-  gifts,
-  ministrySlugs,
-  tags,
-  catalog,
+    gifts,
+    ministrySlugs,
+    tags,
+    catalog,
 }: {
-  gifts: readonly Gift[];
-  ministrySlugs: readonly string[];
-  tags: readonly BelieverTag[];
-  catalog: readonly MinistryCatalog[];
+    gifts: readonly Gift[];
+    ministrySlugs: readonly string[];
+    tags: readonly BelieverTag[];
+    catalog: readonly MinistryCatalog[];
 }) {
-  const { t } = useTranslation();
+    const { t } = useTranslation();
 
-  return (
-    <div className="gap-x-8 gap-y-3 flex flex-wrap">
-      <Grupo label={t('believers.gifts')}>
-        {gifts.length > 0 ? (
-          <GiftTags gifts={gifts} />
-        ) : (
-          <span className="text-xs text-muted-foreground">{t('gifts.none')}</span>
-        )}
-      </Grupo>
+    return (
+        <div className="gap-x-8 gap-y-3 flex flex-wrap">
+            <Grupo label={t('believers.gifts')}>
+                {gifts.length > 0 ? (
+                    <GiftTags gifts={gifts} />
+                ) : (
+                    <span className="text-xs text-muted-foreground">{t('gifts.none')}</span>
+                )}
+            </Grupo>
 
-      <Grupo label={t('ministries.title')}>
-        {ministrySlugs.length > 0 ? (
-          <MinistryTags slugs={ministrySlugs} catalog={catalog} />
-        ) : (
-          <span className="text-xs text-muted-foreground">{t('ministries.none')}</span>
-        )}
-      </Grupo>
+            <Grupo label={t('ministries.title')}>
+                {ministrySlugs.length > 0 ? (
+                    <MinistryTags slugs={ministrySlugs} catalog={catalog} />
+                ) : (
+                    <span className="text-xs text-muted-foreground">{t('ministries.none')}</span>
+                )}
+            </Grupo>
 
-      <Grupo label={t('believerTags.title')}>
-        {tags.length > 0 ? (
-          <BelieverTagPills tags={tags} />
-        ) : (
-          <span className="text-xs text-muted-foreground">{t('believerTags.none')}</span>
-        )}
-      </Grupo>
-    </div>
-  );
+            <Grupo label={t('believerTags.title')}>
+                {tags.length > 0 ? (
+                    <BelieverTagPills tags={tags} />
+                ) : (
+                    <span className="text-xs text-muted-foreground">{t('believerTags.none')}</span>
+                )}
+            </Grupo>
+        </div>
+    );
 }
 
 function Grupo({ label, children }: { label: string; children: ReactNode }) {
-  return (
-    <div className="gap-1.5 min-w-0 flex flex-col">
-      <span className="font-medium text-[10px] tracking-[0.12em] text-muted-foreground uppercase">
-        {label}
-      </span>
-      <div className="gap-1 flex flex-wrap items-center">{children}</div>
-    </div>
-  );
+    return (
+        <div className="gap-1.5 min-w-0 flex flex-col">
+            <span className="font-medium text-[10px] tracking-[0.12em] text-muted-foreground uppercase">
+                {label}
+            </span>
+            <div className="gap-1 flex flex-wrap items-center">{children}</div>
+        </div>
+    );
 }

@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
-  believerName,
-  generateListPassword,
-  proposeListUsername,
-  type ListCredentialSheetRow,
+    believerName,
+    generateListPassword,
+    proposeListUsername,
+    type ListCredentialSheetRow,
 } from '@navis/shared';
 import { In, Repository } from 'typeorm';
 
@@ -25,61 +25,64 @@ import { ListViewersService } from './list-viewers.service';
  */
 @Injectable()
 export class ListViewersBulkService {
-  constructor(
-    @InjectRepository(ListMember) private readonly members: Repository<ListMember>,
-    @InjectRepository(Believer) private readonly believers: Repository<Believer>,
-    @InjectRepository(ListViewer) private readonly viewers: Repository<ListViewer>,
-    private readonly directory: ListViewersService,
-    private readonly grants: ListGrantsService,
-  ) {}
+    constructor(
+        @InjectRepository(ListMember) private readonly members: Repository<ListMember>,
+        @InjectRepository(Believer) private readonly believers: Repository<Believer>,
+        @InjectRepository(ListViewer) private readonly viewers: Repository<ListViewer>,
+        private readonly directory: ListViewersService,
+        private readonly grants: ListGrantsService,
+    ) {}
 
-  /** A quién afectaría: los miembros vivos que todavía no tienen acceso. */
-  async candidates(churchId: string, listId: string): Promise<Believer[]> {
-    const rows = await this.members.find({ where: { listId }, order: { position: 'ASC' } });
-    if (rows.length === 0) return [];
+    /** A quién afectaría: los miembros vivos que todavía no tienen acceso. */
+    async candidates(churchId: string, listId: string): Promise<Believer[]> {
+        const rows = await this.members.find({ where: { listId }, order: { position: 'ASC' } });
+        if (rows.length === 0) return [];
 
-    const people = await this.believers.find({
-      where: { id: In(rows.map((row) => row.believerId)), churchId },
-    });
-    if (people.length === 0) return [];
+        const people = await this.believers.find({
+            where: { id: In(rows.map((row) => row.believerId)), churchId },
+        });
+        if (people.length === 0) return [];
 
-    const conAcceso = new Set(
-      (
-        await this.viewers.find({
-          where: { churchId, believerId: In(people.map((one) => one.id)) },
-        })
-      ).map((one) => one.believerId),
-    );
+        const conAcceso = new Set(
+            (
+                await this.viewers.find({
+                    where: { churchId, believerId: In(people.map((one) => one.id)) },
+                })
+            ).map((one) => one.believerId),
+        );
 
-    const orden = new Map(rows.map((row, index) => [row.believerId, index]));
+        const orden = new Map(rows.map((row, index) => [row.believerId, index]));
 
-    return people
-      .filter((person) => !conAcceso.has(person.id))
-      .sort((uno, otro) => (orden.get(uno.id) ?? 0) - (orden.get(otro.id) ?? 0));
-  }
-
-  async run(churchId: string, listId: string, by: string): Promise<ListCredentialSheetRow[]> {
-    const sheet: ListCredentialSheetRow[] = [];
-
-    for (const person of await this.candidates(churchId, listId)) {
-      const name = believerName(person);
-      const password = generateListPassword();
-
-      const { viewer } = await this.directory.create(
-        churchId,
-        {
-          label: name,
-          username: await this.directory.freeUsername(churchId, proposeListUsername(name)),
-          password,
-          believerId: person.id,
-        },
-        by,
-      );
-
-      await this.grants.setForViewer(viewer.id, [listId], by);
-      sheet.push({ name, username: viewer.username, password });
+        return people
+            .filter((person) => !conAcceso.has(person.id))
+            .sort((uno, otro) => (orden.get(uno.id) ?? 0) - (orden.get(otro.id) ?? 0));
     }
 
-    return sheet;
-  }
+    async run(churchId: string, listId: string, by: string): Promise<ListCredentialSheetRow[]> {
+        const sheet: ListCredentialSheetRow[] = [];
+
+        for (const person of await this.candidates(churchId, listId)) {
+            const name = believerName(person);
+            const password = generateListPassword();
+
+            const { viewer } = await this.directory.create(
+                churchId,
+                {
+                    label: name,
+                    username: await this.directory.freeUsername(
+                        churchId,
+                        proposeListUsername(name),
+                    ),
+                    password,
+                    believerId: person.id,
+                },
+                by,
+            );
+
+            await this.grants.setForViewer(viewer.id, [listId], by);
+            sheet.push({ name, username: viewer.username, password });
+        }
+
+        return sheet;
+    }
 }

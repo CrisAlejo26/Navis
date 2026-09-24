@@ -17,38 +17,38 @@ import { Message } from './message.entity';
  */
 @Entity('channels')
 export class Channel extends BaseEntity {
-  @ApiProperty()
-  @Index()
-  @Column({ name: 'church_id', type: UUID })
-  churchId: string;
+    @ApiProperty()
+    @Index()
+    @Column({ name: 'church_id', type: UUID })
+    churchId: string;
 
-  @ApiProperty({ example: 'grupo' })
-  @Column({ type: 'text' })
-  kind: ChannelKind;
+    @ApiProperty({ example: 'grupo' })
+    @Column({ type: 'text' })
+    kind: ChannelKind;
 
-  @ApiPropertyOptional({ description: 'null en «individual»: se pinta con la otra persona' })
-  @Column({ type: 'text', nullable: true })
-  name: string | null;
+    @ApiPropertyOptional({ description: 'null en «individual»: se pinta con la otra persona' })
+    @Column({ type: 'text', nullable: true })
+    name: string | null;
 
-  @ApiPropertyOptional()
-  @Column({ type: 'text', nullable: true })
-  description: string | null;
+    @ApiPropertyOptional()
+    @Column({ type: 'text', nullable: true })
+    description: string | null;
 
-  @ApiPropertyOptional({ description: 'Foto de grupo: la clave del fichero en disco' })
-  @Column({ name: 'photo_key', type: 'text', nullable: true })
-  photoKey: string | null;
+    @ApiPropertyOptional({ description: 'Foto de grupo: la clave del fichero en disco' })
+    @Column({ name: 'photo_key', type: 'text', nullable: true })
+    photoKey: string | null;
 
-  @ApiProperty({ description: 'Archivo global: lo puso un moderador (D2)' })
-  @Column({ name: 'is_archived', type: 'boolean', default: false })
-  isArchived: boolean;
+    @ApiProperty({ description: 'Archivo global: lo puso un moderador (D2)' })
+    @Column({ name: 'is_archived', type: 'boolean', default: false })
+    isArchived: boolean;
 
-  @ApiProperty({ description: 'ID del usuario en Better Auth que lo creó' })
-  @Column({ name: 'created_by', type: 'text' })
-  createdBy: string;
+    @ApiProperty({ description: 'ID del usuario en Better Auth que lo creó' })
+    @Column({ name: 'created_by', type: 'text' })
+    createdBy: string;
 
-  @OneToMany(() => ChannelMember, (member) => member.channel, { cascade: true })
-  members: ChannelMember[];
+    @OneToMany(() => ChannelMember, (member) => member.channel, { cascade: true })
+    members: ChannelMember[];
 
-  @OneToMany(() => Message, (message) => message.channel, { cascade: true })
-  messages: Message[];
+    @OneToMany(() => Message, (message) => message.channel, { cascade: true })
+    messages: Message[];
 }

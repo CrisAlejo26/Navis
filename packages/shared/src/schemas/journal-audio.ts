@@ -10,15 +10,15 @@ import { z } from 'zod';
  * `AUDIO_EXTENSIONS`, `isAudioMimeType`). Lo único que cambia es de qué cuelga.
  */
 export const journalEntryAudioSchema = z.object({
-  id: z.uuid(),
-  entryId: z.uuid(),
-  mimeType: z.string(),
-  sizeBytes: z.number().int(),
-  /** Lo que dura, si el navegador lo supo medir al grabarlo. */
-  durationSeconds: z.number().int().nullable(),
-  /** Si se grabó ahí mismo o se adjuntó ya hecho. Se dice en la interfaz. */
-  recorded: z.boolean(),
-  createdAt: z.string(),
+    id: z.uuid(),
+    entryId: z.uuid(),
+    mimeType: z.string(),
+    sizeBytes: z.number().int(),
+    /** Lo que dura, si el navegador lo supo medir al grabarlo. */
+    durationSeconds: z.number().int().nullable(),
+    /** Si se grabó ahí mismo o se adjuntó ya hecho. Se dice en la interfaz. */
+    recorded: z.boolean(),
+    createdAt: z.string(),
 });
 
 export type JournalEntryAudio = z.infer<typeof journalEntryAudioSchema>;
@@ -29,5 +29,5 @@ export type JournalEntryAudio = z.infer<typeof journalEntryAudioSchema>;
  * 0003), y reutilizarla sin querer serviría un audio con el guard equivocado.
  */
 export function journalAudioPath(audioId: string): string {
-  return `/journal/audios/${audioId}`;
+    return `/journal/audios/${audioId}`;
 }

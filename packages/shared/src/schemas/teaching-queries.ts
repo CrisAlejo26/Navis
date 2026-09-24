@@ -8,21 +8,21 @@
  * se podría distinguir de una con todos los ítems sin marcar.
  */
 export interface TeachingListItem {
-  id: string;
-  title: string;
-  excerpt: string;
-  receivedAt: string;
-  checklist: { checked: number; total: number } | null;
+    id: string;
+    title: string;
+    excerpt: string;
+    receivedAt: string;
+    checklist: { checked: number; total: number } | null;
 }
 
 /** Lo que acepta `GET /teachings`. Todo opcional salvo la paginación. */
 export interface TeachingsQuery {
-  page?: number;
-  limit?: number;
-  /** Contra `search_text`, sin acentos. */
-  search?: string;
-  sort?: 'received' | 'title';
-  order?: 'asc' | 'desc';
+    page?: number;
+    limit?: number;
+    /** Contra `search_text`, sin acentos. */
+    search?: string;
+    sort?: 'received' | 'title';
+    order?: 'asc' | 'desc';
 }
 
 export const TEACHING_SORT_FIELDS = ['received', 'title'] as const;
@@ -31,9 +31,9 @@ export const DEFAULT_TEACHING_SORT: TeachingSortField = 'received';
 
 /** Un mes del gráfico de la portada. Vienen los doce, con los vacíos a cero. */
 export interface TeachingMonth {
-  /** `AAAA-MM`. */
-  month: string;
-  total: number;
+    /** `AAAA-MM`. */
+    month: string;
+    total: number;
 }
 
 /**
@@ -44,10 +44,10 @@ export interface TeachingMonth {
  * mismo criterio que `fulfillmentRate` de profecías.
  */
 export interface TeachingsStats {
-  total: number;
-  thisYear: number;
-  monthly: TeachingMonth[];
-  checklistRate: number | null;
-  checklistChecked: number;
-  checklistTotal: number;
+    total: number;
+    thisYear: number;
+    monthly: TeachingMonth[];
+    checklistRate: number | null;
+    checklistChecked: number;
+    checklistTotal: number;
 }

@@ -17,58 +17,60 @@ import { toast } from '@/lib/toast';
  * exportar ni cambia nada ni lo pide (Regla 6 §2).
  */
 export function BulkCongregationAction({
-  selected,
-  congregations,
-  onDone,
+    selected,
+    congregations,
+    onDone,
 }: {
-  selected: readonly string[];
-  congregations: readonly Congregation[];
-  onDone: () => void;
+    selected: readonly string[];
+    congregations: readonly Congregation[];
+    onDone: () => void;
 }) {
-  const { t } = useTranslation();
-  const assign = useSetCongregation(api);
-  const [congregationId, setCongregationId] = useState('');
+    const { t } = useTranslation();
+    const assign = useSetCongregation(api);
+    const [congregationId, setCongregationId] = useState('');
 
-  return (
-    <>
-      <Select
-        size="sm"
-        value={congregationId}
-        aria-label={t('believers.congregation')}
-        className="w-44"
-        onChange={(event) => {
-          setCongregationId(event.target.value);
-        }}
-      >
-        <option value="">{t('believers.noCongregation')}</option>
-        {congregations.map((one) => (
-          <option key={one.id} value={one.id}>
-            {one.name}
-          </option>
-        ))}
-      </Select>
+    return (
+        <>
+            <Select
+                size="sm"
+                value={congregationId}
+                aria-label={t('believers.congregation')}
+                className="w-44"
+                onChange={(event) => {
+                    setCongregationId(event.target.value);
+                }}
+            >
+                <option value="">{t('believers.noCongregation')}</option>
+                {congregations.map((one) => (
+                    <option key={one.id} value={one.id}>
+                        {one.name}
+                    </option>
+                ))}
+            </Select>
 
-      <Button
-        size="sm"
-        isLoading={assign.isPending}
-        onClick={() => {
-          assign.mutate(
-            { believerIds: [...selected], congregationId: congregationId || null },
-            {
-              onSuccess: ({ updated }) => {
-                toast.success(t('believers.congregationAssigned', { count: updated }));
-                onDone();
-              },
-              onError: () => {
-                toast.error(t('errors.generic'));
-              },
-            },
-          );
-        }}
-      >
-        <MapPin size={14} aria-hidden />
-        {t('believers.assignCongregation')}
-      </Button>
-    </>
-  );
+            <Button
+                size="sm"
+                isLoading={assign.isPending}
+                onClick={() => {
+                    assign.mutate(
+                        { believerIds: [...selected], congregationId: congregationId || null },
+                        {
+                            onSuccess: ({ updated }) => {
+                                toast.success(
+                                    t('believers.congregationAssigned', { count: updated }),
+                                );
+                                onDone();
+                            },
+                            onError: () => {
+                                toast.error(t('errors.generic'));
+                            },
+                        },
+                    );
+                }}
+            >
+                <MapPin size={14} aria-hidden />
+                {t('believers.assignCongregation')}
+            </Button>
+        </>
+    );
 }

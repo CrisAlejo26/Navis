@@ -15,34 +15,34 @@ import { useLocalSession } from '@/stores/local-session';
  * iglesia— no se entra: la lleva `(auth)`.
  */
 export default function TabsLayout() {
-  const { t } = useTranslation();
-  const session = useLocalSession((state) => state.session);
-  const hydrated = useLocalSession((state) => state.hydrated);
-  const [menuOpen, setMenuOpen] = useState(false);
+    const { t } = useTranslation();
+    const session = useLocalSession((state) => state.session);
+    const hydrated = useLocalSession((state) => state.hydrated);
+    const [menuOpen, setMenuOpen] = useState(false);
 
-  if (!hydrated) return <BrandSplash />;
+    if (!hydrated) return <BrandSplash />;
 
-  if (!session?.churchId) return <Redirect href="/(auth)/welcome" />;
+    if (!session?.churchId) return <Redirect href="/(auth)/welcome" />;
 
-  return (
-    <View className="flex-1">
-      <Tabs
-        tabBar={(props) => (
-          <AnimatedTabBar
-            {...props}
-            menuOpen={menuOpen}
-            onToggleMenu={() => setMenuOpen((o) => !o)}
-          />
-        )}
-        screenOptions={{ headerShown: false }}
-      >
-        <Tabs.Screen name="index" options={{ title: t('nav.dashboard') }} />
-        <Tabs.Screen name="calendar" options={{ title: t('nav.calendar') }} />
-        <Tabs.Screen name="believers" options={{ title: t('nav.believers') }} />
-        <Tabs.Screen name="more" options={{ title: t('nav.more') }} />
-        <Tabs.Screen name="settings" options={{ title: t('nav.settings') }} />
-      </Tabs>
-      <MoreMenu open={menuOpen} onClose={() => setMenuOpen(false)} />
-    </View>
-  );
+    return (
+        <View className="flex-1">
+            <Tabs
+                tabBar={(props) => (
+                    <AnimatedTabBar
+                        {...props}
+                        menuOpen={menuOpen}
+                        onToggleMenu={() => setMenuOpen((o) => !o)}
+                    />
+                )}
+                screenOptions={{ headerShown: false }}
+            >
+                <Tabs.Screen name="index" options={{ title: t('nav.dashboard') }} />
+                <Tabs.Screen name="calendar" options={{ title: t('nav.calendar') }} />
+                <Tabs.Screen name="believers" options={{ title: t('nav.believers') }} />
+                <Tabs.Screen name="more" options={{ title: t('nav.more') }} />
+                <Tabs.Screen name="settings" options={{ title: t('nav.settings') }} />
+            </Tabs>
+            <MoreMenu open={menuOpen} onClose={() => setMenuOpen(false)} />
+        </View>
+    );
 }

@@ -32,19 +32,19 @@ import { EmotionsService } from './emotions.service';
  * `dreams/emotions` se leería como un sueño con identificador «emotions».
  */
 @Module({
-  imports: [TypeOrmModule.forFeature([Dream, Emotion, DreamEmotion, DreamAudio]), MediaModule],
-  controllers: [EmotionsController, DreamsController, DreamAudiosController],
-  providers: [
-    DreamsRepository,
-    EmotionsRepository,
-    DreamEmotionsRepository,
-    DreamsService,
-    DreamRowsService,
-    DreamsPageService,
-    DreamsExportService,
-    DreamStatsService,
-    EmotionsService,
-    DreamAudiosService,
-  ],
+    imports: [TypeOrmModule.forFeature([Dream, Emotion, DreamEmotion, DreamAudio]), MediaModule],
+    controllers: [EmotionsController, DreamsController, DreamAudiosController],
+    providers: [
+        DreamsRepository,
+        EmotionsRepository,
+        DreamEmotionsRepository,
+        DreamsService,
+        DreamRowsService,
+        DreamsPageService,
+        DreamsExportService,
+        DreamStatsService,
+        EmotionsService,
+        DreamAudiosService,
+    ],
 })
 export class DreamsModule {}

@@ -21,32 +21,32 @@ import { UUID } from '../database/column-types';
 @Index('UQ_ministries_slug', ['churchId', 'slug'], { unique: true })
 @Index('UQ_ministries_name', ['churchId', 'name'], { unique: true })
 export class Ministry extends BaseEntity {
-  @ApiProperty()
-  @Index()
-  @Column({ name: 'church_id', type: UUID })
-  churchId: string;
+    @ApiProperty()
+    @Index()
+    @Column({ name: 'church_id', type: UUID })
+    churchId: string;
 
-  @ApiProperty({ description: 'Lo que se guarda en la persona y mira el calendario' })
-  @Column({ type: 'text' })
-  slug: string;
+    @ApiProperty({ description: 'Lo que se guarda en la persona y mira el calendario' })
+    @Column({ type: 'text' })
+    slug: string;
 
-  @ApiProperty({ example: 'Púlpito' })
-  @Column({ type: 'text' })
-  name: string;
+    @ApiProperty({ example: 'Púlpito' })
+    @Column({ type: 'text' })
+    name: string;
 
-  @ApiProperty({ description: 'Token de color o hexadecimal, como los dones' })
-  @Column({ type: 'text', default: DEFAULT_CONGREGATION_ACCENT })
-  accent: string;
+    @ApiProperty({ description: 'Token de color o hexadecimal, como los dones' })
+    @Column({ type: 'text', default: DEFAULT_CONGREGATION_ACCENT })
+    accent: string;
 
-  @ApiProperty({ description: 'El orden en que se listan' })
-  @Column({ type: 'int', default: 0 })
-  position: number;
+    @ApiProperty({ description: 'El orden en que se listan' })
+    @Column({ type: 'int', default: 0 })
+    position: number;
 
-  @ApiProperty({ description: 'De serie: se renombra y se desactiva, no se borra' })
-  @Column({ name: 'is_system', type: 'boolean', default: false })
-  isSystem: boolean;
+    @ApiProperty({ description: 'De serie: se renombra y se desactiva, no se borra' })
+    @Column({ name: 'is_system', type: 'boolean', default: false })
+    isSystem: boolean;
 
-  @ApiProperty({ description: 'Apagada deja de proponerse, sin perder historial' })
-  @Column({ name: 'is_active', type: 'boolean', default: true })
-  isActive: boolean;
+    @ApiProperty({ description: 'Apagada deja de proponerse, sin perder historial' })
+    @Column({ name: 'is_active', type: 'boolean', default: true })
+    isActive: boolean;
 }

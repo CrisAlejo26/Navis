@@ -7,18 +7,18 @@ import { Icon } from '@/components/ui/icon';
 import { cn } from '@/lib/cn';
 
 export interface SelectOption<T extends string> {
-  value: T;
-  label: string;
+    value: T;
+    label: string;
 }
 
 interface SelectProps<T extends string> {
-  label: string;
-  value: T | null;
-  options: SelectOption<T>[];
-  placeholder: string;
-  error?: string;
-  onChange: (value: T) => void;
-  disabled?: boolean;
+    label: string;
+    value: T | null;
+    options: SelectOption<T>[];
+    placeholder: string;
+    error?: string;
+    onChange: (value: T) => void;
+    disabled?: boolean;
 }
 
 /**
@@ -27,53 +27,57 @@ interface SelectProps<T extends string> {
  * vive en la hoja, no en un `<select>` nativo que aquí no existe.
  */
 export function Select<T extends string>({
-  label,
-  value,
-  options,
-  placeholder,
-  error,
-  onChange,
-  disabled = false,
+    label,
+    value,
+    options,
+    placeholder,
+    error,
+    onChange,
+    disabled = false,
 }: SelectProps<T>) {
-  const [open, setOpen] = useState(false);
-  const selected = options.find((option) => option.value === value);
+    const [open, setOpen] = useState(false);
+    const selected = options.find((option) => option.value === value);
 
-  return (
-    <>
-      <FieldButton
-        label={label}
-        value={selected?.label}
-        placeholder={placeholder}
-        icon="chevron-down"
-        error={error}
-        disabled={disabled}
-        onPress={() => setOpen(true)}
-      />
-      <BottomSheet visible={open} onClose={() => setOpen(false)} title={label}>
-        <View className="gap-1 pb-2">
-          {options.map((option) => {
-            const isSelected = option.value === value;
-            return (
-              <Pressable
-                key={option.value}
-                accessibilityRole="button"
-                accessibilityState={{ selected: isSelected }}
-                onPress={() => {
-                  onChange(option.value);
-                  setOpen(false);
-                }}
-                className={cn(
-                  'h-11 px-3 flex-row items-center justify-between rounded-lg active:bg-muted',
-                  isSelected && 'bg-muted',
-                )}
-              >
-                <Text className="text-base font-sans text-foreground">{option.label}</Text>
-                {isSelected ? <Icon name="checkmark" tone="primary" size="sm" /> : null}
-              </Pressable>
-            );
-          })}
-        </View>
-      </BottomSheet>
-    </>
-  );
+    return (
+        <>
+            <FieldButton
+                label={label}
+                value={selected?.label}
+                placeholder={placeholder}
+                icon="chevron-down"
+                error={error}
+                disabled={disabled}
+                onPress={() => setOpen(true)}
+            />
+            <BottomSheet visible={open} onClose={() => setOpen(false)} title={label}>
+                <View className="gap-1 pb-2">
+                    {options.map((option) => {
+                        const isSelected = option.value === value;
+                        return (
+                            <Pressable
+                                key={option.value}
+                                accessibilityRole="button"
+                                accessibilityState={{ selected: isSelected }}
+                                onPress={() => {
+                                    onChange(option.value);
+                                    setOpen(false);
+                                }}
+                                className={cn(
+                                    'h-11 px-3 flex-row items-center justify-between rounded-lg active:bg-muted',
+                                    isSelected && 'bg-muted',
+                                )}
+                            >
+                                <Text className="text-base font-sans text-foreground">
+                                    {option.label}
+                                </Text>
+                                {isSelected ? (
+                                    <Icon name="checkmark" tone="primary" size="sm" />
+                                ) : null}
+                            </Pressable>
+                        );
+                    })}
+                </View>
+            </BottomSheet>
+        </>
+    );
 }

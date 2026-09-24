@@ -7,13 +7,13 @@ import { NAV_GROUPS, type NavChildren, type NavItem } from '@/lib/nav';
 
 /** Lo que cuelga de una entrada: sus subentradas y, si se puede, el alta rápida. */
 export interface NavBranch {
-  entries: readonly NavChild[];
-  onAdd?: () => void;
-  /** Clave de traducción del botón de añadir, que no dice lo mismo en cada una. */
-  addLabelKey: string;
-  /** Editar o eliminar una subentrada, sin salir de la barra. Sin permiso, sin acción. */
-  onEditEntry?: (id: string) => void;
-  onDeleteEntry?: (id: string) => void;
+    entries: readonly NavChild[];
+    onAdd?: () => void;
+    /** Clave de traducción del botón de añadir, que no dice lo mismo en cada una. */
+    addLabelKey: string;
+    /** Editar o eliminar una subentrada, sin salir de la barra. Sin permiso, sin acción. */
+    onEditEntry?: (id: string) => void;
+    onDeleteEntry?: (id: string) => void;
 }
 
 /**
@@ -30,68 +30,68 @@ export interface NavBranch {
  * encabezado suelto solo le dice lo que se está perdiendo.
  */
 export function AppNav({
-  items,
-  collapsed = false,
-  onNavigate,
-  branches = {},
+    items,
+    collapsed = false,
+    onNavigate,
+    branches = {},
 }: {
-  items: readonly NavItem[];
-  /** Solo iconos, para la barra lateral plegada. */
-  collapsed?: boolean;
-  /** Se llama al pulsar una entrada; en móvil sirve para cerrar el panel. */
-  onNavigate?: () => void;
-  /** Las subentradas de cada entrada que las tenga, ya venidas de la API. */
-  branches?: Partial<Record<NavChildren, NavBranch>>;
+    items: readonly NavItem[];
+    /** Solo iconos, para la barra lateral plegada. */
+    collapsed?: boolean;
+    /** Se llama al pulsar una entrada; en móvil sirve para cerrar el panel. */
+    onNavigate?: () => void;
+    /** Las subentradas de cada entrada que las tenga, ya venidas de la API. */
+    branches?: Partial<Record<NavChildren, NavBranch>>;
 }) {
-  const { t } = useTranslation();
-  const sueltas = items.filter((item) => !item.group);
+    const { t } = useTranslation();
+    const sueltas = items.filter((item) => !item.group);
 
-  const pintar = (item: NavItem) => {
-    const branch = item.children ? branches[item.children] : undefined;
+    const pintar = (item: NavItem) => {
+        const branch = item.children ? branches[item.children] : undefined;
 
-    return branch ? (
-      <NavGroup
-        key={item.to}
-        item={item}
-        entries={branch.entries}
-        collapsed={collapsed}
-        onNavigate={onNavigate}
-        onAdd={branch.onAdd}
-        addLabel={t(branch.addLabelKey)}
-        onEditEntry={branch.onEditEntry}
-        onDeleteEntry={branch.onDeleteEntry}
-      />
-    ) : (
-      <NavEntry key={item.to} item={item} collapsed={collapsed} onNavigate={onNavigate} />
-    );
-  };
-
-  return (
-    <nav className="gap-1 flex flex-1 flex-col">
-      {NAV_GROUPS.map(({ id, labelKey }) => {
-        const delGrupo = items.filter((item) => item.group === id);
-        if (delGrupo.length === 0) return null;
-
-        return (
-          <div key={id} className="mb-1 gap-1 flex flex-col">
-            {/* Plegada, el encabezado se queda en una raya: el texto no cabe y
-                el bloque se seguiría notando igual. */}
-            {collapsed ? (
-              <span aria-hidden className="mx-3 my-2 border-t" />
-            ) : (
-              <p className="px-3 pt-3 pb-1 font-semibold text-[11px] tracking-[0.14em] text-muted-foreground uppercase">
-                {t(labelKey)}
-              </p>
-            )}
-
-            {delGrupo.map(pintar)}
-          </div>
+        return branch ? (
+            <NavGroup
+                key={item.to}
+                item={item}
+                entries={branch.entries}
+                collapsed={collapsed}
+                onNavigate={onNavigate}
+                onAdd={branch.onAdd}
+                addLabel={t(branch.addLabelKey)}
+                onEditEntry={branch.onEditEntry}
+                onDeleteEntry={branch.onDeleteEntry}
+            />
+        ) : (
+            <NavEntry key={item.to} item={item} collapsed={collapsed} onNavigate={onNavigate} />
         );
-      })}
+    };
 
-      <div className={cn('gap-1 flex flex-col', sueltas.length > 0 && 'mt-1')}>
-        {sueltas.map(pintar)}
-      </div>
-    </nav>
-  );
+    return (
+        <nav className="gap-1 flex flex-1 flex-col">
+            {NAV_GROUPS.map(({ id, labelKey }) => {
+                const delGrupo = items.filter((item) => item.group === id);
+                if (delGrupo.length === 0) return null;
+
+                return (
+                    <div key={id} className="mb-1 gap-1 flex flex-col">
+                        {/* Plegada, el encabezado se queda en una raya: el texto no cabe y
+                el bloque se seguiría notando igual. */}
+                        {collapsed ? (
+                            <span aria-hidden className="mx-3 my-2 border-t" />
+                        ) : (
+                            <p className="px-3 pt-3 pb-1 font-semibold text-[11px] tracking-[0.14em] text-muted-foreground uppercase">
+                                {t(labelKey)}
+                            </p>
+                        )}
+
+                        {delGrupo.map(pintar)}
+                    </div>
+                );
+            })}
+
+            <div className={cn('gap-1 flex flex-col', sueltas.length > 0 && 'mt-1')}>
+                {sueltas.map(pintar)}
+            </div>
+        </nav>
+    );
 }

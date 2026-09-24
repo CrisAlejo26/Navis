@@ -11,31 +11,31 @@ import { queryKeys } from './query-keys';
  * pedir la primera iglesia antes de dejar entrar a ninguna pantalla.
  */
 export function useMyChurches(api: ApiClient, enabled = true): UseQueryResult<MyChurches> {
-  return useQuery({
-    queryKey: queryKeys.churches.mine,
-    queryFn: () => api.get<MyChurches>('/churches'),
-    enabled,
-    staleTime: 60_000,
-  });
+    return useQuery({
+        queryKey: queryKeys.churches.mine,
+        queryFn: () => api.get<MyChurches>('/churches'),
+        enabled,
+        staleTime: 60_000,
+    });
 }
 
 export function useCreateChurch(api: ApiClient) {
-  const queryClient = useQueryClient();
+    const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: (input: CreateChurchInput) => api.post<Church>('/churches', { ...input }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.churches.all }),
-  });
+    return useMutation({
+        mutationFn: (input: CreateChurchInput) => api.post<Church>('/churches', { ...input }),
+        onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.churches.all }),
+    });
 }
 
 export function useUpdateChurch(api: ApiClient) {
-  const queryClient = useQueryClient();
+    const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: ({ id, ...input }: UpdateChurchInput & { id: string }) =>
-      api.patch<Church>(`/churches/${id}`, { ...input }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.churches.all }),
-  });
+    return useMutation({
+        mutationFn: ({ id, ...input }: UpdateChurchInput & { id: string }) =>
+            api.patch<Church>(`/churches/${id}`, { ...input }),
+        onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.churches.all }),
+    });
 }
 
 /**
@@ -43,13 +43,13 @@ export function useUpdateChurch(api: ApiClient) {
  * lo que había en pantalla era de la iglesia anterior.
  */
 export function useSetActiveChurch(api: ApiClient) {
-  const queryClient = useQueryClient();
+    const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: (churchId: string) => api.put<MyChurches>('/churches/active', { churchId }),
-    onSuccess: (churches) => {
-      queryClient.setQueryData(queryKeys.churches.mine, churches);
-      return queryClient.invalidateQueries();
-    },
-  });
+    return useMutation({
+        mutationFn: (churchId: string) => api.put<MyChurches>('/churches/active', { churchId }),
+        onSuccess: (churches) => {
+            queryClient.setQueryData(queryKeys.churches.mine, churches);
+            return queryClient.invalidateQueries();
+        },
+    });
 }

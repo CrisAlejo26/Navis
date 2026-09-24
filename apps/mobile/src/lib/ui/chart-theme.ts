@@ -1,14 +1,14 @@
 import { FONT_FAMILIES, type ThemeColors } from '@navis/theme';
 
 export interface ChartTheme {
-  /** Color de la línea / barras: `--primary`. */
-  line: string;
-  /** Color de ejes y reglas: `--border`. */
-  axis: string;
-  /** Color del texto de los ejes: `--muted-foreground`. */
-  label: string;
-  /** La familia de cuerpo, para los textos que la librería pinta por su cuenta. */
-  font: string;
+    /** Color de la línea / barras: `--primary`. */
+    line: string;
+    /** Color de ejes y reglas: `--border`. */
+    axis: string;
+    /** Color del texto de los ejes: `--muted-foreground`. */
+    label: string;
+    /** La familia de cuerpo, para los textos que la librería pinta por su cuenta. */
+    font: string;
 }
 
 /**
@@ -19,10 +19,10 @@ export interface ChartTheme {
  * necesitan el hexadecimal, resuelto aquí una sola vez.
  */
 export function chartTheme(palette: ThemeColors): ChartTheme {
-  return {
-    line: palette.primary,
-    axis: palette.border,
-    label: palette.mutedForeground,
-    font: FONT_FAMILIES.sans.native,
-  };
+    return {
+        line: palette.primary,
+        axis: palette.border,
+        label: palette.mutedForeground,
+        font: FONT_FAMILIES.sans.native,
+    };
 }

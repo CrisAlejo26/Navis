@@ -13,21 +13,21 @@ import { TableColumn, type MigrationInterface, type QueryRunner } from 'typeorm'
  * superadministrador que ya existen: no hace falta un `UPDATE` aparte.
  */
 export class RestrictSuperadminScope1788220800000 implements MigrationInterface {
-  name = 'RestrictSuperadminScope1788220800000';
+    name = 'RestrictSuperadminScope1788220800000';
 
-  async up(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.addColumn(
-      'profiles',
-      new TableColumn({
-        name: 'restrict_own_scope',
-        type: 'boolean',
-        isNullable: false,
-        default: true,
-      }),
-    );
-  }
+    async up(queryRunner: QueryRunner): Promise<void> {
+        await queryRunner.addColumn(
+            'profiles',
+            new TableColumn({
+                name: 'restrict_own_scope',
+                type: 'boolean',
+                isNullable: false,
+                default: true,
+            }),
+        );
+    }
 
-  async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropColumn('profiles', 'restrict_own_scope');
-  }
+    async down(queryRunner: QueryRunner): Promise<void> {
+        await queryRunner.dropColumn('profiles', 'restrict_own_scope');
+    }
 }

@@ -9,23 +9,23 @@ import { queryKeys } from './query-keys';
  * de leerlo de un contexto, para que cada app decida cómo construirlo.
  */
 export function useProfile(api: ApiClient, enabled = true): UseQueryResult<Profile> {
-  return useQuery({
-    queryKey: queryKeys.profile.me(),
-    queryFn: () => api.get<Profile>('/me/profile'),
-    enabled,
-    staleTime: 60_000,
-  });
+    return useQuery({
+        queryKey: queryKeys.profile.me(),
+        queryFn: () => api.get<Profile>('/me/profile'),
+        enabled,
+        staleTime: 60_000,
+    });
 }
 
 export function useUpdateProfile(api: ApiClient) {
-  const queryClient = useQueryClient();
+    const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: (input: UpdateProfileInput) => api.patch<Profile>('/me/profile', input),
-    onSuccess: (profile) => {
-      queryClient.setQueryData(queryKeys.profile.me(), profile);
-    },
-  });
+    return useMutation({
+        mutationFn: (input: UpdateProfileInput) => api.patch<Profile>('/me/profile', input),
+        onSuccess: (profile) => {
+            queryClient.setQueryData(queryKeys.profile.me(), profile);
+        },
+    });
 }
 
 /**
@@ -35,25 +35,25 @@ export function useUpdateProfile(api: ApiClient) {
  * nadie abre el panel para ver cómo cambia el termómetro.
  */
 export function useWeather(api: ApiClient, enabled = true): UseQueryResult<Weather | null> {
-  return useQuery({
-    queryKey: queryKeys.weather,
-    queryFn: () => api.get<Weather | null>('/weather'),
-    enabled,
-    retry: false,
-    staleTime: 30 * 60_000,
-  });
+    return useQuery({
+        queryKey: queryKeys.weather,
+        queryFn: () => api.get<Weather | null>('/weather'),
+        enabled,
+        retry: false,
+        staleTime: 30 * 60_000,
+    });
 }
 
 export interface AiStatus {
-  enabled: boolean;
-  provider: string;
-  model: string;
+    enabled: boolean;
+    provider: string;
+    model: string;
 }
 
 export function useAiStatus(api: ApiClient): UseQueryResult<AiStatus> {
-  return useQuery({
-    queryKey: queryKeys.ai.status,
-    queryFn: () => api.get<AiStatus>('/ai/status'),
-    staleTime: 5 * 60_000,
-  });
+    return useQuery({
+        queryKey: queryKeys.ai.status,
+        queryFn: () => api.get<AiStatus>('/ai/status'),
+        staleTime: 5 * 60_000,
+    });
 }

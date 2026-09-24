@@ -6,11 +6,11 @@ import { queryKeys } from './query-keys';
 
 /** La ruta de una página del historial. Sin `before`, la primera (los últimos mensajes). */
 export function messagesPath(channelId: string, before?: string): string {
-  const params = new URLSearchParams();
-  if (before) params.set('before', before);
-  const qs = params.toString();
+    const params = new URLSearchParams();
+    if (before) params.set('before', before);
+    const qs = params.toString();
 
-  return `/channels/${channelId}/messages${qs ? `?${qs}` : ''}`;
+    return `/channels/${channelId}/messages${qs ? `?${qs}` : ''}`;
 }
 
 /**
@@ -18,7 +18,7 @@ export function messagesPath(channelId: string, before?: string): string {
  * cargado en esta página, o nada si el servidor dice que no queda más atrás.
  */
 export function nextMessagesCursor(page: MessagesPage): string | undefined {
-  return page.hasMore ? page.items[0]?.createdAt : undefined;
+    return page.hasMore ? page.items[0]?.createdAt : undefined;
 }
 
 /**
@@ -32,18 +32,18 @@ export function nextMessagesCursor(page: MessagesPage): string | undefined {
  * llamarla, no un `IntersectionObserver`.
  */
 export function useMessages(
-  api: ApiClient,
-  channelId: string,
-  enabled = true,
-  pollMs?: number,
+    api: ApiClient,
+    channelId: string,
+    enabled = true,
+    pollMs?: number,
 ): UseInfiniteQueryResult<{ pages: MessagesPage[] }> {
-  return useInfiniteQuery({
-    queryKey: queryKeys.chat.messages(channelId),
-    initialPageParam: undefined as string | undefined,
-    queryFn: ({ pageParam }) => api.get<MessagesPage>(messagesPath(channelId, pageParam)),
-    getNextPageParam: nextMessagesCursor,
-    enabled: enabled && Boolean(channelId),
-    staleTime: 5_000,
-    refetchInterval: pollMs,
-  });
+    return useInfiniteQuery({
+        queryKey: queryKeys.chat.messages(channelId),
+        initialPageParam: undefined as string | undefined,
+        queryFn: ({ pageParam }) => api.get<MessagesPage>(messagesPath(channelId, pageParam)),
+        getNextPageParam: nextMessagesCursor,
+        enabled: enabled && Boolean(channelId),
+        staleTime: 5_000,
+        refetchInterval: pollMs,
+    });
 }

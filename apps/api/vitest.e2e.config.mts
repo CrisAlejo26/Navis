@@ -7,24 +7,24 @@ import { defineConfig } from 'vitest/config';
  * `DB_DRIVER=postgres`, arranca antes `pnpm db:up && pnpm db:migrate`.
  */
 export default defineConfig({
-  plugins: [swc.vite({ module: { type: 'es6' } })],
-  test: {
-    globals: true,
-    environment: 'node',
-    include: ['test/**/*.e2e-spec.ts'],
-    // Corre antes de importar cada fichero: `config/env` valida el entorno al
-    // cargarse, y aquí además se apaga la fuente de festivos.
-    setupFiles: ['./vitest.e2e.setup.ts'],
-    testTimeout: 30_000,
-    hookTimeout: 30_000,
-    fileParallelism: false,
-    server: {
-      deps: {
-        // Módulos nativos y de base de datos: los tiene que cargar Node, no
-        // Vite. Si pasan por su transformación, el `.node` binario de
-        // better-sqlite3 explota con «Invalid or unexpected token».
-        external: [/better-sqlite3/, /^pg$/, /typeorm/, /better-auth/],
-      },
+    plugins: [swc.vite({ module: { type: 'es6' } })],
+    test: {
+        globals: true,
+        environment: 'node',
+        include: ['test/**/*.e2e-spec.ts'],
+        // Corre antes de importar cada fichero: `config/env` valida el entorno al
+        // cargarse, y aquí además se apaga la fuente de festivos.
+        setupFiles: ['./vitest.e2e.setup.ts'],
+        testTimeout: 30_000,
+        hookTimeout: 30_000,
+        fileParallelism: false,
+        server: {
+            deps: {
+                // Módulos nativos y de base de datos: los tiene que cargar Node, no
+                // Vite. Si pasan por su transformación, el `.node` binario de
+                // better-sqlite3 explota con «Invalid or unexpected token».
+                external: [/better-sqlite3/, /^pg$/, /typeorm/, /better-auth/],
+            },
+        },
     },
-  },
 });

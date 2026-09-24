@@ -15,12 +15,12 @@ export const defaultNS = 'translation';
  * PWA y en la app móvil).
  */
 export const resources = {
-  es: { translation: es },
-  en: { translation: en },
-  fr: { translation: fr },
-  pt: { translation: pt },
-  de: { translation: de },
-  it: { translation: it },
+    es: { translation: es },
+    en: { translation: en },
+    fr: { translation: fr },
+    pt: { translation: pt },
+    de: { translation: de },
+    it: { translation: it },
 } as const satisfies Record<Locale, { translation: Translation }>;
 
 export type Resources = typeof resources;

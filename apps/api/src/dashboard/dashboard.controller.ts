@@ -13,16 +13,16 @@ import { DashboardService } from './dashboard.service';
 @Controller('dashboard')
 @UseGuards(ActiveChurchGuard)
 export class DashboardController {
-  constructor(private readonly dashboard: DashboardService) {}
+    constructor(private readonly dashboard: DashboardService) {}
 
-  @Get('summary')
-  @RequirePermissions('dashboard.view')
-  @ApiOperation({ summary: 'Las tarjetas, gráficas y agenda de la portada' })
-  @ApiOkResponse({ description: 'Todo el panel, en una sola respuesta' })
-  summary(
-    @CurrentChurch() churchId: string,
-    @CurrentUser('id') ownerId: string,
-  ): Promise<DashboardSummary> {
-    return this.dashboard.summary(churchId, ownerId);
-  }
+    @Get('summary')
+    @RequirePermissions('dashboard.view')
+    @ApiOperation({ summary: 'Las tarjetas, gráficas y agenda de la portada' })
+    @ApiOkResponse({ description: 'Todo el panel, en una sola respuesta' })
+    summary(
+        @CurrentChurch() churchId: string,
+        @CurrentUser('id') ownerId: string,
+    ): Promise<DashboardSummary> {
+        return this.dashboard.summary(churchId, ownerId);
+    }
 }

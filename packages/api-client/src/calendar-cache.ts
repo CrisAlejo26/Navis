@@ -1,8 +1,8 @@
 import type { AssignSlotInput, CalendarRange } from '@navis/shared';
 
 export interface AssignVariables extends AssignSlotInput {
-  /** El nombre ya compuesto, para poder pintarlo antes de que responda la API. */
-  believerName?: string | null;
+    /** El nombre ya compuesto, para poder pintarlo antes de que responda la API. */
+    believerName?: string | null;
 }
 
 /**
@@ -12,7 +12,7 @@ export interface AssignVariables extends AssignSlotInput {
  * parcheo optimista solo tiene sentido sobre los tramos.
  */
 export function isCalendarRange(data: unknown): data is CalendarRange {
-  return typeof data === 'object' && data !== null && Array.isArray((data as CalendarRange).days);
+    return typeof data === 'object' && data !== null && Array.isArray((data as CalendarRange).days);
 }
 
 /**
@@ -23,35 +23,41 @@ export function isCalendarRange(data: unknown): data is CalendarRange {
  * Si la API falla, la mutación repone la copia anterior y avisa.
  */
 export function withAssignment(range: CalendarRange, input: AssignVariables): CalendarRange {
-  return {
-    ...range,
-    days: range.days.map((day) => {
-      if (day.date !== input.date) return day;
+    return {
+        ...range,
+        days: range.days.map((day) => {
+            if (day.date !== input.date) return day;
 
-      return {
-        ...day,
-        meetings: day.meetings.map((meeting) => {
-          const isTarget = input.meetingId
-            ? meeting.id === input.meetingId
-            : meeting.patternId === input.patternId;
-          if (!isTarget) return meeting;
+            return {
+                ...day,
+                meetings: day.meetings.map((meeting) => {
+                    const isTarget = input.meetingId
+                        ? meeting.id === input.meetingId
+                        : meeting.patternId === input.patternId;
+                    if (!isTarget) return meeting;
 
-          return {
-            ...meeting,
-            slots: meeting.slots.map((slot) =>
-              slot.position === input.position
-                ? {
-                    ...slot,
-                    believer: input.believerId
-                      ? { id: input.believerId, name: input.believerName ?? '…' }
-                      : null,
-                    note: input.note === undefined ? slot.note : (input.note ?? null),
-                  }
-                : slot,
-            ),
-          };
+                    return {
+                        ...meeting,
+                        slots: meeting.slots.map((slot) =>
+                            slot.position === input.position
+                                ? {
+                                      ...slot,
+                                      believer: input.believerId
+                                          ? {
+                                                id: input.believerId,
+                                                name: input.believerName ?? '…',
+                                            }
+                                          : null,
+                                      note:
+                                          input.note === undefined
+                                              ? slot.note
+                                              : (input.note ?? null),
+                                  }
+                                : slot,
+                        ),
+                    };
+                }),
+            };
         }),
-      };
-    }),
-  };
+    };
 }

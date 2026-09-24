@@ -157,45 +157,45 @@ lista y el nombre de la iglesia, igual que el documento de `og:` de D14.
 ```typescript
 // apps/api/src/lists/list-manifest.ts
 export interface ListManifestInput {
-  origin: string;
-  token: string;
-  listName: string;
-  churchName: string;
+    origin: string;
+    token: string;
+    listName: string;
+    churchName: string;
 }
 
 /** El manifest de aplicación de una lista publicada: un `start_url` propio. */
 export function renderListManifest(input: ListManifestInput): object {
-  const startUrl = `${input.origin}${listPublicPath(input.token)}`; // /lists/s/<token>
+    const startUrl = `${input.origin}${listPublicPath(input.token)}`; // /lists/s/<token>
 
-  return {
-    id: startUrl,
-    name: `${input.listName} · ${input.churchName}`,
-    short_name: input.listName.slice(0, 30),
-    start_url: startUrl,
-    scope: startUrl,
-    display: 'standalone',
-    orientation: 'portrait',
-    background_color: '#fcfcfa',
-    theme_color: '#fcfcfa',
-    icons: [
-      {
-        src: `${input.origin}/pwa-192x192.png`,
-        sizes: '192x192',
-        type: 'image/png',
-      },
-      {
-        src: `${input.origin}/pwa-512x512.png`,
-        sizes: '512x512',
-        type: 'image/png',
-      },
-      {
-        src: `${input.origin}/pwa-maskable-512x512.png`,
-        sizes: '512x512',
-        type: 'image/png',
-        purpose: 'maskable',
-      },
-    ],
-  };
+    return {
+        id: startUrl,
+        name: `${input.listName} · ${input.churchName}`,
+        short_name: input.listName.slice(0, 30),
+        start_url: startUrl,
+        scope: startUrl,
+        display: 'standalone',
+        orientation: 'portrait',
+        background_color: '#fcfcfa',
+        theme_color: '#fcfcfa',
+        icons: [
+            {
+                src: `${input.origin}/pwa-192x192.png`,
+                sizes: '192x192',
+                type: 'image/png',
+            },
+            {
+                src: `${input.origin}/pwa-512x512.png`,
+                sizes: '512x512',
+                type: 'image/png',
+            },
+            {
+                src: `${input.origin}/pwa-maskable-512x512.png`,
+                sizes: '512x512',
+                type: 'image/png',
+                purpose: 'maskable',
+            },
+        ],
+    };
 }
 ```
 

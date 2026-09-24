@@ -8,14 +8,14 @@ import { Select } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 
 interface FieldsProps {
-  note?: BelieverNote;
-  gifts: readonly Gift[];
-  kind: NoteKind;
-  onKindChange: (kind: NoteKind) => void;
-  giftId: string;
-  onGiftChange: (giftId: string) => void;
-  /** «Lo que me contó» se lleva el foco al abrir: es a lo que se viene (§7.6). */
-  toldRef: RefObject<HTMLTextAreaElement | null>;
+    note?: BelieverNote;
+    gifts: readonly Gift[];
+    kind: NoteKind;
+    onKindChange: (kind: NoteKind) => void;
+    giftId: string;
+    onGiftChange: (giftId: string) => void;
+    /** «Lo que me contó» se lleva el foco al abrir: es a lo que se viene (§7.6). */
+    toldRef: RefObject<HTMLTextAreaElement | null>;
 }
 
 /**
@@ -27,70 +27,70 @@ interface FieldsProps {
  * lo llevan, porque no son campos con `name` que el navegador sepa recoger.
  */
 export function NoteFields({
-  note,
-  gifts,
-  kind,
-  onKindChange,
-  giftId,
-  onGiftChange,
-  toldRef,
+    note,
+    gifts,
+    kind,
+    onKindChange,
+    giftId,
+    onGiftChange,
+    toldRef,
 }: FieldsProps) {
-  const { t } = useTranslation();
-  const available = gifts.filter((gift) => gift.isActive || gift.id === giftId);
+    const { t } = useTranslation();
+    const available = gifts.filter((gift) => gift.isActive || gift.id === giftId);
 
-  return (
-    <>
-      <NoteKindPicker value={kind} onChange={onKindChange} label={t('notes.kind')} />
+    return (
+        <>
+            <NoteKindPicker value={kind} onChange={onKindChange} label={t('notes.kind')} />
 
-      <div className="gap-3 sm:grid-cols-2 grid">
-        <Input
-          name="occurredAt"
-          type="date"
-          label={t('notes.date')}
-          defaultValue={note?.occurredAt ?? toIsoDate(new Date())}
-          required
-        />
+            <div className="gap-3 sm:grid-cols-2 grid">
+                <Input
+                    name="occurredAt"
+                    type="date"
+                    label={t('notes.date')}
+                    defaultValue={note?.occurredAt ?? toIsoDate(new Date())}
+                    required
+                />
 
-        {kind === 'don' && (
-          <Select
-            name="giftId"
-            label={t('notes.gift')}
-            value={giftId}
-            onChange={(event) => {
-              onGiftChange(event.target.value);
-            }}
-            required
-          >
-            <option value="">{t('gifts.none')}</option>
-            {available.map((gift) => (
-              <option key={gift.id} value={gift.id}>
-                {gift.name}
-              </option>
-            ))}
-          </Select>
-        )}
-      </div>
+                {kind === 'don' && (
+                    <Select
+                        name="giftId"
+                        label={t('notes.gift')}
+                        value={giftId}
+                        onChange={(event) => {
+                            onGiftChange(event.target.value);
+                        }}
+                        required
+                    >
+                        <option value="">{t('gifts.none')}</option>
+                        {available.map((gift) => (
+                            <option key={gift.id} value={gift.id}>
+                                {gift.name}
+                            </option>
+                        ))}
+                    </Select>
+                )}
+            </div>
 
-      {kind === 'don' && (
-        <p className="-mt-2 text-xs text-muted-foreground">{t('notes.giftHint')}</p>
-      )}
+            {kind === 'don' && (
+                <p className="-mt-2 text-xs text-muted-foreground">{t('notes.giftHint')}</p>
+            )}
 
-      <Textarea
-        ref={toldRef}
-        name="told"
-        rows={5}
-        label={t('notes.told')}
-        defaultValue={note?.told}
-        required
-      />
+            <Textarea
+                ref={toldRef}
+                name="told"
+                rows={5}
+                label={t('notes.told')}
+                defaultValue={note?.told}
+                required
+            />
 
-      <Textarea
-        name="advice"
-        rows={3}
-        label={t('notes.advice')}
-        defaultValue={note?.advice ?? ''}
-        hint={t('notes.adviceHint')}
-      />
-    </>
-  );
+            <Textarea
+                name="advice"
+                rows={3}
+                label={t('notes.advice')}
+                defaultValue={note?.advice ?? ''}
+                hint={t('notes.adviceHint')}
+            />
+        </>
+    );
 }

@@ -16,23 +16,23 @@ const MIN_TOUCH = 44;
 /** El hueco que le falta a la caja visible para llegar a los 44 px de área
  * táctil (Regla 5 punto 4): crece el `hitSlop`, no el dibujo del icono. */
 function touchPadding(box: number) {
-  const extra = Math.max(0, Math.ceil((MIN_TOUCH - box) / 2));
-  return { top: extra, bottom: extra, left: extra, right: extra };
+    const extra = Math.max(0, Math.ceil((MIN_TOUCH - box) / 2));
+    return { top: extra, bottom: extra, left: extra, right: extra };
 }
 
 interface IconButtonProps extends Omit<PressableProps, 'children' | 'hitSlop'> {
-  icon: IoniconName;
-  /** Sin texto al lado, la etiqueta accesible es obligatoria (Regla 2). */
-  accessibilityLabel: string;
-  variant?: ButtonVariant;
-  size?: Size;
-  className?: string;
-  /**
-   * Color explícito del glifo, para los casos sobre una ilustración de fondo
-   * donde el tono de la variante se pierde. Con él, el tono de la variante
-   * se ignora.
-   */
-  iconColor?: string;
+    icon: IoniconName;
+    /** Sin texto al lado, la etiqueta accesible es obligatoria (Regla 2). */
+    accessibilityLabel: string;
+    variant?: ButtonVariant;
+    size?: Size;
+    className?: string;
+    /**
+     * Color explícito del glifo, para los casos sobre una ilustración de fondo
+     * donde el tono de la variante se pierde. Con él, el tono de la variante
+     * se ignora.
+     */
+    iconColor?: string;
 }
 
 /**
@@ -41,36 +41,36 @@ interface IconButtonProps extends Omit<PressableProps, 'children' | 'hitSlop'> {
  * se vean como la misma familia.
  */
 export function IconButton({
-  icon,
-  accessibilityLabel,
-  variant = 'ghost',
-  size = 'md',
-  iconColor,
-  disabled,
-  className,
-  ...props
+    icon,
+    accessibilityLabel,
+    variant = 'ghost',
+    size = 'md',
+    iconColor,
+    disabled,
+    className,
+    ...props
 }: IconButtonProps) {
-  const palette = themeColorsHex[useThemeStore((state) => state.resolvedTheme)];
-  const iconColorResuelto = iconColor ?? palette[BUTTON_ICON_TONE[variant]];
-  const box = BOX[size];
+    const palette = themeColorsHex[useThemeStore((state) => state.resolvedTheme)];
+    const iconColorResuelto = iconColor ?? palette[BUTTON_ICON_TONE[variant]];
+    const box = BOX[size];
 
-  return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityLabel={accessibilityLabel}
-      accessibilityState={{ disabled: Boolean(disabled) }}
-      disabled={disabled}
-      hitSlop={touchPadding(box)}
-      style={{ width: box, height: box }}
-      className={cn(
-        'items-center justify-center rounded-lg active:opacity-80',
-        BUTTON_CONTAINERS[variant],
-        disabled && 'opacity-50',
-        className,
-      )}
-      {...props}
-    >
-      <Ionicons name={icon} size={GLYPH[size]} color={iconColorResuelto} />
-    </Pressable>
-  );
+    return (
+        <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={accessibilityLabel}
+            accessibilityState={{ disabled: Boolean(disabled) }}
+            disabled={disabled}
+            hitSlop={touchPadding(box)}
+            style={{ width: box, height: box }}
+            className={cn(
+                'items-center justify-center rounded-lg active:opacity-80',
+                BUTTON_CONTAINERS[variant],
+                disabled && 'opacity-50',
+                className,
+            )}
+            {...props}
+        >
+            <Ionicons name={icon} size={GLYPH[size]} color={iconColorResuelto} />
+        </Pressable>
+    );
 }

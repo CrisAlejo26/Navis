@@ -8,26 +8,26 @@ import { plainText, type ExportDocument } from '@/lib/export/document';
  * de qué es y de cuándo.
  */
 export function toMarkdown(doc: ExportDocument): string {
-  const separador = doc.aligns.map((align) => (align === 'right' ? '---:' : ':---'));
+    const separador = doc.aligns.map((align) => (align === 'right' ? '---:' : ':---'));
 
-  return [
-    `# ${doc.title}`,
-    '',
-    `_${doc.subtitle}_`,
-    '',
-    fila(doc.headers),
-    fila(separador),
-    ...doc.rows.map((row) => fila(row.map(plainText))),
-    '',
-  ].join('\n');
+    return [
+        `# ${doc.title}`,
+        '',
+        `_${doc.subtitle}_`,
+        '',
+        fila(doc.headers),
+        fila(separador),
+        ...doc.rows.map((row) => fila(row.map(plainText))),
+        '',
+    ].join('\n');
 }
 
 export function toMarkdownBlob(doc: ExportDocument): Blob {
-  return new Blob([toMarkdown(doc)], { type: 'text/markdown;charset=utf-8' });
+    return new Blob([toMarkdown(doc)], { type: 'text/markdown;charset=utf-8' });
 }
 
 function fila(cells: readonly string[]): string {
-  return `| ${cells.map(escape).join(' | ')} |`;
+    return `| ${cells.map(escape).join(' | ')} |`;
 }
 
 /**
@@ -36,5 +36,5 @@ function fila(cells: readonly string[]): string {
  * dentro de una celda es problema de quien lo escribió.
  */
 function escape(value: string): string {
-  return value.replace(/\|/g, '\\|').replace(/\r?\n/g, ' ');
+    return value.replace(/\|/g, '\\|').replace(/\r?\n/g, ' ');
 }

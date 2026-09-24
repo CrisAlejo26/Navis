@@ -19,29 +19,31 @@ import { usePwaInstallPrompt } from '@/lib/pwa-install';
  * verdad.
  */
 export function InstallListButton() {
-  const { t } = useTranslation();
-  const install = usePwaInstallPrompt();
+    const { t } = useTranslation();
+    const install = usePwaInstallPrompt();
 
-  if (install.installed) return null;
+    if (install.installed) return null;
 
-  if (install.isIOS) {
+    if (install.isIOS) {
+        return (
+            <p className="text-xs max-w-[16rem] text-muted-foreground">
+                {t('lists.installAppHint')}
+            </p>
+        );
+    }
+
+    if (!install.available) return null;
+
     return (
-      <p className="text-xs max-w-[16rem] text-muted-foreground">{t('lists.installAppHint')}</p>
+        <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => {
+                void install.promptInstall();
+            }}
+        >
+            <Smartphone size={14} aria-hidden />
+            {t('lists.installApp')}
+        </Button>
     );
-  }
-
-  if (!install.available) return null;
-
-  return (
-    <Button
-      variant="secondary"
-      size="sm"
-      onClick={() => {
-        void install.promptInstall();
-      }}
-    >
-      <Smartphone size={14} aria-hidden />
-      {t('lists.installApp')}
-    </Button>
-  );
 }

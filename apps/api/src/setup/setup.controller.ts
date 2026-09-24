@@ -16,21 +16,21 @@ import { SetupService } from './setup.service';
 @Public()
 @Controller('setup')
 export class SetupController {
-  constructor(private readonly setup: SetupService) {}
+    constructor(private readonly setup: SetupService) {}
 
-  @Get('status')
-  @ApiOperation({ summary: '¿Hace falta crear la primera cuenta?' })
-  @ApiOkResponse({ description: '{ needsSetup: boolean }' })
-  getStatus(): Promise<SetupStatus> {
-    return this.setup.getStatus();
-  }
+    @Get('status')
+    @ApiOperation({ summary: '¿Hace falta crear la primera cuenta?' })
+    @ApiOkResponse({ description: '{ needsSetup: boolean }' })
+    getStatus(): Promise<SetupStatus> {
+        return this.setup.getStatus();
+    }
 
-  @Post('admin')
-  @Throttle({ default: { limit: 5, ttl: 60_000 } })
-  @ApiOperation({ summary: 'Crea la primera cuenta con el rol de administrador' })
-  @ApiOkResponse({ description: 'La cuenta creada' })
-  @ApiConflictResponse({ description: 'La instalación ya tiene cuentas' })
-  createFirstAdmin(@Body() dto: CreateFirstAdminDto): Promise<ManagedUser> {
-    return this.setup.createFirstAdmin(dto);
-  }
+    @Post('admin')
+    @Throttle({ default: { limit: 5, ttl: 60_000 } })
+    @ApiOperation({ summary: 'Crea la primera cuenta con el rol de administrador' })
+    @ApiOkResponse({ description: 'La cuenta creada' })
+    @ApiConflictResponse({ description: 'La instalación ya tiene cuentas' })
+    createFirstAdmin(@Body() dto: CreateFirstAdminDto): Promise<ManagedUser> {
+        return this.setup.createFirstAdmin(dto);
+    }
 }

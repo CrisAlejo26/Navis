@@ -4,17 +4,17 @@ import { useTranslation } from 'react-i18next';
 import { TableHeader } from '@/components/ui/table';
 
 export interface SortableColumn<TField extends string> {
-  field: TField;
-  /** Ya traducido: quien lo pasa sabe con qué clave (Regla 2). */
-  label: string;
-  align?: 'left' | 'right';
+    field: TField;
+    /** Ya traducido: quien lo pasa sabe con qué clave (Regla 2). */
+    label: string;
+    align?: 'left' | 'right';
 }
 
 interface SortableColumnsProps<TField extends string> {
-  columns: readonly SortableColumn<TField>[];
-  sort: TField;
-  order: SortOrder;
-  onToggle: (field: TField) => void;
+    columns: readonly SortableColumn<TField>[];
+    sort: TField;
+    order: SortOrder;
+    onToggle: (field: TField) => void;
 }
 
 /**
@@ -23,28 +23,28 @@ interface SortableColumnsProps<TField extends string> {
  * activa y en qué sentido» se escribe una vez.
  */
 export function SortableColumns<TField extends string>({
-  columns,
-  sort,
-  order,
-  onToggle,
+    columns,
+    sort,
+    order,
+    onToggle,
 }: SortableColumnsProps<TField>) {
-  const { t } = useTranslation();
+    const { t } = useTranslation();
 
-  return (
-    <>
-      {columns.map((column) => (
-        <TableHeader
-          key={column.field}
-          sorted={sort === column.field && order}
-          sortLabel={t('roles.sortBy', { column: column.label })}
-          className={column.align === 'right' ? 'text-right' : undefined}
-          onSort={() => {
-            onToggle(column.field);
-          }}
-        >
-          {column.label}
-        </TableHeader>
-      ))}
-    </>
-  );
+    return (
+        <>
+            {columns.map((column) => (
+                <TableHeader
+                    key={column.field}
+                    sorted={sort === column.field && order}
+                    sortLabel={t('roles.sortBy', { column: column.label })}
+                    className={column.align === 'right' ? 'text-right' : undefined}
+                    onSort={() => {
+                        onToggle(column.field);
+                    }}
+                >
+                    {column.label}
+                </TableHeader>
+            ))}
+        </>
+    );
 }

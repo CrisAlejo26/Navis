@@ -19,46 +19,46 @@ import { MessageReaction } from './message-reaction.entity';
 @Entity('messages')
 @Index('IDX_messages_channel', ['channelId', 'createdAt'])
 export class Message extends BaseEntity {
-  @ApiProperty()
-  @Column({ name: 'channel_id', type: UUID })
-  channelId: string;
+    @ApiProperty()
+    @Column({ name: 'channel_id', type: UUID })
+    channelId: string;
 
-  /* Por nombre y con `Relation<>`: ver `list-member.entity.ts`. */
-  @ManyToOne('Channel', 'messages', { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'channel_id' })
-  channel: Relation<Channel>;
+    /* Por nombre y con `Relation<>`: ver `list-member.entity.ts`. */
+    @ManyToOne('Channel', 'messages', { onDelete: 'CASCADE' })
+    @JoinColumn({ name: 'channel_id' })
+    channel: Relation<Channel>;
 
-  @ApiProperty({ description: 'ID del usuario en Better Auth' })
-  @Column({ name: 'author_id', type: 'text' })
-  authorId: string;
+    @ApiProperty({ description: 'ID del usuario en Better Auth' })
+    @Column({ name: 'author_id', type: 'text' })
+    authorId: string;
 
-  @ApiPropertyOptional({ description: 'null si el mensaje es solo adjunto(s)' })
-  @Column({ type: 'text', nullable: true })
-  body: string | null;
+    @ApiPropertyOptional({ description: 'null si el mensaje es solo adjunto(s)' })
+    @Column({ type: 'text', nullable: true })
+    body: string | null;
 
-  @ApiPropertyOptional()
-  @Column({ name: 'reply_to_id', type: UUID, nullable: true })
-  replyToId: string | null;
+    @ApiPropertyOptional()
+    @Column({ name: 'reply_to_id', type: UUID, nullable: true })
+    replyToId: string | null;
 
-  @ManyToOne(() => Message, { nullable: true, onDelete: 'SET NULL' })
-  @JoinColumn({ name: 'reply_to_id' })
-  replyTo: Relation<Message> | null;
+    @ManyToOne(() => Message, { nullable: true, onDelete: 'SET NULL' })
+    @JoinColumn({ name: 'reply_to_id' })
+    replyTo: Relation<Message> | null;
 
-  @ApiPropertyOptional({ description: 'Para la etiqueta «Reenviado» (D4)' })
-  @Column({ name: 'forwarded_from_id', type: UUID, nullable: true })
-  forwardedFromId: string | null;
+    @ApiPropertyOptional({ description: 'Para la etiqueta «Reenviado» (D4)' })
+    @Column({ name: 'forwarded_from_id', type: UUID, nullable: true })
+    forwardedFromId: string | null;
 
-  @ManyToOne(() => Message, { nullable: true, onDelete: 'SET NULL' })
-  @JoinColumn({ name: 'forwarded_from_id' })
-  forwardedFrom: Relation<Message> | null;
+    @ManyToOne(() => Message, { nullable: true, onDelete: 'SET NULL' })
+    @JoinColumn({ name: 'forwarded_from_id' })
+    forwardedFrom: Relation<Message> | null;
 
-  @ApiPropertyOptional()
-  @Column({ name: 'edited_at', type: TIMESTAMP, nullable: true })
-  editedAt: Date | null;
+    @ApiPropertyOptional()
+    @Column({ name: 'edited_at', type: TIMESTAMP, nullable: true })
+    editedAt: Date | null;
 
-  @OneToMany(() => MessageAttachment, (attachment) => attachment.message, { cascade: true })
-  attachments: MessageAttachment[];
+    @OneToMany(() => MessageAttachment, (attachment) => attachment.message, { cascade: true })
+    attachments: MessageAttachment[];
 
-  @OneToMany(() => MessageReaction, (reaction) => reaction.message, { cascade: true })
-  reactions: MessageReaction[];
+    @OneToMany(() => MessageReaction, (reaction) => reaction.message, { cascade: true })
+    reactions: MessageReaction[];
 }

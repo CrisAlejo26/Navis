@@ -6,10 +6,10 @@ const bucketSchema = z.object({ label: z.string(), accent: z.string(), count: z.
 
 /** Un día de **la estela**: viene relleno con ceros, huecos incluidos (§7.4). */
 export const listDaySchema = z.object({
-  /** `AAAA-MM-DD`, calculado en JS sobre el ISO y no con `EXTRACT(DOW)`. */
-  day: z.string(),
-  views: z.number().int(),
-  visitors: z.number().int(),
+    /** `AAAA-MM-DD`, calculado en JS sobre el ISO y no con `EXTRACT(DOW)`. */
+    day: z.string(),
+    views: z.number().int(),
+    visitors: z.number().int(),
 });
 
 export type ListDay = z.infer<typeof listDaySchema>;
@@ -22,62 +22,62 @@ export type ListDay = z.infer<typeof listDaySchema>;
  * sabe nadie hasta que se cae.
  */
 export const listOverlapSchema = z.object({
-  inOtherLists: z.array(
-    z.object({
-      believerId: z.uuid(),
-      name: z.string(),
-      listCount: z.number().int(),
-    }),
-  ),
-  sharedWith: z.array(
-    z.object({
-      listId: z.uuid(),
-      name: z.string(),
-      accent: z.string(),
-      count: z.number().int(),
-    }),
-  ),
+    inOtherLists: z.array(
+        z.object({
+            believerId: z.uuid(),
+            name: z.string(),
+            listCount: z.number().int(),
+        }),
+    ),
+    sharedWith: z.array(
+        z.object({
+            listId: z.uuid(),
+            name: z.string(),
+            accent: z.string(),
+            count: z.number().int(),
+        }),
+    ),
 });
 
 export const listStatsSchema = z.object({
-  members: z.object({
-    total: z.number().int(),
-    byCongregation: z.array(bucketSchema),
-    byMinistry: z.array(bucketSchema),
-    byGift: z.array(bucketSchema),
-    byStatus: z.array(bucketSchema),
-    withoutCongregation: z.number().int(),
-  }),
-  overlap: listOverlapSchema,
-  audience: z.object({
-    views: z.number().int(),
-    visitors: z.number().int(),
-    firstViewAt: z.string().nullable(),
-    lastViewAt: z.string().nullable(),
-    days: z.array(listDaySchema),
-    byDevice: z.array(bucketSchema),
-    byPlatform: z.array(bucketSchema),
-    byReferrer: z.array(bucketSchema),
-    byHour: z.array(z.object({ hour: z.number().int(), count: z.number().int() })),
-    /** Solo en restringida: «cuánta gente» pasa a ser «quién» (D35). */
-    byViewer: z.array(
-      z.object({
-        viewerId: z.uuid(),
-        label: z.string(),
-        believerId: z.uuid().nullable(),
-        believerHasPhoto: z.boolean(),
+    members: z.object({
+        total: z.number().int(),
+        byCongregation: z.array(bucketSchema),
+        byMinistry: z.array(bucketSchema),
+        byGift: z.array(bucketSchema),
+        byStatus: z.array(bucketSchema),
+        withoutCongregation: z.number().int(),
+    }),
+    overlap: listOverlapSchema,
+    audience: z.object({
         views: z.number().int(),
-        lastAt: z.string(),
-      }),
-    ),
-  }),
-  /** Solo en restringida. `neverEntered` casi siempre dice que el mensaje no llegó. */
-  access: z.object({
-    granted: z.number().int(),
-    neverEntered: z.number().int(),
-    failedLast7Days: z.number().int(),
-    recent: z.array(listAccessEntrySchema),
-  }),
+        visitors: z.number().int(),
+        firstViewAt: z.string().nullable(),
+        lastViewAt: z.string().nullable(),
+        days: z.array(listDaySchema),
+        byDevice: z.array(bucketSchema),
+        byPlatform: z.array(bucketSchema),
+        byReferrer: z.array(bucketSchema),
+        byHour: z.array(z.object({ hour: z.number().int(), count: z.number().int() })),
+        /** Solo en restringida: «cuánta gente» pasa a ser «quién» (D35). */
+        byViewer: z.array(
+            z.object({
+                viewerId: z.uuid(),
+                label: z.string(),
+                believerId: z.uuid().nullable(),
+                believerHasPhoto: z.boolean(),
+                views: z.number().int(),
+                lastAt: z.string(),
+            }),
+        ),
+    }),
+    /** Solo en restringida. `neverEntered` casi siempre dice que el mensaje no llegó. */
+    access: z.object({
+        granted: z.number().int(),
+        neverEntered: z.number().int(),
+        failedLast7Days: z.number().int(),
+        recent: z.array(listAccessEntrySchema),
+    }),
 });
 
 export type ListStats = z.infer<typeof listStatsSchema>;

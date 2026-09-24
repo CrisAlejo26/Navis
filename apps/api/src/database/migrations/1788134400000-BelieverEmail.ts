@@ -8,16 +8,16 @@ import { TableColumn, type MigrationInterface, type QueryRunner } from 'typeorm'
  * correo sigue siendo una ficha válida.
  */
 export class BelieverEmail1788134400000 implements MigrationInterface {
-  name = 'BelieverEmail1788134400000';
+    name = 'BelieverEmail1788134400000';
 
-  async up(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.addColumn(
-      'believers',
-      new TableColumn({ name: 'email', type: 'text', isNullable: true }),
-    );
-  }
+    async up(queryRunner: QueryRunner): Promise<void> {
+        await queryRunner.addColumn(
+            'believers',
+            new TableColumn({ name: 'email', type: 'text', isNullable: true }),
+        );
+    }
 
-  async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropColumn('believers', 'email');
-  }
+    async down(queryRunner: QueryRunner): Promise<void> {
+        await queryRunner.dropColumn('believers', 'email');
+    }
 }

@@ -9,15 +9,15 @@ import type { IoniconName } from '@/lib/nav-mobile';
  * sendero. Comprobados a simple vista: ninguno se lee como cruz (Regla 7 §6).
  */
 export const PROPHECY_STATE_ICONS: Record<ProphecyState, IoniconName> = {
-  espera: 'hourglass-outline',
-  camino: 'trail-sign-outline',
-  cumplida: 'flag-outline',
+    espera: 'hourglass-outline',
+    camino: 'trail-sign-outline',
+    cumplida: 'flag-outline',
 };
 
 export const PROPHECY_STATE_TONE = {
-  espera: 'warning',
-  camino: 'primary',
-  cumplida: 'success',
+    espera: 'warning',
+    camino: 'primary',
+    cumplida: 'success',
 } as const;
 
 export const PROPHECY_SECTION_ICON: IoniconName = 'sparkles-outline';

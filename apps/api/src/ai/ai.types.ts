@@ -1,13 +1,13 @@
 export interface AiCompletionOptions {
-  system?: string;
-  maxTokens?: number;
-  temperature?: number;
+    system?: string;
+    maxTokens?: number;
+    temperature?: number;
 }
 
 export interface AiCompletionResult {
-  text: string;
-  model: string;
-  provider: string;
+    text: string;
+    model: string;
+    provider: string;
 }
 
 /**
@@ -16,8 +16,8 @@ export interface AiCompletionResult {
  * añadir una tercera no debería tocar nada fuera de este módulo.
  */
 export interface AiProvider {
-  readonly name: string;
-  complete(prompt: string, options?: AiCompletionOptions): Promise<AiCompletionResult>;
+    readonly name: string;
+    complete(prompt: string, options?: AiCompletionOptions): Promise<AiCompletionResult>;
 }
 
 export const AI_PROVIDER = Symbol('AI_PROVIDER');

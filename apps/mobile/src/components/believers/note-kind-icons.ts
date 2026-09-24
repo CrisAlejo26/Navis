@@ -8,11 +8,11 @@ import type { IoniconName } from '@/lib/nav-mobile';
  * desde aquí los importa: una sola fuente para los dos.
  */
 export const NOTE_KIND_ICONS: Record<NoteKind, IoniconName> = {
-  seguimiento: 'chatbubble-outline',
-  testimonio: 'chatbox-outline',
-  sueno: 'moon-outline',
-  vision: 'eye-outline',
-  experiencia: 'flame-outline',
-  don: 'sparkles-outline',
-  correccion: 'alert-circle-outline',
+    seguimiento: 'chatbubble-outline',
+    testimonio: 'chatbox-outline',
+    sueno: 'moon-outline',
+    vision: 'eye-outline',
+    experiencia: 'flame-outline',
+    don: 'sparkles-outline',
+    correccion: 'alert-circle-outline',
 };

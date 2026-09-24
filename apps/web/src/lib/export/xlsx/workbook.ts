@@ -15,16 +15,16 @@ const TIPO = 'application/vnd.openxmlformats-officedocument.spreadsheetml';
 export const XLSX_MIME = `${TIPO}.sheet`;
 
 export interface XlsxLabels {
-  /** El nombre de la primera pestaña: «Creyentes». */
-  sheet: string;
-  /** El de la segunda: «Resumen». */
-  summary: string;
-  /** La banda de la hoja de resumen. */
-  summaryTitle: string;
-  /** Lo que pone debajo: «47 filas». */
-  rows: string;
-  /** Cómo se llama la ausencia de dato: «Sin asignar». */
-  empty: string;
+    /** El nombre de la primera pestaña: «Creyentes». */
+    sheet: string;
+    /** El de la segunda: «Resumen». */
+    summary: string;
+    /** La banda de la hoja de resumen. */
+    summaryTitle: string;
+    /** Lo que pone debajo: «47 filas». */
+    rows: string;
+    /** Cómo se llama la ausencia de dato: «Sin asignar». */
+    empty: string;
 }
 
 /**
@@ -36,95 +36,103 @@ export interface XlsxLabels {
  * descomprime lo generado y comprueba que están las siete.
  */
 export function toXlsx(doc: ExportDocument, labels: XlsxLabels): Blob {
-  const summary = buildSummary(doc, labels.empty);
-  const styles = buildStyles(collectAccents(doc, summary));
-  const conResumen = summary.length > 0;
+    const summary = buildSummary(doc, labels.empty);
+    const styles = buildStyles(collectAccents(doc, summary));
+    const conResumen = summary.length > 0;
 
-  const hojas = [
-    { name: labels.sheet, xml: buildDataSheet(doc, styles) },
-    ...(conResumen
-      ? [
-          {
-            name: labels.summary,
-            xml: buildSummarySheet(doc, summary, styles, {
-              title: labels.summaryTitle,
-              rows: labels.rows,
-            }),
-          },
-        ]
-      : []),
-  ];
+    const hojas = [
+        { name: labels.sheet, xml: buildDataSheet(doc, styles) },
+        ...(conResumen
+            ? [
+                  {
+                      name: labels.summary,
+                      xml: buildSummarySheet(doc, summary, styles, {
+                          title: labels.summaryTitle,
+                          rows: labels.rows,
+                      }),
+                  },
+              ]
+            : []),
+    ];
 
-  const entries: ZipEntry[] = [
-    entry('[Content_Types].xml', contentTypes(hojas.length)),
-    entry('_rels/.rels', rels([{ id: 'rId1', type: 'officeDocument', target: 'xl/workbook.xml' }])),
-    entry('xl/workbook.xml', workbook(hojas.map((hoja) => hoja.name))),
-    entry('xl/_rels/workbook.xml.rels', workbookRels(hojas.length)),
-    entry('xl/styles.xml', styles.xml),
-    ...hojas.map((hoja, index) => entry(`xl/worksheets/sheet${String(index + 1)}.xml`, hoja.xml)),
-  ];
+    const entries: ZipEntry[] = [
+        entry('[Content_Types].xml', contentTypes(hojas.length)),
+        entry(
+            '_rels/.rels',
+            rels([{ id: 'rId1', type: 'officeDocument', target: 'xl/workbook.xml' }]),
+        ),
+        entry('xl/workbook.xml', workbook(hojas.map((hoja) => hoja.name))),
+        entry('xl/_rels/workbook.xml.rels', workbookRels(hojas.length)),
+        entry('xl/styles.xml', styles.xml),
+        ...hojas.map((hoja, index) =>
+            entry(`xl/worksheets/sheet${String(index + 1)}.xml`, hoja.xml),
+        ),
+    ];
 
-  return buildZip(entries, XLSX_MIME);
+    return buildZip(entries, XLSX_MIME);
 }
 
 function entry(name: string, xml: string): ZipEntry {
-  return { name, data: utf8(xml) };
+    return { name, data: utf8(xml) };
 }
 
 function contentTypes(sheets: number): string {
-  const hojas = Array.from(
-    { length: sheets },
-    (_unused, index) =>
-      `<Override PartName="/xl/worksheets/sheet${String(index + 1)}.xml" ContentType="${TIPO}.worksheet+xml"/>`,
-  ).join('');
+    const hojas = Array.from(
+        { length: sheets },
+        (_unused, index) =>
+            `<Override PartName="/xl/worksheets/sheet${String(index + 1)}.xml" ContentType="${TIPO}.worksheet+xml"/>`,
+    ).join('');
 
-  return [
-    XML_HEADER,
-    '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">',
-    '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>',
-    '<Default Extension="xml" ContentType="application/xml"/>',
-    `<Override PartName="/xl/workbook.xml" ContentType="${TIPO}.sheet.main+xml"/>`,
-    `<Override PartName="/xl/styles.xml" ContentType="${TIPO}.styles+xml"/>`,
-    hojas,
-    '</Types>',
-  ].join('');
+    return [
+        XML_HEADER,
+        '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">',
+        '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>',
+        '<Default Extension="xml" ContentType="application/xml"/>',
+        `<Override PartName="/xl/workbook.xml" ContentType="${TIPO}.sheet.main+xml"/>`,
+        `<Override PartName="/xl/styles.xml" ContentType="${TIPO}.styles+xml"/>`,
+        hojas,
+        '</Types>',
+    ].join('');
 }
 
 function rels(items: readonly { id: string; type: string; target: string }[]): string {
-  const relaciones = items
-    .map(
-      (item) =>
-        `<Relationship Id="${item.id}" Type="${NS_REL}/${item.type}" Target="${item.target}"/>`,
-    )
-    .join('');
+    const relaciones = items
+        .map(
+            (item) =>
+                `<Relationship Id="${item.id}" Type="${NS_REL}/${item.type}" Target="${item.target}"/>`,
+        )
+        .join('');
 
-  return `${XML_HEADER}<Relationships xmlns="${NS_PKG}">${relaciones}</Relationships>`;
+    return `${XML_HEADER}<Relationships xmlns="${NS_PKG}">${relaciones}</Relationships>`;
 }
 
 function workbookRels(sheets: number): string {
-  const hojas = Array.from({ length: sheets }, (_unused, index) => ({
-    id: `rId${String(index + 1)}`,
-    type: 'worksheet',
-    target: `worksheets/sheet${String(index + 1)}.xml`,
-  }));
+    const hojas = Array.from({ length: sheets }, (_unused, index) => ({
+        id: `rId${String(index + 1)}`,
+        type: 'worksheet',
+        target: `worksheets/sheet${String(index + 1)}.xml`,
+    }));
 
-  return rels([...hojas, { id: `rId${String(sheets + 1)}`, type: 'styles', target: 'styles.xml' }]);
+    return rels([
+        ...hojas,
+        { id: `rId${String(sheets + 1)}`, type: 'styles', target: 'styles.xml' },
+    ]);
 }
 
 function workbook(names: readonly string[]): string {
-  const hojas = names
-    .map(
-      (name, index) =>
-        `<sheet name="${escapeXml(sheetName(name))}" sheetId="${String(index + 1)}" r:id="rId${String(index + 1)}"/>`,
-    )
-    .join('');
+    const hojas = names
+        .map(
+            (name, index) =>
+                `<sheet name="${escapeXml(sheetName(name))}" sheetId="${String(index + 1)}" r:id="rId${String(index + 1)}"/>`,
+        )
+        .join('');
 
-  return [
-    XML_HEADER,
-    `<workbook xmlns="${NS_SHEET}" xmlns:r="${NS_REL}">`,
-    `<sheets>${hojas}</sheets>`,
-    '</workbook>',
-  ].join('');
+    return [
+        XML_HEADER,
+        `<workbook xmlns="${NS_SHEET}" xmlns:r="${NS_REL}">`,
+        `<sheets>${hojas}</sheets>`,
+        '</workbook>',
+    ].join('');
 }
 
 /**
@@ -133,6 +141,6 @@ function workbook(names: readonly string[]): string {
  * traducción, así que se sanea aquí y no se confía en que nadie se acuerde.
  */
 function sheetName(name: string): string {
-  const limpio = name.replace(/[[\]:*?/\\]/g, ' ').trim();
-  return (limpio || 'Hoja').slice(0, 31);
+    const limpio = name.replace(/[[\]:*?/\\]/g, ' ').trim();
+    return (limpio || 'Hoja').slice(0, 31);
 }

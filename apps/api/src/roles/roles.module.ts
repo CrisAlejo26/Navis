@@ -12,9 +12,9 @@ import { RolesService } from './roles.service';
  * para eso consulta el DataSource directamente.
  */
 @Module({
-  imports: [TypeOrmModule.forFeature([Role])],
-  controllers: [RolesController],
-  providers: [RolesService, RoleAdminService],
-  exports: [RolesService, RoleAdminService],
+    imports: [TypeOrmModule.forFeature([Role])],
+    controllers: [RolesController],
+    providers: [RolesService, RoleAdminService],
+    exports: [RolesService, RoleAdminService],
 })
 export class RolesModule {}

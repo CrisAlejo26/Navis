@@ -14,40 +14,40 @@ import type { ListPublicFields } from './lists';
  * saldría publicada por omisión, y aquí hay nombres de personas detrás.
  */
 export const publicListMemberSchema = z.object({
-  position: z.number().int(),
-  /** Entero o con inicial, según `publicFields.nameStyle`. */
-  name: z.string(),
-  note: z.string().nullable(),
-  congregation: z.string().nullable(),
-  ministry: z.string().nullable(),
-  /** La trayectoria (RFC 0012): `AAAA-MM-01`, se formatea en el cliente. */
-  arrivedAt: z.string().nullable(),
-  arrivalSite: z.string().nullable(),
-  bibleReadings: z.number().int().nullable(),
-  vivenciasReadings: z.number().int().nullable(),
-  bibleInstituteTimes: z.number().int().nullable(),
-  /**
-   * El **único** identificador que sale, y solo con la foto activada: sin él no
-   * habría forma de pedir la imagen a `/l/:token/photos/:id` (D17). Con la foto
-   * apagada es nulo y en la respuesta no queda ni un identificador.
-   */
-  photoId: z.uuid().nullable(),
+    position: z.number().int(),
+    /** Entero o con inicial, según `publicFields.nameStyle`. */
+    name: z.string(),
+    note: z.string().nullable(),
+    congregation: z.string().nullable(),
+    ministry: z.string().nullable(),
+    /** La trayectoria (RFC 0012): `AAAA-MM-01`, se formatea en el cliente. */
+    arrivedAt: z.string().nullable(),
+    arrivalSite: z.string().nullable(),
+    bibleReadings: z.number().int().nullable(),
+    vivenciasReadings: z.number().int().nullable(),
+    bibleInstituteTimes: z.number().int().nullable(),
+    /**
+     * El **único** identificador que sale, y solo con la foto activada: sin él no
+     * habría forma de pedir la imagen a `/l/:token/photos/:id` (D17). Con la foto
+     * apagada es nulo y en la respuesta no queda ni un identificador.
+     */
+    photoId: z.uuid().nullable(),
 });
 
 export type PublicListMember = z.infer<typeof publicListMemberSchema>;
 
 export const publicListSchema = z.object({
-  churchName: z.string(),
-  name: z.string(),
-  description: z.string().nullable(),
-  accent: z.string(),
-  /** Cuándo se tocó por última vez: es lo que se lee al pie del cartel. */
-  updatedAt: z.string(),
-  allowDownload: z.boolean(),
-  /** Si hizo falta entrar. Es lo que enseña «Estás viendo como…» y «Salir». */
-  restricted: z.boolean(),
-  viewerLabel: z.string().nullable(),
-  members: z.array(publicListMemberSchema),
+    churchName: z.string(),
+    name: z.string(),
+    description: z.string().nullable(),
+    accent: z.string(),
+    /** Cuándo se tocó por última vez: es lo que se lee al pie del cartel. */
+    updatedAt: z.string(),
+    allowDownload: z.boolean(),
+    /** Si hizo falta entrar. Es lo que enseña «Estás viendo como…» y «Salir». */
+    restricted: z.boolean(),
+    viewerLabel: z.string().nullable(),
+    members: z.array(publicListMemberSchema),
 });
 
 export type PublicList = z.infer<typeof publicListSchema>;
@@ -58,16 +58,16 @@ export type PublicList = z.infer<typeof publicListSchema>;
  * es un dato—.
  */
 export const publicListGateSchema = z.object({
-  churchName: z.string(),
-  name: z.string(),
-  accent: z.string(),
+    churchName: z.string(),
+    name: z.string(),
+    accent: z.string(),
 });
 
 export type PublicListGate = z.infer<typeof publicListGateSchema>;
 
 export const publicListAccessSchema = z.object({
-  username: listUsernameSchema,
-  password: listPasswordSchema,
+    username: listUsernameSchema,
+    password: listPasswordSchema,
 });
 
 export type PublicListAccessInput = z.infer<typeof publicListAccessSchema>;
@@ -94,35 +94,35 @@ export const LIST_SESSION_HOURS = 12;
  * es público.
  */
 export function toPublicListMember(member: ListMember, fields: ListPublicFields): PublicListMember {
-  return {
-    position: member.position,
-    name: publicListName(member, fields.nameStyle),
-    note: fields.note ? member.note : null,
-    congregation: fields.congregation ? member.congregationName : null,
-    ministry: fields.ministry ? (member.ministries[0] ?? null) : null,
-    arrivedAt: fields.arrival ? member.arrivedAt : null,
-    arrivalSite: fields.arrival ? member.arrivalSite : null,
-    bibleReadings: fields.bibleReadings ? member.bibleReadings : null,
-    vivenciasReadings: fields.vivenciasReadings ? member.vivenciasReadings : null,
-    bibleInstituteTimes: fields.bibleInstituteTimes ? member.bibleInstituteTimes : null,
-    /*
-     * El único identificador que sale, y solo con la foto activada: sin él no
-     * habría forma de pedir la imagen a `/l/:token/photos/:id` (D17). Con la
-     * foto apagada es nulo y en la respuesta no queda ni un identificador.
-     */
-    photoId: fields.photo && member.hasPhoto ? member.believerId : null,
-  };
+    return {
+        position: member.position,
+        name: publicListName(member, fields.nameStyle),
+        note: fields.note ? member.note : null,
+        congregation: fields.congregation ? member.congregationName : null,
+        ministry: fields.ministry ? (member.ministries[0] ?? null) : null,
+        arrivedAt: fields.arrival ? member.arrivedAt : null,
+        arrivalSite: fields.arrival ? member.arrivalSite : null,
+        bibleReadings: fields.bibleReadings ? member.bibleReadings : null,
+        vivenciasReadings: fields.vivenciasReadings ? member.vivenciasReadings : null,
+        bibleInstituteTimes: fields.bibleInstituteTimes ? member.bibleInstituteTimes : null,
+        /*
+         * El único identificador que sale, y solo con la foto activada: sin él no
+         * habría forma de pedir la imagen a `/l/:token/photos/:id` (D17). Con la
+         * foto apagada es nulo y en la respuesta no queda ni un identificador.
+         */
+        photoId: fields.photo && member.hasPhoto ? member.believerId : null,
+    };
 }
 
 /** `Juan Pérez` o `Juan P.`, según lo que se haya elegido al publicar. */
 export function publicListName(
-  member: { firstName: string; lastName: string },
-  style: ListPublicFields['nameStyle'],
+    member: { firstName: string; lastName: string },
+    style: ListPublicFields['nameStyle'],
 ): string {
-  const apellido = member.lastName.trim();
-  if (!apellido) return member.firstName.trim();
+    const apellido = member.lastName.trim();
+    if (!apellido) return member.firstName.trim();
 
-  return style === 'initial'
-    ? `${member.firstName.trim()} ${apellido.charAt(0).toUpperCase()}.`
-    : `${member.firstName.trim()} ${apellido}`;
+    return style === 'initial'
+        ? `${member.firstName.trim()} ${apellido.charAt(0).toUpperCase()}.`
+        : `${member.firstName.trim()} ${apellido}`;
 }

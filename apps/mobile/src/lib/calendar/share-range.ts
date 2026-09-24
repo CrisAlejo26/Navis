@@ -4,8 +4,8 @@ import type { PosterAspect } from '@/components/calendar/poster/poster-size';
 
 /** El tramo de fechas, extremos incluidos. */
 export interface ShareRange {
-  from: string;
-  to: string;
+    from: string;
+    to: string;
 }
 
 /**
@@ -14,30 +14,30 @@ export interface ShareRange {
  * hoja de cálculo.
  */
 export const SHARE_PRESETS = [
-  'day',
-  'week',
-  'twoWeeks',
-  'threeWeeks',
-  'fourWeeks',
-  'month',
+    'day',
+    'week',
+    'twoWeeks',
+    'threeWeeks',
+    'fourWeeks',
+    'month',
 ] as const;
 
 export type SharePreset = (typeof SHARE_PRESETS)[number];
 
 export const SHARE_LABELS: Record<SharePreset, string> = {
-  day: 'calendar.shareOneDay',
-  week: 'calendar.shareWeek',
-  twoWeeks: 'calendar.shareTwoWeeks',
-  threeWeeks: 'calendar.shareThreeWeeks',
-  fourWeeks: 'calendar.shareFourWeeks',
-  month: 'calendar.shareMonth',
+    day: 'calendar.shareOneDay',
+    week: 'calendar.shareWeek',
+    twoWeeks: 'calendar.shareTwoWeeks',
+    threeWeeks: 'calendar.shareThreeWeeks',
+    fourWeeks: 'calendar.shareFourWeeks',
+    month: 'calendar.shareMonth',
 };
 
 const WEEKS: Partial<Record<SharePreset, number>> = {
-  week: 1,
-  twoWeeks: 2,
-  threeWeeks: 3,
-  fourWeeks: 4,
+    week: 1,
+    twoWeeks: 2,
+    threeWeeks: 3,
+    fourWeeks: 4,
 };
 
 /**
@@ -47,17 +47,17 @@ const WEEKS: Partial<Record<SharePreset, number>> = {
  * días del mes anterior sobran.
  */
 export function shareRangeFor(preset: SharePreset, anchor: string, day: string | null): ShareRange {
-  if (preset === 'day') {
-    const date = day ?? anchor;
-    return { from: date, to: date };
-  }
+    if (preset === 'day') {
+        const date = day ?? anchor;
+        return { from: date, to: date };
+    }
 
-  if (preset === 'month') {
-    return { from: startOfMonth(anchor), to: endOfMonth(anchor) };
-  }
+    if (preset === 'month') {
+        return { from: startOfMonth(anchor), to: endOfMonth(anchor) };
+    }
 
-  const from = startOfWeek(day ?? anchor);
-  return { from, to: addDays(from, (WEEKS[preset] ?? 1) * 7 - 1) };
+    const from = startOfWeek(day ?? anchor);
+    return { from, to: addDays(from, (WEEKS[preset] ?? 1) * 7 - 1) };
 }
 
 /**
@@ -65,7 +65,7 @@ export function shareRangeFor(preset: SharePreset, anchor: string, day: string |
  * hoy al grupo, una columna por día y sede— y apaisada para lo que ya no cabe.
  */
 export function suggestedAspect(preset: SharePreset): PosterAspect {
-  if (preset === 'day') return 'portrait';
-  if (preset === 'week' || preset === 'twoWeeks') return 'table';
-  return 'landscape';
+    if (preset === 'day') return 'portrait';
+    if (preset === 'week' || preset === 'twoWeeks') return 'table';
+    return 'landscape';
 }

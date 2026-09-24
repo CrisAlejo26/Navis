@@ -23,8 +23,8 @@ const carpeta = join(dirname(fileURLToPath(import.meta.url)), '../packages/theme
 export const AZUL = '#2140cf';
 
 export const VARIANTES = {
-  azul: 'azul-sin-fondo.svg',
-  blanco: 'blanco-sin-fondo.svg',
+    azul: 'azul-sin-fondo.svg',
+    blanco: 'blanco-sin-fondo.svg',
 };
 
 export const leerVariante = (variante) => readFileSync(join(carpeta, VARIANTES[variante]), 'utf8');
@@ -40,39 +40,39 @@ const cache = new Map();
  * sería el lienzo entero.
  */
 export function cajaDelDibujo(svg) {
-  const enCache = cache.get(svg);
-  if (enCache) return enCache;
+    const enCache = cache.get(svg);
+    if (enCache) return enCache;
 
-  const imagen = new Resvg(svg, { fitTo: { mode: 'width', value: MUESTREO } }).render();
-  const pixeles = imagen.pixels;
+    const imagen = new Resvg(svg, { fitTo: { mode: 'width', value: MUESTREO } }).render();
+    const pixeles = imagen.pixels;
 
-  let minX = MUESTREO;
-  let minY = MUESTREO;
-  let maxX = -1;
-  let maxY = -1;
+    let minX = MUESTREO;
+    let minY = MUESTREO;
+    let maxX = -1;
+    let maxY = -1;
 
-  for (let y = 0; y < MUESTREO; y++) {
-    for (let x = 0; x < MUESTREO; x++) {
-      // Umbral bajo: el antialias de los bordes no debe recortar el dibujo.
-      if (pixeles[(y * MUESTREO + x) * 4 + 3] <= 8) continue;
-      if (x < minX) minX = x;
-      if (x > maxX) maxX = x;
-      if (y < minY) minY = y;
-      if (y > maxY) maxY = y;
+    for (let y = 0; y < MUESTREO; y++) {
+        for (let x = 0; x < MUESTREO; x++) {
+            // Umbral bajo: el antialias de los bordes no debe recortar el dibujo.
+            if (pixeles[(y * MUESTREO + x) * 4 + 3] <= 8) continue;
+            if (x < minX) minX = x;
+            if (x > maxX) maxX = x;
+            if (y < minY) minY = y;
+            if (y > maxY) maxY = y;
+        }
     }
-  }
 
-  if (maxX < 0) throw new Error('El SVG no pinta nada: no se puede encuadrar.');
+    if (maxX < 0) throw new Error('El SVG no pinta nada: no se puede encuadrar.');
 
-  const caja = {
-    x: minX / MUESTREO,
-    y: minY / MUESTREO,
-    ancho: (maxX - minX + 1) / MUESTREO,
-    alto: (maxY - minY + 1) / MUESTREO,
-  };
+    const caja = {
+        x: minX / MUESTREO,
+        y: minY / MUESTREO,
+        ancho: (maxX - minX + 1) / MUESTREO,
+        alto: (maxY - minY + 1) / MUESTREO,
+    };
 
-  cache.set(svg, caja);
-  return caja;
+    cache.set(svg, caja);
+    return caja;
 }
 
 const lienzoDe = (svg) => Number(/viewBox="0 0 ([\d.]+)/.exec(svg)?.[1] ?? 1080);
@@ -88,31 +88,31 @@ const lienzoDe = (svg) => Number(/viewBox="0 0 ([\d.]+)/.exec(svg)?.[1] ?? 1080)
  * @param {number} opciones.proporcion ancho ÷ alto del lienzo; 1 da un cuadrado
  */
 export function encuadrar(svg, { ocupacion = 1, fondo = null, radio = 0, proporcion = 1 } = {}) {
-  const lienzo = lienzoDe(svg);
-  const caja = cajaDelDibujo(svg);
+    const lienzo = lienzoDe(svg);
+    const caja = cajaDelDibujo(svg);
 
-  // Alto del lienzo final, en unidades del SVG original; el ancho sale de la
-  // proporción. Con proporcion=1 (el caso de siempre) ancho y alto coinciden.
-  const mayor = Math.max(caja.ancho, caja.alto) * lienzo;
-  const alto = mayor / ocupacion;
-  const ancho = alto * proporcion;
+    // Alto del lienzo final, en unidades del SVG original; el ancho sale de la
+    // proporción. Con proporcion=1 (el caso de siempre) ancho y alto coinciden.
+    const mayor = Math.max(caja.ancho, caja.alto) * lienzo;
+    const alto = mayor / ocupacion;
+    const ancho = alto * proporcion;
 
-  // Desplazamiento que centra el dibujo en ese lienzo.
-  const dx = (ancho - caja.ancho * lienzo) / 2 - caja.x * lienzo;
-  const dy = (alto - caja.alto * lienzo) / 2 - caja.y * lienzo;
+    // Desplazamiento que centra el dibujo en ese lienzo.
+    const dx = (ancho - caja.ancho * lienzo) / 2 - caja.x * lienzo;
+    const dy = (alto - caja.alto * lienzo) / 2 - caja.y * lienzo;
 
-  const interior = svg
-    .replace(/<\?xml[^?]*\?>\s*/, '')
-    .replace(/^<svg[^>]*>/, '')
-    .replace(/<\/svg>\s*$/, '');
+    const interior = svg
+        .replace(/<\?xml[^?]*\?>\s*/, '')
+        .replace(/^<svg[^>]*>/, '')
+        .replace(/<\/svg>\s*$/, '');
 
-  const n = (valor) => Number(valor.toFixed(2));
-  const rect =
-    fondo === null
-      ? ''
-      : `  <rect width="${String(n(ancho))}" height="${String(n(alto))}" rx="${String(n(radio * alto))}" fill="${fondo}" />\n`;
+    const n = (valor) => Number(valor.toFixed(2));
+    const rect =
+        fondo === null
+            ? ''
+            : `  <rect width="${String(n(ancho))}" height="${String(n(alto))}" rx="${String(n(radio * alto))}" fill="${fondo}" />\n`;
 
-  return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 ${String(n(ancho))} ${String(n(alto))}">
+    return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 ${String(n(ancho))} ${String(n(alto))}">
 ${rect}  <g transform="translate(${String(n(dx))} ${String(n(dy))})">
 ${interior}
   </g>

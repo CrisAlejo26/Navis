@@ -18,28 +18,28 @@ import { UUID } from '../database/column-types';
 @Entity('gifts')
 @Index('UQ_gifts_name', ['churchId', 'name'], { unique: true })
 export class Gift extends BaseEntity {
-  @ApiProperty()
-  @Index()
-  @Column({ name: 'church_id', type: UUID })
-  churchId: string;
+    @ApiProperty()
+    @Index()
+    @Column({ name: 'church_id', type: UUID })
+    churchId: string;
 
-  @ApiProperty({ example: 'Sanidad' })
-  @Column({ type: 'text' })
-  name: string;
+    @ApiProperty({ example: 'Sanidad' })
+    @Column({ type: 'text' })
+    name: string;
 
-  @ApiProperty({ description: 'Token de color o hexadecimal, como las sedes' })
-  @Column({ type: 'text', default: DEFAULT_CONGREGATION_ACCENT })
-  accent: string;
+    @ApiProperty({ description: 'Token de color o hexadecimal, como las sedes' })
+    @Column({ type: 'text', default: DEFAULT_CONGREGATION_ACCENT })
+    accent: string;
 
-  @ApiProperty({ description: 'El orden en que se listan' })
-  @Column({ type: 'int', default: 0 })
-  position: number;
+    @ApiProperty({ description: 'El orden en que se listan' })
+    @Column({ type: 'int', default: 0 })
+    position: number;
 
-  @ApiProperty({ description: 'De serie: se renombra y se desactiva, no se borra' })
-  @Column({ name: 'is_system', type: 'boolean', default: false })
-  isSystem: boolean;
+    @ApiProperty({ description: 'De serie: se renombra y se desactiva, no se borra' })
+    @Column({ name: 'is_system', type: 'boolean', default: false })
+    isSystem: boolean;
 
-  @ApiProperty({ description: 'Apagado deja de proponerse, sin perder historial' })
-  @Column({ name: 'is_active', type: 'boolean', default: true })
-  isActive: boolean;
+    @ApiProperty({ description: 'Apagado deja de proponerse, sin perder historial' })
+    @Column({ name: 'is_active', type: 'boolean', default: true })
+    isActive: boolean;
 }

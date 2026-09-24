@@ -12,8 +12,8 @@ import type { NavKey } from '@/routes/placeholder';
  * todavía sea solo un documento.
  */
 export const PUENTES = [] as const satisfies readonly {
-  path: string;
-  titleKey: NavKey;
-  rfc: string;
-  permission: Permission;
+    path: string;
+    titleKey: NavKey;
+    rfc: string;
+    permission: Permission;
 }[];

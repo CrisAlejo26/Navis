@@ -1,9 +1,9 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
-  type CustomTableColumn as CustomTableColumnView,
-  type CustomTableRow as CustomTableRowView,
-  type Paginated,
+    type CustomTableColumn as CustomTableColumnView,
+    type CustomTableRow as CustomTableRowView,
+    type Paginated,
 } from '@navis/shared';
 import { Repository } from 'typeorm';
 
@@ -14,12 +14,12 @@ import { toRowView } from './table-row.mapper';
 import { applyRowFilter } from './table-row-filters';
 
 export interface RowsPageQuery {
-  page: number;
-  limit: number;
-  order: 'asc' | 'desc';
-  sort?: string;
-  search?: string;
-  filters?: string;
+    page: number;
+    limit: number;
+    order: 'asc' | 'desc';
+    sort?: string;
+    search?: string;
+    filters?: string;
 }
 
 /**
@@ -32,49 +32,51 @@ export interface RowsPageQuery {
  */
 @Injectable()
 export class TableRowsPageService {
-  constructor(
-    @InjectRepository(CustomTableRow) private readonly rows: Repository<CustomTableRow>,
-  ) {}
+    constructor(
+        @InjectRepository(CustomTableRow) private readonly rows: Repository<CustomTableRow>,
+    ) {}
 
-  async findPage(
-    tableId: string,
-    query: RowsPageQuery,
-    activeColumns: readonly CustomTableColumnView[],
-  ): Promise<Paginated<CustomTableRowView>> {
-    const order = query.order === 'asc' ? 'ASC' : 'DESC';
-    const builder = this.rows
-      .createQueryBuilder('row')
-      .where('row.tableId = :tableId', { tableId });
+    async findPage(
+        tableId: string,
+        query: RowsPageQuery,
+        activeColumns: readonly CustomTableColumnView[],
+    ): Promise<Paginated<CustomTableRowView>> {
+        const order = query.order === 'asc' ? 'ASC' : 'DESC';
+        const builder = this.rows
+            .createQueryBuilder('row')
+            .where('row.tableId = :tableId', { tableId });
 
-    if (query.search) {
-      builder.andWhere('LOWER(row.data) LIKE LOWER(:search)', { search: `%${query.search}%` });
+        if (query.search) {
+            builder.andWhere('LOWER(row.data) LIKE LOWER(:search)', {
+                search: `%${query.search}%`,
+            });
+        }
+
+        parseRowFilters(query.filters).forEach((filter, index) => {
+            applyRowFilter(builder, activeColumns, filter, index);
+        });
+
+        if (query.sort) {
+            const column = activeColumns.find((one) => one.key === query.sort);
+            if (!column) throw new BadRequestException('Esa columna no existe');
+            builder.orderBy(jsonFieldOrderExpr('row.data', column.key, column.type), order);
+        } else {
+            builder.orderBy('row.createdAt', order);
+        }
+        // Segundo criterio siempre el identificador: sin él, dos filas empatadas
+        // bailan de página en página entre una consulta y la siguiente.
+        builder.addOrderBy('row.id', 'ASC');
+
+        builder.offset((query.page - 1) * query.limit).limit(query.limit);
+
+        const [items, total] = await builder.getManyAndCount();
+
+        return {
+            items: items.map((row) => toRowView(row, activeColumns)),
+            total,
+            page: query.page,
+            limit: query.limit,
+            totalPages: Math.max(1, Math.ceil(total / query.limit)),
+        };
     }
-
-    parseRowFilters(query.filters).forEach((filter, index) => {
-      applyRowFilter(builder, activeColumns, filter, index);
-    });
-
-    if (query.sort) {
-      const column = activeColumns.find((one) => one.key === query.sort);
-      if (!column) throw new BadRequestException('Esa columna no existe');
-      builder.orderBy(jsonFieldOrderExpr('row.data', column.key, column.type), order);
-    } else {
-      builder.orderBy('row.createdAt', order);
-    }
-    // Segundo criterio siempre el identificador: sin él, dos filas empatadas
-    // bailan de página en página entre una consulta y la siguiente.
-    builder.addOrderBy('row.id', 'ASC');
-
-    builder.offset((query.page - 1) * query.limit).limit(query.limit);
-
-    const [items, total] = await builder.getManyAndCount();
-
-    return {
-      items: items.map((row) => toRowView(row, activeColumns)),
-      total,
-      page: query.page,
-      limit: query.limit,
-      totalPages: Math.max(1, Math.ceil(total / query.limit)),
-    };
-  }
 }

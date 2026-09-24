@@ -28,7 +28,7 @@ export const PULPIT_MINISTRY: Ministry = 'pulpito';
 
 /** Si ese texto tiene forma de labor: un slug. */
 export function isMinistry(value: string): value is Ministry {
-  return /^[a-z0-9-]{2,40}$/.test(value);
+    return /^[a-z0-9-]{2,40}$/.test(value);
 }
 
 /**
@@ -42,16 +42,16 @@ export function isMinistry(value: string): value is Ministry {
  * el de una sede. Lo que sí va en los seis idiomas es todo lo que lo rodea.
  */
 export const SYSTEM_MINISTRIES = [
-  { slug: 'biblias', name: 'Biblias' },
-  { slug: 'sonido', name: 'Sonido' },
-  { slug: 'pulpito', name: 'Púlpito' },
-  { slug: 'recepcion', name: 'Recepción' },
-  { slug: 'ofrenda', name: 'Ofrenda' },
-  { slug: 'vigilancia', name: 'Vigilancia' },
-  { slug: 'microfono', name: 'Micrófono' },
-  { slug: 'profecia-ensenanzas', name: 'Profecía en enseñanzas' },
-  { slug: 'profecia-primera-vez', name: 'Profecía por primera vez' },
-  { slug: 'enviar-programacion', name: 'Enviar programación' },
+    { slug: 'biblias', name: 'Biblias' },
+    { slug: 'sonido', name: 'Sonido' },
+    { slug: 'pulpito', name: 'Púlpito' },
+    { slug: 'recepcion', name: 'Recepción' },
+    { slug: 'ofrenda', name: 'Ofrenda' },
+    { slug: 'vigilancia', name: 'Vigilancia' },
+    { slug: 'microfono', name: 'Micrófono' },
+    { slug: 'profecia-ensenanzas', name: 'Profecía en enseñanzas' },
+    { slug: 'profecia-primera-vez', name: 'Profecía por primera vez' },
+    { slug: 'enviar-programacion', name: 'Enviar programación' },
 ] as const;
 
 /**
@@ -59,30 +59,30 @@ export const SYSTEM_MINISTRIES = [
  * orden— más el `slug`, que es lo que se guarda en la persona.
  */
 export const ministryCatalogSchema = z.object({
-  id: z.uuid(),
-  churchId: z.uuid(),
-  slug: z.string(),
-  name: z.string(),
-  /** Token de la paleta o `#rrggbb`, como las sedes. */
-  accent: z.string(),
-  position: z.number().int(),
-  /** De serie: se renombra y se desactiva, no se borra. */
-  isSystem: z.boolean(),
-  /** Apagada deja de proponerse, sin perder el historial de quien la tiene. */
-  isActive: z.boolean(),
+    id: z.uuid(),
+    churchId: z.uuid(),
+    slug: z.string(),
+    name: z.string(),
+    /** Token de la paleta o `#rrggbb`, como las sedes. */
+    accent: z.string(),
+    position: z.number().int(),
+    /** De serie: se renombra y se desactiva, no se borra. */
+    isSystem: z.boolean(),
+    /** Apagada deja de proponerse, sin perder el historial de quien la tiene. */
+    isActive: z.boolean(),
 });
 
 export type MinistryCatalog = z.infer<typeof ministryCatalogSchema>;
 
 export const createMinistrySchema = z.object({
-  name: z.string().trim().min(2, 'El nombre de la labor es obligatorio').max(60),
-  accent: accentSchema.optional(),
+    name: z.string().trim().min(2, 'El nombre de la labor es obligatorio').max(60),
+    accent: accentSchema.optional(),
 });
 
 export type CreateMinistryInput = z.infer<typeof createMinistrySchema>;
 
 export const updateMinistrySchema = createMinistrySchema.partial().extend({
-  isActive: z.boolean().optional(),
+    isActive: z.boolean().optional(),
 });
 
 export type UpdateMinistryInput = z.infer<typeof updateMinistrySchema>;
@@ -95,11 +95,11 @@ export type UpdateMinistryInput = z.infer<typeof updateMinistrySchema>;
  * edite. Si dos nombres distintos dieran el mismo, el servicio le pone sufijo.
  */
 export function toMinistrySlug(name: string): string {
-  return name
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-    .slice(0, 40);
+    return name
+        .normalize('NFD')
+        .replace(/[̀-ͯ]/g, '')
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '')
+        .slice(0, 40);
 }

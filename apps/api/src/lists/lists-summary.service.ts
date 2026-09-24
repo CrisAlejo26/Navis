@@ -20,42 +20,42 @@ const INICIALES = 8;
  */
 @Injectable()
 export class ListsSummaryService {
-  constructor(
-    private readonly rows: ListRowsService,
-    private readonly members: ListMembersService,
-    private readonly audience: ListAudienceService,
-  ) {}
+    constructor(
+        private readonly rows: ListRowsService,
+        private readonly members: ListMembersService,
+        private readonly audience: ListAudienceService,
+    ) {}
 
-  async of(lists: readonly List[]): Promise<ListSummary[]> {
-    const ids = lists.map((one) => one.id);
-    const [counts, estelas] = await Promise.all([
-      this.members.counts(ids),
-      this.audience.recent(
-        lists.filter((one) => one.visibility !== 'private').map((one) => one.id),
-        DIAS_MINIATURA,
-      ),
-    ]);
+    async of(lists: readonly List[]): Promise<ListSummary[]> {
+        const ids = lists.map((one) => one.id);
+        const [counts, estelas] = await Promise.all([
+            this.members.counts(ids),
+            this.audience.recent(
+                lists.filter((one) => one.visibility !== 'private').map((one) => one.id),
+                DIAS_MINIATURA,
+            ),
+        ]);
 
-    const summaries: ListSummary[] = [];
+        const summaries: ListSummary[] = [];
 
-    for (const list of lists) {
-      const miembros = await this.rows.view(list.id);
+        for (const list of lists) {
+            const miembros = await this.rows.view(list.id);
 
-      summaries.push({
-        ...toListView(list, counts.get(list.id) ?? 0),
-        initials: miembros.slice(0, INICIALES).map(initialsOf),
-        recentViews: estelas.get(list.id) ?? [],
-      });
+            summaries.push({
+                ...toListView(list, counts.get(list.id) ?? 0),
+                initials: miembros.slice(0, INICIALES).map(initialsOf),
+                recentViews: estelas.get(list.id) ?? [],
+            });
+        }
+
+        return summaries;
     }
-
-    return summaries;
-  }
 }
 
 /** `Juan Pérez` → `JP`. Sin apellido, la primera letra basta. */
 function initialsOf(member: { firstName: string; lastName: string }): string {
-  const nombre = member.firstName.trim().charAt(0);
-  const apellido = member.lastName.trim().charAt(0);
+    const nombre = member.firstName.trim().charAt(0);
+    const apellido = member.lastName.trim().charAt(0);
 
-  return `${nombre}${apellido}`.toUpperCase() || '·';
+    return `${nombre}${apellido}`.toUpperCase() || '·';
 }

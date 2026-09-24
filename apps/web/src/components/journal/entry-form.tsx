@@ -15,30 +15,30 @@ import { api } from '@/lib/api';
  * `ProphecyForm`).
  */
 export function EntryForm({
-  open,
-  onClose,
-  entryId,
+    open,
+    onClose,
+    entryId,
 }: {
-  open: boolean;
-  onClose: () => void;
-  /** Si viene, se edita; si no, se añade una nueva. */
-  entryId?: string;
+    open: boolean;
+    onClose: () => void;
+    /** Si viene, se edita; si no, se añade una nueva. */
+    entryId?: string;
 }) {
-  const { t } = useTranslation();
-  const { data: entry } = useJournalEntry(api, entryId ?? '', open && Boolean(entryId));
+    const { t } = useTranslation();
+    const { data: entry } = useJournalEntry(api, entryId ?? '', open && Boolean(entryId));
 
-  return (
-    <Dialog
-      open={open}
-      onClose={onClose}
-      width="min(42rem, calc(100vw - 2rem))"
-      title={entryId ? t('journal.edit') : t('journal.add')}
-    >
-      {entryId && !entry ? (
-        <FormSkeleton />
-      ) : (
-        <EntryFormBody key={entry?.id ?? 'nueva'} entry={entry} onSaved={onClose} />
-      )}
-    </Dialog>
-  );
+    return (
+        <Dialog
+            open={open}
+            onClose={onClose}
+            width="min(42rem, calc(100vw - 2rem))"
+            title={entryId ? t('journal.edit') : t('journal.add')}
+        >
+            {entryId && !entry ? (
+                <FormSkeleton />
+            ) : (
+                <EntryFormBody key={entry?.id ?? 'nueva'} entry={entry} onSaved={onClose} />
+            )}
+        </Dialog>
+    );
 }

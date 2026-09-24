@@ -12,42 +12,42 @@ import { cn } from '@/lib/cn';
  * El nombre no se traduce: es dato de la iglesia, igual que el de una sede.
  */
 export function BelieverTagPills({
-  tags,
-  max,
-  className,
+    tags,
+    max,
+    className,
 }: {
-  tags: readonly BelieverTag[];
-  /** Cuántas caben antes de resumir en «+2». Sin él, todas. */
-  max?: number;
-  className?: string;
+    tags: readonly BelieverTag[];
+    /** Cuántas caben antes de resumir en «+2». Sin él, todas. */
+    max?: number;
+    className?: string;
 }) {
-  const { t } = useTranslation();
-  if (tags.length === 0) return null;
+    const { t } = useTranslation();
+    if (tags.length === 0) return null;
 
-  const shown = max === undefined ? tags : tags.slice(0, max);
-  const rest = tags.length - shown.length;
+    const shown = max === undefined ? tags : tags.slice(0, max);
+    const rest = tags.length - shown.length;
 
-  return (
-    <span className={cn('gap-1 flex flex-wrap items-center', className)}>
-      {shown.map((tag) => (
-        <span
-          key={tag.id}
-          style={accentVars(tag.accent)}
-          className={cn(
-            'gap-1.5 px-2 py-0.5 inline-flex items-center rounded-full text-[11px]',
-            'border border-[color-mix(in_oklab,var(--acento)_45%,transparent)] text-foreground/85',
-          )}
-        >
-          <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-[var(--acento)]" />
-          {tag.name}
+    return (
+        <span className={cn('gap-1 flex flex-wrap items-center', className)}>
+            {shown.map((tag) => (
+                <span
+                    key={tag.id}
+                    style={accentVars(tag.accent)}
+                    className={cn(
+                        'gap-1.5 px-2 py-0.5 inline-flex items-center rounded-full text-[11px]',
+                        'border border-[color-mix(in_oklab,var(--acento)_45%,transparent)] text-foreground/85',
+                    )}
+                >
+                    <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-[var(--acento)]" />
+                    {tag.name}
+                </span>
+            ))}
+
+            {rest > 0 && (
+                <span className="px-1.5 py-0.5 rounded-full text-[11px] text-muted-foreground tabular-nums">
+                    {t('believers.moreTags', { count: rest })}
+                </span>
+            )}
         </span>
-      ))}
-
-      {rest > 0 && (
-        <span className="px-1.5 py-0.5 rounded-full text-[11px] text-muted-foreground tabular-nums">
-          {t('believers.moreTags', { count: rest })}
-        </span>
-      )}
-    </span>
-  );
+    );
 }

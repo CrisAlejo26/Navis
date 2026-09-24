@@ -11,16 +11,19 @@ import { useCreateMeeting } from '@/hooks/use-calendar';
 import type { IsoDate } from '@navis/shared';
 
 interface MeetingFormSheetProps {
-  date: IsoDate | null;
-  calendarId: string;
-  congregations: readonly { id: string; name: string; accent: string }[];
-  onClose: () => void;
+    date: IsoDate | null;
+    calendarId: string;
+    congregations: readonly { id: string; name: string; accent: string }[];
+    onClose: () => void;
 }
 
 const FASES_SUGERIDAS = [
-  { label: 'Introducción y cierre', phases: ['Introducción', 'Final'] },
-  { label: 'Enseñanza completa', phases: ['Introducción', 'Predicación', 'Testimonios', 'Final'] },
-  { label: 'Solo un tramo', phases: ['Encargado'] },
+    { label: 'Introducción y cierre', phases: ['Introducción', 'Final'] },
+    {
+        label: 'Enseñanza completa',
+        phases: ['Introducción', 'Predicación', 'Testimonios', 'Final'],
+    },
+    { label: 'Solo un tramo', phases: ['Encargado'] },
 ];
 
 /**
@@ -34,82 +37,87 @@ const FASES_SUGERIDAS = [
  * `BelieverFormSheet`).
  */
 export function MeetingFormSheet(props: MeetingFormSheetProps) {
-  if (!props.date) return null;
-  return <MeetingFormBody key={props.date} {...props} />;
+    if (!props.date) return null;
+    return <MeetingFormBody key={props.date} {...props} />;
 }
 
 function MeetingFormBody({ date, calendarId, congregations, onClose }: MeetingFormSheetProps) {
-  const { t } = useTranslation();
-  const [name, setName] = useState('Culto');
-  const [startTime, setStartTime] = useState('19:00');
-  const [sedeId, setSedeId] = useState<string | null>(null);
-  const [fases, setFases] = useState(FASES_SUGERIDAS[0].phases);
-  const crear = useCreateMeeting(calendarId);
+    const { t } = useTranslation();
+    const [name, setName] = useState('Culto');
+    const [startTime, setStartTime] = useState('19:00');
+    const [sedeId, setSedeId] = useState<string | null>(null);
+    const [fases, setFases] = useState(FASES_SUGERIDAS[0].phases);
+    const crear = useCreateMeeting(calendarId);
 
-  const sede = sedeId ?? congregations[0]?.id ?? null;
+    const sede = sedeId ?? congregations[0]?.id ?? null;
 
-  function guardar() {
-    if (!date || !name.trim() || !sede) return;
+    function guardar() {
+        if (!date || !name.trim() || !sede) return;
 
-    crear.mutate(
-      {
-        congregationId: sede,
-        date,
-        startTime,
-        name,
-        phases: fases.map((fase) => ({ name: fase })),
-      },
-      { onError: () => undefined },
+        crear.mutate(
+            {
+                congregationId: sede,
+                date,
+                startTime,
+                name,
+                phases: fases.map((fase) => ({ name: fase })),
+            },
+            { onError: () => undefined },
+        );
+        onClose();
+    }
+
+    return (
+        <BottomSheet
+            visible={Boolean(date)}
+            onClose={onClose}
+            title={
+                date ? `${t('calendar.addMeeting')} · ${formatDay(date)}` : t('calendar.addMeeting')
+            }
+        >
+            <View className="gap-3">
+                <View className="gap-1.5 flex-row flex-wrap">
+                    {FASES_SUGERIDAS.map((atajo) => (
+                        <Button
+                            key={atajo.label}
+                            variant={fases === atajo.phases ? 'primary' : 'secondary'}
+                            size="sm"
+                            title={atajo.label}
+                            onPress={() => setFases(atajo.phases)}
+                        />
+                    ))}
+                </View>
+
+                <TextField label={t('calendar.meetingName')} value={name} onChangeText={setName} />
+                <View className="gap-2 flex-row">
+                    <View className="flex-1">
+                        <TextField
+                            label={t('calendar.startTime')}
+                            value={startTime}
+                            onChangeText={setStartTime}
+                        />
+                    </View>
+                    <View className="flex-[2]">
+                        <Select
+                            label={t('calendar.congregation')}
+                            placeholder={t('calendar.congregation')}
+                            value={sede}
+                            options={congregations.map((one) => ({
+                                value: one.id,
+                                label: one.name,
+                            }))}
+                            onChange={setSedeId}
+                        />
+                    </View>
+                </View>
+
+                <Button
+                    title={t('common.save')}
+                    onPress={guardar}
+                    loading={crear.isPending}
+                    disabled={!name.trim() || !sede}
+                />
+            </View>
+        </BottomSheet>
     );
-    onClose();
-  }
-
-  return (
-    <BottomSheet
-      visible={Boolean(date)}
-      onClose={onClose}
-      title={date ? `${t('calendar.addMeeting')} · ${formatDay(date)}` : t('calendar.addMeeting')}
-    >
-      <View className="gap-3">
-        <View className="gap-1.5 flex-row flex-wrap">
-          {FASES_SUGERIDAS.map((atajo) => (
-            <Button
-              key={atajo.label}
-              variant={fases === atajo.phases ? 'primary' : 'secondary'}
-              size="sm"
-              title={atajo.label}
-              onPress={() => setFases(atajo.phases)}
-            />
-          ))}
-        </View>
-
-        <TextField label={t('calendar.meetingName')} value={name} onChangeText={setName} />
-        <View className="gap-2 flex-row">
-          <View className="flex-1">
-            <TextField
-              label={t('calendar.startTime')}
-              value={startTime}
-              onChangeText={setStartTime}
-            />
-          </View>
-          <View className="flex-[2]">
-            <Select
-              label={t('calendar.congregation')}
-              placeholder={t('calendar.congregation')}
-              value={sede}
-              options={congregations.map((one) => ({ value: one.id, label: one.name }))}
-              onChange={setSedeId}
-            />
-          </View>
-        </View>
-
-        <Button
-          title={t('common.save')}
-          onPress={guardar}
-          loading={crear.isPending}
-          disabled={!name.trim() || !sede}
-        />
-      </View>
-    </BottomSheet>
-  );
 }

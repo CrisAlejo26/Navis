@@ -6,12 +6,12 @@ import { slugify } from '@/lib/share/files';
 
 /** Los textos, ya traducidos: esto es una función pura y no sabe de i18next. */
 export interface JournalMarkdownLabels {
-  frontmatterTitle: string;
-  frontmatterKind: string;
-  frontmatterDate: string;
-  frontmatterReminder: string;
-  annotationHeading: string;
-  learnedHeading: string;
+    frontmatterTitle: string;
+    frontmatterKind: string;
+    frontmatterDate: string;
+    frontmatterReminder: string;
+    annotationHeading: string;
+    learnedHeading: string;
 }
 
 /**
@@ -22,48 +22,50 @@ export interface JournalMarkdownLabels {
  * recibe `titel`, `art`, `datum` — son los `labels` que llegan de fuera.
  */
 export function toEntryMarkdown(
-  row: JournalExportRow,
-  kindLabel: string,
-  labels: JournalMarkdownLabels,
+    row: JournalExportRow,
+    kindLabel: string,
+    labels: JournalMarkdownLabels,
 ): string {
-  const frontmatter = [
-    `${labels.frontmatterTitle}: ${row.title}`,
-    `${labels.frontmatterKind}: ${kindLabel}`,
-    `${labels.frontmatterDate}: ${row.occurredAt}`,
-  ];
+    const frontmatter = [
+        `${labels.frontmatterTitle}: ${row.title}`,
+        `${labels.frontmatterKind}: ${kindLabel}`,
+        `${labels.frontmatterDate}: ${row.occurredAt}`,
+    ];
 
-  if (row.remindAt) {
-    const mensaje = row.remindText ? ` — ${row.remindText}` : '';
-    frontmatter.push(`${labels.frontmatterReminder}: ${toPlainDateTime(row.remindAt)}${mensaje}`);
-  }
+    if (row.remindAt) {
+        const mensaje = row.remindText ? ` — ${row.remindText}` : '';
+        frontmatter.push(
+            `${labels.frontmatterReminder}: ${toPlainDateTime(row.remindAt)}${mensaje}`,
+        );
+    }
 
-  const cuerpo = [
-    '---',
-    ...frontmatter,
-    '---',
-    '',
-    `# ${row.title}`,
-    '',
-    `## ${labels.annotationHeading}`,
-    '',
-    row.annotation,
-  ];
+    const cuerpo = [
+        '---',
+        ...frontmatter,
+        '---',
+        '',
+        `# ${row.title}`,
+        '',
+        `## ${labels.annotationHeading}`,
+        '',
+        row.annotation,
+    ];
 
-  if (row.learned) {
-    cuerpo.push('', `## ${labels.learnedHeading}`, '', row.learned);
-  }
+    if (row.learned) {
+        cuerpo.push('', `## ${labels.learnedHeading}`, '', row.learned);
+    }
 
-  return `${cuerpo.join('\n')}\n`;
+    return `${cuerpo.join('\n')}\n`;
 }
 
 export function toEntryMarkdownBlob(
-  row: JournalExportRow,
-  kindLabel: string,
-  labels: JournalMarkdownLabels,
+    row: JournalExportRow,
+    kindLabel: string,
+    labels: JournalMarkdownLabels,
 ): Blob {
-  return new Blob([toEntryMarkdown(row, kindLabel, labels)], {
-    type: 'text/markdown;charset=utf-8',
-  });
+    return new Blob([toEntryMarkdown(row, kindLabel, labels)], {
+        type: 'text/markdown;charset=utf-8',
+    });
 }
 
 /**
@@ -76,20 +78,20 @@ export function toEntryMarkdownBlob(
  * sueltos que se abren uno a uno.
  */
 export function toEntriesZip(
-  rows: readonly JournalExportRow[],
-  kindLabel: (row: JournalExportRow) => string,
-  labels: JournalMarkdownLabels,
+    rows: readonly JournalExportRow[],
+    kindLabel: (row: JournalExportRow) => string,
+    labels: JournalMarkdownLabels,
 ): Blob {
-  const usados = new Map<string, number>();
+    const usados = new Map<string, number>();
 
-  const entries = rows.map((row) => {
-    const base = slugify(row.title) || 'entrada';
-    const veces = usados.get(base) ?? 0;
-    usados.set(base, veces + 1);
-    const nombre = veces === 0 ? `${base}.md` : `${base}-${String(veces + 1)}.md`;
+    const entries = rows.map((row) => {
+        const base = slugify(row.title) || 'entrada';
+        const veces = usados.get(base) ?? 0;
+        usados.set(base, veces + 1);
+        const nombre = veces === 0 ? `${base}.md` : `${base}-${String(veces + 1)}.md`;
 
-    return { name: nombre, data: utf8(toEntryMarkdown(row, kindLabel(row), labels)) };
-  });
+        return { name: nombre, data: utf8(toEntryMarkdown(row, kindLabel(row), labels)) };
+    });
 
-  return buildZip(entries, 'application/zip');
+    return buildZip(entries, 'application/zip');
 }

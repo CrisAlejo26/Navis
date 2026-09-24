@@ -8,19 +8,19 @@ import type { Habit } from './habit.entity';
 /** El recordatorio de un hábito: mismo patrón que el de la tarea. */
 @Entity('habit_reminders')
 export class HabitReminder extends BaseEntity {
-  @Column({ name: 'habit_id', type: UUID, unique: true })
-  habitId: string;
+    @Column({ name: 'habit_id', type: UUID, unique: true })
+    habitId: string;
 
-  @ManyToOne('Habit', 'reminders', { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'habit_id' })
-  habit: Relation<Habit>;
+    @ManyToOne('Habit', 'reminders', { onDelete: 'CASCADE' })
+    @JoinColumn({ name: 'habit_id' })
+    habit: Relation<Habit>;
 
-  @Column({ type: 'boolean', default: true })
-  enabled: boolean;
+    @Column({ type: 'boolean', default: true })
+    enabled: boolean;
 
-  @Column({ name: 'remind_at', type: TIMESTAMP })
-  remindAt: Date;
+    @Column({ name: 'remind_at', type: TIMESTAMP })
+    remindAt: Date;
 
-  @OneToMany(() => HabitReminderTag, (link) => link.reminder, { cascade: true })
-  tags: HabitReminderTag[];
+    @OneToMany(() => HabitReminderTag, (link) => link.reminder, { cascade: true })
+    tags: HabitReminderTag[];
 }

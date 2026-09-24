@@ -17,41 +17,41 @@ import type { NoteAudio } from './note-audio.entity';
  * identificador, que es lo que el guard sabe comprobar.
  */
 export function toNoteView(
-  note: BelieverNote,
-  context: {
-    giftNames: ReadonlyMap<string, string>;
-    authorNames: ReadonlyMap<string, string>;
-    audios: ReadonlyMap<string, NoteAudio[]>;
-  },
+    note: BelieverNote,
+    context: {
+        giftNames: ReadonlyMap<string, string>;
+        authorNames: ReadonlyMap<string, string>;
+        audios: ReadonlyMap<string, NoteAudio[]>;
+    },
 ): NoteView {
-  return {
-    id: note.id,
-    churchId: note.churchId,
-    believerId: note.believerId,
-    kind: note.kind,
-    occurredAt: toIsoDay(note.occurredAt),
-    told: note.told,
-    advice: note.advice,
-    giftId: note.giftId,
-    giftName: note.giftId ? (context.giftNames.get(note.giftId) ?? null) : null,
-    remindAt: note.remindAt?.toISOString() ?? null,
-    remindText: note.remindText,
-    remindDoneAt: note.remindDoneAt?.toISOString() ?? null,
-    audios: (context.audios.get(note.id) ?? []).map(toAudioView),
-    authorId: note.authorId,
-    authorName: note.authorId ? (context.authorNames.get(note.authorId) ?? null) : null,
-    createdAt: note.createdAt.toISOString(),
-  };
+    return {
+        id: note.id,
+        churchId: note.churchId,
+        believerId: note.believerId,
+        kind: note.kind,
+        occurredAt: toIsoDay(note.occurredAt),
+        told: note.told,
+        advice: note.advice,
+        giftId: note.giftId,
+        giftName: note.giftId ? (context.giftNames.get(note.giftId) ?? null) : null,
+        remindAt: note.remindAt?.toISOString() ?? null,
+        remindText: note.remindText,
+        remindDoneAt: note.remindDoneAt?.toISOString() ?? null,
+        audios: (context.audios.get(note.id) ?? []).map(toAudioView),
+        authorId: note.authorId,
+        authorName: note.authorId ? (context.authorNames.get(note.authorId) ?? null) : null,
+        createdAt: note.createdAt.toISOString(),
+    };
 }
 
 export function toAudioView(audio: NoteAudio): NoteAudioView {
-  return {
-    id: audio.id,
-    noteId: audio.noteId,
-    mimeType: audio.mimeType,
-    sizeBytes: audio.sizeBytes,
-    durationSeconds: audio.durationSeconds,
-    recorded: audio.recorded,
-    createdAt: audio.createdAt.toISOString(),
-  };
+    return {
+        id: audio.id,
+        noteId: audio.noteId,
+        mimeType: audio.mimeType,
+        sizeBytes: audio.sizeBytes,
+        durationSeconds: audio.durationSeconds,
+        recorded: audio.recorded,
+        createdAt: audio.createdAt.toISOString(),
+    };
 }

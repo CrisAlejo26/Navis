@@ -21,61 +21,61 @@ const [major, minor, patch] = version.split('.').map(Number);
 const versionCode = major * 10000 + minor * 100 + patch;
 
 const config: ExpoConfig = {
-  name: 'Navis',
-  slug: 'navis',
-  version,
-  orientation: 'portrait',
-  scheme,
-  userInterfaceStyle: 'automatic',
-  icon: './assets/icon.png',
-  // El splash ya no se configura aquí en SDK 57: solo con el plugin de abajo.
-  ios: {
-    supportsTablet: true,
-    bundleIdentifier: 'org.navis.app',
-  },
-  android: {
-    package: 'org.navis.app',
-    versionCode,
-    adaptiveIcon: {
-      // El primer plano es el barco en blanco con transparencia; el color de
-      // marca lo pone esta capa, que es lo que exige el formato adaptativo.
-      foregroundImage: './assets/adaptive-icon.png',
-      backgroundColor: '#2140cf',
+    name: 'Navis',
+    slug: 'navis',
+    version,
+    orientation: 'portrait',
+    scheme,
+    userInterfaceStyle: 'automatic',
+    icon: './assets/icon.png',
+    // El splash ya no se configura aquí en SDK 57: solo con el plugin de abajo.
+    ios: {
+        supportsTablet: true,
+        bundleIdentifier: 'org.navis.app',
     },
-  },
-  web: {
-    bundler: 'metro',
-    output: 'static',
-    favicon: './assets/favicon.png',
-  },
-  plugins: [
-    'expo-router',
-    'expo-localization',
-    'expo-secure-store',
-    // El micrófono pide permiso y declaración en el manifest: lo lleva su
-    // plugin de config, no un ajuste a mano.
-    'expo-audio',
-    [
-      'expo-image-picker',
-      {
-        photosPermission: 'Navis usa tus fotos para la ficha de cada hermano.',
-        cameraPermission: 'Navis usa la cámara para la foto de cada hermano.',
-        microphonePermission: false,
-      },
+    android: {
+        package: 'org.navis.app',
+        versionCode,
+        adaptiveIcon: {
+            // El primer plano es el barco en blanco con transparencia; el color de
+            // marca lo pone esta capa, que es lo que exige el formato adaptativo.
+            foregroundImage: './assets/adaptive-icon.png',
+            backgroundColor: '#2140cf',
+        },
+    },
+    web: {
+        bundler: 'metro',
+        output: 'static',
+        favicon: './assets/favicon.png',
+    },
+    plugins: [
+        'expo-router',
+        'expo-localization',
+        'expo-secure-store',
+        // El micrófono pide permiso y declaración en el manifest: lo lleva su
+        // plugin de config, no un ajuste a mano.
+        'expo-audio',
+        [
+            'expo-image-picker',
+            {
+                photosPermission: 'Navis usa tus fotos para la ficha de cada hermano.',
+                cameraPermission: 'Navis usa la cámara para la foto de cada hermano.',
+                microphonePermission: false,
+            },
+        ],
+        [
+            'expo-splash-screen',
+            {
+                image: './assets/splash-icon.png',
+                resizeMode: 'contain',
+                backgroundColor: '#fcfcfa',
+                dark: { backgroundColor: '#0d0f15' },
+            },
+        ],
     ],
-    [
-      'expo-splash-screen',
-      {
-        image: './assets/splash-icon.png',
-        resizeMode: 'contain',
-        backgroundColor: '#fcfcfa',
-        dark: { backgroundColor: '#0d0f15' },
-      },
-    ],
-  ],
-  experiments: {
-    typedRoutes: true,
-  },
+    experiments: {
+        typedRoutes: true,
+    },
 };
 
 export default config;

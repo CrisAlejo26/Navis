@@ -13,29 +13,29 @@ import { getLocale } from './i18n';
 const FECHA_CORTA = { day: '2-digit', month: '2-digit', year: 'numeric' } as const;
 
 export function formatDate(value: Date | string, style: 'short' | 'medium' = 'medium'): string {
-  const date = value instanceof Date ? value : new Date(value);
-  if (Number.isNaN(date.getTime())) return '—';
+    const date = value instanceof Date ? value : new Date(value);
+    if (Number.isNaN(date.getTime())) return '—';
 
-  return new Intl.DateTimeFormat(
-    getLocale(),
-    style === 'short' ? FECHA_CORTA : { dateStyle: 'medium' },
-  ).format(date);
+    return new Intl.DateTimeFormat(
+        getLocale(),
+        style === 'short' ? FECHA_CORTA : { dateStyle: 'medium' },
+    ).format(date);
 }
 
 /** «lunes, 3 de agosto de 2026». Para la cabecera del panel. */
 export function formatLongDate(value: Date): string {
-  return new Intl.DateTimeFormat(getLocale(), { dateStyle: 'full' }).format(value);
+    return new Intl.DateTimeFormat(getLocale(), { dateStyle: 'full' }).format(value);
 }
 
 /** «12 ago 2026, 19:00». Un recordatorio lleva hora, no solo día (D16). */
 export function formatDateTime(value: string): string {
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return '—';
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return '—';
 
-  return new Intl.DateTimeFormat(getLocale(), {
-    dateStyle: 'medium',
-    timeStyle: 'short',
-  }).format(date);
+    return new Intl.DateTimeFormat(getLocale(), {
+        dateStyle: 'medium',
+        timeStyle: 'short',
+    }).format(date);
 }
 
 /**
@@ -45,14 +45,14 @@ export function formatDateTime(value: string): string {
  * dato no tiene (RFC 0012).
  */
 export function formatMonth(iso: string): string {
-  const date = new Date(`${iso.slice(0, 7)}-01T00:00:00Z`);
-  if (Number.isNaN(date.getTime())) return iso;
+    const date = new Date(`${iso.slice(0, 7)}-01T00:00:00Z`);
+    if (Number.isNaN(date.getTime())) return iso;
 
-  return new Intl.DateTimeFormat(getLocale(), {
-    month: 'long',
-    year: 'numeric',
-    timeZone: 'UTC',
-  }).format(date);
+    return new Intl.DateTimeFormat(getLocale(), {
+        month: 'long',
+        year: 'numeric',
+        timeZone: 'UTC',
+    }).format(date);
 }
 
 /**
@@ -63,8 +63,8 @@ export function formatMonth(iso: string): string {
  * idiomas, que es justo lo que hace falta en un eje de ancho fijo.
  */
 export function formatShortMonth(iso: string): string {
-  const [year = '', month = ''] = iso.slice(0, 7).split('-');
-  return `${month}/${year.slice(2)}`;
+    const [year = '', month = ''] = iso.slice(0, 7).split('-');
+    return `${month}/${year.slice(2)}`;
 }
 
 /**
@@ -79,13 +79,13 @@ export function formatShortMonth(iso: string): string {
  * Es la pareja en la interfaz de lo que `database/iso-day.ts` hace en la API.
  */
 export function formatDay(iso: string, style: 'short' | 'medium' = 'medium'): string {
-  const date = new Date(`${iso.slice(0, 10)}T00:00:00Z`);
-  if (Number.isNaN(date.getTime())) return '—';
+    const date = new Date(`${iso.slice(0, 10)}T00:00:00Z`);
+    if (Number.isNaN(date.getTime())) return '—';
 
-  return new Intl.DateTimeFormat(getLocale(), {
-    timeZone: 'UTC',
-    ...(style === 'short' ? FECHA_CORTA : { dateStyle: 'medium' }),
-  }).format(date);
+    return new Intl.DateTimeFormat(getLocale(), {
+        timeZone: 'UTC',
+        ...(style === 'short' ? FECHA_CORTA : { dateStyle: 'medium' }),
+    }).format(date);
 }
 
 /**
@@ -100,14 +100,14 @@ export function formatDay(iso: string, style: 'short' | 'medium' = 'medium'): st
  * su «desde» o su «hasta» delante de `formatDay`.
  */
 export function formatDayRange(from: string, to: string): string {
-  const start = new Date(`${from.slice(0, 10)}T00:00:00Z`);
-  const end = new Date(`${to.slice(0, 10)}T00:00:00Z`);
-  if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) return '—';
+    const start = new Date(`${from.slice(0, 10)}T00:00:00Z`);
+    const end = new Date(`${to.slice(0, 10)}T00:00:00Z`);
+    if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) return '—';
 
-  return new Intl.DateTimeFormat(getLocale(), {
-    dateStyle: 'medium',
-    timeZone: 'UTC',
-  }).formatRange(start, end);
+    return new Intl.DateTimeFormat(getLocale(), {
+        dateStyle: 'medium',
+        timeZone: 'UTC',
+    }).formatRange(start, end);
 }
 
 /**
@@ -118,9 +118,9 @@ export function formatDayRange(from: string, to: string): string {
  * activo, y `Intl` no lo da suelto.
  */
 export function formatWeekday(weekday: number, style: 'short' | 'long' = 'short'): string {
-  const date = new Date(Date.UTC(2026, 7, 2 + weekday));
+    const date = new Date(Date.UTC(2026, 7, 2 + weekday));
 
-  return new Intl.DateTimeFormat(getLocale(), { weekday: style, timeZone: 'UTC' }).format(date);
+    return new Intl.DateTimeFormat(getLocale(), { weekday: style, timeZone: 'UTC' }).format(date);
 }
 
 /**
@@ -129,38 +129,38 @@ export function formatWeekday(weekday: number, style: 'short' | 'long' = 'short'
  * 2 §6).
  */
 export function formatAgo(days: number): string {
-  const relative = new Intl.RelativeTimeFormat(getLocale(), { numeric: 'auto' });
+    const relative = new Intl.RelativeTimeFormat(getLocale(), { numeric: 'auto' });
 
-  if (days < 7) return relative.format(-days, 'day');
-  if (days < 31) return relative.format(-Math.round(days / 7), 'week');
-  if (days < 365) return relative.format(-Math.round(days / 30), 'month');
-  return relative.format(-Math.round(days / 365), 'year');
+    if (days < 7) return relative.format(-days, 'day');
+    if (days < 31) return relative.format(-Math.round(days / 7), 'week');
+    if (days < 365) return relative.format(-Math.round(days / 30), 'month');
+    return relative.format(-Math.round(days / 365), 'year');
 }
 
 export function formatNumber(value: number): string {
-  return new Intl.NumberFormat(getLocale()).format(value);
+    return new Intl.NumberFormat(getLocale()).format(value);
 }
 
 /** «2,4 MB». El tamaño de un adjunto (RFC 0016 §7), con el separador del idioma activo. */
 export function formatBytes(bytes: number): string {
-  if (bytes < 1024) return `${String(bytes)} B`;
-  const units = ['KB', 'MB', 'GB'];
-  let value = bytes / 1024;
-  let unitIndex = 0;
-  while (value >= 1024 && unitIndex < units.length - 1) {
-    value /= 1024;
-    unitIndex += 1;
-  }
+    if (bytes < 1024) return `${String(bytes)} B`;
+    const units = ['KB', 'MB', 'GB'];
+    let value = bytes / 1024;
+    let unitIndex = 0;
+    while (value >= 1024 && unitIndex < units.length - 1) {
+        value /= 1024;
+        unitIndex += 1;
+    }
 
-  return `${new Intl.NumberFormat(getLocale(), { maximumFractionDigits: 1 }).format(value)} ${units[unitIndex]}`;
+    return `${new Intl.NumberFormat(getLocale(), { maximumFractionDigits: 1 }).format(value)} ${units[unitIndex]}`;
 }
 
 /** «19:42». La hora de un mensaje, sin el día (RFC 0016 §5). */
 export function formatTime(value: string): string {
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return '—';
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return '—';
 
-  return new Intl.DateTimeFormat(getLocale(), { timeStyle: 'short' }).format(date);
+    return new Intl.DateTimeFormat(getLocale(), { timeStyle: 'short' }).format(date);
 }
 
 /**
@@ -168,20 +168,20 @@ export function formatTime(value: string): string {
  * fila de una conversación (RFC 0016 §5), donde «hace 2 minutos» no cabe.
  */
 export function formatConversationTime(value: string): string {
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return '';
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return '';
 
-  const minutes = Math.floor((Date.now() - date.getTime()) / 60_000);
-  const relative = new Intl.RelativeTimeFormat(getLocale(), { numeric: 'auto' });
+    const minutes = Math.floor((Date.now() - date.getTime()) / 60_000);
+    const relative = new Intl.RelativeTimeFormat(getLocale(), { numeric: 'auto' });
 
-  if (minutes < 1) return relative.format(0, 'minute');
-  if (minutes < 60) return relative.format(-minutes, 'minute');
+    if (minutes < 1) return relative.format(0, 'minute');
+    if (minutes < 60) return relative.format(-minutes, 'minute');
 
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return relative.format(-hours, 'hour');
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return relative.format(-hours, 'hour');
 
-  const days = Math.floor(hours / 24);
-  if (days < 7) return relative.format(-days, 'day');
+    const days = Math.floor(hours / 24);
+    if (days < 7) return relative.format(-days, 'day');
 
-  return formatDate(date, 'short');
+    return formatDate(date, 'short');
 }

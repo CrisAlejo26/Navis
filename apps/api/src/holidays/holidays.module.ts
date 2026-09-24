@@ -15,8 +15,8 @@ import { HOLIDAYS_FETCH, HolidaysService } from './holidays.service';
 const salirALaCalle: typeof fetch = (input, init) => globalThis.fetch(input, init);
 
 @Module({
-  imports: [TypeOrmModule.forFeature([HolidayCache])],
-  providers: [HolidaysService, { provide: HOLIDAYS_FETCH, useValue: salirALaCalle }],
-  exports: [HolidaysService],
+    imports: [TypeOrmModule.forFeature([HolidayCache])],
+    providers: [HolidaysService, { provide: HOLIDAYS_FETCH, useValue: salirALaCalle }],
+    exports: [HolidaysService],
 })
 export class HolidaysModule {}

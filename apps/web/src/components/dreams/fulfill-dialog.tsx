@@ -23,80 +23,80 @@ import { toast } from '@/lib/toast';
  * `min` lo dice antes de enviar y el servidor lo vuelve a comprobar.
  */
 export function FulfillDialog({
-  dream,
-  open,
-  onClose,
+    dream,
+    open,
+    onClose,
 }: {
-  dream: Dream;
-  open: boolean;
-  onClose: () => void;
+    dream: Dream;
+    open: boolean;
+    onClose: () => void;
 }) {
-  const { t } = useTranslation();
-  const update = useUpdateDream(api);
-  const [error, setError] = useState<string | null>(null);
+    const { t } = useTranslation();
+    const update = useUpdateDream(api);
+    const [error, setError] = useState<string | null>(null);
 
-  const today = todayIn(Intl.DateTimeFormat().resolvedOptions().timeZone);
+    const today = todayIn(Intl.DateTimeFormat().resolvedOptions().timeZone);
 
-  const submit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const form = new FormData(event.currentTarget);
-    const fulfilledAt = formText(form.get('fulfilledAt'));
+    const submit = (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        const form = new FormData(event.currentTarget);
+        const fulfilledAt = formText(form.get('fulfilledAt'));
 
-    if (fulfilledAt < dream.dreamedAt) {
-      setError(t('dreams.errorOrder'));
-      return;
-    }
+        if (fulfilledAt < dream.dreamedAt) {
+            setError(t('dreams.errorOrder'));
+            return;
+        }
 
-    setError(null);
-    void update
-      .mutateAsync({
-        id: dream.id,
-        fulfilledAt,
-        fulfillmentMeaning: formText(form.get('fulfillmentMeaning')) || null,
-      })
-      .then(() => {
-        toast.success(t('dreams.markedFulfilled'));
-        onClose();
-      })
-      .catch(() => {
-        setError(t('errors.generic'));
-      });
-  };
+        setError(null);
+        void update
+            .mutateAsync({
+                id: dream.id,
+                fulfilledAt,
+                fulfillmentMeaning: formText(form.get('fulfillmentMeaning')) || null,
+            })
+            .then(() => {
+                toast.success(t('dreams.markedFulfilled'));
+                onClose();
+            })
+            .catch(() => {
+                setError(t('errors.generic'));
+            });
+    };
 
-  return (
-    <Dialog
-      open={open}
-      onClose={onClose}
-      width="min(32rem, calc(100vw - 2rem))"
-      title={t('dreams.fulfillTitle')}
-      description={t('dreams.fulfillHint')}
-    >
-      <form onSubmit={submit} className="gap-4 min-w-0 flex flex-col" noValidate>
-        <div className="sm:max-w-56">
-          <Input
-            name="fulfilledAt"
-            type="date"
-            label={t('dreams.fulfilledAt')}
-            min={dream.dreamedAt}
-            defaultValue={dream.fulfilledAt ?? today}
-            required
-          />
-        </div>
+    return (
+        <Dialog
+            open={open}
+            onClose={onClose}
+            width="min(32rem, calc(100vw - 2rem))"
+            title={t('dreams.fulfillTitle')}
+            description={t('dreams.fulfillHint')}
+        >
+            <form onSubmit={submit} className="gap-4 min-w-0 flex flex-col" noValidate>
+                <div className="sm:max-w-56">
+                    <Input
+                        name="fulfilledAt"
+                        type="date"
+                        label={t('dreams.fulfilledAt')}
+                        min={dream.dreamedAt}
+                        defaultValue={dream.fulfilledAt ?? today}
+                        required
+                    />
+                </div>
 
-        <Textarea
-          name="fulfillmentMeaning"
-          rows={6}
-          label={t('dreams.meaning')}
-          placeholder={t('dreams.meaningPlaceholder')}
-          defaultValue={dream.fulfillmentMeaning ?? ''}
-        />
+                <Textarea
+                    name="fulfillmentMeaning"
+                    rows={6}
+                    label={t('dreams.meaning')}
+                    placeholder={t('dreams.meaningPlaceholder')}
+                    defaultValue={dream.fulfillmentMeaning ?? ''}
+                />
 
-        <FormError message={error} />
+                <FormError message={error} />
 
-        <Button type="submit" size="lg" className="w-full" isLoading={update.isPending}>
-          {t('common.save')}
-        </Button>
-      </form>
-    </Dialog>
-  );
+                <Button type="submit" size="lg" className="w-full" isLoading={update.isPending}>
+                    {t('common.save')}
+                </Button>
+            </form>
+        </Dialog>
+    );
 }

@@ -8,15 +8,15 @@ import type { ManagedUser } from '@navis/shared';
  * rompe la recarga en caliente de React.
  */
 export interface UserDialogsState {
-  creating: boolean;
-  editing: ManagedUser | null;
-  changingPassword: ManagedUser | null;
-  deleting: ManagedUser | null;
+    creating: boolean;
+    editing: ManagedUser | null;
+    changingPassword: ManagedUser | null;
+    deleting: ManagedUser | null;
 }
 
 export const NO_DIALOG: UserDialogsState = {
-  creating: false,
-  editing: null,
-  changingPassword: null,
-  deleting: null,
+    creating: false,
+    editing: null,
+    changingPassword: null,
+    deleting: null,
 };

@@ -7,45 +7,47 @@ import { cn } from '@/lib/cn';
 import { useThemeStore } from '@/lib/theme';
 
 interface CheckboxProps {
-  label: string;
-  description?: string;
-  checked: boolean;
-  onChange: (checked: boolean) => void;
-  disabled?: boolean;
+    label: string;
+    description?: string;
+    checked: boolean;
+    onChange: (checked: boolean) => void;
+    disabled?: boolean;
 }
 
 function CheckboxGlyph({ checked }: { checked: boolean }) {
-  const palette = themeColorsHex[useThemeStore((state) => state.resolvedTheme)];
+    const palette = themeColorsHex[useThemeStore((state) => state.resolvedTheme)];
 
-  return (
-    <View
-      className={cn(
-        'h-5 w-5 items-center justify-center rounded-md border-2',
-        checked ? 'border-primary bg-primary' : 'border-input',
-      )}
-    >
-      {checked ? <Ionicons name="checkmark" size={14} color={palette.primaryForeground} /> : null}
-    </View>
-  );
+    return (
+        <View
+            className={cn(
+                'h-5 w-5 items-center justify-center rounded-md border-2',
+                checked ? 'border-primary bg-primary' : 'border-input',
+            )}
+        >
+            {checked ? (
+                <Ionicons name="checkmark" size={14} color={palette.primaryForeground} />
+            ) : null}
+        </View>
+    );
 }
 
 /** Casilla con etiqueta a la derecha — Fase 6. */
 export function Checkbox({
-  label,
-  description,
-  checked,
-  onChange,
-  disabled = false,
+    label,
+    description,
+    checked,
+    onChange,
+    disabled = false,
 }: CheckboxProps) {
-  return (
-    <ControlRow
-      label={label}
-      description={description}
-      accessibilityRole="checkbox"
-      checked={checked}
-      disabled={disabled}
-      onPress={() => onChange(!checked)}
-      control={<CheckboxGlyph checked={checked} />}
-    />
-  );
+    return (
+        <ControlRow
+            label={label}
+            description={description}
+            accessibilityRole="checkbox"
+            checked={checked}
+            disabled={disabled}
+            onPress={() => onChange(!checked)}
+            control={<CheckboxGlyph checked={checked} />}
+        />
+    );
 }

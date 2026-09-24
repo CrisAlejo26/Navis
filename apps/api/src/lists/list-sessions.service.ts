@@ -20,12 +20,12 @@ import { ListViewer } from './list-viewer.entity';
  */
 @Injectable()
 export class ListSessionsService {
-  constructor(@InjectRepository(ListViewer) private readonly viewers: Repository<ListViewer>) {}
+    constructor(@InjectRepository(ListViewer) private readonly viewers: Repository<ListViewer>) {}
 
-  async revoke(viewerIds: readonly string[]): Promise<void> {
-    const ids = [...new Set(viewerIds)].filter(Boolean);
-    if (ids.length === 0) return;
+    async revoke(viewerIds: readonly string[]): Promise<void> {
+        const ids = [...new Set(viewerIds)].filter(Boolean);
+        if (ids.length === 0) return;
 
-    await this.viewers.update({ id: In(ids) }, { sessionsValidFrom: new Date() });
-  }
+        await this.viewers.update({ id: In(ids) }, { sessionsValidFrom: new Date() });
+    }
 }

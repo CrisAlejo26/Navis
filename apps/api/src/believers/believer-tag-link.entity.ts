@@ -20,21 +20,21 @@ import type { Believer } from './believer.entity';
 @Entity('believer_tag_links')
 @Index('UQ_believer_tag_links', ['believerId', 'tagId'], { unique: true })
 export class BelieverTagLink extends BaseEntity {
-  @ApiProperty()
-  @Column({ name: 'believer_id', type: UUID })
-  believerId: string;
+    @ApiProperty()
+    @Column({ name: 'believer_id', type: UUID })
+    believerId: string;
 
-  /* Por nombre y con `Relation<>`: ver `calendar/pattern-phase.entity.ts`. */
-  @ManyToOne('Believer', 'tagLinks', { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'believer_id' })
-  believer: Relation<Believer>;
+    /* Por nombre y con `Relation<>`: ver `calendar/pattern-phase.entity.ts`. */
+    @ManyToOne('Believer', 'tagLinks', { onDelete: 'CASCADE' })
+    @JoinColumn({ name: 'believer_id' })
+    believer: Relation<Believer>;
 
-  @ApiProperty()
-  @Index()
-  @Column({ name: 'tag_id', type: UUID })
-  tagId: string;
+    @ApiProperty()
+    @Index()
+    @Column({ name: 'tag_id', type: UUID })
+    tagId: string;
 
-  @ApiPropertyOptional({ description: 'La única que se muestra en la tabla del listado' })
-  @Column({ type: 'boolean', default: false })
-  featured: boolean;
+    @ApiPropertyOptional({ description: 'La única que se muestra en la tabla del listado' })
+    @Column({ type: 'boolean', default: false })
+    featured: boolean;
 }

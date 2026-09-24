@@ -14,11 +14,11 @@ import type { NoteKind } from './schemas/believer-notes';
  * con los mismos colores (Regla 1).
  */
 export const NOTE_KIND_ACCENTS: Record<NoteKind, string> = {
-  seguimiento: ACCENT_PALETTE[1],
-  testimonio: ACCENT_PALETTE[10],
-  sueno: ACCENT_PALETTE[13],
-  vision: ACCENT_PALETTE[3],
-  experiencia: ACCENT_PALETTE[7],
-  don: ACCENT_PALETTE[4],
-  correccion: ACCENT_PALETTE[8],
+    seguimiento: ACCENT_PALETTE[1],
+    testimonio: ACCENT_PALETTE[10],
+    sueno: ACCENT_PALETTE[13],
+    vision: ACCENT_PALETTE[3],
+    experiencia: ACCENT_PALETTE[7],
+    don: ACCENT_PALETTE[4],
+    correccion: ACCENT_PALETTE[8],
 };

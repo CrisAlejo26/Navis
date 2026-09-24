@@ -1,10 +1,10 @@
 import type {
-  Dream,
-  DreamListItem,
-  DreamsQuery,
-  DreamsStats,
-  EmotionWithCount,
-  Paginated,
+    Dream,
+    DreamListItem,
+    DreamsQuery,
+    DreamsStats,
+    EmotionWithCount,
+    Paginated,
 } from '@navis/shared';
 import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 
@@ -19,29 +19,29 @@ import { queryKeys } from './query-keys';
  * pisan sin avisar.
  */
 export function toDreamSearch(query: DreamsQuery): string {
-  const params = new URLSearchParams();
+    const params = new URLSearchParams();
 
-  if (query.page && query.page > 1) params.set('page', String(query.page));
-  if (query.limit) params.set('limit', String(query.limit));
-  if (query.search) params.set('search', query.search);
-  for (const state of query.state ?? []) params.append('state', state);
-  for (const emotion of query.emotion ?? []) params.append('emotion', emotion);
-  if (query.from) params.set('from', query.from);
-  if (query.to) params.set('to', query.to);
-  if (query.year) params.set('year', String(query.year));
-  if (query.sort) params.set('sort', query.sort);
-  if (query.order) params.set('order', query.order);
+    if (query.page && query.page > 1) params.set('page', String(query.page));
+    if (query.limit) params.set('limit', String(query.limit));
+    if (query.search) params.set('search', query.search);
+    for (const state of query.state ?? []) params.append('state', state);
+    for (const emotion of query.emotion ?? []) params.append('emotion', emotion);
+    if (query.from) params.set('from', query.from);
+    if (query.to) params.set('to', query.to);
+    if (query.year) params.set('year', String(query.year));
+    if (query.sort) params.set('sort', query.sort);
+    if (query.order) params.set('order', query.order);
 
-  return params.toString();
+    return params.toString();
 }
 
 /** Clave estable: el mismo filtro escrito en otro orden comparte caché. */
 function keyOf(query: DreamsQuery): object {
-  return {
-    ...query,
-    state: [...(query.state ?? [])].sort().join(','),
-    emotion: [...(query.emotion ?? [])].sort().join(','),
-  };
+    return {
+        ...query,
+        state: [...(query.state ?? [])].sort().join(','),
+        emotion: [...(query.emotion ?? [])].sort().join(','),
+    };
 }
 
 /**
@@ -51,17 +51,17 @@ function keyOf(query: DreamsQuery): object {
  * sin él, cambiar de página vacía la lista y da un salto de alto.
  */
 export function useDreams(
-  api: ApiClient,
-  query: DreamsQuery,
-  enabled = true,
+    api: ApiClient,
+    query: DreamsQuery,
+    enabled = true,
 ): UseQueryResult<Paginated<DreamListItem>> {
-  return useQuery({
-    queryKey: queryKeys.dreams.list(keyOf(query)),
-    queryFn: () => api.get<Paginated<DreamListItem>>(`/dreams?${toDreamSearch(query)}`),
-    enabled,
-    staleTime: 30_000,
-    placeholderData: (previous) => previous,
-  });
+    return useQuery({
+        queryKey: queryKeys.dreams.list(keyOf(query)),
+        queryFn: () => api.get<Paginated<DreamListItem>>(`/dreams?${toDreamSearch(query)}`),
+        enabled,
+        staleTime: 30_000,
+        placeholderData: (previous) => previous,
+    });
 }
 
 /**
@@ -70,22 +70,22 @@ export function useDreams(
  * No se derivan del listado: la página 1 no sabe nada de las otras (D15).
  */
 export function useDreamsStats(api: ApiClient, enabled = true): UseQueryResult<DreamsStats> {
-  return useQuery({
-    queryKey: queryKeys.dreams.stats,
-    queryFn: () => api.get<DreamsStats>('/dreams/stats'),
-    enabled,
-    staleTime: 30_000,
-  });
+    return useQuery({
+        queryKey: queryKeys.dreams.stats,
+        queryFn: () => api.get<DreamsStats>('/dreams/stats'),
+        enabled,
+        staleTime: 30_000,
+    });
 }
 
 /** La ficha entera, con el texto completo, sus emociones y sus audios. */
 export function useDream(api: ApiClient, id: string, enabled = true): UseQueryResult<Dream> {
-  return useQuery({
-    queryKey: queryKeys.dreams.one(id),
-    queryFn: () => api.get<Dream>(`/dreams/${id}`),
-    enabled: enabled && Boolean(id),
-    staleTime: 30_000,
-  });
+    return useQuery({
+        queryKey: queryKeys.dreams.one(id),
+        queryFn: () => api.get<Dream>(`/dreams/${id}`),
+        enabled: enabled && Boolean(id),
+        staleTime: 30_000,
+    });
 }
 
 /**
@@ -95,10 +95,10 @@ export function useDream(api: ApiClient, id: string, enabled = true): UseQueryRe
  * una emoción, y eso ya invalida.
  */
 export function useEmotions(api: ApiClient, enabled = true): UseQueryResult<EmotionWithCount[]> {
-  return useQuery({
-    queryKey: queryKeys.dreams.emotions,
-    queryFn: () => api.get<EmotionWithCount[]>('/dreams/emotions'),
-    enabled,
-    staleTime: 300_000,
-  });
+    return useQuery({
+        queryKey: queryKeys.dreams.emotions,
+        queryFn: () => api.get<EmotionWithCount[]>('/dreams/emotions'),
+        enabled,
+        staleTime: 300_000,
+    });
 }

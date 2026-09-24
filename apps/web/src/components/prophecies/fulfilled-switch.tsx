@@ -4,8 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { Input } from '@/components/ui/input';
 
 export interface FulfilledDraft {
-  /** Vacío mientras siga abierta. Con fecha, está cumplida (D3). */
-  at: string;
+    /** Vacío mientras siga abierta. Con fecha, está cumplida (D3). */
+    at: string;
 }
 
 /**
@@ -17,44 +17,44 @@ export interface FulfilledDraft {
  * cumplimientos parciales no se tocan.
  */
 export function FulfilledSwitch({
-  value,
-  onChange,
+    value,
+    onChange,
 }: {
-  value: FulfilledDraft;
-  onChange: (value: FulfilledDraft) => void;
+    value: FulfilledDraft;
+    onChange: (value: FulfilledDraft) => void;
 }) {
-  const { t } = useTranslation();
-  const on = value.at !== '';
+    const { t } = useTranslation();
+    const on = value.at !== '';
 
-  return (
-    <div className="gap-3 p-3 flex flex-col rounded-lg border bg-muted/30">
-      <label className="gap-3 text-sm font-medium flex cursor-pointer items-center">
-        <input
-          type="checkbox"
-          checked={on}
-          onChange={(event) => {
-            onChange({ at: event.target.checked ? toIsoDate(new Date()) : '' });
-          }}
-          className="h-4 w-4 rounded cursor-pointer accent-primary focus-visible:ring-2 focus-visible:ring-ring"
-        />
-        {t('prophecies.markFulfilled')}
-      </label>
+    return (
+        <div className="gap-3 p-3 flex flex-col rounded-lg border bg-muted/30">
+            <label className="gap-3 text-sm font-medium flex cursor-pointer items-center">
+                <input
+                    type="checkbox"
+                    checked={on}
+                    onChange={(event) => {
+                        onChange({ at: event.target.checked ? toIsoDate(new Date()) : '' });
+                    }}
+                    className="h-4 w-4 rounded cursor-pointer accent-primary focus-visible:ring-2 focus-visible:ring-ring"
+                />
+                {t('prophecies.markFulfilled')}
+            </label>
 
-      {on ? (
-        <div className="sm:max-w-56">
-          <Input
-            name="fulfilledAt"
-            type="date"
-            label={t('prophecies.fulfilledAt')}
-            value={value.at}
-            onChange={(event) => {
-              onChange({ at: event.target.value });
-            }}
-          />
+            {on ? (
+                <div className="sm:max-w-56">
+                    <Input
+                        name="fulfilledAt"
+                        type="date"
+                        label={t('prophecies.fulfilledAt')}
+                        value={value.at}
+                        onChange={(event) => {
+                            onChange({ at: event.target.value });
+                        }}
+                    />
+                </div>
+            ) : (
+                <p className="text-xs text-muted-foreground">{t('prophecies.markFulfilledHint')}</p>
+            )}
         </div>
-      ) : (
-        <p className="text-xs text-muted-foreground">{t('prophecies.markFulfilledHint')}</p>
-      )}
-    </div>
-  );
+    );
 }

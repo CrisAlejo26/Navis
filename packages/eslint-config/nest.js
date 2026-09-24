@@ -9,23 +9,26 @@ import { baseConfig } from './index.js';
  * @param {{ tsconfigRootDir: string }} options
  */
 export function nestConfig({ tsconfigRootDir }) {
-  return tseslint.config(...baseConfig({ tsconfigRootDir }), {
-    files: ['**/*.ts'],
-    // Los ficheros de configuración quedan fuera del análisis con tipos (ver
-    // `disableTypeChecked` en la base): reactivar aquí una regla type-aware
-    // haría que ESLint reventase al llegar a ellos.
-    ignores: ['**/*.config.ts'],
-    rules: {
-      // `no-unsafe-argument` se queda en error como en el resto del repositorio
-      // (Regla 10): los `any` que devuelven algunos decoradores de Nest y
-      // TypeORM se acotan en el sitio donde entran, no se silencian aquí.
-      '@typescript-eslint/no-extraneous-class': 'off',
-      // Los módulos de Nest son clases vacías por diseño.
-      '@typescript-eslint/no-empty-function': ['error', { allow: ['constructors'] }],
-      '@typescript-eslint/explicit-member-accessibility': ['error', { accessibility: 'no-public' }],
-      '@typescript-eslint/require-await': 'off',
-    },
-  });
+    return tseslint.config(...baseConfig({ tsconfigRootDir }), {
+        files: ['**/*.ts'],
+        // Los ficheros de configuración quedan fuera del análisis con tipos (ver
+        // `disableTypeChecked` en la base): reactivar aquí una regla type-aware
+        // haría que ESLint reventase al llegar a ellos.
+        ignores: ['**/*.config.ts'],
+        rules: {
+            // `no-unsafe-argument` se queda en error como en el resto del repositorio
+            // (Regla 10): los `any` que devuelven algunos decoradores de Nest y
+            // TypeORM se acotan en el sitio donde entran, no se silencian aquí.
+            '@typescript-eslint/no-extraneous-class': 'off',
+            // Los módulos de Nest son clases vacías por diseño.
+            '@typescript-eslint/no-empty-function': ['error', { allow: ['constructors'] }],
+            '@typescript-eslint/explicit-member-accessibility': [
+                'error',
+                { accessibility: 'no-public' },
+            ],
+            '@typescript-eslint/require-await': 'off',
+        },
+    });
 }
 
 export default nestConfig;

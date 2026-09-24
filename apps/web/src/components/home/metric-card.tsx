@@ -20,55 +20,65 @@ import { ACCENT_TONE, FILLED_TONE } from '@/lib/stat-tones';
  * (`lib/stat-tones.ts`, RFC 0005 §7.1): no se inventa una paleta nueva.
  */
 export function MetricCard({
-  icon,
-  label,
-  value,
-  sub,
-  to,
-  linkLabel,
-  tone,
-  children,
+    icon,
+    label,
+    value,
+    sub,
+    to,
+    linkLabel,
+    tone,
+    children,
 }: {
-  icon: LucideIcon;
-  label: string;
-  value: number;
-  /** Una segunda línea, como «8 altas este mes». */
-  sub?: string;
-  to: string;
-  linkLabel: string;
-  tone: TileTone;
-  /** La vista previa de la tarjeta: nombres, filas… Va debajo del número. */
-  children?: ReactNode;
+    icon: LucideIcon;
+    label: string;
+    value: number;
+    /** Una segunda línea, como «8 altas este mes». */
+    sub?: string;
+    to: string;
+    linkLabel: string;
+    tone: TileTone;
+    /** La vista previa de la tarjeta: nombres, filas… Va debajo del número. */
+    children?: ReactNode;
 }) {
-  const filled = tone === 'filled';
-  const colors = filled ? undefined : ACCENT_TONE[tone];
+    const filled = tone === 'filled';
+    const colors = filled ? undefined : ACCENT_TONE[tone];
 
-  return (
-    <div className={cn('p-5 gap-3 flex flex-col', filled ? FILLED_TONE.card : colors?.edge)}>
-      <TileHeader icon={icon} label={label} tone={tone} />
+    return (
+        <div className={cn('p-5 gap-3 flex flex-col', filled ? FILLED_TONE.card : colors?.edge)}>
+            <TileHeader icon={icon} label={label} tone={tone} />
 
-      <div>
-        <p className={cn('text-3xl font-semibold tracking-[-0.02em] tabular-nums', colors?.value)}>
-          {formatNumber(value)}
-        </p>
-        {sub && (
-          <p className={cn('mt-0.5 text-xs', filled ? FILLED_TONE.label : 'text-muted-foreground')}>
-            {sub}
-          </p>
-        )}
-      </div>
+            <div>
+                <p
+                    className={cn(
+                        'text-3xl font-semibold tracking-[-0.02em] tabular-nums',
+                        colors?.value,
+                    )}
+                >
+                    {formatNumber(value)}
+                </p>
+                {sub && (
+                    <p
+                        className={cn(
+                            'mt-0.5 text-xs',
+                            filled ? FILLED_TONE.label : 'text-muted-foreground',
+                        )}
+                    >
+                        {sub}
+                    </p>
+                )}
+            </div>
 
-      {children}
+            {children}
 
-      <Link
-        to={to}
-        className={cn(
-          'text-xs font-medium mt-auto underline-offset-4 hover:underline',
-          filled ? FILLED_TONE.cta : 'text-primary',
-        )}
-      >
-        {linkLabel}
-      </Link>
-    </div>
-  );
+            <Link
+                to={to}
+                className={cn(
+                    'text-xs font-medium mt-auto underline-offset-4 hover:underline',
+                    filled ? FILLED_TONE.cta : 'text-primary',
+                )}
+            >
+                {linkLabel}
+            </Link>
+        </div>
+    );
 }

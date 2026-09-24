@@ -19,9 +19,9 @@ import { ChurchTransferService } from './church-transfer.service';
  * entidades con el `EntityManager` de su propia transacción.
  */
 @Module({
-  imports: [TypeOrmModule.forFeature([Church, ChurchMember]), ProfilesModule, MediaModule],
-  controllers: [ChurchesController],
-  providers: [ChurchesService, ChurchClockService, ChurchTransferService],
-  exports: [ChurchesService, ChurchClockService, ChurchTransferService],
+    imports: [TypeOrmModule.forFeature([Church, ChurchMember]), ProfilesModule, MediaModule],
+    controllers: [ChurchesController],
+    providers: [ChurchesService, ChurchClockService, ChurchTransferService],
+    exports: [ChurchesService, ChurchClockService, ChurchTransferService],
 })
 export class ChurchesModule {}

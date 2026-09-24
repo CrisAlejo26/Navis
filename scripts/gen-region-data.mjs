@@ -44,46 +44,46 @@ const OBSOLETOS = new Set(['AN', 'TP', 'YU']);
  * son válidos, y este script no necesita nada más de ese paquete.
  */
 function paísesVigentes() {
-  const source = readFileSync(constantsFile, 'utf8');
-  const match = /export const COUNTRY_CODES = \[([\s\S]*?)] as const;/.exec(source);
-  if (!match) throw new Error('No se encontró COUNTRY_CODES en constants.ts');
+    const source = readFileSync(constantsFile, 'utf8');
+    const match = /export const COUNTRY_CODES = \[([\s\S]*?)] as const;/.exec(source);
+    if (!match) throw new Error('No se encontró COUNTRY_CODES en constants.ts');
 
-  const codes = [...match[1].matchAll(/'([A-Z]{2})'/g)].map((one) => one[1]);
-  return new Set(codes);
+    const codes = [...match[1].matchAll(/'([A-Z]{2})'/g)].map((one) => one[1]);
+    return new Set(codes);
 }
 
 async function main() {
-  const vigentes = paísesVigentes();
+    const vigentes = paísesVigentes();
 
-  const response = await fetch(FUENTE);
-  if (!response.ok) {
-    throw new Error(`No se pudo descargar el dataset: ${String(response.status)}`);
-  }
-  const data = await response.json();
+    const response = await fetch(FUENTE);
+    if (!response.ok) {
+        throw new Error(`No se pudo descargar el dataset: ${String(response.status)}`);
+    }
+    const data = await response.json();
 
-  rmSync(outDir, { recursive: true, force: true });
-  mkdirSync(outDir, { recursive: true });
+    rmSync(outDir, { recursive: true, force: true });
+    mkdirSync(outDir, { recursive: true });
 
-  let escritos = 0;
-  for (const [code, entry] of Object.entries(data)) {
-    if (code === 'ES' || OBSOLETOS.has(code) || !vigentes.has(code)) continue;
+    let escritos = 0;
+    for (const [code, entry] of Object.entries(data)) {
+        if (code === 'ES' || OBSOLETOS.has(code) || !vigentes.has(code)) continue;
 
-    const divisions = entry.divisions ?? {};
-    if (Object.keys(divisions).length === 0) continue;
+        const divisions = entry.divisions ?? {};
+        if (Object.keys(divisions).length === 0) continue;
 
-    writeFileSync(join(outDir, `${code}.json`), `${JSON.stringify(divisions, null, 2)}\n`);
-    escritos++;
-  }
+        writeFileSync(join(outDir, `${code}.json`), `${JSON.stringify(divisions, null, 2)}\n`);
+        escritos++;
+    }
 
-  writeFileSync(join(outDir, 'README.md'), readmeContents(escritos, vigentes.size));
+    writeFileSync(join(outDir, 'README.md'), readmeContents(escritos, vigentes.size));
 
-  console.log(
-    `${String(escritos)} países con comunidades, de ${String(vigentes.size)} códigos vigentes.`,
-  );
+    console.log(
+        `${String(escritos)} países con comunidades, de ${String(vigentes.size)} códigos vigentes.`,
+    );
 }
 
 function readmeContents(escritos, totalPaíses) {
-  return `# Comunidades del selector geográfico
+    return `# Comunidades del selector geográfico
 
 Generado por \`scripts/gen-region-data.mjs\` — no se edita a mano.
 
@@ -103,6 +103,6 @@ un país necesita corrección, se corrige en la fuente y se regenera, no aquí.
 }
 
 main().catch((cause) => {
-  console.error(cause);
-  process.exitCode = 1;
+    console.error(cause);
+    process.exitCode = 1;
 });

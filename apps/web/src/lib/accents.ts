@@ -28,34 +28,34 @@ export type AccentVars = CSSProperties & Record<'--acento' | '--acento-fg', stri
  * cambiando con el tema y cumpliendo contraste en claro y en oscuro (Regla 3).
  */
 const TOKEN_VAR: Record<CongregationAccent, string> = {
-  primary: 'var(--color-primary)',
-  accent: 'var(--color-accent)',
-  success: 'var(--color-success)',
-  warning: 'var(--color-warning)',
-  destructive: 'var(--color-destructive)',
-  brand: 'var(--color-brand)',
+    primary: 'var(--color-primary)',
+    accent: 'var(--color-accent)',
+    success: 'var(--color-success)',
+    warning: 'var(--color-warning)',
+    destructive: 'var(--color-destructive)',
+    brand: 'var(--color-brand)',
 };
 
 const HEX = /^#[0-9a-fA-F]{6}$/;
 
 /** El color tal cual lo entiende CSS. */
 export function accentColor(accent: string): string {
-  if (isCongregationAccent(accent)) return TOKEN_VAR[accent];
-  return HEX.test(accent) ? accent : TOKEN_VAR.primary;
+    if (isCongregationAccent(accent)) return TOKEN_VAR[accent];
+    return HEX.test(accent) ? accent : TOKEN_VAR.primary;
 }
 
 export function accentVars(accent: string): AccentVars {
-  return { '--acento': accentColor(accent), '--acento-fg': accentForeground(accent) };
+    return { '--acento': accentColor(accent), '--acento-fg': accentForeground(accent) };
 }
 
 /** El `-foreground` de los seis tokens de siempre, que sí lo traen puesto. */
 const TOKEN_FOREGROUND: Record<CongregationAccent, string> = {
-  primary: 'var(--color-primary-foreground)',
-  accent: 'var(--color-accent-foreground)',
-  success: 'var(--color-success-foreground)',
-  warning: 'var(--color-warning-foreground)',
-  destructive: 'var(--color-destructive-foreground)',
-  brand: 'var(--color-brand-foreground)',
+    primary: 'var(--color-primary-foreground)',
+    accent: 'var(--color-accent-foreground)',
+    success: 'var(--color-success-foreground)',
+    warning: 'var(--color-warning-foreground)',
+    destructive: 'var(--color-destructive-foreground)',
+    brand: 'var(--color-brand-foreground)',
 };
 
 /**
@@ -68,18 +68,18 @@ const TOKEN_FOREGROUND: Record<CongregationAccent, string> = {
  * oscuro (RFC 0010 D37, Regla 3 §6).
  */
 export function accentForeground(accent: string): string {
-  if (isCongregationAccent(accent)) return TOKEN_FOREGROUND[accent];
-  if (!HEX.test(accent)) return TOKEN_FOREGROUND.primary;
+    if (isCongregationAccent(accent)) return TOKEN_FOREGROUND[accent];
+    if (!HEX.test(accent)) return TOKEN_FOREGROUND.primary;
 
-  return luminance(accent) > 0.45 ? '#101728' : '#ffffff';
+    return luminance(accent) > 0.45 ? '#101728' : '#ffffff';
 }
 
 /** Luminancia relativa (WCAG), que es lo que decide si el texto va claro u oscuro. */
 function luminance(hex: string): number {
-  const canal = (from: number) => {
-    const value = Number.parseInt(hex.slice(from, from + 2), 16) / 255;
-    return value <= 0.03928 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
-  };
+    const canal = (from: number) => {
+        const value = Number.parseInt(hex.slice(from, from + 2), 16) / 255;
+        return value <= 0.03928 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
+    };
 
-  return 0.2126 * canal(1) + 0.7152 * canal(3) + 0.0722 * canal(5);
+    return 0.2126 * canal(1) + 0.7152 * canal(3) + 0.0722 * canal(5);
 }

@@ -141,13 +141,13 @@ Profile (existente, RFC 0008)
 
 ```ts
 export const profileSchema = z.object({
-  // …los campos que ya hay…
-  restrictOwnScope: z.boolean(),
+    // …los campos que ya hay…
+    restrictOwnScope: z.boolean(),
 });
 
 export const updateProfileSchema = z.object({
-  // …los campos que ya hay…
-  restrictOwnScope: z.boolean().optional(),
+    // …los campos que ya hay…
+    restrictOwnScope: z.boolean().optional(),
 });
 ```
 
@@ -160,10 +160,10 @@ Y en `packages/shared/src/constants.ts`, junto a `ROLE_HIERARCHY`:
  * superadministrador no pasa por aquí (D2).
  */
 export function canAssignRoleLevel(
-  askerLevel: number,
-  targetLevel: number,
+    askerLevel: number,
+    targetLevel: number,
 ): boolean {
-  return targetLevel < askerLevel;
+    return targetLevel < askerLevel;
 }
 ```
 
@@ -212,7 +212,7 @@ const permissions = await this.roles.permissionsOf(input.role);
 const seProvisionaSolo = hasPermission(permissions ?? [], 'churches.manage');
 
 if (!seProvisionaSolo) {
-  await this.churches.addToActive(asker, created.user.id);
+    await this.churches.addToActive(asker, created.user.id);
 }
 ```
 
@@ -308,9 +308,9 @@ la cuenta no podría asignar. `RoleSelect` gana una prop:
 
 ```ts
 interface RoleSelectProps {
-  // …las que ya tiene…
-  /** Si se pasa, solo se listan los roles con `level` por debajo de este. */
-  belowLevel?: number;
+    // …las que ya tiene…
+    /** Si se pasa, solo se listan los roles con `level` por debajo de este. */
+    belowLevel?: number;
 }
 ```
 
@@ -338,20 +338,20 @@ iglesia—, visible únicamente cuando `session.user.role === SUPERADMIN_ROLE`:
 
 ```tsx
 {
-  session?.user.role === SUPERADMIN_ROLE && (
-    <>
-      <SettingsSection
-        eyebrow={t('settings.scopeGlobal')}
-        title={t('settings.superadminScope')}
-        description={t('settings.superadminScopeHint')}
-      >
-        <Card>
-          <ScopeToggle profile={profile} update={updateProfile} />
-        </Card>
-      </SettingsSection>
-      <hr className="border-border/60" />
-    </>
-  );
+    session?.user.role === SUPERADMIN_ROLE && (
+        <>
+            <SettingsSection
+                eyebrow={t('settings.scopeGlobal')}
+                title={t('settings.superadminScope')}
+                description={t('settings.superadminScopeHint')}
+            >
+                <Card>
+                    <ScopeToggle profile={profile} update={updateProfile} />
+                </Card>
+            </SettingsSection>
+            <hr className="border-border/60" />
+        </>
+    );
 }
 ```
 
@@ -390,13 +390,13 @@ Una sola, después de `BelieverJourney` (`1788048000000`):
 ```ts
 // apps/api/src/database/migrations/<siguiente-timestamp>-RestrictSuperadminScope.ts
 await queryRunner.addColumn(
-  'profiles',
-  new TableColumn({
-    name: 'restrict_own_scope',
-    type: 'boolean',
-    default: true,
-    isNullable: false,
-  }),
+    'profiles',
+    new TableColumn({
+        name: 'restrict_own_scope',
+        type: 'boolean',
+        default: true,
+        isNullable: false,
+    }),
 );
 ```
 
@@ -440,18 +440,18 @@ motores, como pide `CLAUDE.md`.
   las tres combinaciones de rol/restricción, `UserAdminService.ensureAssignable`
   y el `create` sin `addToActive` para `pastor`.
 - **e2e de la API** (Postgres, como siempre):
-  - Un pastor intenta crear una cuenta con rol `pastor` → `403`. Con rol
-    `recepcion` → `201`.
-  - Un pastor intenta subir el rol de una cuenta suya a `pastor` → `403`.
-  - Se crea un pastor desde la administración: sin `ChurchMember`, `GET
+    - Un pastor intenta crear una cuenta con rol `pastor` → `403`. Con rol
+      `recepcion` → `201`.
+    - Un pastor intenta subir el rol de una cuenta suya a `pastor` → `403`.
+    - Se crea un pastor desde la administración: sin `ChurchMember`, `GET
 /churches` le devuelve `items: []`.
-  - Dos pastores con sus propias iglesias: ninguno ve en `/admin/users` las
-    cuentas del otro.
-  - Un superadministrador nuevo (`restrict_own_scope = true` por defecto): `GET
+    - Dos pastores con sus propias iglesias: ninguno ve en `/admin/users` las
+      cuentas del otro.
+    - Un superadministrador nuevo (`restrict_own_scope = true` por defecto): `GET
 /churches` y `GET /admin/users` acotados a lo suyo. Tras `PATCH /profile`
-    con `restrictOwnScope: false`, ambos devuelven todo.
-  - Una lista (RFC 0010) de la iglesia A, pedida por una cuenta de la iglesia
-    B → `403` (deja explícito lo que RFC 0010 ya hacía implícitamente).
+      con `restrictOwnScope: false`, ambos devuelven todo.
+    - Una lista (RFC 0010) de la iglesia A, pedida por una cuenta de la iglesia
+      B → `403` (deja explícito lo que RFC 0010 ya hacía implícitamente).
 - **e2e de web** (Playwright): el desplegable de rol de un pastor no ofrece
   `pastor` ni `superadmin`; el interruptor de ajustes solo aparece para
   `superadmin` y cambia lo que enseña `/users` sin recargar.

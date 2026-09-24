@@ -14,35 +14,35 @@ import { TableIndex, type MigrationInterface, type QueryRunner } from 'typeorm';
  * motores.
  */
 export class PartialUniqueSlugs1789430400000 implements MigrationInterface {
-  name = 'PartialUniqueSlugs1789430400000';
+    name = 'PartialUniqueSlugs1789430400000';
 
-  async up(queryRunner: QueryRunner): Promise<void> {
-    for (const { table, name, columns } of INDEXES) {
-      await queryRunner.dropIndex(table, name);
-      await queryRunner.createIndex(
-        table,
-        new TableIndex({ name, columnNames: columns, isUnique: true, where: WHERE }),
-      );
+    async up(queryRunner: QueryRunner): Promise<void> {
+        for (const { table, name, columns } of INDEXES) {
+            await queryRunner.dropIndex(table, name);
+            await queryRunner.createIndex(
+                table,
+                new TableIndex({ name, columnNames: columns, isUnique: true, where: WHERE }),
+            );
+        }
     }
-  }
 
-  async down(queryRunner: QueryRunner): Promise<void> {
-    for (const { table, name, columns } of INDEXES) {
-      await queryRunner.dropIndex(table, name);
-      await queryRunner.createIndex(
-        table,
-        new TableIndex({ name, columnNames: columns, isUnique: true }),
-      );
+    async down(queryRunner: QueryRunner): Promise<void> {
+        for (const { table, name, columns } of INDEXES) {
+            await queryRunner.dropIndex(table, name);
+            await queryRunner.createIndex(
+                table,
+                new TableIndex({ name, columnNames: columns, isUnique: true }),
+            );
+        }
     }
-  }
 }
 
 const WHERE = '"deleted_at" IS NULL';
 
 const INDEXES = [
-  { table: 'calendars', name: 'UQ_calendars_slug', columns: ['church_id', 'slug'] },
-  { table: 'lists', name: 'UQ_lists_slug', columns: ['church_id', 'slug'] },
-  { table: 'lists', name: 'UQ_lists_name', columns: ['church_id', 'name'] },
-  { table: 'custom_tables', name: 'UQ_custom_tables_slug', columns: ['church_id', 'slug'] },
-  { table: 'custom_tables', name: 'UQ_custom_tables_name', columns: ['church_id', 'name'] },
+    { table: 'calendars', name: 'UQ_calendars_slug', columns: ['church_id', 'slug'] },
+    { table: 'lists', name: 'UQ_lists_slug', columns: ['church_id', 'slug'] },
+    { table: 'lists', name: 'UQ_lists_name', columns: ['church_id', 'name'] },
+    { table: 'custom_tables', name: 'UQ_custom_tables_slug', columns: ['church_id', 'slug'] },
+    { table: 'custom_tables', name: 'UQ_custom_tables_name', columns: ['church_id', 'name'] },
 ];

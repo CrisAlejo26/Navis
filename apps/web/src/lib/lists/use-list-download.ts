@@ -13,37 +13,37 @@ import { toast } from '@/lib/toast';
  * lo que hace que el botón de descargar no mienta (D39).
  */
 export function useListDownload(
-  poster: RefObject<HTMLDivElement | null>,
-  name: string,
+    poster: RefObject<HTMLDivElement | null>,
+    name: string,
 ): { busy: boolean; png: () => void; pdf: () => void } {
-  const { t } = useTranslation();
-  const [busy, setBusy] = useState(false);
+    const { t } = useTranslation();
+    const [busy, setBusy] = useState(false);
 
-  const con = async (action: (node: HTMLDivElement) => Promise<void>) => {
-    const node = poster.current;
-    if (!node) return;
+    const con = async (action: (node: HTMLDivElement) => Promise<void>) => {
+        const node = poster.current;
+        if (!node) return;
 
-    setBusy(true);
-    try {
-      await action(node);
-    } catch {
-      toast.error(t('lists.downloadFailed'));
-    } finally {
-      setBusy(false);
-    }
-  };
+        setBusy(true);
+        try {
+            await action(node);
+        } catch {
+            toast.error(t('lists.downloadFailed'));
+        } finally {
+            setBusy(false);
+        }
+    };
 
-  return {
-    busy,
-    png: () =>
-      void con(async (node) => {
-        downloadFile(await nodeToPng(node), `${name}.png`);
-      }),
-    // Un documento llega tal cual por WhatsApp; una imagen se recomprime hasta
-    // perder la letra pequeña (RFC 0009 D6).
-    pdf: () =>
-      void con(async (node) => {
-        downloadFile(buildPdf([await nodeToJpeg(node)]), `${name}.pdf`);
-      }),
-  };
+    return {
+        busy,
+        png: () =>
+            void con(async (node) => {
+                downloadFile(await nodeToPng(node), `${name}.png`);
+            }),
+        // Un documento llega tal cual por WhatsApp; una imagen se recomprime hasta
+        // perder la letra pequeña (RFC 0009 D6).
+        pdf: () =>
+            void con(async (node) => {
+                downloadFile(buildPdf([await nodeToJpeg(node)]), `${name}.pdf`);
+            }),
+    };
 }

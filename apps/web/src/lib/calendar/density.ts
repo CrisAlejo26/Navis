@@ -6,8 +6,8 @@ export const DENSITY_STORAGE_KEY = 'navis.calendarDensity';
 export type Density = 'compact' | 'cosy';
 
 interface DensityState {
-  density: Density;
-  setDensity: (density: Density) => void;
+    density: Density;
+    setDensity: (density: Density) => void;
 }
 
 /**
@@ -18,16 +18,16 @@ interface DensityState {
  * cómodo. Volver a elegirlo en cada visita es fricción tonta.
  */
 export const useDensityStore = create<DensityState>()(
-  persist(
-    (set) => ({
-      density: 'cosy',
-      setDensity: (density) => {
-        set({ density });
-      },
-    }),
-    {
-      name: DENSITY_STORAGE_KEY,
-      storage: createJSONStorage(() => globalThis.localStorage),
-    },
-  ),
+    persist(
+        (set) => ({
+            density: 'cosy',
+            setDensity: (density) => {
+                set({ density });
+            },
+        }),
+        {
+            name: DENSITY_STORAGE_KEY,
+            storage: createJSONStorage(() => globalThis.localStorage),
+        },
+    ),
 );

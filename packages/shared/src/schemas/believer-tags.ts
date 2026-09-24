@@ -15,29 +15,29 @@ import { accentSchema } from './congregations';
  * traduce (es dato de la iglesia) y el módulo vive junto a dones y labores.
  */
 export const believerTagSchema = z.object({
-  id: z.uuid(),
-  churchId: z.uuid(),
-  name: z.string(),
-  /** Token de la paleta o `#rrggbb`, como las sedes. */
-  accent: z.string(),
-  position: z.number().int(),
-  /** De serie: se renombra y se desactiva, no se borra. Aquí siempre falso. */
-  isSystem: z.boolean(),
-  /** Apagada deja de proponerse, sin perder a quien ya la tiene. */
-  isActive: z.boolean(),
+    id: z.uuid(),
+    churchId: z.uuid(),
+    name: z.string(),
+    /** Token de la paleta o `#rrggbb`, como las sedes. */
+    accent: z.string(),
+    position: z.number().int(),
+    /** De serie: se renombra y se desactiva, no se borra. Aquí siempre falso. */
+    isSystem: z.boolean(),
+    /** Apagada deja de proponerse, sin perder a quien ya la tiene. */
+    isActive: z.boolean(),
 });
 
 export type BelieverTag = z.infer<typeof believerTagSchema>;
 
 export const createBelieverTagSchema = z.object({
-  name: z.string().trim().min(2, 'El nombre de la etiqueta es obligatorio').max(60),
-  accent: accentSchema.optional(),
+    name: z.string().trim().min(2, 'El nombre de la etiqueta es obligatorio').max(60),
+    accent: accentSchema.optional(),
 });
 
 export type CreateBelieverTagInput = z.infer<typeof createBelieverTagSchema>;
 
 export const updateBelieverTagSchema = createBelieverTagSchema.partial().extend({
-  isActive: z.boolean().optional(),
+    isActive: z.boolean().optional(),
 });
 
 export type UpdateBelieverTagInput = z.infer<typeof updateBelieverTagSchema>;

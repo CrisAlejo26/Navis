@@ -10,10 +10,10 @@
  * instala.
  */
 export function assertSeedAllowed(enProduccion: boolean): void {
-  if (!enProduccion) return;
+    if (!enProduccion) return;
 
-  throw new Error(
-    'La semilla no se ejecuta en producción: su contraseña es pública. ' +
-      'Crea la primera cuenta desde la pantalla de primer arranque de la aplicación.',
-  );
+    throw new Error(
+        'La semilla no se ejecuta en producción: su contraseña es pública. ' +
+            'Crea la primera cuenta desde la pantalla de primer arranque de la aplicación.',
+    );
 }

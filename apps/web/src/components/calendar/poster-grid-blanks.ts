@@ -15,6 +15,6 @@ import { weekdayOf } from '@navis/shared';
  * (Regla 6 §…, `react-refresh/only-export-components`).
  */
 export function leadingBlanks(firstDay: string | undefined): number {
-  if (!firstDay) return 0;
-  return (weekdayOf(firstDay) + 6) % 7;
+    if (!firstDay) return 0;
+    return (weekdayOf(firstDay) + 6) % 7;
 }

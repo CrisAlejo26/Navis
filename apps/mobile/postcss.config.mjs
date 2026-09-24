@@ -4,7 +4,7 @@
  * Tailwind v4 compila las clases del proyecto.
  */
 export default {
-  plugins: {
-    '@tailwindcss/postcss': {},
-  },
+    plugins: {
+        '@tailwindcss/postcss': {},
+    },
 };

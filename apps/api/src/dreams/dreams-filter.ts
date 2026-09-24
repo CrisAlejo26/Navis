@@ -17,18 +17,18 @@ import type { Dream } from './dream.entity';
  * filtrado enseñaría un estado y la ficha, otro.
  */
 const STATE_SQL: Record<DreamState, string> = {
-  apuntado:
-    "dream.fulfilledAt IS NULL AND (dream.interpretation IS NULL OR dream.interpretation = '')",
-  estudio:
-    "dream.fulfilledAt IS NULL AND dream.interpretation IS NOT NULL AND dream.interpretation <> ''",
-  cumplido: 'dream.fulfilledAt IS NOT NULL',
+    apuntado:
+        "dream.fulfilledAt IS NULL AND (dream.interpretation IS NULL OR dream.interpretation = '')",
+    estudio:
+        "dream.fulfilledAt IS NULL AND dream.interpretation IS NOT NULL AND dream.interpretation <> ''",
+    cumplido: 'dream.fulfilledAt IS NOT NULL',
 };
 
 /** Por qué columna ordena cada campo. */
 const SORT_SQL: Record<DreamSortField, string> = {
-  dreamed: 'dream.dreamedAt',
-  fulfilled: 'dream.fulfilledAt',
-  title: 'dream.title',
+    dreamed: 'dream.dreamedAt',
+    fulfilled: 'dream.fulfilledAt',
+    title: 'dream.title',
 };
 
 /**
@@ -39,41 +39,43 @@ const SORT_SQL: Record<DreamSortField, string> = {
  * habría que arrastrar un `DISTINCT` hasta la paginación.
  */
 export function applyFilters(
-  builder: SelectQueryBuilder<Dream>,
-  query: DreamsQuery,
-  emotionDreamIds: readonly string[] | null,
+    builder: SelectQueryBuilder<Dream>,
+    query: DreamsQuery,
+    emotionDreamIds: readonly string[] | null,
 ): void {
-  if (query.search) {
-    builder.andWhere('dream.searchText LIKE :search', {
-      // La misma normalización con la que se guardó, o dejaría de encontrar.
-      search: `%${toSearchName(query.search)}%`,
-    });
-  }
-
-  const states = query.state ?? [];
-  if (states.length > 0) {
-    const clause = states.map((state) => `(${STATE_SQL[state]})`).join(' OR ');
-    builder.andWhere(`(${clause})`);
-  }
-
-  if (query.from) builder.andWhere('dream.dreamedAt >= :from', { from: query.from });
-  if (query.to) builder.andWhere('dream.dreamedAt <= :to', { to: query.to });
-  if (query.year !== undefined) {
-    builder.andWhere('dream.dreamedAt >= :yearStart', { yearStart: `${String(query.year)}-01-01` });
-    builder.andWhere('dream.dreamedAt <= :yearEnd', { yearEnd: `${String(query.year)}-12-31` });
-  }
-
-  if (emotionDreamIds !== null) {
-    // Ninguna coincidencia es una respuesta vacía, no «sin filtro»: un `IN ()`
-    // vacío es además un error de sintaxis en los dos motores.
-    if (emotionDreamIds.length === 0) {
-      builder.andWhere('1 = 0');
-      return;
+    if (query.search) {
+        builder.andWhere('dream.searchText LIKE :search', {
+            // La misma normalización con la que se guardó, o dejaría de encontrar.
+            search: `%${toSearchName(query.search)}%`,
+        });
     }
-    builder.andWhere('dream.id IN (:...emotionDreamIds)', {
-      emotionDreamIds: [...emotionDreamIds],
-    });
-  }
+
+    const states = query.state ?? [];
+    if (states.length > 0) {
+        const clause = states.map((state) => `(${STATE_SQL[state]})`).join(' OR ');
+        builder.andWhere(`(${clause})`);
+    }
+
+    if (query.from) builder.andWhere('dream.dreamedAt >= :from', { from: query.from });
+    if (query.to) builder.andWhere('dream.dreamedAt <= :to', { to: query.to });
+    if (query.year !== undefined) {
+        builder.andWhere('dream.dreamedAt >= :yearStart', {
+            yearStart: `${String(query.year)}-01-01`,
+        });
+        builder.andWhere('dream.dreamedAt <= :yearEnd', { yearEnd: `${String(query.year)}-12-31` });
+    }
+
+    if (emotionDreamIds !== null) {
+        // Ninguna coincidencia es una respuesta vacía, no «sin filtro»: un `IN ()`
+        // vacío es además un error de sintaxis en los dos motores.
+        if (emotionDreamIds.length === 0) {
+            builder.andWhere('1 = 0');
+            return;
+        }
+        builder.andWhere('dream.id IN (:...emotionDreamIds)', {
+            emotionDreamIds: [...emotionDreamIds],
+        });
+    }
 }
 
 /**
@@ -83,12 +85,12 @@ export function applyFilters(
  * páginas seguidas y uno de ellos se repetiría mientras otro desaparece.
  */
 export function applyOrder(
-  builder: SelectQueryBuilder<Dream>,
-  sort: DreamSortField,
-  order: 'asc' | 'desc',
+    builder: SelectQueryBuilder<Dream>,
+    sort: DreamSortField,
+    order: 'asc' | 'desc',
 ): void {
-  const direction = order === 'asc' ? 'ASC' : 'DESC';
-  // `NULLS FIRST` no existe en SQLite: la cláusula se pone solo en Postgres.
-  builder.orderBy(SORT_SQL[sort], direction, nullsFor(direction));
-  builder.addOrderBy('dream.id', direction);
+    const direction = order === 'asc' ? 'ASC' : 'DESC';
+    // `NULLS FIRST` no existe en SQLite: la cláusula se pone solo en Postgres.
+    builder.orderBy(SORT_SQL[sort], direction, nullsFor(direction));
+    builder.addOrderBy('dream.id', direction);
 }

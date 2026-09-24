@@ -16,11 +16,11 @@ const PUBLIC_LIST_PATH = /^\/lists\/s\/([^/]+)/;
  * al final de `<head>` ya existe.
  */
 export function linkPublicListManifest(pathname: string = globalThis.location.pathname): void {
-  const match = PUBLIC_LIST_PATH.exec(pathname);
-  if (!match?.[1]) return;
+    const match = PUBLIC_LIST_PATH.exec(pathname);
+    if (!match?.[1]) return;
 
-  const link = document.querySelector<HTMLLinkElement>('link[rel="manifest"]');
-  if (!link) return;
+    const link = document.querySelector<HTMLLinkElement>('link[rel="manifest"]');
+    if (!link) return;
 
-  link.href = `/l/${match[1]}/manifest.webmanifest`;
+    link.href = `/l/${match[1]}/manifest.webmanifest`;
 }

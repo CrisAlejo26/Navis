@@ -8,25 +8,25 @@ import { lazy } from 'react';
  * `lazy` entra en su propio trozo y llega cuando hace falta.
  */
 export const MonthlyChart = lazy(() =>
-  import('./index').then((module) => ({ default: module.MonthlyChart })),
+    import('./index').then((module) => ({ default: module.MonthlyChart })),
 );
 
 export const JournalMonthlyChart = lazy(() =>
-  import('./index').then((module) => ({ default: module.JournalMonthlyChart })),
+    import('./index').then((module) => ({ default: module.JournalMonthlyChart })),
 );
 
 export const RateRing = lazy(() =>
-  import('./index').then((module) => ({ default: module.RateRing })),
+    import('./index').then((module) => ({ default: module.RateRing })),
 );
 
 export const Sparkline = lazy(() =>
-  import('./index').then((module) => ({ default: module.Sparkline })),
+    import('./index').then((module) => ({ default: module.Sparkline })),
 );
 
 export const TaskWeeklyChart = lazy(() =>
-  import('./index').then((module) => ({ default: module.TaskWeeklyChart })),
+    import('./index').then((module) => ({ default: module.TaskWeeklyChart })),
 );
 
 export const TeachingMonthlyChart = lazy(() =>
-  import('./index').then((module) => ({ default: module.TeachingMonthlyChart })),
+    import('./index').then((module) => ({ default: module.TeachingMonthlyChart })),
 );

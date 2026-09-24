@@ -16,12 +16,12 @@ import { signOut } from './auth-client';
  * nueva no tiene iglesia todavía.
  */
 export function useSignOut(): () => Promise<void> {
-  const navigate = useNavigate();
-  const queryClient = useQueryClient();
+    const navigate = useNavigate();
+    const queryClient = useQueryClient();
 
-  return async () => {
-    await signOut();
-    queryClient.clear();
-    await navigate('/login', { replace: true });
-  };
+    return async () => {
+        await signOut();
+        queryClient.clear();
+        await navigate('/login', { replace: true });
+    };
 }

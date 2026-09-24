@@ -26,7 +26,7 @@ const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 
 /** Rasteriza un SVG a PNG cuadrado. */
 export function aPng(svg, size) {
-  return Buffer.from(new Resvg(svg, { fitTo: { mode: 'width', value: size } }).render().asPng());
+    return Buffer.from(new Resvg(svg, { fitTo: { mode: 'width', value: size } }).render().asPng());
 }
 
 /**
@@ -35,10 +35,10 @@ export function aPng(svg, size) {
  * en la pestaña.
  */
 function conModoOscuro(svg) {
-  return svg.replace(
-    '</svg>',
-    '  <style>@media (prefers-color-scheme: dark) { .cls-1 { fill: #fff; } }</style>\n</svg>',
-  );
+    return svg.replace(
+        '</svg>',
+        '  <style>@media (prefers-color-scheme: dark) { .cls-1 { fill: #fff; } }</style>\n</svg>',
+    );
 }
 
 /**
@@ -52,103 +52,112 @@ function conModoOscuro(svg) {
  *   recorta con la forma que le da la gana y hay que dejar zona segura.
  */
 export const DESTINOS = [
-  // Al 100 %, como el favicon de GitHub: el dibujo toca los bordes del cuadro.
-  // A 16 px cualquier margen se nota, y aquí no hay fondo que dé presencia.
-  ['apps/web/public/favicon.svg', { variante: 'azul', ocupacion: 1, svg: true, modoOscuro: true }],
+    // Al 100 %, como el favicon de GitHub: el dibujo toca los bordes del cuadro.
+    // A 16 px cualquier margen se nota, y aquí no hay fondo que dé presencia.
+    [
+        'apps/web/public/favicon.svg',
+        { variante: 'azul', ocupacion: 1, svg: true, modoOscuro: true },
+    ],
 
-  // Versiones encuadradas y transparentes que consume la interfaz. Van en un
-  // subdirectorio `encuadrado/` para que quede claro que son salida, no las
-  // originales del diseñador.
-  ['packages/theme/src/logo/encuadrado/azul.svg', { variante: 'azul', ocupacion: 1, svg: true }],
-  [
-    'packages/theme/src/logo/encuadrado/blanco.svg',
-    { variante: 'blanco', ocupacion: 1, svg: true },
-  ],
+    // Versiones encuadradas y transparentes que consume la interfaz. Van en un
+    // subdirectorio `encuadrado/` para que quede claro que son salida, no las
+    // originales del diseñador.
+    ['packages/theme/src/logo/encuadrado/azul.svg', { variante: 'azul', ocupacion: 1, svg: true }],
+    [
+        'packages/theme/src/logo/encuadrado/blanco.svg',
+        { variante: 'blanco', ocupacion: 1, svg: true },
+    ],
 
-  [
-    'apps/web/public/pwa-192x192.png',
-    { variante: 'blanco', ocupacion: 0.72, fondo: AZUL, size: 192 },
-  ],
-  [
-    'apps/web/public/pwa-512x512.png',
-    { variante: 'blanco', ocupacion: 0.72, fondo: AZUL, size: 512 },
-  ],
-  [
-    'apps/web/public/pwa-maskable-512x512.png',
-    { variante: 'blanco', ocupacion: 0.56, fondo: AZUL, size: 512 },
-  ],
-  [
-    'apps/web/public/apple-touch-icon.png',
-    // Sin esquinas redondeadas: iOS las pone él, y si vienen puestas se ven dobles.
-    { variante: 'blanco', ocupacion: 0.72, fondo: AZUL, size: 180 },
-  ],
-  ['apps/mobile/assets/icon.png', { variante: 'blanco', ocupacion: 0.72, fondo: AZUL, size: 1024 }],
-  ['apps/mobile/assets/adaptive-icon.png', { variante: 'blanco', ocupacion: 0.56, size: 1024 }],
-  [
-    'apps/mobile/assets/splash-icon.png',
-    { variante: 'blanco', ocupacion: 0.62, fondo: AZUL, radio: 0.22, size: 512 },
-  ],
-  ['apps/mobile/assets/favicon.png', { variante: 'blanco', ocupacion: 0.8, fondo: AZUL, size: 48 }],
+    [
+        'apps/web/public/pwa-192x192.png',
+        { variante: 'blanco', ocupacion: 0.72, fondo: AZUL, size: 192 },
+    ],
+    [
+        'apps/web/public/pwa-512x512.png',
+        { variante: 'blanco', ocupacion: 0.72, fondo: AZUL, size: 512 },
+    ],
+    [
+        'apps/web/public/pwa-maskable-512x512.png',
+        { variante: 'blanco', ocupacion: 0.56, fondo: AZUL, size: 512 },
+    ],
+    [
+        'apps/web/public/apple-touch-icon.png',
+        // Sin esquinas redondeadas: iOS las pone él, y si vienen puestas se ven dobles.
+        { variante: 'blanco', ocupacion: 0.72, fondo: AZUL, size: 180 },
+    ],
+    [
+        'apps/mobile/assets/icon.png',
+        { variante: 'blanco', ocupacion: 0.72, fondo: AZUL, size: 1024 },
+    ],
+    ['apps/mobile/assets/adaptive-icon.png', { variante: 'blanco', ocupacion: 0.56, size: 1024 }],
+    [
+        'apps/mobile/assets/splash-icon.png',
+        { variante: 'blanco', ocupacion: 0.62, fondo: AZUL, radio: 0.22, size: 512 },
+    ],
+    [
+        'apps/mobile/assets/favicon.png',
+        { variante: 'blanco', ocupacion: 0.8, fondo: AZUL, size: 48 },
+    ],
 
-  // Vista previa al compartir un enlace (Open Graph / Twitter Card): 1200×630,
-  // el tamaño que recomiendan ambos. Más aire que un icono de aplicación,
-  // porque aquí el barco no es lo único en el lienzo.
-  [
-    'apps/web/public/og-image.png',
-    { variante: 'blanco', ocupacion: 0.5, fondo: AZUL, size: 1200, alto: 630 },
-  ],
+    // Vista previa al compartir un enlace (Open Graph / Twitter Card): 1200×630,
+    // el tamaño que recomiendan ambos. Más aire que un icono de aplicación,
+    // porque aquí el barco no es lo único en el lienzo.
+    [
+        'apps/web/public/og-image.png',
+        { variante: 'blanco', ocupacion: 0.5, fondo: AZUL, size: 1200, alto: 630 },
+    ],
 ];
 
 /** Contenido que le corresponde a un destino, sin escribir nada. */
 export function contenidoDe([, opciones]) {
-  let svg = encuadrar(leerVariante(opciones.variante), {
-    ocupacion: opciones.ocupacion,
-    fondo: opciones.fondo ?? null,
-    radio: opciones.radio ?? 0,
-    proporcion: opciones.alto ? opciones.size / opciones.alto : 1,
-  });
+    let svg = encuadrar(leerVariante(opciones.variante), {
+        ocupacion: opciones.ocupacion,
+        fondo: opciones.fondo ?? null,
+        radio: opciones.radio ?? 0,
+        proporcion: opciones.alto ? opciones.size / opciones.alto : 1,
+    });
 
-  if (opciones.modoOscuro) svg = conModoOscuro(svg);
+    if (opciones.modoOscuro) svg = conModoOscuro(svg);
 
-  return opciones.svg ? Buffer.from(svg, 'utf8') : aPng(svg, opciones.size);
+    return opciones.svg ? Buffer.from(svg, 'utf8') : aPng(svg, opciones.size);
 }
 
 export function generar({ silencioso = false } = {}) {
-  for (const destino of DESTINOS) {
-    const [ruta, opciones] = destino;
-    const salida = join(root, ruta);
-    mkdirSync(dirname(salida), { recursive: true });
-    writeFileSync(salida, contenidoDe(destino));
+    for (const destino of DESTINOS) {
+        const [ruta, opciones] = destino;
+        const salida = join(root, ruta);
+        mkdirSync(dirname(salida), { recursive: true });
+        writeFileSync(salida, contenidoDe(destino));
 
-    if (!silencioso) {
-      const detalle = opciones.svg
-        ? 'SVG'
-        : `${String(opciones.size)}x${String(opciones.alto ?? opciones.size)}px`;
-      console.log(
-        `  ${ruta} — ${opciones.variante}, ${detalle}, ocupa ${String(Math.round(opciones.ocupacion * 100))}%`,
-      );
+        if (!silencioso) {
+            const detalle = opciones.svg
+                ? 'SVG'
+                : `${String(opciones.size)}x${String(opciones.alto ?? opciones.size)}px`;
+            console.log(
+                `  ${ruta} — ${opciones.variante}, ${detalle}, ocupa ${String(Math.round(opciones.ocupacion * 100))}%`,
+            );
+        }
     }
-  }
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  generar();
+    generar();
 
-  const { scope } = JSON.parse(readFileSync(join(root, 'brand.json'), 'utf8'));
+    const { scope } = JSON.parse(readFileSync(join(root, 'brand.json'), 'utf8'));
 
-  console.log('\n  escritorio (tauri icon)…');
-  try {
-    // Comando entero y no argumentos sueltos: en Windows `pnpm` es un .cmd y
-    // hace falta shell. `scope` sale de brand.json, que el renombrador escribe
-    // ya saneado a [a-z0-9], así que no hay dónde inyectar nada.
-    execSync(`pnpm --filter ${scope}/desktop icons`, { cwd: root, stdio: 'pipe' });
-    console.log('  apps/desktop/src-tauri/icons/ — .ico, .icns y los PNG de cada tamaño');
-  } catch {
-    console.warn(
-      '  ⚠ No he podido generar los iconos de escritorio.\n' +
-        '    Necesitan las dependencias instaladas: pnpm install && pnpm icons',
-    );
-  }
+    console.log('\n  escritorio (tauri icon)…');
+    try {
+        // Comando entero y no argumentos sueltos: en Windows `pnpm` es un .cmd y
+        // hace falta shell. `scope` sale de brand.json, que el renombrador escribe
+        // ya saneado a [a-z0-9], así que no hay dónde inyectar nada.
+        execSync(`pnpm --filter ${scope}/desktop icons`, { cwd: root, stdio: 'pipe' });
+        console.log('  apps/desktop/src-tauri/icons/ — .ico, .icns y los PNG de cada tamaño');
+    } catch {
+        console.warn(
+            '  ⚠ No he podido generar los iconos de escritorio.\n' +
+                '    Necesitan las dependencias instaladas: pnpm install && pnpm icons',
+        );
+    }
 
-  console.log('\n✓ Iconos regenerados desde packages/theme/src/logo/.\n');
+    console.log('\n✓ Iconos regenerados desde packages/theme/src/logo/.\n');
 }

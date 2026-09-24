@@ -4,8 +4,8 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 export const SIDEBAR_STORAGE_KEY = 'navis.sidebar';
 
 interface SidebarState {
-  collapsed: boolean;
-  toggle: () => void;
+    collapsed: boolean;
+    toggle: () => void;
 }
 
 /**
@@ -17,16 +17,16 @@ interface SidebarState {
  * volver a plegarla en cada recarga.
  */
 export const useSidebarStore = create<SidebarState>()(
-  persist(
-    (set) => ({
-      collapsed: false,
-      toggle: () => {
-        set((state) => ({ collapsed: !state.collapsed }));
-      },
-    }),
-    {
-      name: SIDEBAR_STORAGE_KEY,
-      storage: createJSONStorage(() => globalThis.localStorage),
-    },
-  ),
+    persist(
+        (set) => ({
+            collapsed: false,
+            toggle: () => {
+                set((state) => ({ collapsed: !state.collapsed }));
+            },
+        }),
+        {
+            name: SIDEBAR_STORAGE_KEY,
+            storage: createJSONStorage(() => globalThis.localStorage),
+        },
+    ),
 );

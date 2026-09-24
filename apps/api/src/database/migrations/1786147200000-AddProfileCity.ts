@@ -8,16 +8,16 @@ import { TableColumn, type MigrationInterface, type QueryRunner } from 'typeorm'
  * aplicación es el tiempo de donde está.
  */
 export class AddProfileCity1786147200000 implements MigrationInterface {
-  name = 'AddProfileCity1786147200000';
+    name = 'AddProfileCity1786147200000';
 
-  async up(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.addColumn(
-      'profiles',
-      new TableColumn({ name: 'city', type: 'text', isNullable: true }),
-    );
-  }
+    async up(queryRunner: QueryRunner): Promise<void> {
+        await queryRunner.addColumn(
+            'profiles',
+            new TableColumn({ name: 'city', type: 'text', isNullable: true }),
+        );
+    }
 
-  async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropColumn('profiles', 'city');
-  }
+    async down(queryRunner: QueryRunner): Promise<void> {
+        await queryRunner.dropColumn('profiles', 'city');
+    }
 }

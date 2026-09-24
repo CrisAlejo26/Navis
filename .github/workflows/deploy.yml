@@ -10,370 +10,370 @@ name: Deploy
 # Nada de esto se ejecuta si el paso 1 falla.
 
 on:
-  push:
-    branches: [main]
-  workflow_dispatch:
-    inputs:
-      skip_verify:
-        description: "Saltar las verificaciones (solo para revertir una emergencia)"
-        type: boolean
-        default: false
+    push:
+        branches: [main]
+    workflow_dispatch:
+        inputs:
+            skip_verify:
+                description: "Saltar las verificaciones (solo para revertir una emergencia)"
+                type: boolean
+                default: false
 
 # Un despliegue a la vez, y sin cancelar el que ya esté en marcha: cortar a
 # medias dejaría la base de datos migrada y la app sin actualizar.
 concurrency:
-  group: deploy-production
-  cancel-in-progress: false
+    group: deploy-production
+    cancel-in-progress: false
 
 env:
-  REGISTRY: ghcr.io
+    REGISTRY: ghcr.io
 
-  # ESTE REPOSITORIO ES PÚBLICO.
-  #
-  # Aquí NO se escriben la IP del servidor, el usuario de SSH, la ruta de
-  # despliegue ni los puertos internos. Aunque el DNS ya revele la IP, publicar
-  # el usuario y la ruta le ahorra el trabajo a quien venga a probar suerte.
-  # Todo eso vive en los secretos del repositorio (ver docs/DESPLIEGUE.md).
-  #
-  # Lo único que sí va aquí son las URL públicas: acaban incrustadas en el
-  # bundle de la web, así que no hay nada que esconder. Una variable del
-  # repositorio las sobreescribe si cambia el dominio, sin tocar el workflow.
-  WEB_API_URL: https://navis.officetools.es/api/v1
-  WEB_AUTH_URL: https://navis.officetools.es
-  SITE_URL: https://navis.officetools.es
+    # ESTE REPOSITORIO ES PÚBLICO.
+    #
+    # Aquí NO se escriben la IP del servidor, el usuario de SSH, la ruta de
+    # despliegue ni los puertos internos. Aunque el DNS ya revele la IP, publicar
+    # el usuario y la ruta le ahorra el trabajo a quien venga a probar suerte.
+    # Todo eso vive en los secretos del repositorio (ver docs/DESPLIEGUE.md).
+    #
+    # Lo único que sí va aquí son las URL públicas: acaban incrustadas en el
+    # bundle de la web, así que no hay nada que esconder. Una variable del
+    # repositorio las sobreescribe si cambia el dominio, sin tocar el workflow.
+    WEB_API_URL: https://navis.officetools.es/api/v1
+    WEB_AUTH_URL: https://navis.officetools.es
+    SITE_URL: https://navis.officetools.es
 
 jobs:
-  # --- 0. ¿Está configurado el despliegue? ------------------------------------
-  # Se comprueban las cuatro piezas de golpe: si falta cualquiera, el despliegue
-  # no puede salir bien y es mejor saberlo aquí que a mitad de la conexión SSH.
-  #
-  # En un fork esto no es un error —no hay servidor al que desplegar— y el
-  # workflow se salta entero. En el repositorio de verdad **falla en rojo**: un
-  # despliegue verde que no ha desplegado nada es peor que uno rojo, porque
-  # nadie va a mirar el servidor.
-  #
-  # Se dice qué falta, nunca cuánto vale: el resumen de una ejecución de un
-  # repositorio público lo lee cualquiera.
-  #
-  # La comprobación va en un `run` porque el contexto `secrets` no está
-  # disponible en el `if` de un job.
-  configurado:
-    name: ¿Está configurado el despliegue?
-    runs-on: ubuntu-latest
-    outputs:
-      listo: ${{ steps.comprobar.outputs.listo }}
-    steps:
-      - id: comprobar
-        env:
-          HOST_CRISTIAN_SSH_KEY: ${{ secrets.HOST_CRISTIAN_SSH_KEY }}
-          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
-          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
-          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
-          ES_FORK: ${{ github.event.repository.fork }}
-        run: |
-          set -euo pipefail
+    # --- 0. ¿Está configurado el despliegue? ------------------------------------
+    # Se comprueban las cuatro piezas de golpe: si falta cualquiera, el despliegue
+    # no puede salir bien y es mejor saberlo aquí que a mitad de la conexión SSH.
+    #
+    # En un fork esto no es un error —no hay servidor al que desplegar— y el
+    # workflow se salta entero. En el repositorio de verdad **falla en rojo**: un
+    # despliegue verde que no ha desplegado nada es peor que uno rojo, porque
+    # nadie va a mirar el servidor.
+    #
+    # Se dice qué falta, nunca cuánto vale: el resumen de una ejecución de un
+    # repositorio público lo lee cualquiera.
+    #
+    # La comprobación va en un `run` porque el contexto `secrets` no está
+    # disponible en el `if` de un job.
+    configurado:
+        name: ¿Está configurado el despliegue?
+        runs-on: ubuntu-latest
+        outputs:
+            listo: ${{ steps.comprobar.outputs.listo }}
+        steps:
+            - id: comprobar
+              env:
+                  HOST_CRISTIAN_SSH_KEY: ${{ secrets.HOST_CRISTIAN_SSH_KEY }}
+                  DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+                  DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+                  DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+                  ES_FORK: ${{ github.event.repository.fork }}
+              run: |
+                  set -euo pipefail
 
-          faltan=()
-          for nombre in HOST_CRISTIAN_SSH_KEY DEPLOY_HOST DEPLOY_USER DEPLOY_PATH; do
-            [ -n "${!nombre:-}" ] || faltan+=("$nombre")
-          done
+                  faltan=()
+                  for nombre in HOST_CRISTIAN_SSH_KEY DEPLOY_HOST DEPLOY_USER DEPLOY_PATH; do
+                    [ -n "${!nombre:-}" ] || faltan+=("$nombre")
+                  done
 
-          if [ ${#faltan[@]} -eq 0 ]; then
-            echo "listo=true" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
+                  if [ ${#faltan[@]} -eq 0 ]; then
+                    echo "listo=true" >> "$GITHUB_OUTPUT"
+                    exit 0
+                  fi
 
-          echo "listo=false" >> "$GITHUB_OUTPUT"
-          lista="$(printf '`%s` ' "${faltan[@]}")"
+                  echo "listo=false" >> "$GITHUB_OUTPUT"
+                  lista="$(printf '`%s` ' "${faltan[@]}")"
 
-          if [ "${ES_FORK:-false}" = "true" ]; then
-            echo "::notice::Este fork no tiene servidor configurado. No se despliega nada."
-            {
-              echo "### Despliegue omitido"
-              echo ""
-              echo "Es un fork y no hay servidor configurado. Falta: $lista"
-            } >> "$GITHUB_STEP_SUMMARY"
-            exit 0
-          fi
+                  if [ "${ES_FORK:-false}" = "true" ]; then
+                    echo "::notice::Este fork no tiene servidor configurado. No se despliega nada."
+                    {
+                      echo "### Despliegue omitido"
+                      echo ""
+                      echo "Es un fork y no hay servidor configurado. Falta: $lista"
+                    } >> "$GITHUB_STEP_SUMMARY"
+                    exit 0
+                  fi
 
-          echo "::error::No se ha desplegado nada. Falta configurar: $lista"
-          {
-            echo "### El despliegue NO se ha hecho"
-            echo ""
-            echo "Falta configurar: $lista"
-            echo ""
-            echo "Se añaden en **Settings → Secrets and variables → Actions**, y hay"
-            echo "dos sitios donde es fácil equivocarse:"
-            echo ""
-            echo "- En la pestaña **Secrets**, no en la de *Variables*."
-            echo "- Como **repository secret**, no dentro de un *Environment*: el job"
-            echo "  que comprueba no entra en ningún entorno y no los vería."
-            echo ""
-            echo "El nombre tiene que coincidir exactamente, en mayúsculas."
-            echo "Qué es cada uno, en \`docs/DESPLIEGUE.md\`."
-          } >> "$GITHUB_STEP_SUMMARY"
-          exit 1
+                  echo "::error::No se ha desplegado nada. Falta configurar: $lista"
+                  {
+                    echo "### El despliegue NO se ha hecho"
+                    echo ""
+                    echo "Falta configurar: $lista"
+                    echo ""
+                    echo "Se añaden en **Settings → Secrets and variables → Actions**, y hay"
+                    echo "dos sitios donde es fácil equivocarse:"
+                    echo ""
+                    echo "- En la pestaña **Secrets**, no en la de *Variables*."
+                    echo "- Como **repository secret**, no dentro de un *Environment*: el job"
+                    echo "  que comprueba no entra en ningún entorno y no los vería."
+                    echo ""
+                    echo "El nombre tiene que coincidir exactamente, en mayúsculas."
+                    echo "Qué es cada uno, en \`docs/DESPLIEGUE.md\`."
+                  } >> "$GITHUB_STEP_SUMMARY"
+                  exit 1
 
-  # --- 1. Verificación --------------------------------------------------------
-  verify:
-    name: Verificación completa
-    needs: configurado
-    if: ${{ needs.configurado.outputs.listo == 'true' && !inputs.skip_verify }}
-    uses: ./.github/workflows/ci.yml
-    # De escritura porque la verificación sube el formato si encuentra algo sin
-    # formatear, en vez de tirar el despliegue por una coma.
-    permissions:
-      contents: write
+    # --- 1. Verificación --------------------------------------------------------
+    verify:
+        name: Verificación completa
+        needs: configurado
+        if: ${{ needs.configurado.outputs.listo == 'true' && !inputs.skip_verify }}
+        uses: ./.github/workflows/ci.yml
+        # De escritura porque la verificación sube el formato si encuentra algo sin
+        # formatear, en vez de tirar el despliegue por una coma.
+        permissions:
+            contents: write
 
-  # --- 2. Imágenes ------------------------------------------------------------
-  images:
-    name: Construir y publicar imágenes
-    needs: [configurado, verify]
-    # `always()` + comprobación explícita: permite el atajo de emergencia sin
-    # que un fallo de verificación se cuele nunca.
-    if: >-
-      ${{ always() && needs.configurado.outputs.listo == 'true'
-          && (needs.verify.result == 'success' || inputs.skip_verify) }}
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-    outputs:
-      tag: ${{ steps.meta.outputs.tag }}
-      repo: ${{ steps.meta.outputs.repo }}
-    steps:
-      - uses: actions/checkout@v6
+    # --- 2. Imágenes ------------------------------------------------------------
+    images:
+        name: Construir y publicar imágenes
+        needs: [configurado, verify]
+        # `always()` + comprobación explícita: permite el atajo de emergencia sin
+        # que un fallo de verificación se cuele nunca.
+        if: >-
+            ${{ always() && needs.configurado.outputs.listo == 'true'
+                && (needs.verify.result == 'success' || inputs.skip_verify) }}
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+            packages: write
+        outputs:
+            tag: ${{ steps.meta.outputs.tag }}
+            repo: ${{ steps.meta.outputs.repo }}
+        steps:
+            - uses: actions/checkout@v6
 
-      - id: meta
-        name: Etiqueta y nombre de las imágenes
-        run: |
-          echo "tag=${GITHUB_SHA::12}" >> "$GITHUB_OUTPUT"
-          # GHCR sólo acepta nombres de repositorio en minúsculas, y
-          # `github.repository` conserva las mayúsculas del nombre en GitHub
-          # (CrisAlejo26/Navis). Sin bajarlo, `docker buildx` rechaza la
-          # etiqueta con "repository name must be lowercase".
-          echo "repo=${GITHUB_REPOSITORY,,}" >> "$GITHUB_OUTPUT"
+            - id: meta
+              name: Etiqueta y nombre de las imágenes
+              run: |
+                  echo "tag=${GITHUB_SHA::12}" >> "$GITHUB_OUTPUT"
+                  # GHCR sólo acepta nombres de repositorio en minúsculas, y
+                  # `github.repository` conserva las mayúsculas del nombre en GitHub
+                  # (CrisAlejo26/Navis). Sin bajarlo, `docker buildx` rechaza la
+                  # etiqueta con "repository name must be lowercase".
+                  echo "repo=${GITHUB_REPOSITORY,,}" >> "$GITHUB_OUTPUT"
 
-      - uses: docker/setup-buildx-action@v3
+            - uses: docker/setup-buildx-action@v3
 
-      - uses: docker/login-action@v3
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+            - uses: docker/login-action@v3
+              with:
+                  registry: ${{ env.REGISTRY }}
+                  username: ${{ github.actor }}
+                  password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: API
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: docker/api.Dockerfile
-          target: runtime
-          push: true
-          tags: |
-            ${{ env.REGISTRY }}/${{ steps.meta.outputs.repo }}/api:${{ steps.meta.outputs.tag }}
-            ${{ env.REGISTRY }}/${{ steps.meta.outputs.repo }}/api:latest
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+            - name: API
+              uses: docker/build-push-action@v6
+              with:
+                  context: .
+                  file: docker/api.Dockerfile
+                  target: runtime
+                  push: true
+                  tags: |
+                      ${{ env.REGISTRY }}/${{ steps.meta.outputs.repo }}/api:${{ steps.meta.outputs.tag }}
+                      ${{ env.REGISTRY }}/${{ steps.meta.outputs.repo }}/api:latest
+                  cache-from: type=gha
+                  cache-to: type=gha,mode=max
 
-      - name: API (migraciones)
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: docker/api.Dockerfile
-          target: migrate
-          push: true
-          tags: |
-            ${{ env.REGISTRY }}/${{ steps.meta.outputs.repo }}/api-migrate:${{ steps.meta.outputs.tag }}
-            ${{ env.REGISTRY }}/${{ steps.meta.outputs.repo }}/api-migrate:latest
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+            - name: API (migraciones)
+              uses: docker/build-push-action@v6
+              with:
+                  context: .
+                  file: docker/api.Dockerfile
+                  target: migrate
+                  push: true
+                  tags: |
+                      ${{ env.REGISTRY }}/${{ steps.meta.outputs.repo }}/api-migrate:${{ steps.meta.outputs.tag }}
+                      ${{ env.REGISTRY }}/${{ steps.meta.outputs.repo }}/api-migrate:latest
+                  cache-from: type=gha
+                  cache-to: type=gha,mode=max
 
-      - name: Web
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: docker/web.Dockerfile
-          push: true
-          build-args: |
-            VITE_API_URL=${{ vars.VITE_API_URL || env.WEB_API_URL }}
-            VITE_AUTH_URL=${{ vars.VITE_AUTH_URL || env.WEB_AUTH_URL }}
-            VITE_SITE_URL=${{ vars.VITE_SITE_URL || env.SITE_URL }}
-          tags: |
-            ${{ env.REGISTRY }}/${{ steps.meta.outputs.repo }}/web:${{ steps.meta.outputs.tag }}
-            ${{ env.REGISTRY }}/${{ steps.meta.outputs.repo }}/web:latest
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+            - name: Web
+              uses: docker/build-push-action@v6
+              with:
+                  context: .
+                  file: docker/web.Dockerfile
+                  push: true
+                  build-args: |
+                      VITE_API_URL=${{ vars.VITE_API_URL || env.WEB_API_URL }}
+                      VITE_AUTH_URL=${{ vars.VITE_AUTH_URL || env.WEB_AUTH_URL }}
+                      VITE_SITE_URL=${{ vars.VITE_SITE_URL || env.SITE_URL }}
+                  tags: |
+                      ${{ env.REGISTRY }}/${{ steps.meta.outputs.repo }}/web:${{ steps.meta.outputs.tag }}
+                      ${{ env.REGISTRY }}/${{ steps.meta.outputs.repo }}/web:latest
+                  cache-from: type=gha
+                  cache-to: type=gha,mode=max
 
-  # --- 3, 4 y 5. Migrar, desplegar y comprobar --------------------------------
-  deploy:
-    name: Migrar y desplegar
-    needs: images
-    runs-on: ubuntu-latest
-    # `packages: read` es lo que le permite al servidor tirar de las imágenes
-    # de ghcr con el GITHUB_TOKEN de esta ejecución.
-    permissions:
-      contents: read
-      packages: read
-    # El entorno `production` de GitHub es donde se configura, si se quiere, la
-    # aprobación manual antes de tocar el servidor.
-    environment:
-      name: production
-      url: ${{ vars.PRODUCTION_URL || env.SITE_URL }}
-    steps:
-      - uses: actions/checkout@v6
+    # --- 3, 4 y 5. Migrar, desplegar y comprobar --------------------------------
+    deploy:
+        name: Migrar y desplegar
+        needs: images
+        runs-on: ubuntu-latest
+        # `packages: read` es lo que le permite al servidor tirar de las imágenes
+        # de ghcr con el GITHUB_TOKEN de esta ejecución.
+        permissions:
+            contents: read
+            packages: read
+        # El entorno `production` de GitHub es donde se configura, si se quiere, la
+        # aprobación manual antes de tocar el servidor.
+        environment:
+            name: production
+            url: ${{ vars.PRODUCTION_URL || env.SITE_URL }}
+        steps:
+            - uses: actions/checkout@v6
 
-      # Un despliegue entero se perdió porque el servidor no contestó a UNA
-      # conexión: `dial tcp :22: i/o timeout` en la copia, y con él se fueron
-      # los diez minutos de verificación e imágenes que ya estaban hechos. Aquí
-      # se espera a que el puerto responda antes de intentar nada.
-      #
-      # La espera es de **quince minutos**, no de cuatro: lo que se ha visto en
-      # este servidor no es un firewall —ufw acepta el 22 desde cualquier sitio,
-      # fail2ban no ha baneado a nadie y el propio `sshd` registra despliegues
-      # que sí entraron el mismo día— sino cortes de red aguas arriba que duran
-      # varios minutos y se van solos. Rendirse a los cuatro tiraba un
-      # despliegue bueno por un corte que se iba a arreglar solo.
-      #
-      # El host no se imprime: este repositorio es público (ver la nota de `env`).
-      - name: Esperar a que el servidor acepte SSH
-        env:
-          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
-          DEPLOY_PORT: ${{ secrets.DEPLOY_PORT || 22 }}
-        run: |
-          set -uo pipefail
+            # Un despliegue entero se perdió porque el servidor no contestó a UNA
+            # conexión: `dial tcp :22: i/o timeout` en la copia, y con él se fueron
+            # los diez minutos de verificación e imágenes que ya estaban hechos. Aquí
+            # se espera a que el puerto responda antes de intentar nada.
+            #
+            # La espera es de **quince minutos**, no de cuatro: lo que se ha visto en
+            # este servidor no es un firewall —ufw acepta el 22 desde cualquier sitio,
+            # fail2ban no ha baneado a nadie y el propio `sshd` registra despliegues
+            # que sí entraron el mismo día— sino cortes de red aguas arriba que duran
+            # varios minutos y se van solos. Rendirse a los cuatro tiraba un
+            # despliegue bueno por un corte que se iba a arreglar solo.
+            #
+            # El host no se imprime: este repositorio es público (ver la nota de `env`).
+            - name: Esperar a que el servidor acepte SSH
+              env:
+                  DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+                  DEPLOY_PORT: ${{ secrets.DEPLOY_PORT || 22 }}
+              run: |
+                  set -uo pipefail
 
-          # Los primeros intentos, seguidos —un corte de segundos es lo más
-          # frecuente—; a partir del quinto, cada medio minuto.
-          for intento in $(seq 1 30); do
-            if timeout 10 bash -c ": > /dev/tcp/$DEPLOY_HOST/$DEPLOY_PORT" 2>/dev/null; then
-              echo "El servidor acepta conexiones (intento $intento)."
-              exit 0
-            fi
+                  # Los primeros intentos, seguidos —un corte de segundos es lo más
+                  # frecuente—; a partir del quinto, cada medio minuto.
+                  for intento in $(seq 1 30); do
+                    if timeout 10 bash -c ": > /dev/tcp/$DEPLOY_HOST/$DEPLOY_PORT" 2>/dev/null; then
+                      echo "El servidor acepta conexiones (intento $intento)."
+                      exit 0
+                    fi
 
-            espera=$([ "$intento" -le 5 ] && echo 10 || echo 30)
-            echo "Intento $intento: sin respuesta. Reintento en $espera s."
-            sleep "$espera"
-          done
+                    espera=$([ "$intento" -le 5 ] && echo 10 || echo 30)
+                    echo "Intento $intento: sin respuesta. Reintento en $espera s."
+                    sleep "$espera"
+                  done
 
-          echo "::error::Quince minutos sin respuesta en el puerto SSH. No es la clave ni el usuario —esos fallarían autenticando, no con un timeout—: los paquetes no llegan. Relanza este job antes de nada, que las imágenes ya están publicadas y no hay que reconstruir; si vuelve a fallar, mira el firewall del proveedor y fail2ban (docs/DESPLIEGUE.md)."
-          exit 1
+                  echo "::error::Quince minutos sin respuesta en el puerto SSH. No es la clave ni el usuario —esos fallarían autenticando, no con un timeout—: los paquetes no llegan. Relanza este job antes de nada, que las imágenes ya están publicadas y no hay que reconstruir; si vuelve a fallar, mira el firewall del proveedor y fail2ban (docs/DESPLIEGUE.md)."
+                  exit 1
 
-      # Las dos acciones que reciben la clave privada van clavadas al SHA, no a
-      # una etiqueta: `@v1` se puede reapuntar, y quien lo hiciera se llevaría
-      # la clave del servidor. El SHA no se puede reescribir.
-      - name: Copiar el compose al servidor
-        uses: appleboy/scp-action@ff85246acaad7bdce478db94a363cd2bf7c90345 # v1
-        with:
-          host: ${{ secrets.DEPLOY_HOST }}
-          username: ${{ secrets.DEPLOY_USER }}
-          key: ${{ secrets.HOST_CRISTIAN_SSH_KEY }}
-          port: ${{ secrets.DEPLOY_PORT || 22 }}
-          source: "docker-compose.deploy.yml,scripts/limpiar-docker.sh,docker/marcas-anteriores.txt,brand.json"
-          target: ${{ secrets.DEPLOY_PATH }}
+            # Las dos acciones que reciben la clave privada van clavadas al SHA, no a
+            # una etiqueta: `@v1` se puede reapuntar, y quien lo hiciera se llevaría
+            # la clave del servidor. El SHA no se puede reescribir.
+            - name: Copiar el compose al servidor
+              uses: appleboy/scp-action@ff85246acaad7bdce478db94a363cd2bf7c90345 # v1
+              with:
+                  host: ${{ secrets.DEPLOY_HOST }}
+                  username: ${{ secrets.DEPLOY_USER }}
+                  key: ${{ secrets.HOST_CRISTIAN_SSH_KEY }}
+                  port: ${{ secrets.DEPLOY_PORT || 22 }}
+                  source: "docker-compose.deploy.yml,scripts/limpiar-docker.sh,docker/marcas-anteriores.txt,brand.json"
+                  target: ${{ secrets.DEPLOY_PATH }}
 
-      - name: Migrar, desplegar y verificar
-        uses: appleboy/ssh-action@0ff4204d59e8e51228ff73bce53f80d53301dee2 # v1
-        env:
-          IMAGE_TAG: ${{ needs.images.outputs.tag }}
-          # El mismo nombre en minúsculas con el que se publicaron: el servidor
-          # tiene que pedir exactamente la imagen que existe en el registro.
-          IMAGE_REPO: ${{ needs.images.outputs.repo }}
-          # Los valores viajan como variables de entorno y NO interpolados
-          # dentro del script: así no acaban escritos en el guion que se manda
-          # al servidor y un valor con caracteres raros no se ejecuta como
-          # orden. Es lo que recomienda GitHub para todo lo que salga de
-          # `secrets`.
-          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
-          REGISTRY_TOKEN: ${{ secrets.REGISTRY_TOKEN || secrets.GITHUB_TOKEN }}
-          REGISTRY_USER: ${{ github.actor }}
-        with:
-          host: ${{ secrets.DEPLOY_HOST }}
-          username: ${{ secrets.DEPLOY_USER }}
-          key: ${{ secrets.HOST_CRISTIAN_SSH_KEY }}
-          port: ${{ secrets.DEPLOY_PORT || 22 }}
-          envs: IMAGE_TAG,IMAGE_REPO,DEPLOY_PATH,REGISTRY_TOKEN,REGISTRY_USER
-          command_timeout: 20m
-          script: |
-            set -euo pipefail
-            cd "$DEPLOY_PATH"
+            - name: Migrar, desplegar y verificar
+              uses: appleboy/ssh-action@0ff4204d59e8e51228ff73bce53f80d53301dee2 # v1
+              env:
+                  IMAGE_TAG: ${{ needs.images.outputs.tag }}
+                  # El mismo nombre en minúsculas con el que se publicaron: el servidor
+                  # tiene que pedir exactamente la imagen que existe en el registro.
+                  IMAGE_REPO: ${{ needs.images.outputs.repo }}
+                  # Los valores viajan como variables de entorno y NO interpolados
+                  # dentro del script: así no acaban escritos en el guion que se manda
+                  # al servidor y un valor con caracteres raros no se ejecuta como
+                  # orden. Es lo que recomienda GitHub para todo lo que salga de
+                  # `secrets`.
+                  DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+                  REGISTRY_TOKEN: ${{ secrets.REGISTRY_TOKEN || secrets.GITHUB_TOKEN }}
+                  REGISTRY_USER: ${{ github.actor }}
+              with:
+                  host: ${{ secrets.DEPLOY_HOST }}
+                  username: ${{ secrets.DEPLOY_USER }}
+                  key: ${{ secrets.HOST_CRISTIAN_SSH_KEY }}
+                  port: ${{ secrets.DEPLOY_PORT || 22 }}
+                  envs: IMAGE_TAG,IMAGE_REPO,DEPLOY_PATH,REGISTRY_TOKEN,REGISTRY_USER
+                  command_timeout: 20m
+                  script: |
+                      set -euo pipefail
+                      cd "$DEPLOY_PATH"
 
-            export REGISTRY="${{ env.REGISTRY }}"
-            export IMAGE_TAG="$IMAGE_TAG"
-            export IMAGE_REPO="$IMAGE_REPO"
+                      export REGISTRY="${{ env.REGISTRY }}"
+                      export IMAGE_TAG="$IMAGE_TAG"
+                      export IMAGE_REPO="$IMAGE_REPO"
 
-            COMPOSE="docker compose -f docker-compose.deploy.yml"
+                      COMPOSE="docker compose -f docker-compose.deploy.yml"
 
-            # La versión en marcha se apunta en un fichero al terminar cada
-            # despliegue: es lo que permite volver atrás si el nuevo no arranca.
-            PREVIOUS_TAG="$(cat .deployed-tag 2>/dev/null || true)"
-            echo "Versión anterior: ${PREVIOUS_TAG:-desconocida} → nueva: $IMAGE_TAG"
+                      # La versión en marcha se apunta en un fichero al terminar cada
+                      # despliegue: es lo que permite volver atrás si el nuevo no arranca.
+                      PREVIOUS_TAG="$(cat .deployed-tag 2>/dev/null || true)"
+                      echo "Versión anterior: ${PREVIOUS_TAG:-desconocida} → nueva: $IMAGE_TAG"
 
-            # Por stdin y desde una variable: así el token no aparece en la
-            # lista de procesos del servidor ni escrito en el guion.
-            printf '%s' "$REGISTRY_TOKEN" \
-              | docker login "$REGISTRY" -u "$REGISTRY_USER" --password-stdin
+                      # Por stdin y desde una variable: así el token no aparece en la
+                      # lista de procesos del servidor ni escrito en el guion.
+                      printf '%s' "$REGISTRY_TOKEN" \
+                        | docker login "$REGISTRY" -u "$REGISTRY_USER" --password-stdin
 
-            echo "== 1/4 Descargando imágenes =="
-            $COMPOSE --profile migrate pull
+                      echo "== 1/4 Descargando imágenes =="
+                      $COMPOSE --profile migrate pull
 
-            echo "== 2/4 Base de datos arriba =="
-            $COMPOSE up -d postgres
+                      echo "== 2/4 Base de datos arriba =="
+                      $COMPOSE up -d postgres
 
-            echo "== 3/4 Migraciones =="
-            # Si esto falla, la API vieja sigue sirviendo: no se ha tocado nada.
-            $COMPOSE run --rm migrate
+                      echo "== 3/4 Migraciones =="
+                      # Si esto falla, la API vieja sigue sirviendo: no se ha tocado nada.
+                      $COMPOSE run --rm migrate
 
-            echo "== 4/4 Levantando la versión nueva =="
-            # Sin `--remove-orphans` a propósito: el contenedor de IA se levanta
-            # aparte (está bajo un perfil de docker-compose.prod.yml y no en este
-            # fichero), así que compose lo vería como huérfano y lo borraría.
-            $COMPOSE up -d
+                      echo "== 4/4 Levantando la versión nueva =="
+                      # Sin `--remove-orphans` a propósito: el contenedor de IA se levanta
+                      # aparte (está bajo un perfil de docker-compose.prod.yml y no en este
+                      # fichero), así que compose lo vería como huérfano y lo borraría.
+                      $COMPOSE up -d
 
-            echo "== Comprobando que responde =="
-            # El puerto lo fija el .env del servidor (aquí, 3010). Este shell no
-            # lo tiene —compose lee el fichero, la sesión SSH no—, así que se
-            # saca de ahí: con el 3000 por defecto se estaría mirando un puerto
-            # donde no escucha nadie y el despliegue se revertiría estando bien.
-            API_PORT="$(sed -nE 's/^[[:space:]]*API_PORT[[:space:]]*=[[:space:]]*"?([0-9]+)"?.*/\1/p' .env 2>/dev/null | tail -1)"
-            API_PORT="${API_PORT:-3000}"
-            echo "Escuchando en 127.0.0.1:$API_PORT"
+                      echo "== Comprobando que responde =="
+                      # El puerto lo fija el .env del servidor (aquí, 3010). Este shell no
+                      # lo tiene —compose lee el fichero, la sesión SSH no—, así que se
+                      # saca de ahí: con el 3000 por defecto se estaría mirando un puerto
+                      # donde no escucha nadie y el despliegue se revertiría estando bien.
+                      API_PORT="$(sed -nE 's/^[[:space:]]*API_PORT[[:space:]]*=[[:space:]]*"?([0-9]+)"?.*/\1/p' .env 2>/dev/null | tail -1)"
+                      API_PORT="${API_PORT:-3000}"
+                      echo "Escuchando en 127.0.0.1:$API_PORT"
 
-            ok=0
-            for i in $(seq 1 30); do
-              if curl -fsS "http://127.0.0.1:$API_PORT/health" >/dev/null; then
-                ok=1; break
-              fi
-              sleep 5
-            done
+                      ok=0
+                      for i in $(seq 1 30); do
+                        if curl -fsS "http://127.0.0.1:$API_PORT/health" >/dev/null; then
+                          ok=1; break
+                        fi
+                        sleep 5
+                      done
 
-            if [ "$ok" -ne 1 ]; then
-              echo "La API nueva no responde en /health."
-              if [ -n "${PREVIOUS_TAG:-}" ]; then
-                echo "Volviendo a $PREVIOUS_TAG (las migraciones NO se revierten:"
-                echo "por eso deben ser siempre compatibles hacia atrás)."
-                IMAGE_TAG="$PREVIOUS_TAG" $COMPOSE up -d
-              fi
-              exit 1
-            fi
+                      if [ "$ok" -ne 1 ]; then
+                        echo "La API nueva no responde en /health."
+                        if [ -n "${PREVIOUS_TAG:-}" ]; then
+                          echo "Volviendo a $PREVIOUS_TAG (las migraciones NO se revierten:"
+                          echo "por eso deben ser siempre compatibles hacia atrás)."
+                          IMAGE_TAG="$PREVIOUS_TAG" $COMPOSE up -d
+                        fi
+                        exit 1
+                      fi
 
-            echo "$IMAGE_TAG" > .deployed-tag
-            echo "Despliegue correcto en $IMAGE_TAG"
+                      echo "$IMAGE_TAG" > .deployed-tag
+                      echo "Despliegue correcto en $IMAGE_TAG"
 
-            # Limpieza. Va al final y a propósito: si algo hubiera fallado, las
-            # imágenes de la versión anterior siguen ahí para volver atrás.
-            # El script solo toca lo de este proyecto; el servidor aloja más
-            # cosas y `docker system prune -a` se las llevaría por delante.
-            echo "== Limpiando imágenes y caché =="
-            chmod +x scripts/limpiar-docker.sh
-            REPO_IMAGENES="$IMAGE_REPO" TAG_ACTUAL="$IMAGE_TAG" RETENCION_CACHE=168h \
-              bash scripts/limpiar-docker.sh || echo "La limpieza falló, pero el despliegue está bien."
+                      # Limpieza. Va al final y a propósito: si algo hubiera fallado, las
+                      # imágenes de la versión anterior siguen ahí para volver atrás.
+                      # El script solo toca lo de este proyecto; el servidor aloja más
+                      # cosas y `docker system prune -a` se las llevaría por delante.
+                      echo "== Limpiando imágenes y caché =="
+                      chmod +x scripts/limpiar-docker.sh
+                      REPO_IMAGENES="$IMAGE_REPO" TAG_ACTUAL="$IMAGE_TAG" RETENCION_CACHE=168h \
+                        bash scripts/limpiar-docker.sh || echo "La limpieza falló, pero el despliegue está bien."
 
-      - name: Resumen
-        if: ${{ always() }}
-        run: |
-          {
-            echo "### Despliegue"
-            echo ""
-            echo "- Versión: \`${{ needs.images.outputs.tag }}\`"
-            echo "- Resultado: ${{ job.status }}"
-          } >> "$GITHUB_STEP_SUMMARY"
+            - name: Resumen
+              if: ${{ always() }}
+              run: |
+                  {
+                    echo "### Despliegue"
+                    echo ""
+                    echo "- Versión: \`${{ needs.images.outputs.tag }}\`"
+                    echo "- Resultado: ${{ job.status }}"
+                  } >> "$GITHUB_STEP_SUMMARY"

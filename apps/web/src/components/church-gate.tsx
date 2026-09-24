@@ -13,16 +13,16 @@ import { usePermissions } from '@/lib/permissions';
  * rellenar sería peor que no decirle nada (RFC 0008 §7.2)—.
  */
 export function ChurchGate({ children }: { children: ReactNode }) {
-  const { items, isLoading } = useChurches();
-  const { can, isLoading: loadingPermissions } = usePermissions();
+    const { items, isLoading } = useChurches();
+    const { can, isLoading: loadingPermissions } = usePermissions();
 
-  if (isLoading || loadingPermissions) {
-    return <PageSkeleton className="max-w-5xl p-6 md:p-8 mx-auto" />;
-  }
+    if (isLoading || loadingPermissions) {
+        return <PageSkeleton className="max-w-5xl p-6 md:p-8 mx-auto" />;
+    }
 
-  if (items.length === 0) {
-    return <Navigate to={can('churches.manage') ? '/welcome' : '/no-access'} replace />;
-  }
+    if (items.length === 0) {
+        return <Navigate to={can('churches.manage') ? '/welcome' : '/no-access'} replace />;
+    }
 
-  return children;
+    return children;
 }

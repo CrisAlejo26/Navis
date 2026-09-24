@@ -28,11 +28,11 @@ export const DEFAULT_ALERT_AFTER_DAYS = 30;
 export const MAX_ALERT_AFTER_DAYS = 1825;
 
 export function isBelieverStatus(value: string): value is BelieverStatus {
-  return (BELIEVER_STATUSES as readonly string[]).includes(value);
+    return (BELIEVER_STATUSES as readonly string[]).includes(value);
 }
 
 export function isSchedulable(status: BelieverStatus): boolean {
-  return (SCHEDULABLE_STATUSES as readonly string[]).includes(status);
+    return (SCHEDULABLE_STATUSES as readonly string[]).includes(status);
 }
 
 export const believerStatusSchema = z.enum(BELIEVER_STATUSES);
@@ -66,88 +66,88 @@ export const readCountSchema = z.number().int().min(0).max(MAX_READ_COUNT).nulla
  * la tabla del núcleo mínimo de la RFC 0002 §6; no crea otra (D1).
  */
 export const believerSchema = z.object({
-  id: z.uuid(),
-  churchId: z.uuid(),
-  /** Su sede habitual. No acota nada: cualquiera puede predicar en cualquiera. */
-  congregationId: z.uuid().nullable(),
-  firstName: z.string(),
-  lastName: z.string(),
-  phone: z.string().nullable(),
-  email: z.string().nullable(),
-  status: believerStatusSchema,
-  /** Días que pueden pasar sin nota antes de que salte el aviso. `null` lo apaga. */
-  alertAfterDays: z.number().int().nullable(),
-  /** Derivado de la última nota; lo escribe solo `NotesService` (D4). */
-  lastNoteAt: isoDateSchema.nullable(),
-  /** Instante del alta: sin ninguna nota, el margen se cuenta desde aquí (§5.4). */
-  createdAt: z.string(),
-  ministries: z.array(z.string()),
+    id: z.uuid(),
+    churchId: z.uuid(),
+    /** Su sede habitual. No acota nada: cualquiera puede predicar en cualquiera. */
+    congregationId: z.uuid().nullable(),
+    firstName: z.string(),
+    lastName: z.string(),
+    phone: z.string().nullable(),
+    email: z.string().nullable(),
+    status: believerStatusSchema,
+    /** Días que pueden pasar sin nota antes de que salte el aviso. `null` lo apaga. */
+    alertAfterDays: z.number().int().nullable(),
+    /** Derivado de la última nota; lo escribe solo `NotesService` (D4). */
+    lastNoteAt: isoDateSchema.nullable(),
+    /** Instante del alta: sin ninguna nota, el margen se cuenta desde aquí (§5.4). */
+    createdAt: z.string(),
+    ministries: z.array(z.string()),
 
-  /*
-   * La trayectoria en la iglesia (RFC 0012). Todo opcional: son datos que se
-   * van completando con los años, y una ficha a medias es lo normal, no un
-   * error.
-   */
+    /*
+     * La trayectoria en la iglesia (RFC 0012). Todo opcional: son datos que se
+     * van completando con los años, y una ficha a medias es lo normal, no un
+     * error.
+     */
 
-  /** Mes y año en que llegó. Se guarda el día 1: el mes es lo que se sabe. */
-  arrivedAt: isoDateSchema.nullable(),
-  /** La sede donde llegó, escrita como la escribió: «Iglesia la 40 Tuluá». */
-  arrivalSite: z.string().nullable(),
-  /** Cuántas veces ha leído la Biblia entera. */
-  bibleReadings: z.number().int().nullable(),
-  /** Cuántas veces ha leído el libro de vivencias. */
-  vivenciasReadings: z.number().int().nullable(),
-  /** En cuántos institutos bíblicos ha participado. */
-  bibleInstituteTimes: z.number().int().nullable(),
+    /** Mes y año en que llegó. Se guarda el día 1: el mes es lo que se sabe. */
+    arrivedAt: isoDateSchema.nullable(),
+    /** La sede donde llegó, escrita como la escribió: «Iglesia la 40 Tuluá». */
+    arrivalSite: z.string().nullable(),
+    /** Cuántas veces ha leído la Biblia entera. */
+    bibleReadings: z.number().int().nullable(),
+    /** Cuántas veces ha leído el libro de vivencias. */
+    vivenciasReadings: z.number().int().nullable(),
+    /** En cuántos institutos bíblicos ha participado. */
+    bibleInstituteTimes: z.number().int().nullable(),
 
-  /** Cuándo empezó cada labor, por `slug`. Lo que no está, no tiene fecha. */
-  ministryDates: dateByKeySchema,
-  /** Cuándo recibió cada don, por identificador del catálogo. */
-  giftDates: dateByKeySchema,
-  /**
-   * Si tiene fotografía. **Un booleano y no la imagen ni su ruta**: el fichero
-   * se pide aparte a `believerPhotoPath(id)`, que va con la cookie de sesión, y
-   * así una lista de veinte personas no arrastra veinte imágenes en el JSON.
-   */
-  hasPhoto: z.boolean(),
+    /** Cuándo empezó cada labor, por `slug`. Lo que no está, no tiene fecha. */
+    ministryDates: dateByKeySchema,
+    /** Cuándo recibió cada don, por identificador del catálogo. */
+    giftDates: dateByKeySchema,
+    /**
+     * Si tiene fotografía. **Un booleano y no la imagen ni su ruta**: el fichero
+     * se pide aparte a `believerPhotoPath(id)`, que va con la cookie de sesión, y
+     * así una lista de veinte personas no arrastra veinte imágenes en el JSON.
+     */
+    hasPhoto: z.boolean(),
 });
 
 export type Believer = z.infer<typeof believerSchema>;
 
 export const createBelieverSchema = z.object({
-  firstName: z.string().trim().min(2, 'El nombre es obligatorio').max(80),
-  lastName: z.string().trim().max(80).optional(),
-  phone: z.string().trim().max(40).optional(),
-  /** Se reutiliza `emailSchema` (normaliza a minúsculas y valida el formato),
-   *  pero aquí es opcional y nulable: no todo el mundo lo ha anotado. */
-  email: emailSchema.nullable().optional(),
-  congregationId: z.uuid().nullable().optional(),
-  status: believerStatusSchema.optional(),
-  alertAfterDays: alertAfterDaysSchema.optional(),
-  ministries: z.array(ministrySchema).optional(),
-  /** Los dones que ya se le conocen, por identificador del catálogo (D5). */
-  giftIds: z.array(z.uuid()).optional(),
-  /** Las etiquetas que tiene, por identificador del catálogo. */
-  tagIds: z.array(z.uuid()).optional(),
-  /**
-   * La etiqueta que sale en la tabla del listado. Solo una, y tiene que estar
-   * entre las que tiene: quien la quita, desmarca también el destacado.
-   */
-  featuredTagId: z.uuid().nullable().optional(),
+    firstName: z.string().trim().min(2, 'El nombre es obligatorio').max(80),
+    lastName: z.string().trim().max(80).optional(),
+    phone: z.string().trim().max(40).optional(),
+    /** Se reutiliza `emailSchema` (normaliza a minúsculas y valida el formato),
+     *  pero aquí es opcional y nulable: no todo el mundo lo ha anotado. */
+    email: emailSchema.nullable().optional(),
+    congregationId: z.uuid().nullable().optional(),
+    status: believerStatusSchema.optional(),
+    alertAfterDays: alertAfterDaysSchema.optional(),
+    ministries: z.array(ministrySchema).optional(),
+    /** Los dones que ya se le conocen, por identificador del catálogo (D5). */
+    giftIds: z.array(z.uuid()).optional(),
+    /** Las etiquetas que tiene, por identificador del catálogo. */
+    tagIds: z.array(z.uuid()).optional(),
+    /**
+     * La etiqueta que sale en la tabla del listado. Solo una, y tiene que estar
+     * entre las que tiene: quien la quita, desmarca también el destacado.
+     */
+    featuredTagId: z.uuid().nullable().optional(),
 
-  arrivedAt: isoDateSchema.nullable().optional(),
-  arrivalSite: z.string().trim().max(120).nullable().optional(),
-  bibleReadings: readCountSchema.optional(),
-  vivenciasReadings: readCountSchema.optional(),
-  bibleInstituteTimes: readCountSchema.optional(),
+    arrivedAt: isoDateSchema.nullable().optional(),
+    arrivalSite: z.string().trim().max(120).nullable().optional(),
+    bibleReadings: readCountSchema.optional(),
+    vivenciasReadings: readCountSchema.optional(),
+    bibleInstituteTimes: readCountSchema.optional(),
 
-  /**
-   * Las fechas viajan **con** su lista, en la misma petición: una clave que no
-   * esté en `ministries` o en `giftIds` se ignora, así que no puede quedar la
-   * fecha de una labor que ya no tiene.
-   */
-  ministryDates: dateByKeySchema.optional(),
-  giftDates: dateByKeySchema.optional(),
+    /**
+     * Las fechas viajan **con** su lista, en la misma petición: una clave que no
+     * esté en `ministries` o en `giftIds` se ignora, así que no puede quedar la
+     * fecha de una labor que ya no tiene.
+     */
+    ministryDates: dateByKeySchema.optional(),
+    giftDates: dateByKeySchema.optional(),
 });
 
 export type CreateBelieverInput = z.infer<typeof createBelieverSchema>;
@@ -158,7 +158,7 @@ export type UpdateBelieverInput = z.infer<typeof updateBelieverSchema>;
 
 /** `Juan Carlos` + `Ruiz` → `Juan Carlos Ruiz`, sin espacios de más. */
 export function believerName(person: { firstName: string; lastName?: string | null }): string {
-  return [person.firstName, person.lastName].filter(Boolean).join(' ').trim();
+    return [person.firstName, person.lastName].filter(Boolean).join(' ').trim();
 }
 
 /**
@@ -171,10 +171,10 @@ export function believerName(person: { firstName: string; lastName?: string | nu
  * guarda y lo que se busca: si divergieran, la búsqueda dejaría de encontrar.
  */
 export function toSearchName(value: string): string {
-  return value
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '') // los diacríticos que NFD ha separado
-    .toLowerCase()
-    .replace(/\s+/g, ' ')
-    .trim();
+    return value
+        .normalize('NFD')
+        .replace(/[̀-ͯ]/g, '') // los diacríticos que NFD ha separado
+        .toLowerCase()
+        .replace(/\s+/g, ' ')
+        .trim();
 }

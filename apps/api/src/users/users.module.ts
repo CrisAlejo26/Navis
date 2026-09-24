@@ -7,10 +7,10 @@ import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 
 @Module({
-  // El alcance de quién administra a quién sale de las iglesias compartidas.
-  imports: [RolesModule, ChurchesModule],
-  controllers: [UsersController],
-  providers: [UsersService, UserAdminService],
-  exports: [UsersService, UserAdminService],
+    // El alcance de quién administra a quién sale de las iglesias compartidas.
+    imports: [RolesModule, ChurchesModule],
+    controllers: [UsersController],
+    providers: [UsersService, UserAdminService],
+    exports: [UsersService, UserAdminService],
 })
 export class UsersModule {}

@@ -1,12 +1,12 @@
 import { useRoles } from '@navis/api-client';
 import {
-  ACCENT_PALETTE,
-  DEFAULT_ROLE,
-  isSystemRole,
-  SUPERADMIN_ROLE,
-  type Role,
-  type RoleRow,
-  type RoleSlug,
+    ACCENT_PALETTE,
+    DEFAULT_ROLE,
+    isSystemRole,
+    SUPERADMIN_ROLE,
+    type Role,
+    type RoleRow,
+    type RoleSlug,
 } from '@navis/shared';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -23,25 +23,25 @@ import { useSession } from './auth-client';
  * cada instalación no están aquí: guardan su nombre en la base de datos.
  */
 export const ROLE_LABEL_KEY = {
-  creyente: 'roles.creyente',
-  recepcion: 'roles.recepcion',
-  biblias: 'roles.biblias',
-  sonido: 'roles.sonido',
-  pulpito: 'roles.pulpito',
-  'predicador-apoyo': 'roles.predicadorApoyo',
-  pastor: 'roles.pastor',
-  superadmin: 'roles.superadmin',
+    creyente: 'roles.creyente',
+    recepcion: 'roles.recepcion',
+    biblias: 'roles.biblias',
+    sonido: 'roles.sonido',
+    pulpito: 'roles.pulpito',
+    'predicador-apoyo': 'roles.predicadorApoyo',
+    pastor: 'roles.pastor',
+    superadmin: 'roles.superadmin',
 } as const satisfies Record<Role, string>;
 
 export const ROLE_HINT_KEY = {
-  creyente: 'roles.creyenteHint',
-  recepcion: 'roles.recepcionHint',
-  biblias: 'roles.bibliasHint',
-  sonido: 'roles.sonidoHint',
-  pulpito: 'roles.pulpitoHint',
-  'predicador-apoyo': 'roles.predicadorApoyoHint',
-  pastor: 'roles.pastorHint',
-  superadmin: 'roles.superadminHint',
+    creyente: 'roles.creyenteHint',
+    recepcion: 'roles.recepcionHint',
+    biblias: 'roles.bibliasHint',
+    sonido: 'roles.sonidoHint',
+    pulpito: 'roles.pulpitoHint',
+    'predicador-apoyo': 'roles.predicadorApoyoHint',
+    pastor: 'roles.pastorHint',
+    superadmin: 'roles.superadminHint',
 } as const satisfies Record<Role, string>;
 
 /**
@@ -49,10 +49,10 @@ export const ROLE_HINT_KEY = {
  * si es propio de la instalación (esos no tienen traducción posible).
  */
 export function useRoleLabel(): (role: { slug: RoleSlug; name?: string | null }) => string {
-  const { t } = useTranslation();
+    const { t } = useTranslation();
 
-  return (role) =>
-    isSystemRole(role.slug) ? t(ROLE_LABEL_KEY[role.slug]) : (role.name ?? role.slug);
+    return (role) =>
+        isSystemRole(role.slug) ? t(ROLE_LABEL_KEY[role.slug]) : (role.name ?? role.slug);
 }
 
 /**
@@ -60,13 +60,13 @@ export function useRoleLabel(): (role: { slug: RoleSlug; name?: string | null })
  * escribió quien lo creó si es propio.
  */
 export function useRoleHint(): (role: {
-  slug: RoleSlug;
-  description?: string | null;
+    slug: RoleSlug;
+    description?: string | null;
 }) => string | null {
-  const { t } = useTranslation();
+    const { t } = useTranslation();
 
-  return (role) =>
-    isSystemRole(role.slug) ? t(ROLE_HINT_KEY[role.slug]) : (role.description ?? null);
+    return (role) =>
+        isSystemRole(role.slug) ? t(ROLE_HINT_KEY[role.slug]) : (role.description ?? null);
 }
 
 /**
@@ -75,12 +75,12 @@ export function useRoleHint(): (role: {
  * barato que devolver el rol entero en cada usuario del listado.
  */
 export function useRoleCatalog(enabled = true): Map<RoleSlug, RoleRow> {
-  const { data } = useRoles(api, { page: 1, limit: 100, sort: 'level', order: 'asc' }, enabled);
+    const { data } = useRoles(api, { page: 1, limit: 100, sort: 'level', order: 'asc' }, enabled);
 
-  return useMemo(
-    () => new Map((data?.items ?? []).map((role) => [role.slug, role])),
-    [data?.items],
-  );
+    return useMemo(
+        () => new Map((data?.items ?? []).map((role) => [role.slug, role])),
+        [data?.items],
+    );
 }
 
 /**
@@ -94,8 +94,8 @@ export function useRoleCatalog(enabled = true): Map<RoleSlug, RoleRow> {
  * (Regla 9 §3: el color nunca informa solo).
  */
 export function roleAccent(level: number): string {
-  const index = ((level % ACCENT_PALETTE.length) + ACCENT_PALETTE.length) % ACCENT_PALETTE.length;
-  return ACCENT_PALETTE[index];
+    const index = ((level % ACCENT_PALETTE.length) + ACCENT_PALETTE.length) % ACCENT_PALETTE.length;
+    return ACCENT_PALETTE[index];
 }
 
 /**
@@ -104,9 +104,9 @@ export function roleAccent(level: number): string {
  * superadministrador no tiene tope, así que no se acota su desplegable.
  */
 export function useAssignableRoleBelowLevel(): number | undefined {
-  const { data: session } = useSession();
-  const catalog = useRoleCatalog();
-  const ownRole = session?.user.role ?? DEFAULT_ROLE;
+    const { data: session } = useSession();
+    const catalog = useRoleCatalog();
+    const ownRole = session?.user.role ?? DEFAULT_ROLE;
 
-  return ownRole === SUPERADMIN_ROLE ? undefined : catalog.get(ownRole)?.level;
+    return ownRole === SUPERADMIN_ROLE ? undefined : catalog.get(ownRole)?.level;
 }

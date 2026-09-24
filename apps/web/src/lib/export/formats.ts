@@ -9,27 +9,32 @@ export type ExportFormat = (typeof EXPORT_FORMATS)[number];
 export const DEFAULT_EXPORT_FORMAT: ExportFormat = 'xlsx';
 
 interface FormatInfo {
-  extension: string;
-  labelKey: string;
-  hintKey: string;
-  /** Si «Copiar» hace algo con este formato, y qué copia. */
-  copy: 'text' | 'image' | 'none';
+    extension: string;
+    labelKey: string;
+    hintKey: string;
+    /** Si «Copiar» hace algo con este formato, y qué copia. */
+    copy: 'text' | 'image' | 'none';
 }
 
 export const FORMAT_INFO: Record<ExportFormat, FormatInfo> = {
-  xlsx: {
-    extension: 'xlsx',
-    labelKey: 'export.xlsx',
-    hintKey: 'export.xlsxHint',
-    copy: 'none',
-  },
-  pdf: { extension: 'pdf', labelKey: 'export.pdf', hintKey: 'export.pdfHint', copy: 'none' },
-  image: { extension: 'png', labelKey: 'export.image', hintKey: 'export.imageHint', copy: 'image' },
-  markdown: {
-    extension: 'md',
-    labelKey: 'export.markdown',
-    hintKey: 'export.markdownHint',
-    copy: 'text',
-  },
-  csv: { extension: 'csv', labelKey: 'export.csv', hintKey: 'export.csvHint', copy: 'text' },
+    xlsx: {
+        extension: 'xlsx',
+        labelKey: 'export.xlsx',
+        hintKey: 'export.xlsxHint',
+        copy: 'none',
+    },
+    pdf: { extension: 'pdf', labelKey: 'export.pdf', hintKey: 'export.pdfHint', copy: 'none' },
+    image: {
+        extension: 'png',
+        labelKey: 'export.image',
+        hintKey: 'export.imageHint',
+        copy: 'image',
+    },
+    markdown: {
+        extension: 'md',
+        labelKey: 'export.markdown',
+        hintKey: 'export.markdownHint',
+        copy: 'text',
+    },
+    csv: { extension: 'csv', labelKey: 'export.csv', hintKey: 'export.csvHint', copy: 'text' },
 };

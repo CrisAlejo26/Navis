@@ -425,16 +425,16 @@ LOWER('%término%')` funciona igual en SQLite y en Postgres sin ninguna rama
   problema de este RFC, y ninguna se añade «porque la tiene el otro
   producto» (Regla 1 §4, «abstraer por si acaso»).
 
-  | Vista          | Para qué sirve                                        | Requisito                               |
-  | -------------- | ----------------------------------------------------- | --------------------------------------- |
-  | **Cuadrícula** | La tabla entera, paginada (D17–D19)                   | Ninguno; es la que siempre existe       |
-  | **Tablero**    | Agrupar por estado —peticiones de oración, turnos—    | Al menos una columna de selección única |
-  | **Calendario** | Ver las filas por su fecha —asistencia, seguimientos— | Al menos una columna de fecha           |
+    | Vista          | Para qué sirve                                        | Requisito                               |
+    | -------------- | ----------------------------------------------------- | --------------------------------------- |
+    | **Cuadrícula** | La tabla entera, paginada (D17–D19)                   | Ninguno; es la que siempre existe       |
+    | **Tablero**    | Agrupar por estado —peticiones de oración, turnos—    | Al menos una columna de selección única |
+    | **Calendario** | Ver las filas por su fecha —asistencia, seguimientos— | Al menos una columna de fecha           |
 
-  Si la tabla no tiene ninguna columna de selección única, el tablero no se
-  ofrece como opción; lo mismo el calendario sin una columna de fecha. No es
-  una limitación que haya que explicar: la vista que no tiene sentido con las
-  columnas que hay, directamente no aparece.
+    Si la tabla no tiene ninguna columna de selección única, el tablero no se
+    ofrece como opción; lo mismo el calendario sin una columna de fecha. No es
+    una limitación que haya que explicar: la vista que no tiene sentido con las
+    columnas que hay, directamente no aparece.
 
 - **D26 — El tablero no rompe la carga perezosa: cada columna del tablero
   pagina por su cuenta.** La tentación de un tablero es traer todas las filas
@@ -460,14 +460,14 @@ LOWER('%término%')` funciona igual en SQLite y en Postgres sin ninguna rama
   tipo. Añadir una columna nueva añade su filtro solo; borrarla (D10) lo
   quita solo. Nadie mantiene una lista de filtros a mano.
 
-  | Tipo de columna                                 | Filtro                                                              |
-  | ----------------------------------------------- | ------------------------------------------------------------------- |
-  | Texto corto, texto largo, correo, teléfono, URL | Contiene                                                            |
-  | Número, moneda                                  | Entre (mínimo, máximo)                                              |
-  | Fecha                                           | Entre (desde, hasta), con atajos («hoy», «esta semana», «este mes») |
-  | Casilla                                         | Sí / no / cualquiera                                                |
-  | Selección única, selección múltiple             | Elegir entre las opciones definidas                                 |
-  | Contraseña                                      | Sin filtro (D29)                                                    |
+    | Tipo de columna                                 | Filtro                                                              |
+    | ----------------------------------------------- | ------------------------------------------------------------------- |
+    | Texto corto, texto largo, correo, teléfono, URL | Contiene                                                            |
+    | Número, moneda                                  | Entre (mínimo, máximo)                                              |
+    | Fecha                                           | Entre (desde, hasta), con atajos («hoy», «esta semana», «este mes») |
+    | Casilla                                         | Sí / no / cualquiera                                                |
+    | Selección única, selección múltiple             | Elegir entre las opciones definidas                                 |
+    | Contraseña                                      | Sin filtro (D29)                                                    |
 
 - **D29 — La contraseña no se puede filtrar.** Ni siquiera «contiene»:
   filtrar un campo cifrado exigiría descifrar cada fila para compararla, y
@@ -502,25 +502,25 @@ LOWER('%término%')` funciona igual en SQLite y en Postgres sin ninguna rama
   cuadrícula, los carriles del tablero— y una tabla sin apenas datos es
   justo el caso donde más se nota el blanco:
 
-  - El **tablón** (`/tables`) pinta cada tabla como un panel **relleno** con
-    su acento (D5), no una tarjeta en `bg-card` con un borde: es el mismo
-    criterio que ya usa el tablón de Listas.
-  - La **cabecera de la ficha** lleva el acento de fondo, con el icono (D4)
-    grande y el nombre encima, igual que la cabecera de una lista.
-  - En la **cuadrícula**, la fila de cabeceras de columna lleva un tinte del
-    acento —no blanco puro ni `bg-card` plano— y la columna por la que se
-    está ordenando se marca con el acento sólido, no con una raya gris.
-  - En el **tablero**, cada carril lleva el color de su propia opción (D28:
-    `options[].color`, del mismo `ACCENT_PALETTE`), así que un tablero por
-    estado se lee de un vistazo por color antes de leer una sola palabra.
-  - El **estado vacío** —una tabla sin filas todavía— no es el genérico de
-    `EmptyState` a secas: lleva el acento de la tabla de fondo y la
-    invitación a crear la primera fila en su color, para que una tabla
-    recién creada no se vea como un error de carga.
+    - El **tablón** (`/tables`) pinta cada tabla como un panel **relleno** con
+      su acento (D5), no una tarjeta en `bg-card` con un borde: es el mismo
+      criterio que ya usa el tablón de Listas.
+    - La **cabecera de la ficha** lleva el acento de fondo, con el icono (D4)
+      grande y el nombre encima, igual que la cabecera de una lista.
+    - En la **cuadrícula**, la fila de cabeceras de columna lleva un tinte del
+      acento —no blanco puro ni `bg-card` plano— y la columna por la que se
+      está ordenando se marca con el acento sólido, no con una raya gris.
+    - En el **tablero**, cada carril lleva el color de su propia opción (D28:
+      `options[].color`, del mismo `ACCENT_PALETTE`), así que un tablero por
+      estado se lee de un vistazo por color antes de leer una sola palabra.
+    - El **estado vacío** —una tabla sin filas todavía— no es el genérico de
+      `EmptyState` a secas: lleva el acento de la tabla de fondo y la
+      invitación a crear la primera fila en su color, para que una tabla
+      recién creada no se vea como un error de carga.
 
-  Esta decisión es la respuesta directa al pedido de que estas pantallas «no
-  tengan tanto blanco»: aquí se resuelve subiendo la ocupación del acento por
-  tabla (D5), no añadiendo un degradado decorativo que la Regla 9 §2 prohíbe.
+    Esta decisión es la respuesta directa al pedido de que estas pantallas «no
+    tengan tanto blanco»: aquí se resuelve subiendo la ocupación del acento por
+    tabla (D5), no añadiendo un degradado decorativo que la Regla 9 §2 prohíbe.
 
 - **D33 — De `md` para arriba, tabla; por debajo, fichas.** Se reutiliza
   `<DataTable />` tal cual (Regla 5 §2): con columnas dinámicas, la tabla
@@ -663,19 +663,19 @@ la tabla», que son personas distintas en la mayoría de las iglesias.
 ## Interfaz
 
 - **Web**:
-  - `/tables` — el tablón, un panel **relleno** por tabla, con su acento
-    (D32), como `/lists`.
-  - `/tables/:slug` — la ficha: cabecera con acento de fondo (D32), pestañas
-    de vista (cuadrícula + las guardadas, D24), barra de filtros calculada
-    sobre las columnas activas (D28), la vista elegida, botón de exportar.
-  - Un diálogo de columnas: lista arrastrable, con «Añadir columna» al pie.
-  - Un formulario de fila, generado a partir de las columnas activas, en su
-    orden — el mismo patrón de «montar con `key` cuando los datos llegan
-    tarde» que ya usa `ProphecyForm` (CLAUDE.md), para editar una fila
-    existente.
-  - Un diálogo de vista nueva: nombre, tipo (solo se ofrecen los que la tabla
-    puede soportar, D25) y, según el tipo, la columna de agrupación o de
-    fecha.
+    - `/tables` — el tablón, un panel **relleno** por tabla, con su acento
+      (D32), como `/lists`.
+    - `/tables/:slug` — la ficha: cabecera con acento de fondo (D32), pestañas
+      de vista (cuadrícula + las guardadas, D24), barra de filtros calculada
+      sobre las columnas activas (D28), la vista elegida, botón de exportar.
+    - Un diálogo de columnas: lista arrastrable, con «Añadir columna» al pie.
+    - Un formulario de fila, generado a partir de las columnas activas, en su
+      orden — el mismo patrón de «montar con `key` cuando los datos llegan
+      tarde» que ya usa `ProphecyForm` (CLAUDE.md), para editar una fila
+      existente.
+    - Un diálogo de vista nueva: nombre, tipo (solo se ofrecen los que la tabla
+      puede soportar, D25) y, según el tipo, la columna de agrupación o de
+      fecha.
 - **Móvil**: fuera de alcance (ver «Fuera de alcance»).
 - Textos nuevos en `packages/i18n`, sección `tables.*`, con `nav.tables` para
   la barra lateral.

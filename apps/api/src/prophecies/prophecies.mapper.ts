@@ -1,11 +1,11 @@
 import {
-  prophecyState,
-  toExcerpt,
-  waitingDays,
-  type Prophecy as ProphecyView,
-  type ProphecyExportRow,
-  type ProphecyFulfillment as FulfillmentView,
-  type ProphecyListItem,
+    prophecyState,
+    toExcerpt,
+    waitingDays,
+    type Prophecy as ProphecyView,
+    type ProphecyExportRow,
+    type ProphecyFulfillment as FulfillmentView,
+    type ProphecyListItem,
 } from '@navis/shared';
 
 import { toIsoDay } from '../database/iso-day';
@@ -13,26 +13,26 @@ import type { ProphecyFulfillment } from './prophecy-fulfillment.entity';
 import type { Prophecy } from './prophecy.entity';
 
 export function toFulfillmentView(fulfillment: ProphecyFulfillment): FulfillmentView {
-  return {
-    id: fulfillment.id,
-    prophecyId: fulfillment.prophecyId,
-    text: fulfillment.text,
-    occurredAt: toIsoDay(fulfillment.occurredAt),
-    createdAt: fulfillment.createdAt.toISOString(),
-  };
+    return {
+        id: fulfillment.id,
+        prophecyId: fulfillment.prophecyId,
+        text: fulfillment.text,
+        occurredAt: toIsoDay(fulfillment.occurredAt),
+        createdAt: fulfillment.createdAt.toISOString(),
+    };
 }
 
 export function toProphecyView(prophecy: Prophecy): ProphecyView {
-  return {
-    id: prophecy.id,
-    title: prophecy.title,
-    body: prophecy.body,
-    receivedAt: toIsoDay(prophecy.receivedAt),
-    fulfilledAt: prophecy.fulfilledAt ? toIsoDay(prophecy.fulfilledAt) : null,
-    lastFulfillmentAt: prophecy.lastFulfillmentAt ? toIsoDay(prophecy.lastFulfillmentAt) : null,
-    fulfillments: (prophecy.fulfillments ?? []).map(toFulfillmentView),
-    createdAt: prophecy.createdAt.toISOString(),
-  };
+    return {
+        id: prophecy.id,
+        title: prophecy.title,
+        body: prophecy.body,
+        receivedAt: toIsoDay(prophecy.receivedAt),
+        fulfilledAt: prophecy.fulfilledAt ? toIsoDay(prophecy.fulfilledAt) : null,
+        lastFulfillmentAt: prophecy.lastFulfillmentAt ? toIsoDay(prophecy.lastFulfillmentAt) : null,
+        fulfillments: (prophecy.fulfillments ?? []).map(toFulfillmentView),
+        createdAt: prophecy.createdAt.toISOString(),
+    };
 }
 
 /**
@@ -43,26 +43,26 @@ export function toProphecyView(prophecy: Prophecy): ProphecyView {
  * cargar la relación entera en cada fila.
  */
 export function toListItem(
-  prophecy: Prophecy,
-  today: string,
-  fulfillmentDays: readonly string[],
+    prophecy: Prophecy,
+    today: string,
+    fulfillmentDays: readonly string[],
 ): ProphecyListItem {
-  const progress = {
-    receivedAt: toIsoDay(prophecy.receivedAt),
-    fulfilledAt: prophecy.fulfilledAt ? toIsoDay(prophecy.fulfilledAt) : null,
-    lastFulfillmentAt: prophecy.lastFulfillmentAt ? toIsoDay(prophecy.lastFulfillmentAt) : null,
-  };
+    const progress = {
+        receivedAt: toIsoDay(prophecy.receivedAt),
+        fulfilledAt: prophecy.fulfilledAt ? toIsoDay(prophecy.fulfilledAt) : null,
+        lastFulfillmentAt: prophecy.lastFulfillmentAt ? toIsoDay(prophecy.lastFulfillmentAt) : null,
+    };
 
-  return {
-    id: prophecy.id,
-    title: prophecy.title,
-    excerpt: toExcerpt(prophecy.body),
-    ...progress,
-    state: prophecyState(progress),
-    waitingDays: waitingDays(progress, today),
-    fulfillmentsCount: fulfillmentDays.length,
-    fulfillmentDays: [...fulfillmentDays],
-  };
+    return {
+        id: prophecy.id,
+        title: prophecy.title,
+        excerpt: toExcerpt(prophecy.body),
+        ...progress,
+        state: prophecyState(progress),
+        waitingDays: waitingDays(progress, today),
+        fulfillmentsCount: fulfillmentDays.length,
+        fulfillmentDays: [...fulfillmentDays],
+    };
 }
 
 /**
@@ -74,23 +74,23 @@ export function toListItem(
  * compilador obliga a decidir si va también al fichero o no.
  */
 export function toExportRow(
-  prophecy: Prophecy,
-  today: string,
-  fulfillmentDays: readonly string[],
+    prophecy: Prophecy,
+    today: string,
+    fulfillmentDays: readonly string[],
 ): ProphecyExportRow {
-  const item = toListItem(prophecy, today, fulfillmentDays);
+    const item = toListItem(prophecy, today, fulfillmentDays);
 
-  return {
-    id: item.id,
-    title: item.title,
-    body: prophecy.body,
-    receivedAt: item.receivedAt,
-    fulfilledAt: item.fulfilledAt,
-    lastFulfillmentAt: item.lastFulfillmentAt,
-    state: item.state,
-    waitingDays: item.waitingDays,
-    fulfillmentsCount: item.fulfillmentsCount,
-    fulfillmentDays: item.fulfillmentDays,
-    createdAt: prophecy.createdAt.toISOString(),
-  };
+    return {
+        id: item.id,
+        title: item.title,
+        body: prophecy.body,
+        receivedAt: item.receivedAt,
+        fulfilledAt: item.fulfilledAt,
+        lastFulfillmentAt: item.lastFulfillmentAt,
+        state: item.state,
+        waitingDays: item.waitingDays,
+        fulfillmentsCount: item.fulfillmentsCount,
+        fulfillmentDays: item.fulfillmentDays,
+        createdAt: prophecy.createdAt.toISOString(),
+    };
 }

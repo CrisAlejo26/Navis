@@ -21,67 +21,71 @@ import { api } from '@/lib/api';
  * uno que no está.
  */
 export function GiftsPage() {
-  const { t } = useTranslation();
-  const { data: gifts = [] } = useGifts(api);
+    const { t } = useTranslation();
+    const { data: gifts = [] } = useGifts(api);
 
-  const [adding, setAdding] = useState(false);
-  const [editing, setEditing] = useState<Gift | null>(null);
-  const [deleting, setDeleting] = useState<Gift | null>(null);
+    const [adding, setAdding] = useState(false);
+    const [editing, setEditing] = useState<Gift | null>(null);
+    const [deleting, setDeleting] = useState<Gift | null>(null);
 
-  return (
-    <section className="max-w-2xl gap-6 flex flex-col">
-      <div>
-        <Link
-          to="/believers"
-          className="gap-1.5 text-sm -ml-1 inline-flex w-fit items-center rounded-sm text-muted-foreground hover:text-foreground"
-        >
-          <ChevronLeft size={16} aria-hidden />
-          {t('believers.backToList')}
-        </Link>
+    return (
+        <section className="max-w-2xl gap-6 flex flex-col">
+            <div>
+                <Link
+                    to="/believers"
+                    className="gap-1.5 text-sm -ml-1 inline-flex w-fit items-center rounded-sm text-muted-foreground hover:text-foreground"
+                >
+                    <ChevronLeft size={16} aria-hidden />
+                    {t('believers.backToList')}
+                </Link>
 
-        <div className="gap-3 mt-2 sm:flex-row sm:items-center sm:justify-between flex flex-col">
-          <h1 className="text-2xl font-semibold tracking-[-0.02em]">{t('gifts.title')}</h1>
-          <Button
-            variant="secondary"
-            size="md"
-            className="sm:self-auto self-start"
-            onClick={() => {
-              setAdding(true);
-            }}
-          >
-            <Plus size={15} aria-hidden />
-            {t('gifts.add')}
-          </Button>
-        </div>
+                <div className="gap-3 mt-2 sm:flex-row sm:items-center sm:justify-between flex flex-col">
+                    <h1 className="text-2xl font-semibold tracking-[-0.02em]">
+                        {t('gifts.title')}
+                    </h1>
+                    <Button
+                        variant="secondary"
+                        size="md"
+                        className="sm:self-auto self-start"
+                        onClick={() => {
+                            setAdding(true);
+                        }}
+                    >
+                        <Plus size={15} aria-hidden />
+                        {t('gifts.add')}
+                    </Button>
+                </div>
 
-        <p className="mt-2 max-w-prose text-sm text-muted-foreground">{t('gifts.description')}</p>
-      </div>
+                <p className="mt-2 max-w-prose text-sm text-muted-foreground">
+                    {t('gifts.description')}
+                </p>
+            </div>
 
-      <Card>
-        {gifts.length === 0 ? (
-          <EmptyState icon={Sprout} title={t('gifts.empty')} />
-        ) : (
-          <GiftRows gifts={gifts} onEdit={setEditing} onDelete={setDeleting} />
-        )}
-      </Card>
+            <Card>
+                {gifts.length === 0 ? (
+                    <EmptyState icon={Sprout} title={t('gifts.empty')} />
+                ) : (
+                    <GiftRows gifts={gifts} onEdit={setEditing} onDelete={setDeleting} />
+                )}
+            </Card>
 
-      {(adding || editing) && (
-        <GiftForm
-          open
-          gift={editing ?? undefined}
-          onClose={() => {
-            setAdding(false);
-            setEditing(null);
-          }}
-        />
-      )}
+            {(adding || editing) && (
+                <GiftForm
+                    open
+                    gift={editing ?? undefined}
+                    onClose={() => {
+                        setAdding(false);
+                        setEditing(null);
+                    }}
+                />
+            )}
 
-      <DeleteGiftDialog
-        gift={deleting}
-        onClose={() => {
-          setDeleting(null);
-        }}
-      />
-    </section>
-  );
+            <DeleteGiftDialog
+                gift={deleting}
+                onClose={() => {
+                    setDeleting(null);
+                }}
+            />
+        </section>
+    );
 }

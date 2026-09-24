@@ -26,99 +26,99 @@ import { usePermissions } from '@/lib/permissions';
  * él a la derecha— y una sola por debajo.
  */
 export function BelieverPage() {
-  const { t } = useTranslation();
-  const { id = '' } = useParams();
-  const navigate = useNavigate();
-  const { can } = usePermissions();
-  const canManage = can('believers.manage');
+    const { t } = useTranslation();
+    const { id = '' } = useParams();
+    const navigate = useNavigate();
+    const { can } = usePermissions();
+    const canManage = can('believers.manage');
 
-  const [editing, setEditing] = useState(false);
-  const [deleting, setDeleting] = useState(false);
-  const [writing, setWriting] = useState(false);
+    const [editing, setEditing] = useState(false);
+    const [deleting, setDeleting] = useState(false);
+    const [writing, setWriting] = useState(false);
 
-  const { data: believer, isLoading, isError } = useBeliever(api, id);
-  const { data: congregations = [] } = useCongregations(api);
-  const { data: gifts = [] } = useGifts(api);
-  const { data: tags = [] } = useBelieverTags(api);
+    const { data: believer, isLoading, isError } = useBeliever(api, id);
+    const { data: congregations = [] } = useCongregations(api);
+    const { data: gifts = [] } = useGifts(api);
+    const { data: tags = [] } = useBelieverTags(api);
 
-  const today = todayIn(Intl.DateTimeFormat().resolvedOptions().timeZone);
+    const today = todayIn(Intl.DateTimeFormat().resolvedOptions().timeZone);
 
-  if (isLoading) return <PageSkeleton />;
+    if (isLoading) return <PageSkeleton />;
 
-  if (isError || !believer) {
+    if (isError || !believer) {
+        return (
+            <EmptyState icon={UserSearch} title={t('believers.notFound')}>
+                <Link to="/believers" className="text-primary underline-offset-2 hover:underline">
+                    {t('believers.backToList')}
+                </Link>
+            </EmptyState>
+        );
+    }
+
     return (
-      <EmptyState icon={UserSearch} title={t('believers.notFound')}>
-        <Link to="/believers" className="text-primary underline-offset-2 hover:underline">
-          {t('believers.backToList')}
-        </Link>
-      </EmptyState>
-    );
-  }
+        <section className="gap-5 flex flex-col">
+            <BackLink to="/believers" label={t('believers.backToList')} />
 
-  return (
-    <section className="gap-5 flex flex-col">
-      <BackLink to="/believers" label={t('believers.backToList')} />
-
-      {/* A lo ancho y de arriba abajo, como la ficha de un sueño: la cabecera
+            {/* A lo ancho y de arriba abajo, como la ficha de un sueño: la cabecera
           teñida primero y debajo la bitácora con sus formas de verla. */}
-      <div className="gap-4 flex flex-col">
-        <BelieverIdentity
-          believer={believer}
-          congregation={congregations.find((one) => one.id === believer.congregationId)}
-          today={today}
-          canManage={canManage}
-          onNote={() => {
-            setWriting(true);
-          }}
-          onEdit={() => {
-            setEditing(true);
-          }}
-          onDelete={() => {
-            setDeleting(true);
-          }}
-        />
+            <div className="gap-4 flex flex-col">
+                <BelieverIdentity
+                    believer={believer}
+                    congregation={congregations.find((one) => one.id === believer.congregationId)}
+                    today={today}
+                    canManage={canManage}
+                    onNote={() => {
+                        setWriting(true);
+                    }}
+                    onEdit={() => {
+                        setEditing(true);
+                    }}
+                    onDelete={() => {
+                        setDeleting(true);
+                    }}
+                />
 
-        {/* Por dónde ha pasado, antes de lo que se ha escrito de ella: la
+                {/* Por dónde ha pasado, antes de lo que se ha escrito de ella: la
             bitácora cuenta los últimos meses y esto los últimos veinte años. */}
-        <BelieverJourney believer={believer} gifts={gifts} />
+                <BelieverJourney believer={believer} gifts={gifts} />
 
-        {/* Antes de la bitácora: en qué listas está y qué puede ver son datos
+                {/* Antes de la bitácora: en qué listas está y qué puede ver son datos
             de identidad —y uno de ellos puede estar hoy en internet— (§8.7). */}
-        <BelieverAccess believer={believer} />
+                <BelieverAccess believer={believer} />
 
-        <BelieverLog
-          believerId={believer.id}
-          name={believer.firstName}
-          gifts={gifts}
-          today={today}
-          canManage={canManage}
-          writing={writing}
-          onWritingChange={setWriting}
-        />
-      </div>
+                <BelieverLog
+                    believerId={believer.id}
+                    name={believer.firstName}
+                    gifts={gifts}
+                    today={today}
+                    canManage={canManage}
+                    writing={writing}
+                    onWritingChange={setWriting}
+                />
+            </div>
 
-      {editing && (
-        <BelieverForm
-          open
-          believer={believer}
-          congregations={congregations}
-          gifts={gifts}
-          tags={tags}
-          onClose={() => {
-            setEditing(false);
-          }}
-        />
-      )}
+            {editing && (
+                <BelieverForm
+                    open
+                    believer={believer}
+                    congregations={congregations}
+                    gifts={gifts}
+                    tags={tags}
+                    onClose={() => {
+                        setEditing(false);
+                    }}
+                />
+            )}
 
-      <DeleteBelieverDialog
-        believer={deleting ? believer : null}
-        onClose={() => {
-          setDeleting(false);
-        }}
-        onDeleted={() => {
-          void navigate('/believers');
-        }}
-      />
-    </section>
-  );
+            <DeleteBelieverDialog
+                believer={deleting ? believer : null}
+                onClose={() => {
+                    setDeleting(false);
+                }}
+                onDeleted={() => {
+                    void navigate('/believers');
+                }}
+            />
+        </section>
+    );
 }

@@ -15,9 +15,9 @@ import type { DateRange } from '@/lib/calendar/view-range';
 import { cn } from '@/lib/cn';
 
 export interface PickTarget {
-  date: string;
-  meeting: Meeting;
-  slot: MeetingSlot;
+    date: string;
+    meeting: Meeting;
+    slot: MeetingSlot;
 }
 
 /**
@@ -34,125 +34,127 @@ export interface PickTarget {
  * «Ver más»— para que abrir el selector no arrastre a la iglesia entera.
  */
 export function PreacherPicker({
-  target,
-  range,
-  calendarId,
-  ministry,
-  onClose,
-  onAssign,
-  congregationName,
+    target,
+    range,
+    calendarId,
+    ministry,
+    onClose,
+    onAssign,
+    congregationName,
 }: {
-  target: PickTarget | null;
-  range: DateRange;
-  calendarId: string;
-  /** El ministerio del calendario: es a quien se propone primero (D16). */
-  ministry: string | null;
-  onClose: () => void;
-  onAssign: (believerId: string | null, name: string | null) => void;
-  congregationName: (id: string | null) => string | undefined;
+    target: PickTarget | null;
+    range: DateRange;
+    calendarId: string;
+    /** El ministerio del calendario: es a quien se propone primero (D16). */
+    ministry: string | null;
+    onClose: () => void;
+    onAssign: (believerId: string | null, name: string | null) => void;
+    congregationName: (id: string | null) => string | undefined;
 }) {
-  const { t } = useTranslation();
-  const [q, setQ] = useState('');
-  const [all, setAll] = useState(true);
+    const { t } = useTranslation();
+    const [q, setQ] = useState('');
+    const [all, setAll] = useState(true);
 
-  const preachers = usePreachers(api, { ...range, calendarId, q, all }, Boolean(target));
-  const candidates = preachers.data?.pages.flatMap((page) => page.items) ?? [];
-  const createBeliever = useCreateBeliever(api);
+    const preachers = usePreachers(api, { ...range, calendarId, q, all }, Boolean(target));
+    const candidates = preachers.data?.pages.flatMap((page) => page.items) ?? [];
+    const createBeliever = useCreateBeliever(api);
 
-  const addPerson = async () => {
-    const [firstName = q, ...rest] = q.trim().split(/\s+/);
-    const person = await createBeliever.mutateAsync({
-      firstName,
-      lastName: rest.join(' '),
-      // Se da de alta ya con el ministerio del calendario: quien se añade
-      // desde el de sonido es de sonido.
-      ministries: ministry && isMinistry(ministry) ? [ministry] : [],
-      congregationId: target?.meeting.congregationId ?? null,
-    });
+    const addPerson = async () => {
+        const [firstName = q, ...rest] = q.trim().split(/\s+/);
+        const person = await createBeliever.mutateAsync({
+            firstName,
+            lastName: rest.join(' '),
+            // Se da de alta ya con el ministerio del calendario: quien se añade
+            // desde el de sonido es de sonido.
+            ministries: ministry && isMinistry(ministry) ? [ministry] : [],
+            congregationId: target?.meeting.congregationId ?? null,
+        });
 
-    const nombre = `${person.firstName} ${person.lastName}`.trim();
-    toast.success(t('believers.created', { name: nombre }));
-    onAssign(person.id, nombre);
-  };
+        const nombre = `${person.firstName} ${person.lastName}`.trim();
+        toast.success(t('believers.created', { name: nombre }));
+        onAssign(person.id, nombre);
+    };
 
-  return (
-    <Dialog
-      open={Boolean(target)}
-      onClose={onClose}
-      title={target ? target.slot.name : t('calendar.assign')}
-      description={target ? `${target.meeting.name} · ${target.meeting.startTime}` : undefined}
-    >
-      <div className="gap-3 flex flex-col">
-        <div className="gap-2 flex items-center">
-          <SearchField
-            value={q}
-            onChange={setQ}
-            label={t('calendar.searchPerson')}
-            className="flex-1"
-          />
-          <Chip
-            active={all}
-            className="h-10 shrink-0"
-            onClick={() => {
-              setAll(!all);
-            }}
-          >
-            {t(all ? 'calendar.everyone' : 'calendar.onlyLabor')}
-          </Chip>
-        </div>
+    return (
+        <Dialog
+            open={Boolean(target)}
+            onClose={onClose}
+            title={target ? target.slot.name : t('calendar.assign')}
+            description={
+                target ? `${target.meeting.name} · ${target.meeting.startTime}` : undefined
+            }
+        >
+            <div className="gap-3 flex flex-col">
+                <div className="gap-2 flex items-center">
+                    <SearchField
+                        value={q}
+                        onChange={setQ}
+                        label={t('calendar.searchPerson')}
+                        className="flex-1"
+                    />
+                    <Chip
+                        active={all}
+                        className="h-10 shrink-0"
+                        onClick={() => {
+                            setAll(!all);
+                        }}
+                    >
+                        {t(all ? 'calendar.everyone' : 'calendar.onlyLabor')}
+                    </Chip>
+                </div>
 
-        <ul className="max-h-72 -mx-1 flex flex-col overflow-y-auto">
-          {candidates.map((preacher: Preacher) => (
-            <PreacherRow
-              key={preacher.id}
-              preacher={preacher}
-              selected={preacher.id === target?.slot.believer?.id}
-              congregationName={congregationName(preacher.congregationId)}
-              onPick={(chosen) => {
-                onAssign(chosen.id, chosen.name);
-              }}
-            />
-          ))}
-        </ul>
+                <ul className="max-h-72 -mx-1 flex flex-col overflow-y-auto">
+                    {candidates.map((preacher: Preacher) => (
+                        <PreacherRow
+                            key={preacher.id}
+                            preacher={preacher}
+                            selected={preacher.id === target?.slot.believer?.id}
+                            congregationName={congregationName(preacher.congregationId)}
+                            onPick={(chosen) => {
+                                onAssign(chosen.id, chosen.name);
+                            }}
+                        />
+                    ))}
+                </ul>
 
-        {preachers.hasNextPage && (
-          <button
-            type="button"
-            disabled={preachers.isFetchingNextPage}
-            onClick={() => {
-              void preachers.fetchNextPage();
-            }}
-            className="h-10 px-4 text-sm font-medium self-center rounded-lg border bg-card hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none disabled:opacity-50"
-          >
-            {t('calendar.loadMore')}
-          </button>
-        )}
+                {preachers.hasNextPage && (
+                    <button
+                        type="button"
+                        disabled={preachers.isFetchingNextPage}
+                        onClick={() => {
+                            void preachers.fetchNextPage();
+                        }}
+                        className="h-10 px-4 text-sm font-medium self-center rounded-lg border bg-card hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none disabled:opacity-50"
+                    >
+                        {t('calendar.loadMore')}
+                    </button>
+                )}
 
-        <div className="gap-2 pt-3 flex flex-wrap items-center justify-between border-t">
-          {q.trim().length > 1 && (
-            <Button
-              variant="secondary"
-              size="sm"
-              isLoading={createBeliever.isPending}
-              onClick={() => void addPerson()}
-            >
-              <UserPlus size={15} aria-hidden />
-              {t('believers.addPerson')}: {q.trim()}
-            </Button>
-          )}
+                <div className="gap-2 pt-3 flex flex-wrap items-center justify-between border-t">
+                    {q.trim().length > 1 && (
+                        <Button
+                            variant="secondary"
+                            size="sm"
+                            isLoading={createBeliever.isPending}
+                            onClick={() => void addPerson()}
+                        >
+                            <UserPlus size={15} aria-hidden />
+                            {t('believers.addPerson')}: {q.trim()}
+                        </Button>
+                    )}
 
-          <Button
-            variant="ghost"
-            size="sm"
-            className="ml-auto"
-            onClick={() => {
-              onAssign(null, null);
-            }}
-          >
-            {t('calendar.clearSlot')}
-          </Button>
-        </div>
-      </div>
-    </Dialog>
-  );
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        className="ml-auto"
+                        onClick={() => {
+                            onAssign(null, null);
+                        }}
+                    >
+                        {t('calendar.clearSlot')}
+                    </Button>
+                </div>
+            </div>
+        </Dialog>
+    );
 }

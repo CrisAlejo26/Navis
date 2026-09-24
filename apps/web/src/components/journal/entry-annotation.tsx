@@ -9,32 +9,32 @@ import { useTranslation } from 'react-i18next';
  * bitácora de creyentes (RFC 0003 §7.5).
  */
 export function EntryAnnotation({ entry }: { entry: JournalEntry }) {
-  const { t } = useTranslation();
+    const { t } = useTranslation();
 
-  return (
-    <div className="gap-6 flex flex-col">
-      <article
-        style={{ animationDelay: '40ms' }}
-        className="p-4 sm:p-6 animate-rise-in rounded-xl border bg-card"
-      >
-        <p className="max-w-prose text-[17px] leading-[1.75] whitespace-pre-wrap">
-          {entry.annotation}
-        </p>
-      </article>
+    return (
+        <div className="gap-6 flex flex-col">
+            <article
+                style={{ animationDelay: '40ms' }}
+                className="p-4 sm:p-6 animate-rise-in rounded-xl border bg-card"
+            >
+                <p className="max-w-prose text-[17px] leading-[1.75] whitespace-pre-wrap">
+                    {entry.annotation}
+                </p>
+            </article>
 
-      {entry.learned && (
-        <article
-          style={{ animationDelay: '100ms' }}
-          className="pl-4 animate-rise-in border-l-2 border-l-border"
-        >
-          <h2 className="mb-2 text-sm font-medium text-muted-foreground">
-            {t('journal.learnedField')}
-          </h2>
-          <p className="max-w-prose leading-relaxed text-[15px] whitespace-pre-wrap">
-            {entry.learned}
-          </p>
-        </article>
-      )}
-    </div>
-  );
+            {entry.learned && (
+                <article
+                    style={{ animationDelay: '100ms' }}
+                    className="pl-4 animate-rise-in border-l-2 border-l-border"
+                >
+                    <h2 className="mb-2 text-sm font-medium text-muted-foreground">
+                        {t('journal.learnedField')}
+                    </h2>
+                    <p className="max-w-prose leading-relaxed text-[15px] whitespace-pre-wrap">
+                        {entry.learned}
+                    </p>
+                </article>
+            )}
+        </div>
+    );
 }

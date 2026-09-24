@@ -22,85 +22,94 @@ import { useCalendars, useCalendarSchedule, useCalendarSummary } from '@/hooks/u
  * altura completa.
  */
 export default function CalendarBalanceScreen() {
-  const { t } = useTranslation();
-  const calendarId = useActiveCalendarStore((state) => state.calendarId);
-  const { data: calendars = [] } = useCalendars();
-  const activo = calendars.find((one) => one.id === calendarId) ?? calendars[0];
-  const tramo = monthGrid(startOfMonth(todayIn(timezoneDelDispositivo())));
+    const { t } = useTranslation();
+    const calendarId = useActiveCalendarStore((state) => state.calendarId);
+    const { data: calendars = [] } = useCalendars();
+    const activo = calendars.find((one) => one.id === calendarId) ?? calendars[0];
+    const tramo = monthGrid(startOfMonth(todayIn(timezoneDelDispositivo())));
 
-  const { data: summary } = useCalendarSummary(activo?.id ?? '', tramo.from, tramo.to);
+    const { data: summary } = useCalendarSummary(activo?.id ?? '', tramo.from, tramo.to);
 
-  return (
-    <View className="flex-1 bg-background">
-      <AppBar title={t('calendar.balance')} backLabel={t('common.back')} />
+    return (
+        <View className="flex-1 bg-background">
+            <AppBar title={t('calendar.balance')} backLabel={t('common.back')} />
 
-      <ScrollView contentContainerClassName="gap-4 px-4 pb-12 pt-3">
-        <Card title={t('calendar.balance')}>
-          {(summary?.people ?? []).length === 0 ? (
-            <EmptyState
-              icon="people-outline"
-              title={t('calendar.balance')}
-              description={t('calendar.noProgramme')}
-            />
-          ) : (
-            <View className="gap-1">
-              {summary!.people.map((one) => (
-                <ListRow
-                  key={one.believerId}
-                  leading={<Avatar name={one.name} size="sm" />}
-                  title={one.name}
-                  subtitle={`${t('calendar.timesInRange', { count: one.times })} · ${
-                    one.lastDate
-                      ? t('calendar.lastTime', { date: formatDay(one.lastDate) })
-                      : t('calendar.never')
-                  }`}
-                  trailing={<Badge label={String(one.times)} tone="primary" />}
-                />
-              ))}
-            </View>
-          )}
-        </Card>
+            <ScrollView contentContainerClassName="gap-4 px-4 pb-12 pt-3">
+                <Card title={t('calendar.balance')}>
+                    {(summary?.people ?? []).length === 0 ? (
+                        <EmptyState
+                            icon="people-outline"
+                            title={t('calendar.balance')}
+                            description={t('calendar.noProgramme')}
+                        />
+                    ) : (
+                        <View className="gap-1">
+                            {summary!.people.map((one) => (
+                                <ListRow
+                                    key={one.believerId}
+                                    leading={<Avatar name={one.name} size="sm" />}
+                                    title={one.name}
+                                    subtitle={`${t('calendar.timesInRange', { count: one.times })} · ${
+                                        one.lastDate
+                                            ? t('calendar.lastTime', {
+                                                  date: formatDay(one.lastDate),
+                                              })
+                                            : t('calendar.never')
+                                    }`}
+                                    trailing={<Badge label={String(one.times)} tone="primary" />}
+                                />
+                            ))}
+                        </View>
+                    )}
+                </Card>
 
-        <Card title={t('calendar.warnings')}>
-          {(summary?.warnings ?? []).length === 0 ? (
-            <Text className="text-sm text-muted-foreground">{t('calendar.noWarnings')}</Text>
-          ) : (
-            <View className="gap-2">
-              {summary!.warnings.map((one, index) => (
-                <Text key={index} className="text-sm text-foreground">
-                  {TITULO_AVISO(one.kind, one.detail, one.believerName ?? undefined, t)}
-                </Text>
-              ))}
-            </View>
-          )}
-        </Card>
-      </ScrollView>
-    </View>
-  );
+                <Card title={t('calendar.warnings')}>
+                    {(summary?.warnings ?? []).length === 0 ? (
+                        <Text className="text-sm text-muted-foreground">
+                            {t('calendar.noWarnings')}
+                        </Text>
+                    ) : (
+                        <View className="gap-2">
+                            {summary!.warnings.map((one, index) => (
+                                <Text key={index} className="text-sm text-foreground">
+                                    {TITULO_AVISO(
+                                        one.kind,
+                                        one.detail,
+                                        one.believerName ?? undefined,
+                                        t,
+                                    )}
+                                </Text>
+                            ))}
+                        </View>
+                    )}
+                </Card>
+            </ScrollView>
+        </View>
+    );
 }
 
 function timezoneDelDispositivo(): string {
-  try {
-    return Intl.DateTimeFormat().resolvedOptions().timeZone || 'Europe/Madrid';
-  } catch {
-    return 'Europe/Madrid';
-  }
+    try {
+        return Intl.DateTimeFormat().resolvedOptions().timeZone || 'Europe/Madrid';
+    } catch {
+        return 'Europe/Madrid';
+    }
 }
 
 function TITULO_AVISO(
-  kind: CalendarWarningKind,
-  detail: string,
-  name: string | undefined,
-  t: TFunction,
+    kind: CalendarWarningKind,
+    detail: string,
+    name: string | undefined,
+    t: TFunction,
 ): string {
-  switch (kind) {
-    case 'unassigned':
-      return t('calendar.warnUnassigned', { detail });
-    case 'twiceSameDay':
-      return t('calendar.warnTwiceSameDay', { name });
-    case 'backToBack':
-      return t('calendar.warnBackToBack', { name });
-    case 'twoVenues':
-      return t('calendar.warnTwoVenues', { name });
-  }
+    switch (kind) {
+        case 'unassigned':
+            return t('calendar.warnUnassigned', { detail });
+        case 'twiceSameDay':
+            return t('calendar.warnTwiceSameDay', { name });
+        case 'backToBack':
+            return t('calendar.warnBackToBack', { name });
+        case 'twoVenues':
+            return t('calendar.warnTwoVenues', { name });
+    }
 }

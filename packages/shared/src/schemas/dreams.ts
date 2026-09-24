@@ -5,21 +5,21 @@ import { emotionSchema } from './emotions';
 
 /** Un audio de un sueño. El fichero vive en disco; esto es su ficha (D13). */
 export const dreamAudioSchema = z.object({
-  id: z.uuid(),
-  dreamId: z.uuid(),
-  mimeType: z.string(),
-  sizeBytes: z.number().int(),
-  durationSeconds: z.number().int().nullable(),
-  /** Si se grabó ahí mismo o se adjuntó ya hecho. Se dice en la interfaz. */
-  recorded: z.boolean(),
-  createdAt: z.string(),
+    id: z.uuid(),
+    dreamId: z.uuid(),
+    mimeType: z.string(),
+    sizeBytes: z.number().int(),
+    durationSeconds: z.number().int().nullable(),
+    /** Si se grabó ahí mismo o se adjuntó ya hecho. Se dice en la interfaz. */
+    recorded: z.boolean(),
+    createdAt: z.string(),
 });
 
 export type DreamAudio = z.infer<typeof dreamAudioSchema>;
 
 /** De dónde lo descarga la interfaz. Un solo sitio que lo diga (Regla 1). */
 export function dreamAudioPath(audioId: string): string {
-  return `/dream-audios/${audioId}`;
+    return `/dream-audios/${audioId}`;
 }
 
 /**
@@ -29,20 +29,20 @@ export function dreamAudioPath(audioId: string): string {
  * profecía del RFC 0004.
  */
 export const dreamSchema = z.object({
-  id: z.uuid(),
-  /** Opcional: a las cuatro de la mañana nadie titula (D17). */
-  title: z.string().nullable(),
-  body: z.string(),
-  /** La noche en que se soñó, no el día en que se escribió (D11). */
-  dreamedAt: isoDateSchema,
-  interpretation: z.string().nullable(),
-  /** No nulo ⇒ cumplido (D8). */
-  fulfilledAt: isoDateSchema.nullable(),
-  /** Qué significó, escrito al cerrarlo (D10). */
-  fulfillmentMeaning: z.string().nullable(),
-  emotions: z.array(emotionSchema),
-  audios: z.array(dreamAudioSchema),
-  createdAt: z.string(),
+    id: z.uuid(),
+    /** Opcional: a las cuatro de la mañana nadie titula (D17). */
+    title: z.string().nullable(),
+    body: z.string(),
+    /** La noche en que se soñó, no el día en que se escribió (D11). */
+    dreamedAt: isoDateSchema,
+    interpretation: z.string().nullable(),
+    /** No nulo ⇒ cumplido (D8). */
+    fulfilledAt: isoDateSchema.nullable(),
+    /** Qué significó, escrito al cerrarlo (D10). */
+    fulfillmentMeaning: z.string().nullable(),
+    emotions: z.array(emotionSchema),
+    audios: z.array(dreamAudioSchema),
+    createdAt: z.string(),
 });
 
 export type Dream = z.infer<typeof dreamSchema>;
@@ -62,11 +62,11 @@ const emotionIdsSchema = z.array(z.uuid()).max(20);
  * debería tener que abrir la ficha después solo para guardarla.
  */
 export const createDreamSchema = z.object({
-  title: titleSchema.optional(),
-  body: bodySchema,
-  dreamedAt: isoDateSchema,
-  interpretation: longTextSchema.nullable().optional(),
-  emotionIds: emotionIdsSchema.optional(),
+    title: titleSchema.optional(),
+    body: bodySchema,
+    dreamedAt: isoDateSchema,
+    interpretation: longTextSchema.nullable().optional(),
+    emotionIds: emotionIdsSchema.optional(),
 });
 
 export type CreateDreamInput = z.infer<typeof createDreamSchema>;
@@ -77,14 +77,14 @@ export type CreateDreamInput = z.infer<typeof createDreamSchema>;
  * tiene delante la fila entera.
  */
 export const updateDreamSchema = z.object({
-  title: titleSchema.optional(),
-  body: bodySchema.optional(),
-  dreamedAt: isoDateSchema.optional(),
-  interpretation: longTextSchema.nullable().optional(),
-  /** `null` lo vuelve a abrir y se lleva por delante lo que significó. */
-  fulfilledAt: isoDateSchema.nullable().optional(),
-  fulfillmentMeaning: longTextSchema.nullable().optional(),
-  emotionIds: emotionIdsSchema.optional(),
+    title: titleSchema.optional(),
+    body: bodySchema.optional(),
+    dreamedAt: isoDateSchema.optional(),
+    interpretation: longTextSchema.nullable().optional(),
+    /** `null` lo vuelve a abrir y se lleva por delante lo que significó. */
+    fulfilledAt: isoDateSchema.nullable().optional(),
+    fulfillmentMeaning: longTextSchema.nullable().optional(),
+    emotionIds: emotionIdsSchema.optional(),
 });
 
 export type UpdateDreamInput = z.infer<typeof updateDreamSchema>;

@@ -13,61 +13,61 @@ import { cn } from '@/lib/cn';
  * saliendo: no se le quita por haber cambiado el vocabulario.
  */
 export function GiftPicker({
-  gifts,
-  selected,
-  onToggle,
-  label,
+    gifts,
+    selected,
+    onToggle,
+    label,
 }: {
-  gifts: readonly Gift[];
-  selected: readonly string[];
-  onToggle: (id: string) => void;
-  label: string;
+    gifts: readonly Gift[];
+    selected: readonly string[];
+    onToggle: (id: string) => void;
+    label: string;
 }) {
-  const { t } = useTranslation();
-  const shown = gifts.filter((gift) => gift.isActive || selected.includes(gift.id));
+    const { t } = useTranslation();
+    const shown = gifts.filter((gift) => gift.isActive || selected.includes(gift.id));
 
-  return (
-    <fieldset className="gap-2 flex flex-col">
-      <legend className="text-sm font-medium">{label}</legend>
+    return (
+        <fieldset className="gap-2 flex flex-col">
+            <legend className="text-sm font-medium">{label}</legend>
 
-      {shown.length === 0 ? (
-        <p className="text-xs text-muted-foreground">{t('gifts.empty')}</p>
-      ) : (
-        <div className="gap-1.5 flex flex-wrap">
-          {shown.map((gift) => {
-            const active = selected.includes(gift.id);
+            {shown.length === 0 ? (
+                <p className="text-xs text-muted-foreground">{t('gifts.empty')}</p>
+            ) : (
+                <div className="gap-1.5 flex flex-wrap">
+                    {shown.map((gift) => {
+                        const active = selected.includes(gift.id);
 
-            return (
-              <button
-                key={gift.id}
-                type="button"
-                aria-pressed={active}
-                style={accentVars(gift.accent)}
-                onClick={() => {
-                  onToggle(gift.id);
-                }}
-                className={cn(
-                  'h-8 gap-1.5 px-3 text-xs inline-flex cursor-pointer items-center rounded-full border',
-                  'transition-[background-color,border-color] duration-200',
-                  'focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none',
-                  active
-                    ? 'border-[var(--acento)] bg-[color-mix(in_oklab,var(--acento)_14%,transparent)] text-foreground'
-                    : 'border-transparent bg-muted text-muted-foreground hover:text-foreground',
-                )}
-              >
-                <span
-                  aria-hidden
-                  className={cn(
-                    'h-1.5 w-1.5 rounded-full',
-                    active ? 'bg-[var(--acento)]' : 'bg-current opacity-40',
-                  )}
-                />
-                {gift.name}
-              </button>
-            );
-          })}
-        </div>
-      )}
-    </fieldset>
-  );
+                        return (
+                            <button
+                                key={gift.id}
+                                type="button"
+                                aria-pressed={active}
+                                style={accentVars(gift.accent)}
+                                onClick={() => {
+                                    onToggle(gift.id);
+                                }}
+                                className={cn(
+                                    'h-8 gap-1.5 px-3 text-xs inline-flex cursor-pointer items-center rounded-full border',
+                                    'transition-[background-color,border-color] duration-200',
+                                    'focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none',
+                                    active
+                                        ? 'border-[var(--acento)] bg-[color-mix(in_oklab,var(--acento)_14%,transparent)] text-foreground'
+                                        : 'border-transparent bg-muted text-muted-foreground hover:text-foreground',
+                                )}
+                            >
+                                <span
+                                    aria-hidden
+                                    className={cn(
+                                        'h-1.5 w-1.5 rounded-full',
+                                        active ? 'bg-[var(--acento)]' : 'bg-current opacity-40',
+                                    )}
+                                />
+                                {gift.name}
+                            </button>
+                        );
+                    })}
+                </div>
+            )}
+        </fieldset>
+    );
 }

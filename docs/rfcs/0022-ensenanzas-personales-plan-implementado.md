@@ -221,53 +221,56 @@ El editor solo produce — y el servidor solo acepta — este árbol, en
 const markSchema = z.object({ type: z.enum(['bold', 'italic']) });
 
 const textNodeSchema = z.object({
-  type: z.literal('text'),
-  text: z.string(),
-  marks: z.array(markSchema).optional(),
+    type: z.literal('text'),
+    text: z.string(),
+    marks: z.array(markSchema).optional(),
 });
 
 // paragraph, listItem y taskItem son mutuamente recursivos con las listas,
 // de ahí z.lazy(): TypeScript no puede inferir un tipo que se usa a sí mismo.
 const paragraphSchema = z.object({
-  type: z.literal('paragraph'),
-  content: z.array(textNodeSchema).optional(),
+    type: z.literal('paragraph'),
+    content: z.array(textNodeSchema).optional(),
 });
 
 const listItemSchema: z.ZodType<TeachingListItem> = z.lazy(() =>
-  z.object({ type: z.literal('listItem'), content: z.array(paragraphSchema) }),
+    z.object({
+        type: z.literal('listItem'),
+        content: z.array(paragraphSchema),
+    }),
 );
 
 const taskItemSchema: z.ZodType<TeachingTaskItem> = z.lazy(() =>
-  z.object({
-    type: z.literal('taskItem'),
-    attrs: z.object({ checked: z.boolean() }),
-    content: z.array(paragraphSchema),
-  }),
+    z.object({
+        type: z.literal('taskItem'),
+        attrs: z.object({ checked: z.boolean() }),
+        content: z.array(paragraphSchema),
+    }),
 );
 
 const bulletListSchema = z.object({
-  type: z.literal('bulletList'),
-  content: z.array(listItemSchema),
+    type: z.literal('bulletList'),
+    content: z.array(listItemSchema),
 });
 const orderedListSchema = z.object({
-  type: z.literal('orderedList'),
-  content: z.array(listItemSchema),
+    type: z.literal('orderedList'),
+    content: z.array(listItemSchema),
 });
 const taskListSchema = z.object({
-  type: z.literal('taskList'),
-  content: z.array(taskItemSchema),
+    type: z.literal('taskList'),
+    content: z.array(taskItemSchema),
 });
 
 const blockSchema = z.discriminatedUnion('type', [
-  paragraphSchema,
-  bulletListSchema,
-  orderedListSchema,
-  taskListSchema,
+    paragraphSchema,
+    bulletListSchema,
+    orderedListSchema,
+    taskListSchema,
 ]);
 
 export const teachingBodySchema = z.object({
-  type: z.literal('doc'),
-  content: z.array(blockSchema),
+    type: z.literal('doc'),
+    content: z.array(blockSchema),
 });
 
 export type TeachingBody = z.infer<typeof teachingBodySchema>;

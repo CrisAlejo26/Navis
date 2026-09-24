@@ -13,18 +13,18 @@ import { useEffect, useMemo } from 'react';
  * seguidas dejaría los cinco colgados hasta recargar la página.
  */
 export function PendingAudioPlayer({ blob }: { blob: Blob }) {
-  const src = useMemo(() => URL.createObjectURL(blob), [blob]);
+    const src = useMemo(() => URL.createObjectURL(blob), [blob]);
 
-  useEffect(
-    () => () => {
-      URL.revokeObjectURL(src);
-    },
-    [src],
-  );
+    useEffect(
+        () => () => {
+            URL.revokeObjectURL(src);
+        },
+        [src],
+    );
 
-  return (
-    <audio controls preload="metadata" src={src} className="h-9 min-w-0 w-full">
-      <track kind="captions" />
-    </audio>
-  );
+    return (
+        <audio controls preload="metadata" src={src} className="h-9 min-w-0 w-full">
+            <track kind="captions" />
+        </audio>
+    );
 }

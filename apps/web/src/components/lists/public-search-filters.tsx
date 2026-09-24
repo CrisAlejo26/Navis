@@ -17,55 +17,55 @@ import type { PublicFilterState } from '@/lib/lists/use-public-filter';
  * se enseña nunca aquí, a petición expresa: solo importa la sede.
  */
 export function PublicSearchFilters({ state }: { state: PublicFilterState }) {
-  const { t } = useTranslation();
+    const { t } = useTranslation();
 
-  return (
-    <div className="mb-6 gap-3 flex flex-col">
-      <SearchField
-        value={state.search}
-        onChange={state.setSearch}
-        label={t('lists.searchPeople')}
-      />
+    return (
+        <div className="mb-6 gap-3 flex flex-col">
+            <SearchField
+                value={state.search}
+                onChange={state.setSearch}
+                label={t('lists.searchPeople')}
+            />
 
-      {state.congregations.length > 1 && (
-        <FilterRow
-          label={t('believers.congregation')}
-          value={state.congregation}
-          options={state.congregations}
-          onChange={state.setCongregation}
-        />
-      )}
-    </div>
-  );
+            {state.congregations.length > 1 && (
+                <FilterRow
+                    label={t('believers.congregation')}
+                    value={state.congregation}
+                    options={state.congregations}
+                    onChange={state.setCongregation}
+                />
+            )}
+        </div>
+    );
 }
 
 function FilterRow({
-  label,
-  value,
-  options,
-  onChange,
+    label,
+    value,
+    options,
+    onChange,
 }: {
-  label: string;
-  value: string | null;
-  options: readonly string[];
-  onChange: (value: string | null) => void;
+    label: string;
+    value: string | null;
+    options: readonly string[];
+    onChange: (value: string | null) => void;
 }) {
-  return (
-    <div>
-      <p className="mb-1.5 text-xs font-medium text-muted-foreground">{label}</p>
-      <div className="gap-1.5 flex flex-wrap">
-        {options.map((option) => (
-          <Chip
-            key={option}
-            active={value === option}
-            onClick={() => {
-              onChange(value === option ? null : option);
-            }}
-          >
-            {option}
-          </Chip>
-        ))}
-      </div>
-    </div>
-  );
+    return (
+        <div>
+            <p className="mb-1.5 text-xs font-medium text-muted-foreground">{label}</p>
+            <div className="gap-1.5 flex flex-wrap">
+                {options.map((option) => (
+                    <Chip
+                        key={option}
+                        active={value === option}
+                        onClick={() => {
+                            onChange(value === option ? null : option);
+                        }}
+                    >
+                        {option}
+                    </Chip>
+                ))}
+            </div>
+        </div>
+    );
 }

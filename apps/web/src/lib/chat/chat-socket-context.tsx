@@ -13,6 +13,6 @@ import { ChatSocketContext } from './chat-socket-hooks';
  * `withCredentials`. Solo hace falta pasarla a mano en móvil (D6).
  */
 export function ChatSocketProvider({ children }: { children: ReactNode }) {
-  const socket = useChatSocket({ origin: chatOrigin(env.VITE_API_URL) });
-  return <ChatSocketContext.Provider value={socket}>{children}</ChatSocketContext.Provider>;
+    const socket = useChatSocket({ origin: chatOrigin(env.VITE_API_URL) });
+    return <ChatSocketContext.Provider value={socket}>{children}</ChatSocketContext.Provider>;
 }

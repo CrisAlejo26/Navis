@@ -11,19 +11,19 @@ import { STATE_ICON, STATE_TONE } from '@/lib/prophecies/state-icons';
  * cambiase de color no diría nada a quien no lo distingue.
  */
 export function StateBadge({ state, className }: { state: ProphecyState; className?: string }) {
-  const { t } = useTranslation();
-  const Icon = STATE_ICON[state];
+    const { t } = useTranslation();
+    const Icon = STATE_ICON[state];
 
-  return (
-    <span
-      className={cn(
-        'gap-1.5 px-2 py-0.5 font-medium inline-flex items-center rounded-full border text-[11px]',
-        STATE_TONE[state],
-        className,
-      )}
-    >
-      <Icon size={11} aria-hidden />
-      {t(`prophecies.state.${state}`)}
-    </span>
-  );
+    return (
+        <span
+            className={cn(
+                'gap-1.5 px-2 py-0.5 font-medium inline-flex items-center rounded-full border text-[11px]',
+                STATE_TONE[state],
+                className,
+            )}
+        >
+            <Icon size={11} aria-hidden />
+            {t(`prophecies.state.${state}`)}
+        </span>
+    );
 }

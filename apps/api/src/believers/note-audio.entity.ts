@@ -20,37 +20,37 @@ import type { BelieverNote } from './believer-note.entity';
 @Entity('note_audios')
 @Index('IDX_note_audios_note', ['noteId'])
 export class NoteAudio extends BaseEntity {
-  @ApiProperty()
-  @Index()
-  @Column({ name: 'church_id', type: UUID })
-  churchId: string;
+    @ApiProperty()
+    @Index()
+    @Column({ name: 'church_id', type: UUID })
+    churchId: string;
 
-  @ApiProperty()
-  @Column({ name: 'note_id', type: UUID })
-  noteId: string;
+    @ApiProperty()
+    @Column({ name: 'note_id', type: UUID })
+    noteId: string;
 
-  /* Por nombre y con `Relation<>`: ver `calendar/pattern-phase.entity.ts`. */
-  @ManyToOne('BelieverNote', 'audios', { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'note_id' })
-  note: Relation<BelieverNote>;
+    /* Por nombre y con `Relation<>`: ver `calendar/pattern-phase.entity.ts`. */
+    @ManyToOne('BelieverNote', 'audios', { onDelete: 'CASCADE' })
+    @JoinColumn({ name: 'note_id' })
+    note: Relation<BelieverNote>;
 
-  @ApiProperty({ description: 'El nombre del fichero en disco, generado aquí' })
-  @Column({ name: 'storage_key', type: 'text' })
-  storageKey: string;
+    @ApiProperty({ description: 'El nombre del fichero en disco, generado aquí' })
+    @Column({ name: 'storage_key', type: 'text' })
+    storageKey: string;
 
-  @ApiProperty({ example: 'audio/webm' })
-  @Column({ name: 'mime_type', type: 'text' })
-  mimeType: string;
+    @ApiProperty({ example: 'audio/webm' })
+    @Column({ name: 'mime_type', type: 'text' })
+    mimeType: string;
 
-  @ApiProperty()
-  @Column({ name: 'size_bytes', type: 'int' })
-  sizeBytes: number;
+    @ApiProperty()
+    @Column({ name: 'size_bytes', type: 'int' })
+    sizeBytes: number;
 
-  @ApiPropertyOptional({ description: 'Lo que dura, si el navegador lo supo medir' })
-  @Column({ name: 'duration_seconds', type: 'int', nullable: true })
-  durationSeconds: number | null;
+    @ApiPropertyOptional({ description: 'Lo que dura, si el navegador lo supo medir' })
+    @Column({ name: 'duration_seconds', type: 'int', nullable: true })
+    durationSeconds: number | null;
 
-  @ApiProperty({ description: 'Grabado en la aplicación, o adjuntado ya hecho' })
-  @Column({ type: 'boolean', default: false })
-  recorded: boolean;
+    @ApiProperty({ description: 'Grabado en la aplicación, o adjuntado ya hecho' })
+    @Column({ type: 'boolean', default: false })
+    recorded: boolean;
 }

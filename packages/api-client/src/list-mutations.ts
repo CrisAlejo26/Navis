@@ -1,10 +1,10 @@
 import type {
-  AddListMembersInput,
-  CreateListInput,
-  List,
-  ListMember,
-  UpdateListInput,
-  UpdateListMemberInput,
+    AddListMembersInput,
+    CreateListInput,
+    List,
+    ListMember,
+    UpdateListInput,
+    UpdateListMemberInput,
 } from '@navis/shared';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
@@ -21,83 +21,83 @@ import { queryKeys } from './query-keys';
  * `believers.all` también, porque los puntos y el filtro por lista viven ahí.
  */
 function refresh(client: ReturnType<typeof useQueryClient>) {
-  return Promise.all([
-    client.invalidateQueries({ queryKey: queryKeys.lists.all }),
-    client.invalidateQueries({ queryKey: queryKeys.believers.all }),
-  ]);
+    return Promise.all([
+        client.invalidateQueries({ queryKey: queryKeys.lists.all }),
+        client.invalidateQueries({ queryKey: queryKeys.believers.all }),
+    ]);
 }
 
 export function useCreateList(api: ApiClient) {
-  const client = useQueryClient();
+    const client = useQueryClient();
 
-  return useMutation({
-    mutationFn: (input: CreateListInput) => api.post<List>('/lists', { ...input }),
-    onSuccess: () => refresh(client),
-  });
+    return useMutation({
+        mutationFn: (input: CreateListInput) => api.post<List>('/lists', { ...input }),
+        onSuccess: () => refresh(client),
+    });
 }
 
 export function useUpdateList(api: ApiClient) {
-  const client = useQueryClient();
+    const client = useQueryClient();
 
-  return useMutation({
-    mutationFn: ({ id, ...input }: UpdateListInput & { id: string }) =>
-      api.patch<List>(`/lists/${id}`, { ...input }),
-    onSuccess: () => refresh(client),
-  });
+    return useMutation({
+        mutationFn: ({ id, ...input }: UpdateListInput & { id: string }) =>
+            api.patch<List>(`/lists/${id}`, { ...input }),
+        onSuccess: () => refresh(client),
+    });
 }
 
 export function useDeleteList(api: ApiClient) {
-  const client = useQueryClient();
+    const client = useQueryClient();
 
-  return useMutation({
-    mutationFn: (id: string) => api.delete<void>(`/lists/${id}`),
-    onSuccess: () => refresh(client),
-  });
+    return useMutation({
+        mutationFn: (id: string) => api.delete<void>(`/lists/${id}`),
+        onSuccess: () => refresh(client),
+    });
 }
 
 export function useAddListMembers(api: ApiClient) {
-  const client = useQueryClient();
+    const client = useQueryClient();
 
-  return useMutation({
-    mutationFn: ({ listId, ...input }: AddListMembersInput & { listId: string }) =>
-      api.post<ListMember[]>(`/lists/${listId}/members`, { ...input }),
-    onSuccess: () => refresh(client),
-  });
+    return useMutation({
+        mutationFn: ({ listId, ...input }: AddListMembersInput & { listId: string }) =>
+            api.post<ListMember[]>(`/lists/${listId}/members`, { ...input }),
+        onSuccess: () => refresh(client),
+    });
 }
 
 export function useRemoveListMember(api: ApiClient) {
-  const client = useQueryClient();
+    const client = useQueryClient();
 
-  return useMutation({
-    mutationFn: ({ listId, believerId }: { listId: string; believerId: string }) =>
-      api.delete<void>(`/lists/${listId}/members/${believerId}`),
-    onSuccess: () => refresh(client),
-  });
+    return useMutation({
+        mutationFn: ({ listId, believerId }: { listId: string; believerId: string }) =>
+            api.delete<void>(`/lists/${listId}/members/${believerId}`),
+        onSuccess: () => refresh(client),
+    });
 }
 
 export function useUpdateListMember(api: ApiClient) {
-  const client = useQueryClient();
+    const client = useQueryClient();
 
-  return useMutation({
-    mutationFn: ({
-      listId,
-      believerId,
-      ...input
-    }: UpdateListMemberInput & { listId: string; believerId: string }) =>
-      api.patch<ListMember[]>(`/lists/${listId}/members/${believerId}`, { ...input }),
-    onSuccess: () => refresh(client),
-  });
+    return useMutation({
+        mutationFn: ({
+            listId,
+            believerId,
+            ...input
+        }: UpdateListMemberInput & { listId: string; believerId: string }) =>
+            api.patch<ListMember[]>(`/lists/${listId}/members/${believerId}`, { ...input }),
+        onSuccess: () => refresh(client),
+    });
 }
 
 /** El orden **entero**, no «sube uno» (D6). */
 export function useReorderList(api: ApiClient) {
-  const client = useQueryClient();
+    const client = useQueryClient();
 
-  return useMutation({
-    mutationFn: ({ listId, believerIds }: { listId: string; believerIds: string[] }) =>
-      api.put<ListMember[]>(`/lists/${listId}/order`, { believerIds }),
-    onSuccess: () => refresh(client),
-  });
+    return useMutation({
+        mutationFn: ({ listId, believerIds }: { listId: string; believerIds: string[] }) =>
+            api.put<ListMember[]>(`/lists/${listId}/order`, { believerIds }),
+        onSuccess: () => refresh(client),
+    });
 }
 
 /* Publicar tiene su propio fichero (`list-share-mutations`): es otro permiso y

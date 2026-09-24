@@ -15,42 +15,42 @@ import { TagsService } from './tags.service';
 @UseGuards(ActiveChurchGuard)
 @RequirePermissions('tasks.view')
 export class TagsController {
-  constructor(private readonly tags: TagsService) {}
+    constructor(private readonly tags: TagsService) {}
 
-  @Get()
-  @ApiOperation({ summary: 'El vocabulario de la cuenta en la iglesia activa' })
-  list(@CurrentChurch() churchId: string, @CurrentUser('id') ownerId: string): Promise<Tag[]> {
-    return this.tags.list(churchId, ownerId);
-  }
+    @Get()
+    @ApiOperation({ summary: 'El vocabulario de la cuenta en la iglesia activa' })
+    list(@CurrentChurch() churchId: string, @CurrentUser('id') ownerId: string): Promise<Tag[]> {
+        return this.tags.list(churchId, ownerId);
+    }
 
-  @Post()
-  @ApiOperation({ summary: 'Crea una etiqueta' })
-  create(
-    @CurrentChurch() churchId: string,
-    @CurrentUser('id') ownerId: string,
-    @Body() dto: CreateTagDto,
-  ): Promise<Tag> {
-    return this.tags.create(churchId, ownerId, dto);
-  }
+    @Post()
+    @ApiOperation({ summary: 'Crea una etiqueta' })
+    create(
+        @CurrentChurch() churchId: string,
+        @CurrentUser('id') ownerId: string,
+        @Body() dto: CreateTagDto,
+    ): Promise<Tag> {
+        return this.tags.create(churchId, ownerId, dto);
+    }
 
-  @Patch(':id')
-  @ApiOperation({ summary: 'Edita una etiqueta' })
-  update(
-    @CurrentChurch() churchId: string,
-    @CurrentUser('id') ownerId: string,
-    @Param('id') id: string,
-    @Body() dto: UpdateTagDto,
-  ): Promise<Tag> {
-    return this.tags.update(churchId, ownerId, id, dto);
-  }
+    @Patch(':id')
+    @ApiOperation({ summary: 'Edita una etiqueta' })
+    update(
+        @CurrentChurch() churchId: string,
+        @CurrentUser('id') ownerId: string,
+        @Param('id') id: string,
+        @Body() dto: UpdateTagDto,
+    ): Promise<Tag> {
+        return this.tags.update(churchId, ownerId, id, dto);
+    }
 
-  @Delete(':id')
-  @ApiOperation({ summary: 'Borra una etiqueta, en cascada de sus usos' })
-  async remove(
-    @CurrentChurch() churchId: string,
-    @CurrentUser('id') ownerId: string,
-    @Param('id') id: string,
-  ): Promise<void> {
-    await this.tags.remove(churchId, ownerId, id);
-  }
+    @Delete(':id')
+    @ApiOperation({ summary: 'Borra una etiqueta, en cascada de sus usos' })
+    async remove(
+        @CurrentChurch() churchId: string,
+        @CurrentUser('id') ownerId: string,
+        @Param('id') id: string,
+    ): Promise<void> {
+        await this.tags.remove(churchId, ownerId, id);
+    }
 }

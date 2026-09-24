@@ -8,27 +8,27 @@ import { useEffect, useRef, type RefObject } from 'react';
  * (Regla 1 §5).
  */
 export function useDismissablePopover<T extends HTMLElement>(
-  open: boolean,
-  onClose: () => void,
+    open: boolean,
+    onClose: () => void,
 ): RefObject<T | null> {
-  const box = useRef<T>(null);
+    const box = useRef<T>(null);
 
-  useEffect(() => {
-    if (!open) return;
+    useEffect(() => {
+        if (!open) return;
 
-    const close = (event: Event) => {
-      if (event instanceof KeyboardEvent && event.key !== 'Escape') return;
-      if (event.type === 'pointerdown' && box.current?.contains(event.target as Node)) return;
-      onClose();
-    };
+        const close = (event: Event) => {
+            if (event instanceof KeyboardEvent && event.key !== 'Escape') return;
+            if (event.type === 'pointerdown' && box.current?.contains(event.target as Node)) return;
+            onClose();
+        };
 
-    document.addEventListener('pointerdown', close);
-    document.addEventListener('keydown', close);
-    return () => {
-      document.removeEventListener('pointerdown', close);
-      document.removeEventListener('keydown', close);
-    };
-  }, [open, onClose]);
+        document.addEventListener('pointerdown', close);
+        document.addEventListener('keydown', close);
+        return () => {
+            document.removeEventListener('pointerdown', close);
+            document.removeEventListener('keydown', close);
+        };
+    }, [open, onClose]);
 
-  return box;
+    return box;
 }

@@ -19,69 +19,72 @@ import { useThemeStore } from '@/lib/theme';
  * web: aquí las cuentas, en `/prophecies/list` el listado entero.
  */
 export default function PropheciesScreen() {
-  const { t } = useTranslation();
-  const palette = themeColorsHex[useThemeStore((state) => state.resolvedTheme)];
-  const { data: stats, isPending, isError, refetch } = useProphecyStats();
-  const [formOpen, setFormOpen] = useState(false);
-  const createProphecy = useCreateProphecy();
+    const { t } = useTranslation();
+    const palette = themeColorsHex[useThemeStore((state) => state.resolvedTheme)];
+    const { data: stats, isPending, isError, refetch } = useProphecyStats();
+    const [formOpen, setFormOpen] = useState(false);
+    const createProphecy = useCreateProphecy();
 
-  if (isPending) {
+    if (isPending) {
+        return (
+            <View className="flex-1 items-center justify-center bg-background">
+                <ActivityIndicator color={palette.primary} />
+            </View>
+        );
+    }
+
+    if (isError || !stats) {
+        return (
+            <EmptyState
+                icon="cloud-offline-outline"
+                title={t('errors.generic')}
+                action={{ label: t('common.retry'), onPress: () => void refetch() }}
+            />
+        );
+    }
+
     return (
-      <View className="flex-1 items-center justify-center bg-background">
-        <ActivityIndicator color={palette.primary} />
-      </View>
+        <View className="flex-1 bg-background">
+            <ScrollView
+                contentContainerClassName="gap-4 p-4 pb-10"
+                showsVerticalScrollIndicator={false}
+            >
+                {stats.total === 0 ? (
+                    <EmptyState
+                        icon="sparkles-outline"
+                        title={t('prophecies.emptyTitle')}
+                        description={t('prophecies.emptyBody')}
+                        action={{ label: t('prophecies.add'), onPress: () => setFormOpen(true) }}
+                    />
+                ) : (
+                    <>
+                        <ProphecyHero stats={stats} />
+                        <ProphecyStatCards stats={stats} />
+                        <ProphecyMonthlyChart monthly={stats.monthly} />
+                    </>
+                )}
+
+                <Button
+                    title={t('prophecies.add')}
+                    onPress={() => setFormOpen(true)}
+                    leadingIcon="add"
+                    size="lg"
+                />
+                <Button
+                    title={t('prophecies.open')}
+                    variant="secondary"
+                    onPress={() => router.push('/prophecies/list')}
+                />
+            </ScrollView>
+
+            <ProphecyFormSheet
+                visible={formOpen}
+                onClose={() => setFormOpen(false)}
+                prophecy={null}
+                onSave={async (values) => {
+                    await createProphecy.mutateAsync(toInput(values));
+                }}
+            />
+        </View>
     );
-  }
-
-  if (isError || !stats) {
-    return (
-      <EmptyState
-        icon="cloud-offline-outline"
-        title={t('errors.generic')}
-        action={{ label: t('common.retry'), onPress: () => void refetch() }}
-      />
-    );
-  }
-
-  return (
-    <View className="flex-1 bg-background">
-      <ScrollView contentContainerClassName="gap-4 p-4 pb-10" showsVerticalScrollIndicator={false}>
-        {stats.total === 0 ? (
-          <EmptyState
-            icon="sparkles-outline"
-            title={t('prophecies.emptyTitle')}
-            description={t('prophecies.emptyBody')}
-            action={{ label: t('prophecies.add'), onPress: () => setFormOpen(true) }}
-          />
-        ) : (
-          <>
-            <ProphecyHero stats={stats} />
-            <ProphecyStatCards stats={stats} />
-            <ProphecyMonthlyChart monthly={stats.monthly} />
-          </>
-        )}
-
-        <Button
-          title={t('prophecies.add')}
-          onPress={() => setFormOpen(true)}
-          leadingIcon="add"
-          size="lg"
-        />
-        <Button
-          title={t('prophecies.open')}
-          variant="secondary"
-          onPress={() => router.push('/prophecies/list')}
-        />
-      </ScrollView>
-
-      <ProphecyFormSheet
-        visible={formOpen}
-        onClose={() => setFormOpen(false)}
-        prophecy={null}
-        onSave={async (values) => {
-          await createProphecy.mutateAsync(toInput(values));
-        }}
-      />
-    </View>
-  );
 }

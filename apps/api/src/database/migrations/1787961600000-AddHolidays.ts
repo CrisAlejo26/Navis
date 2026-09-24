@@ -19,53 +19,53 @@ import { Table, TableColumn, TableIndex, type MigrationInterface, type QueryRunn
  * misma rama por motor que ya hacen las migraciones anteriores.
  */
 export class AddHolidays1787961600000 implements MigrationInterface {
-  name = 'AddHolidays1787961600000';
+    name = 'AddHolidays1787961600000';
 
-  async up(queryRunner: QueryRunner): Promise<void> {
-    const isPostgres = queryRunner.connection.options.type === 'postgres';
-    const uuid = isPostgres ? 'uuid' : 'varchar';
-    const timestamp = isPostgres ? 'timestamptz' : 'datetime';
-    const now = isPostgres ? 'now()' : 'CURRENT_TIMESTAMP';
+    async up(queryRunner: QueryRunner): Promise<void> {
+        const isPostgres = queryRunner.connection.options.type === 'postgres';
+        const uuid = isPostgres ? 'uuid' : 'varchar';
+        const timestamp = isPostgres ? 'timestamptz' : 'datetime';
+        const now = isPostgres ? 'now()' : 'CURRENT_TIMESTAMP';
 
-    await queryRunner.addColumns('churches', [
-      new TableColumn({ name: 'country', type: 'text', isNullable: false, default: "'ES'" }),
-      new TableColumn({ name: 'region', type: 'text', isNullable: true }),
-    ]);
+        await queryRunner.addColumns('churches', [
+            new TableColumn({ name: 'country', type: 'text', isNullable: false, default: "'ES'" }),
+            new TableColumn({ name: 'region', type: 'text', isNullable: true }),
+        ]);
 
-    await queryRunner.createTable(
-      new Table({
-        name: 'holiday_cache',
-        columns: [
-          {
-            name: 'id',
-            type: uuid,
-            isPrimary: true,
-            default: isPostgres ? 'gen_random_uuid()' : undefined,
-          },
-          { name: 'created_at', type: timestamp, isNullable: false, default: now },
-          { name: 'updated_at', type: timestamp, isNullable: false, default: now },
-          { name: 'deleted_at', type: timestamp, isNullable: true },
-          { name: 'country', type: 'text', isNullable: false },
-          { name: 'year', type: 'int', isNullable: false },
-          { name: 'payload', type: 'text', isNullable: false },
-          { name: 'fetched_at', type: timestamp, isNullable: false },
-        ],
-      }),
-      true,
-    );
+        await queryRunner.createTable(
+            new Table({
+                name: 'holiday_cache',
+                columns: [
+                    {
+                        name: 'id',
+                        type: uuid,
+                        isPrimary: true,
+                        default: isPostgres ? 'gen_random_uuid()' : undefined,
+                    },
+                    { name: 'created_at', type: timestamp, isNullable: false, default: now },
+                    { name: 'updated_at', type: timestamp, isNullable: false, default: now },
+                    { name: 'deleted_at', type: timestamp, isNullable: true },
+                    { name: 'country', type: 'text', isNullable: false },
+                    { name: 'year', type: 'int', isNullable: false },
+                    { name: 'payload', type: 'text', isNullable: false },
+                    { name: 'fetched_at', type: timestamp, isNullable: false },
+                ],
+            }),
+            true,
+        );
 
-    await queryRunner.createIndex(
-      'holiday_cache',
-      new TableIndex({
-        name: 'UQ_holiday_cache',
-        columnNames: ['country', 'year'],
-        isUnique: true,
-      }),
-    );
-  }
+        await queryRunner.createIndex(
+            'holiday_cache',
+            new TableIndex({
+                name: 'UQ_holiday_cache',
+                columnNames: ['country', 'year'],
+                isUnique: true,
+            }),
+        );
+    }
 
-  async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropTable('holiday_cache', true);
-    await queryRunner.dropColumns('churches', ['country', 'region']);
-  }
+    async down(queryRunner: QueryRunner): Promise<void> {
+        await queryRunner.dropTable('holiday_cache', true);
+        await queryRunner.dropColumns('churches', ['country', 'region']);
+    }
 }

@@ -17,30 +17,30 @@ import type { Meeting } from './meeting.entity';
 @Entity('meeting_slots')
 @Index('IDX_meeting_slots_order', ['meetingId', 'position'])
 export class MeetingSlot extends BaseEntity {
-  @ApiProperty()
-  @Column({ name: 'meeting_id', type: UUID })
-  meetingId: string;
+    @ApiProperty()
+    @Column({ name: 'meeting_id', type: UUID })
+    meetingId: string;
 
-  /* Por nombre y con `Relation<>`, para no cerrar el ciclo padre-hijo al
+    /* Por nombre y con `Relation<>`, para no cerrar el ciclo padre-hijo al
      cargar los módulos (ver `pattern-phase.entity.ts`). */
-  @ManyToOne('Meeting', 'slots', { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'meeting_id' })
-  meeting: Relation<Meeting>;
+    @ManyToOne('Meeting', 'slots', { onDelete: 'CASCADE' })
+    @JoinColumn({ name: 'meeting_id' })
+    meeting: Relation<Meeting>;
 
-  @ApiProperty({ example: 'Introducción' })
-  @Column({ type: 'text' })
-  name: string;
+    @ApiProperty({ example: 'Introducción' })
+    @Column({ type: 'text' })
+    name: string;
 
-  @ApiProperty({ description: 'Orden dentro de la reunión, empezando en 0' })
-  @Column({ type: 'int' })
-  position: number;
+    @ApiProperty({ description: 'Orden dentro de la reunión, empezando en 0' })
+    @Column({ type: 'int' })
+    position: number;
 
-  @ApiPropertyOptional({ description: 'Quién la ocupa. Nulo es sin asignar' })
-  @Index()
-  @Column({ name: 'believer_id', type: UUID, nullable: true })
-  believerId: string | null;
+    @ApiPropertyOptional({ description: 'Quién la ocupa. Nulo es sin asignar' })
+    @Index()
+    @Column({ name: 'believer_id', type: UUID, nullable: true })
+    believerId: string | null;
 
-  @ApiPropertyOptional({ example: 'Tema: Hechos 2' })
-  @Column({ type: 'text', nullable: true })
-  note: string | null;
+    @ApiPropertyOptional({ example: 'Tema: Hechos 2' })
+    @Column({ type: 'text', nullable: true })
+    note: string | null;
 }

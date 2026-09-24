@@ -17,74 +17,74 @@ import { formatDay } from '@/lib/format';
  * (RFC 0005 D1).
  */
 export function DreamsExportDialog({
-  open,
-  onClose,
-  screen,
-}: {
-  open: boolean;
-  onClose: () => void;
-  screen: DreamsScreen;
-}) {
-  const { t } = useTranslation();
-  const columns = useDreamExportColumns();
-  const emotionLabel = useEmotionLabel();
-  const filters = screen.filters;
-
-  const { data, isFetching } = useDreamsExport(
-    api,
-    {
-      search: screen.query.search || undefined,
-      state: filters.state,
-      emotion: filters.emotion,
-      from: filters.from || undefined,
-      to: filters.to || undefined,
-      sort: screen.query.sort,
-      order: screen.query.order,
-    },
     open,
-  );
+    onClose,
+    screen,
+}: {
+    open: boolean;
+    onClose: () => void;
+    screen: DreamsScreen;
+}) {
+    const { t } = useTranslation();
+    const columns = useDreamExportColumns();
+    const emotionLabel = useEmotionLabel();
+    const filters = screen.filters;
 
-  const doc = useMemo(() => {
-    if (!data) return null;
+    const { data, isFetching } = useDreamsExport(
+        api,
+        {
+            search: screen.query.search || undefined,
+            state: filters.state,
+            emotion: filters.emotion,
+            from: filters.from || undefined,
+            to: filters.to || undefined,
+            sort: screen.query.sort,
+            order: screen.query.order,
+        },
+        open,
+    );
 
-    const label = t('dreams.title');
-    const emociones = filters.emotion
-      .map((id) => screen.emotions.find((one) => one.id === id))
-      .filter((one) => one !== undefined)
-      .map(emotionLabel);
+    const doc = useMemo(() => {
+        if (!data) return null;
 
-    const partes = [
-      t('export.rows', { count: data.returned, total: data.total }),
-      screen.query.search ? `${t('dreams.search')}: ${screen.query.search}` : '',
-      filters.state.length > 0
-        ? `${t('export.state')}: ${filters.state.map((one) => t(`dreams.state.${one}`)).join(', ')}`
-        : '',
-      emociones.length > 0 ? `${t('dreams.columns.emotions')}: ${emociones.join(', ')}` : '',
-      filters.from || filters.to
-        ? [filters.from, filters.to]
-            .filter(Boolean)
-            .map((day) => formatDay(day))
-            .join(' – ')
-        : '',
-    ].filter(Boolean);
+        const label = t('dreams.title');
+        const emociones = filters.emotion
+            .map((id) => screen.emotions.find((one) => one.id === id))
+            .filter((one) => one !== undefined)
+            .map(emotionLabel);
 
-    return buildDocument({
-      label,
-      title: label,
-      subtitle: partes.join(' · '),
-      columns,
-      rows: data.rows,
-    });
-  }, [data, columns, emotionLabel, filters, screen.emotions, screen.query.search, t]);
+        const partes = [
+            t('export.rows', { count: data.returned, total: data.total }),
+            screen.query.search ? `${t('dreams.search')}: ${screen.query.search}` : '',
+            filters.state.length > 0
+                ? `${t('export.state')}: ${filters.state.map((one) => t(`dreams.state.${one}`)).join(', ')}`
+                : '',
+            emociones.length > 0 ? `${t('dreams.columns.emotions')}: ${emociones.join(', ')}` : '',
+            filters.from || filters.to
+                ? [filters.from, filters.to]
+                      .filter(Boolean)
+                      .map((day) => formatDay(day))
+                      .join(' – ')
+                : '',
+        ].filter(Boolean);
 
-  return (
-    <ExportSheet
-      open={open}
-      onClose={onClose}
-      doc={doc}
-      total={data?.total ?? 0}
-      truncated={data?.truncated ?? false}
-      isLoading={isFetching && !data}
-    />
-  );
+        return buildDocument({
+            label,
+            title: label,
+            subtitle: partes.join(' · '),
+            columns,
+            rows: data.rows,
+        });
+    }, [data, columns, emotionLabel, filters, screen.emotions, screen.query.search, t]);
+
+    return (
+        <ExportSheet
+            open={open}
+            onClose={onClose}
+            doc={doc}
+            total={data?.total ?? 0}
+            truncated={data?.truncated ?? false}
+            isLoading={isFetching && !data}
+        />
+    );
 }

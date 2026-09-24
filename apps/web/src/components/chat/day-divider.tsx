@@ -7,13 +7,13 @@ import { formatDate } from '@/lib/format';
  * dejar sitio a la estela (Regla 9 §4: una audacia, no dos).
  */
 export function DayDivider({ date }: { date: string }) {
-  return (
-    <div role="separator" className="py-3 gap-3 flex items-center text-muted-foreground">
-      <span aria-hidden className="h-px flex-1 bg-border" />
-      <span className="font-medium text-[11px] tracking-[0.14em] uppercase">
-        {formatDate(date, 'medium')}
-      </span>
-      <span aria-hidden className="h-px flex-1 bg-border" />
-    </div>
-  );
+    return (
+        <div role="separator" className="py-3 gap-3 flex items-center text-muted-foreground">
+            <span aria-hidden className="h-px flex-1 bg-border" />
+            <span className="font-medium text-[11px] tracking-[0.14em] uppercase">
+                {formatDate(date, 'medium')}
+            </span>
+            <span aria-hidden className="h-px flex-1 bg-border" />
+        </div>
+    );
 }

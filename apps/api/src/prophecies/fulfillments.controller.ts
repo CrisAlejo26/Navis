@@ -17,36 +17,36 @@ import { toFulfillmentView } from './prophecies.mapper';
 @ApiTags('profecias')
 @Controller('prophecies/:prophecyId/fulfillments')
 export class FulfillmentsController {
-  constructor(private readonly fulfillments: FulfillmentsService) {}
+    constructor(private readonly fulfillments: FulfillmentsService) {}
 
-  @Post()
-  @ApiOperation({ summary: 'Anota una parte que ya se ha cumplido' })
-  async create(
-    @CurrentUser('id') ownerId: string,
-    @Param('prophecyId') prophecyId: string,
-    @Body() dto: CreateFulfillmentDto,
-  ): Promise<FulfillmentView> {
-    return toFulfillmentView(await this.fulfillments.create(ownerId, prophecyId, dto));
-  }
+    @Post()
+    @ApiOperation({ summary: 'Anota una parte que ya se ha cumplido' })
+    async create(
+        @CurrentUser('id') ownerId: string,
+        @Param('prophecyId') prophecyId: string,
+        @Body() dto: CreateFulfillmentDto,
+    ): Promise<FulfillmentView> {
+        return toFulfillmentView(await this.fulfillments.create(ownerId, prophecyId, dto));
+    }
 
-  @Patch(':id')
-  @ApiOperation({ summary: 'Corrige el texto o la fecha' })
-  async update(
-    @CurrentUser('id') ownerId: string,
-    @Param('prophecyId') prophecyId: string,
-    @Param('id') id: string,
-    @Body() dto: UpdateFulfillmentDto,
-  ): Promise<FulfillmentView> {
-    return toFulfillmentView(await this.fulfillments.update(ownerId, prophecyId, id, dto));
-  }
+    @Patch(':id')
+    @ApiOperation({ summary: 'Corrige el texto o la fecha' })
+    async update(
+        @CurrentUser('id') ownerId: string,
+        @Param('prophecyId') prophecyId: string,
+        @Param('id') id: string,
+        @Body() dto: UpdateFulfillmentDto,
+    ): Promise<FulfillmentView> {
+        return toFulfillmentView(await this.fulfillments.update(ownerId, prophecyId, id, dto));
+    }
 
-  @Delete(':id')
-  @ApiOperation({ summary: 'Lo quita y recalcula el último movimiento' })
-  remove(
-    @CurrentUser('id') ownerId: string,
-    @Param('prophecyId') prophecyId: string,
-    @Param('id') id: string,
-  ): Promise<void> {
-    return this.fulfillments.remove(ownerId, prophecyId, id);
-  }
+    @Delete(':id')
+    @ApiOperation({ summary: 'Lo quita y recalcula el último movimiento' })
+    remove(
+        @CurrentUser('id') ownerId: string,
+        @Param('prophecyId') prophecyId: string,
+        @Param('id') id: string,
+    ): Promise<void> {
+        return this.fulfillments.remove(ownerId, prophecyId, id);
+    }
 }

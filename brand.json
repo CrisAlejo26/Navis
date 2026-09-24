@@ -1,12 +1,12 @@
 {
-  "$comentario": [
-    "Identidad del proyecto en un único sitio. NO edites esto a mano:",
-    "usa `pnpm rename <NuevoNombre>`, que lo cambia aquí y en todo el código.",
-    "El logo vive aparte, en packages/theme/src/logo/ (`pnpm icons`)."
-  ],
-  "nombre": "Navis",
-  "slug": "navis",
-  "scope": "@navis",
-  "dominioInverso": "org.navis",
-  "esquema": "navis"
+    "$comentario": [
+        "Identidad del proyecto en un único sitio. NO edites esto a mano:",
+        "usa `pnpm rename <NuevoNombre>`, que lo cambia aquí y en todo el código.",
+        "El logo vive aparte, en packages/theme/src/logo/ (`pnpm icons`)."
+    ],
+    "nombre": "Navis",
+    "slug": "navis",
+    "scope": "@navis",
+    "dominioInverso": "org.navis",
+    "esquema": "navis"
 }

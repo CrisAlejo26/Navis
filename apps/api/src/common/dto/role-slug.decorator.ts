@@ -10,4 +10,8 @@ import { IsString, Length, Matches } from 'class-validator';
  * `RolesService.ensureExists` contra la tabla, que es la única fuente fiable.
  */
 export const IsRoleSlug = (): PropertyDecorator =>
-  applyDecorators(IsString(), Length(2, 40), Matches(/^[a-z0-9-]+$/, { message: 'Rol no válido' }));
+    applyDecorators(
+        IsString(),
+        Length(2, 40),
+        Matches(/^[a-z0-9-]+$/, { message: 'Rol no válido' }),
+    );

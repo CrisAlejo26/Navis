@@ -11,6 +11,6 @@
  * para que del resto del código salga ya tipado (Regla 10 §6).
  */
 export const commaList = ({ value }: { value: unknown }): unknown => {
-  if (typeof value === 'string') return value.split(',').filter(Boolean);
-  return value;
+    if (typeof value === 'string') return value.split(',').filter(Boolean);
+    return value;
 };

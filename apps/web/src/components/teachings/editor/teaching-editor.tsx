@@ -17,46 +17,45 @@ import { TeachingEditorToolbar } from '@/components/teachings/editor/teaching-ed
  * con `React.lazy` (`editor/lazy.tsx`), como recharts (CLAUDE.md).
  */
 export function TeachingEditor({
-  value,
-  onChange,
+    value,
+    onChange,
 }: {
-  value: TeachingBody;
-  onChange: (body: TeachingBody) => void;
+    value: TeachingBody;
+    onChange: (body: TeachingBody) => void;
 }) {
-  const { t } = useTranslation();
+    const { t } = useTranslation();
 
-  const editor = useEditor({
-    extensions: [
-      StarterKit.configure({
-        heading: false,
-        blockquote: false,
-        code: false,
-        codeBlock: false,
-        horizontalRule: false,
-        strike: false,
-        hardBreak: false,
-      }),
-      TaskList,
-      TaskItem.configure({ nested: false }),
-    ],
-    content: value ?? EMPTY_TEACHING_BODY,
-    editorProps: {
-      attributes: {
-        class:
-          'min-h-40 max-w-prose text-[17px] leading-[1.75] focus:outline-none [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:my-1 [&_p]:my-2 [&_ul[data-type=taskList]]:list-none [&_ul[data-type=taskList]]:pl-0',
-      },
-    },
-    onUpdate: ({ editor: instance }) => {
-      onChange(instance.getJSON() as TeachingBody);
-    },
-  });
+    const editor = useEditor({
+        extensions: [
+            StarterKit.configure({
+                heading: false,
+                blockquote: false,
+                code: false,
+                codeBlock: false,
+                horizontalRule: false,
+                strike: false,
+                hardBreak: false,
+            }),
+            TaskList,
+            TaskItem.configure({ nested: false }),
+        ],
+        content: value ?? EMPTY_TEACHING_BODY,
+        editorProps: {
+            attributes: {
+                class: 'min-h-40 max-w-prose text-[17px] leading-[1.75] focus:outline-none [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:my-1 [&_p]:my-2 [&_ul[data-type=taskList]]:list-none [&_ul[data-type=taskList]]:pl-0',
+            },
+        },
+        onUpdate: ({ editor: instance }) => {
+            onChange(instance.getJSON() as TeachingBody);
+        },
+    });
 
-  return (
-    <div className="min-w-0 rounded-lg border bg-background focus-within:ring-2 focus-within:ring-ring">
-      <TeachingEditorToolbar editor={editor} />
-      <div className="p-3">
-        <EditorContent editor={editor} aria-label={t('teachings.notesField')} />
-      </div>
-    </div>
-  );
+    return (
+        <div className="min-w-0 rounded-lg border bg-background focus-within:ring-2 focus-within:ring-ring">
+            <TeachingEditorToolbar editor={editor} />
+            <div className="p-3">
+                <EditorContent editor={editor} aria-label={t('teachings.notesField')} />
+            </div>
+        </div>
+    );
 }

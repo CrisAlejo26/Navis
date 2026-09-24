@@ -24,63 +24,69 @@ import { api } from '@/lib/api';
  * labor cambia el rótulo en todas partes y no mueve ni una programación.
  */
 export function MinistriesPage() {
-  const { t } = useTranslation();
-  const { data: ministries = [] } = useMinistries(api);
+    const { t } = useTranslation();
+    const { data: ministries = [] } = useMinistries(api);
 
-  const [adding, setAdding] = useState(false);
-  const [editing, setEditing] = useState<MinistryCatalog | null>(null);
-  const [deleting, setDeleting] = useState<MinistryCatalog | null>(null);
+    const [adding, setAdding] = useState(false);
+    const [editing, setEditing] = useState<MinistryCatalog | null>(null);
+    const [deleting, setDeleting] = useState<MinistryCatalog | null>(null);
 
-  return (
-    <section className="max-w-2xl gap-6 flex flex-col">
-      <div>
-        <BackLink to="/believers" label={t('believers.backToList')} />
+    return (
+        <section className="max-w-2xl gap-6 flex flex-col">
+            <div>
+                <BackLink to="/believers" label={t('believers.backToList')} />
 
-        <div className="gap-3 mt-2 sm:flex-row sm:items-center sm:justify-between flex flex-col">
-          <h1 className="text-2xl font-semibold tracking-[-0.02em]">{t('ministries.title')}</h1>
-          <Button
-            variant="secondary"
-            size="md"
-            className="sm:self-auto self-start"
-            onClick={() => {
-              setAdding(true);
-            }}
-          >
-            <Plus size={15} aria-hidden />
-            {t('ministries.add')}
-          </Button>
-        </div>
+                <div className="gap-3 mt-2 sm:flex-row sm:items-center sm:justify-between flex flex-col">
+                    <h1 className="text-2xl font-semibold tracking-[-0.02em]">
+                        {t('ministries.title')}
+                    </h1>
+                    <Button
+                        variant="secondary"
+                        size="md"
+                        className="sm:self-auto self-start"
+                        onClick={() => {
+                            setAdding(true);
+                        }}
+                    >
+                        <Plus size={15} aria-hidden />
+                        {t('ministries.add')}
+                    </Button>
+                </div>
 
-        <p className="mt-2 max-w-prose text-sm text-muted-foreground">
-          {t('ministries.description')}
-        </p>
-      </div>
+                <p className="mt-2 max-w-prose text-sm text-muted-foreground">
+                    {t('ministries.description')}
+                </p>
+            </div>
 
-      <Card>
-        {ministries.length === 0 ? (
-          <EmptyState icon={HandHeart} title={t('ministries.empty')} />
-        ) : (
-          <MinistryRows ministries={ministries} onEdit={setEditing} onDelete={setDeleting} />
-        )}
-      </Card>
+            <Card>
+                {ministries.length === 0 ? (
+                    <EmptyState icon={HandHeart} title={t('ministries.empty')} />
+                ) : (
+                    <MinistryRows
+                        ministries={ministries}
+                        onEdit={setEditing}
+                        onDelete={setDeleting}
+                    />
+                )}
+            </Card>
 
-      {(adding || editing) && (
-        <MinistryForm
-          open
-          ministry={editing ?? undefined}
-          onClose={() => {
-            setAdding(false);
-            setEditing(null);
-          }}
-        />
-      )}
+            {(adding || editing) && (
+                <MinistryForm
+                    open
+                    ministry={editing ?? undefined}
+                    onClose={() => {
+                        setAdding(false);
+                        setEditing(null);
+                    }}
+                />
+            )}
 
-      <DeleteMinistryDialog
-        ministry={deleting}
-        onClose={() => {
-          setDeleting(null);
-        }}
-      />
-    </section>
-  );
+            <DeleteMinistryDialog
+                ministry={deleting}
+                onClose={() => {
+                    setDeleting(null);
+                }}
+            />
+        </section>
+    );
 }

@@ -20,60 +20,62 @@ import { Button } from '@/components/ui/button';
  * accidente esperando.
  */
 export function BulkBar({
-  selected,
-  congregations,
-  lists,
-  canManage,
-  canManageLists,
-  onExport,
-  onDone,
-  onClear,
+    selected,
+    congregations,
+    lists,
+    canManage,
+    canManageLists,
+    onExport,
+    onDone,
+    onClear,
 }: {
-  selected: readonly string[];
-  congregations: readonly Congregation[];
-  lists: readonly ListSummary[];
-  /** Poner sede cambia fichas; exportar, no. Solo la primera pide permiso. */
-  canManage: boolean;
-  /** Meter a alguien en una lista es otro permiso: es de listas, no de fichas. */
-  canManageLists: boolean;
-  onExport: () => void;
-  onDone: () => void;
-  onClear: () => void;
+    selected: readonly string[];
+    congregations: readonly Congregation[];
+    lists: readonly ListSummary[];
+    /** Poner sede cambia fichas; exportar, no. Solo la primera pide permiso. */
+    canManage: boolean;
+    /** Meter a alguien en una lista es otro permiso: es de listas, no de fichas. */
+    canManageLists: boolean;
+    onExport: () => void;
+    onDone: () => void;
+    onClear: () => void;
 }) {
-  const { t } = useTranslation();
-  if (selected.length === 0) return null;
+    const { t } = useTranslation();
+    if (selected.length === 0) return null;
 
-  return (
-    <div className="gap-3 p-3 sm:flex-row sm:items-center flex flex-col rounded-xl border border-primary/30 bg-primary/5">
-      <p className="text-sm font-medium tabular-nums">
-        {t('believers.selected', { count: selected.length })}
-      </p>
+    return (
+        <div className="gap-3 p-3 sm:flex-row sm:items-center flex flex-col rounded-xl border border-primary/30 bg-primary/5">
+            <p className="text-sm font-medium tabular-nums">
+                {t('believers.selected', { count: selected.length })}
+            </p>
 
-      <div className="gap-2 sm:ml-auto flex flex-wrap items-center">
-        <Button variant="secondary" size="sm" onClick={onExport}>
-          <Download size={14} aria-hidden />
-          {t('export.selectedAction', { count: selected.length })}
-        </Button>
+            <div className="gap-2 sm:ml-auto flex flex-wrap items-center">
+                <Button variant="secondary" size="sm" onClick={onExport}>
+                    <Download size={14} aria-hidden />
+                    {t('export.selectedAction', { count: selected.length })}
+                </Button>
 
-        {canManage && (
-          <BulkCongregationAction
-            selected={selected}
-            congregations={congregations}
-            onDone={onDone}
-          />
-        )}
+                {canManage && (
+                    <BulkCongregationAction
+                        selected={selected}
+                        congregations={congregations}
+                        onDone={onDone}
+                    />
+                )}
 
-        {canManageLists && <BulkListAction selected={selected} lists={lists} onDone={onDone} />}
+                {canManageLists && (
+                    <BulkListAction selected={selected} lists={lists} onDone={onDone} />
+                )}
 
-        <Button
-          variant="ghost"
-          size="icon"
-          aria-label={t('believers.clearSelection')}
-          onClick={onClear}
-        >
-          <X size={15} aria-hidden />
-        </Button>
-      </div>
-    </div>
-  );
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    aria-label={t('believers.clearSelection')}
+                    onClick={onClear}
+                >
+                    <X size={15} aria-hidden />
+                </Button>
+            </div>
+        </div>
+    );
 }

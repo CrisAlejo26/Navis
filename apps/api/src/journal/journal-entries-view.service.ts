@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import type {
-  JournalEntry as JournalEntryView,
-  JournalEntryListItem,
-  JournalExportRow,
+    JournalEntry as JournalEntryView,
+    JournalEntryListItem,
+    JournalExportRow,
 } from '@navis/shared';
 
 import { UsersService } from '../users/users.service';
@@ -21,49 +21,49 @@ import type { JournalEntry } from './journal-entry.entity';
  */
 @Injectable()
 export class JournalEntriesViewService {
-  constructor(
-    private readonly users: UsersService,
-    private readonly audios: JournalAudiosService,
-  ) {}
+    constructor(
+        private readonly users: UsersService,
+        private readonly audios: JournalAudiosService,
+    ) {}
 
-  async listItems(entries: readonly JournalEntry[]): Promise<JournalEntryListItem[]> {
-    if (entries.length === 0) return [];
+    async listItems(entries: readonly JournalEntry[]): Promise<JournalEntryListItem[]> {
+        if (entries.length === 0) return [];
 
-    const [authorNames, audios] = await this.context(entries);
-    return entries.map((entry) =>
-      toListItem(entry, {
-        authorName: entry.authorId ? (authorNames.get(entry.authorId) ?? null) : null,
-        hasAudio: (audios.get(entry.id) ?? []).length > 0,
-      }),
-    );
-  }
+        const [authorNames, audios] = await this.context(entries);
+        return entries.map((entry) =>
+            toListItem(entry, {
+                authorName: entry.authorId ? (authorNames.get(entry.authorId) ?? null) : null,
+                hasAudio: (audios.get(entry.id) ?? []).length > 0,
+            }),
+        );
+    }
 
-  async exportRows(entries: readonly JournalEntry[]): Promise<JournalExportRow[]> {
-    if (entries.length === 0) return [];
+    async exportRows(entries: readonly JournalEntry[]): Promise<JournalExportRow[]> {
+        if (entries.length === 0) return [];
 
-    const [authorNames, audios] = await this.context(entries);
-    return entries.map((entry) =>
-      toExportRow(entry, {
-        authorName: entry.authorId ? (authorNames.get(entry.authorId) ?? null) : null,
-        hasAudio: (audios.get(entry.id) ?? []).length > 0,
-      }),
-    );
-  }
+        const [authorNames, audios] = await this.context(entries);
+        return entries.map((entry) =>
+            toExportRow(entry, {
+                authorName: entry.authorId ? (authorNames.get(entry.authorId) ?? null) : null,
+                hasAudio: (audios.get(entry.id) ?? []).length > 0,
+            }),
+        );
+    }
 
-  async one(entry: JournalEntry): Promise<JournalEntryView> {
-    const [authorNames, audios] = await this.context([entry]);
-    return toEntryView(entry, {
-      authorName: entry.authorId ? (authorNames.get(entry.authorId) ?? null) : null,
-      audios: audios.get(entry.id) ?? [],
-    });
-  }
+    async one(entry: JournalEntry): Promise<JournalEntryView> {
+        const [authorNames, audios] = await this.context([entry]);
+        return toEntryView(entry, {
+            authorName: entry.authorId ? (authorNames.get(entry.authorId) ?? null) : null,
+            audios: audios.get(entry.id) ?? [],
+        });
+    }
 
-  private context(
-    entries: readonly JournalEntry[],
-  ): Promise<[Map<string, string>, Map<string, JournalEntry['audios']>]> {
-    return Promise.all([
-      this.users.namesOf(entries.map((entry) => entry.authorId)),
-      this.audios.forEntries(entries.map((entry) => entry.id)),
-    ]);
-  }
+    private context(
+        entries: readonly JournalEntry[],
+    ): Promise<[Map<string, string>, Map<string, JournalEntry['audios']>]> {
+        return Promise.all([
+            this.users.namesOf(entries.map((entry) => entry.authorId)),
+            this.audios.forEntries(entries.map((entry) => entry.id)),
+        ]);
+    }
 }

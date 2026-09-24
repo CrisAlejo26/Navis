@@ -13,19 +13,19 @@ import type { Task } from './task.entity';
 @Entity('task_occurrences')
 @Index('UQ_task_occurrences', ['taskId', 'date'], { unique: true })
 export class TaskOccurrence extends BaseEntity {
-  @Column({ name: 'task_id', type: UUID })
-  taskId: string;
+    @Column({ name: 'task_id', type: UUID })
+    taskId: string;
 
-  @ManyToOne('Task', 'occurrences', { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'task_id' })
-  task: Relation<Task>;
+    @ManyToOne('Task', 'occurrences', { onDelete: 'CASCADE' })
+    @JoinColumn({ name: 'task_id' })
+    task: Relation<Task>;
 
-  @Column({ type: 'date' })
-  date: string;
+    @Column({ type: 'date' })
+    date: string;
 
-  @Column({ type: 'text' })
-  status: TaskStatus;
+    @Column({ type: 'text' })
+    status: TaskStatus;
 
-  @Column({ name: 'completed_at', type: TIMESTAMP, nullable: true })
-  completedAt: Date | null;
+    @Column({ name: 'completed_at', type: TIMESTAMP, nullable: true })
+    completedAt: Date | null;
 }

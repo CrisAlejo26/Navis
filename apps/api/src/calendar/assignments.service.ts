@@ -1,8 +1,8 @@
 import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-  UnprocessableEntityException,
+    BadRequestException,
+    Injectable,
+    NotFoundException,
+    UnprocessableEntityException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { isSchedulable, type AssignSlotInput, type Meeting as MeetingView } from '@navis/shared';
@@ -21,98 +21,98 @@ import { PatternsService } from './patterns.service';
  */
 @Injectable()
 export class AssignmentsService {
-  constructor(
-    @InjectRepository(Meeting) private readonly meetings: Repository<Meeting>,
-    @InjectRepository(MeetingSlot) private readonly slots: Repository<MeetingSlot>,
-    private readonly dataSource: DataSource,
-    private readonly patterns: PatternsService,
-    private readonly believers: BelieversService,
-    private readonly meetingsService: MeetingsService,
-  ) {}
+    constructor(
+        @InjectRepository(Meeting) private readonly meetings: Repository<Meeting>,
+        @InjectRepository(MeetingSlot) private readonly slots: Repository<MeetingSlot>,
+        private readonly dataSource: DataSource,
+        private readonly patterns: PatternsService,
+        private readonly believers: BelieversService,
+        private readonly meetingsService: MeetingsService,
+    ) {}
 
-  async assign(churchId: string, input: AssignSlotInput): Promise<MeetingView> {
-    if (input.believerId) {
-      // Se programa a quien sigue viniendo: es lo que antes decía `is_active` y
-      // ahora dice el estado, sin dos fuentes de verdad (RFC 0003 D2).
-      const person = await this.believers.require(churchId, input.believerId);
-      if (!isSchedulable(person.status)) {
-        throw new UnprocessableEntityException('Esa persona ya no está activa');
-      }
+    async assign(churchId: string, input: AssignSlotInput): Promise<MeetingView> {
+        if (input.believerId) {
+            // Se programa a quien sigue viniendo: es lo que antes decía `is_active` y
+            // ahora dice el estado, sin dos fuentes de verdad (RFC 0003 D2).
+            const person = await this.believers.require(churchId, input.believerId);
+            if (!isSchedulable(person.status)) {
+                throw new UnprocessableEntityException('Esa persona ya no está activa');
+            }
+        }
+
+        const meeting = input.meetingId
+            ? await this.meetingsService.require(churchId, input.meetingId)
+            : await this.ensureMeeting(churchId, input);
+
+        const slot = await this.slots.findOne({
+            where: { meetingId: meeting.id, position: input.position },
+        });
+        if (!slot) throw new NotFoundException('Esa fase no existe en la reunión');
+
+        slot.believerId = input.believerId;
+        if (input.note !== undefined) slot.note = input.note ?? null;
+        await this.slots.save(slot);
+
+        return this.meetingsService.view(churchId, meeting.id);
     }
 
-    const meeting = input.meetingId
-      ? await this.meetingsService.require(churchId, input.meetingId)
-      : await this.ensureMeeting(churchId, input);
+    /**
+     * La reunión de ese patrón y ese día, materializándola si hacía falta.
+     *
+     * La creación —reunión y fases— va en una transacción, para que no quede
+     * nunca una reunión sin sus fases. El reintento se hace **fuera**: si dos
+     * clics simultáneos chocan contra el índice único, la transacción perdedora
+     * se deshace entera y basta con leer la que ganó.
+     */
+    private async ensureMeeting(churchId: string, input: AssignSlotInput): Promise<Meeting> {
+        const patternId = input.patternId;
+        if (!patternId) throw new BadRequestException('Hace falta la reunión o el patrón');
 
-    const slot = await this.slots.findOne({
-      where: { meetingId: meeting.id, position: input.position },
-    });
-    if (!slot) throw new NotFoundException('Esa fase no existe en la reunión');
+        const found = await this.findByPattern(churchId, patternId, input.date);
+        if (found) return found;
 
-    slot.believerId = input.believerId;
-    if (input.note !== undefined) slot.note = input.note ?? null;
-    await this.slots.save(slot);
+        const pattern = await this.patterns.require(churchId, patternId);
 
-    return this.meetingsService.view(churchId, meeting.id);
-  }
+        try {
+            return await this.dataSource.transaction(async (manager) => {
+                const meeting = await manager.save(
+                    manager.create(Meeting, {
+                        churchId,
+                        calendarId: pattern.calendarId,
+                        congregationId: pattern.congregationId,
+                        patternId: pattern.id,
+                        date: input.date,
+                        startTime: pattern.startTime,
+                        name: pattern.name,
+                        accent: pattern.accent,
+                        status: 'programada',
+                    }),
+                );
 
-  /**
-   * La reunión de ese patrón y ese día, materializándola si hacía falta.
-   *
-   * La creación —reunión y fases— va en una transacción, para que no quede
-   * nunca una reunión sin sus fases. El reintento se hace **fuera**: si dos
-   * clics simultáneos chocan contra el índice único, la transacción perdedora
-   * se deshace entera y basta con leer la que ganó.
-   */
-  private async ensureMeeting(churchId: string, input: AssignSlotInput): Promise<Meeting> {
-    const patternId = input.patternId;
-    if (!patternId) throw new BadRequestException('Hace falta la reunión o el patrón');
+                await manager.save(
+                    pattern.phases.map((phase) =>
+                        manager.create(MeetingSlot, {
+                            meetingId: meeting.id,
+                            name: phase.name,
+                            position: phase.position,
+                        }),
+                    ),
+                );
 
-    const found = await this.findByPattern(churchId, patternId, input.date);
-    if (found) return found;
-
-    const pattern = await this.patterns.require(churchId, patternId);
-
-    try {
-      return await this.dataSource.transaction(async (manager) => {
-        const meeting = await manager.save(
-          manager.create(Meeting, {
-            churchId,
-            calendarId: pattern.calendarId,
-            congregationId: pattern.congregationId,
-            patternId: pattern.id,
-            date: input.date,
-            startTime: pattern.startTime,
-            name: pattern.name,
-            accent: pattern.accent,
-            status: 'programada',
-          }),
-        );
-
-        await manager.save(
-          pattern.phases.map((phase) =>
-            manager.create(MeetingSlot, {
-              meetingId: meeting.id,
-              name: phase.name,
-              position: phase.position,
-            }),
-          ),
-        );
-
-        return meeting;
-      });
-    } catch (error) {
-      const won = await this.findByPattern(churchId, patternId, input.date);
-      if (won) return won;
-      throw error;
+                return meeting;
+            });
+        } catch (error) {
+            const won = await this.findByPattern(churchId, patternId, input.date);
+            if (won) return won;
+            throw error;
+        }
     }
-  }
 
-  private findByPattern(
-    churchId: string,
-    patternId: string,
-    date: string,
-  ): Promise<Meeting | null> {
-    return this.meetings.findOne({ where: { churchId, patternId, date } });
-  }
+    private findByPattern(
+        churchId: string,
+        patternId: string,
+        date: string,
+    ): Promise<Meeting | null> {
+        return this.meetings.findOne({ where: { churchId, patternId, date } });
+    }
 }

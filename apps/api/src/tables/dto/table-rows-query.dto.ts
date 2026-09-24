@@ -11,14 +11,14 @@ import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
  * comprueba contra las columnas reales y devuelve 400 si no existe.
  */
 export class TableRowsQueryDto extends PaginationQueryDto {
-  @ApiPropertyOptional({ description: 'La key de una columna; sin ella, por fecha de creación' })
-  @IsOptional()
-  @IsString()
-  @Length(1, 80)
-  sort?: string;
+    @ApiPropertyOptional({ description: 'La key de una columna; sin ella, por fecha de creación' })
+    @IsOptional()
+    @IsString()
+    @Length(1, 80)
+    sort?: string;
 
-  @ApiPropertyOptional({ description: 'RowFilter[] codificado en JSON' })
-  @IsOptional()
-  @IsString()
-  filters?: string;
+    @ApiPropertyOptional({ description: 'RowFilter[] codificado en JSON' })
+    @IsOptional()
+    @IsString()
+    filters?: string;
 }

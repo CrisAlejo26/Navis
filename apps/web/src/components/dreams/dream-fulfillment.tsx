@@ -16,31 +16,31 @@ import { formatDay } from '@/lib/format';
  * no» ocuparía el sitio de lo que sí hay.
  */
 export function DreamFulfillment({ dream, onEdit }: { dream: Dream; onEdit: () => void }) {
-  const { t } = useTranslation();
-  if (!dream.fulfilledAt) return null;
+    const { t } = useTranslation();
+    if (!dream.fulfilledAt) return null;
 
-  return (
-    <section
-      style={{ animationDelay: '80ms' }}
-      className="gap-3 p-4 sm:p-5 animate-rise-in flex flex-col rounded-xl border border-success/40 bg-success/10"
-    >
-      <h2 className="gap-2 text-sm font-medium flex items-center text-success">
-        <Sunrise size={15} aria-hidden />
-        {t('dreams.fulfilledOn', { date: formatDay(dream.fulfilledAt) })}
-      </h2>
+    return (
+        <section
+            style={{ animationDelay: '80ms' }}
+            className="gap-3 p-4 sm:p-5 animate-rise-in flex flex-col rounded-xl border border-success/40 bg-success/10"
+        >
+            <h2 className="gap-2 text-sm font-medium flex items-center text-success">
+                <Sunrise size={15} aria-hidden />
+                {t('dreams.fulfilledOn', { date: formatDay(dream.fulfilledAt) })}
+            </h2>
 
-      {dream.fulfillmentMeaning ? (
-        <p className="max-w-prose leading-relaxed text-[15px] whitespace-pre-wrap">
-          {dream.fulfillmentMeaning}
-        </p>
-      ) : (
-        <p className="text-sm text-muted-foreground">{t('dreams.meaningPlaceholder')}</p>
-      )}
+            {dream.fulfillmentMeaning ? (
+                <p className="max-w-prose leading-relaxed text-[15px] whitespace-pre-wrap">
+                    {dream.fulfillmentMeaning}
+                </p>
+            ) : (
+                <p className="text-sm text-muted-foreground">{t('dreams.meaningPlaceholder')}</p>
+            )}
 
-      <Button variant="ghost" size="md" className="self-start" onClick={onEdit}>
-        <Pencil size={15} aria-hidden />
-        {t('common.edit')}
-      </Button>
-    </section>
-  );
+            <Button variant="ghost" size="md" className="self-start" onClick={onEdit}>
+                <Pencil size={15} aria-hidden />
+                {t('common.edit')}
+            </Button>
+        </section>
+    );
 }

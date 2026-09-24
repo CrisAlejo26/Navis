@@ -236,10 +236,10 @@ comparten los cuatro clientes.
 ```ts
 // packages/shared/src/schemas/believers.ts
 export const BELIEVER_STATUSES = [
-  'activo',
-  'nuevo',
-  'inactivo',
-  'trasladado',
+    'activo',
+    'nuevo',
+    'inactivo',
+    'trasladado',
 ] as const;
 
 /** A quién se le puede programar un turno: los que siguen viniendo (D2). */
@@ -400,13 +400,13 @@ pedir nada:
 
 ```ts
 interface BelieverListItem extends Believer {
-  status: BelieverStatus;
-  alertAfterDays: number | null;
-  lastNoteAt: string | null; // AAAA-MM-DD
-  daysWithoutNote: number;
-  needsAttention: boolean;
-  gifts: Gift[]; // el don entero: nombre y color, para pintar la etiqueta
-  notesCount: number;
+    status: BelieverStatus;
+    alertAfterDays: number | null;
+    lastNoteAt: string | null; // AAAA-MM-DD
+    daysWithoutNote: number;
+    needsAttention: boolean;
+    gifts: Gift[]; // el don entero: nombre y color, para pintar la etiqueta
+    notesCount: number;
 }
 ```
 
@@ -420,10 +420,10 @@ los dos).
 
 ```json
 {
-  "total": 128,
-  "byStatus": { "activo": 96, "nuevo": 9, "inactivo": 18, "trasladado": 5 },
-  "needsAttention": 6,
-  "newThisMonth": 3
+    "total": 128,
+    "byStatus": { "activo": 96, "nuevo": 9, "inactivo": 18, "trasladado": 5 },
+    "needsAttention": 6,
+    "newThisMonth": 3
 }
 ```
 
@@ -435,13 +435,13 @@ listado y se invalida con él.
 
 ```json
 {
-  "kind": "don",
-  "occurredAt": "2026-07-14",
-  "told": "Pidió oración por su espalda",
-  "advice": "Oramos por él y quedó bien",
-  "giftId": "…",
-  "remindAt": "2026-08-12T19:00",
-  "remindText": "Preguntarle cómo sigue"
+    "kind": "don",
+    "occurredAt": "2026-07-14",
+    "told": "Pidió oración por su espalda",
+    "advice": "Oramos por él y quedó bien",
+    "giftId": "…",
+    "remindAt": "2026-08-12T19:00",
+    "remindText": "Preguntarle cómo sigue"
 }
 ```
 
@@ -540,9 +540,9 @@ Andrés Molina         ──────────────    sin notas
   en la tabla; a lo ancho de la tarjeta en las fichas y en la ficha completa.
 - **Relleno** proporcional a `transcurridos / margen`, tope al 100 % (no se
   sale de la pista):
-  - hasta 0,7 → `bg-primary`
-  - de 0,7 a 1 → `bg-warning`
-  - por encima de 1 → `bg-destructive`
+    - hasta 0,7 → `bg-primary`
+    - de 0,7 a 1 → `bg-warning`
+    - por encima de 1 → `bg-destructive`
 - **Etiqueta** a la derecha, `tabular-nums`: «hace 7 d». Desbordada, el texto
   pasa a `text-destructive` y se le antepone el icono `TriangleAlert`: **el
   color no informa solo**.
@@ -624,20 +624,20 @@ Dos columnas de `lg` para arriba; una sola por debajo.
 - **Vista «bitácora»**: las notas agrupadas **por mes**, con el mes en
   versalitas pequeñas y pegajoso al desplazar. Cada nota:
 
-  ```
-  ┃ ◆ TESTIMONIO · 14 jul
-  ┃   Contó que llevaba dos años sin hablar con su hermano y…
-  ┃   │ La indicación dada: que le llame esta semana
-  ┃   🔔 Recordatorio el 12 ago, 19:00 · Preguntarle       Dar por hecho
-  ┃   ▶ ──────── 1:24  Grabado aquí
-  ┃   Cristian · hace 3 semanas
-  ```
+    ```
+    ┃ ◆ TESTIMONIO · 14 jul
+    ┃   Contó que llevaba dos años sin hablar con su hermano y…
+    ┃   │ La indicación dada: que le llame esta semana
+    ┃   🔔 Recordatorio el 12 ago, 19:00 · Preguntarle       Dar por hecho
+    ┃   ▶ ──────── 1:24  Grabado aquí
+    ┃   Cristian · hace 3 semanas
+    ```
 
-  Filete vertical de 2 px del color del tipo, el tipo en versalitas a 11 px con
-  `tracking` abierto, la fecha al lado, **lo que contó** en `text-sm
+    Filete vertical de 2 px del color del tipo, el tipo en versalitas a 11 px con
+    `tracking` abierto, la fecha al lado, **lo que contó** en `text-sm
 leading-relaxed` y **la indicación** sangrada debajo, en `muted`, para que se
-  distingan de un vistazo (D15). Después el recordatorio, si lo hay, y los
-  audios con el reproductor del navegador. El pie, en `muted` y a 11 px.
+    distingan de un vistazo (D15). Después el recordatorio, si lo hay, y los
+    audios con el reproductor del navegador. El pie, en `muted` y a 11 px.
 
 - **Vista «lista»**: una línea por nota —cuándo, de qué va, lo que contó, la
   indicación—, truncadas. Es la de escanear un año, no la de leer.

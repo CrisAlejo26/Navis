@@ -10,29 +10,29 @@ import { Input } from '@/components/ui/input';
  * validación dice que no.
  */
 export function PasswordInput(props: Omit<ComponentProps<typeof Input>, 'type' | 'trailing'>) {
-  const { t } = useTranslation();
-  const [visible, setVisible] = useState(false);
-  const Icon = visible ? EyeOff : Eye;
-  const label = visible ? t('auth.hidePassword') : t('auth.showPassword');
+    const { t } = useTranslation();
+    const [visible, setVisible] = useState(false);
+    const Icon = visible ? EyeOff : Eye;
+    const label = visible ? t('auth.hidePassword') : t('auth.showPassword');
 
-  return (
-    <Input
-      {...props}
-      type={visible ? 'text' : 'password'}
-      trailing={
-        <button
-          type="button"
-          onClick={() => {
-            setVisible((current) => !current);
-          }}
-          aria-label={label}
-          aria-pressed={visible}
-          title={label}
-          className="h-9 w-9 inline-flex cursor-pointer items-center justify-center rounded-md text-muted-foreground transition-colors duration-200 hover:text-foreground"
-        >
-          <Icon size={17} aria-hidden />
-        </button>
-      }
-    />
-  );
+    return (
+        <Input
+            {...props}
+            type={visible ? 'text' : 'password'}
+            trailing={
+                <button
+                    type="button"
+                    onClick={() => {
+                        setVisible((current) => !current);
+                    }}
+                    aria-label={label}
+                    aria-pressed={visible}
+                    title={label}
+                    className="h-9 w-9 inline-flex cursor-pointer items-center justify-center rounded-md text-muted-foreground transition-colors duration-200 hover:text-foreground"
+                >
+                    <Icon size={17} aria-hidden />
+                </button>
+            }
+        />
+    );
 }

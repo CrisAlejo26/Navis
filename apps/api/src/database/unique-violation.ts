@@ -13,10 +13,10 @@ import { QueryFailedError } from 'typeorm';
  * trabajo que la otra ya dejó hecho.
  */
 export function isUniqueViolation(error: unknown): boolean {
-  if (!(error instanceof QueryFailedError)) return false;
+    if (!(error instanceof QueryFailedError)) return false;
 
-  const driverError = error.driverError as { code?: string } | undefined;
-  if (driverError?.code === '23505') return true;
+    const driverError = error.driverError as { code?: string } | undefined;
+    if (driverError?.code === '23505') return true;
 
-  return error.message.includes('UNIQUE constraint failed');
+    return error.message.includes('UNIQUE constraint failed');
 }

@@ -18,19 +18,19 @@ import { cn } from '@/lib/cn';
  * `aria-label`.
  */
 export function HolidayMark({ holiday, compact = false }: { holiday: Holiday; compact?: boolean }) {
-  const alcance = useHolidayScopeLabel(holiday);
+    const alcance = useHolidayScopeLabel(holiday);
 
-  return (
-    <p
-      title={`${holiday.name} · ${alcance}`}
-      aria-label={`${holiday.name}. ${alcance}`}
-      className={cn(
-        'gap-1 min-w-0 flex items-center text-[11px] text-muted-foreground',
-        compact && 'gap-0',
-      )}
-    >
-      <span aria-hidden className="size-1.5 shrink-0 rounded-full bg-destructive" />
-      {!compact && <span className="truncate">{holiday.name}</span>}
-    </p>
-  );
+    return (
+        <p
+            title={`${holiday.name} · ${alcance}`}
+            aria-label={`${holiday.name}. ${alcance}`}
+            className={cn(
+                'gap-1 min-w-0 flex items-center text-[11px] text-muted-foreground',
+                compact && 'gap-0',
+            )}
+        >
+            <span aria-hidden className="size-1.5 shrink-0 rounded-full bg-destructive" />
+            {!compact && <span className="truncate">{holiday.name}</span>}
+        </p>
+    );
 }

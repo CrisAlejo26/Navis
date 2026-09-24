@@ -26,76 +26,76 @@ import { toast } from '@/lib/toast';
  * «entrada personal» sin la cabecera a lo ancho.
  */
 export function JournalEntryPage() {
-  const { t } = useTranslation();
-  const { id = '' } = useParams();
-  const navigate = useNavigate();
-  const { data: entry, isLoading } = useJournalEntry(api, id);
-  const update = useUpdateEntry(api);
+    const { t } = useTranslation();
+    const { id = '' } = useParams();
+    const navigate = useNavigate();
+    const { data: entry, isLoading } = useJournalEntry(api, id);
+    const update = useUpdateEntry(api);
 
-  const [editing, setEditing] = useState(false);
-  const [deleting, setDeleting] = useState(false);
+    const [editing, setEditing] = useState(false);
+    const [deleting, setDeleting] = useState(false);
 
-  if (isLoading || !entry) return <PageSkeleton />;
+    if (isLoading || !entry) return <PageSkeleton />;
 
-  const markDone = () => {
-    update.mutate(
-      { id: entry.id, remindDone: true },
-      {
-        onSuccess: () => {
-          toast.success(t('journal.reminderMarkedDone'));
-        },
-      },
+    const markDone = () => {
+        update.mutate(
+            { id: entry.id, remindDone: true },
+            {
+                onSuccess: () => {
+                    toast.success(t('journal.reminderMarkedDone'));
+                },
+            },
+        );
+    };
+
+    return (
+        <section className="gap-4 animate-page-in flex flex-col">
+            <BackLink to="/journal/list" label={entry.title} />
+
+            <EntryIdentity
+                entry={entry}
+                onEdit={() => {
+                    setEditing(true);
+                }}
+                onDelete={() => {
+                    setDeleting(true);
+                }}
+            />
+
+            <Oleaje />
+
+            {entry.remindAt && (
+                <ReminderCard
+                    remindAt={entry.remindAt}
+                    remindText={entry.remindText}
+                    remindDoneAt={entry.remindDoneAt}
+                    isMarking={update.isPending}
+                    onMarkDone={markDone}
+                />
+            )}
+
+            <EntryAnnotation entry={entry} />
+            <EntryAudios audios={entry.audios} />
+
+            {editing && (
+                <EntryForm
+                    open
+                    entryId={entry.id}
+                    onClose={() => {
+                        setEditing(false);
+                    }}
+                />
+            )}
+
+            <DeleteEntryDialog
+                entry={deleting ? entry : null}
+                onClose={() => {
+                    setDeleting(false);
+                }}
+                onDeleted={() => {
+                    void navigate('/journal/list');
+                }}
+            />
+        </section>
     );
-  };
-
-  return (
-    <section className="gap-4 animate-page-in flex flex-col">
-      <BackLink to="/journal/list" label={entry.title} />
-
-      <EntryIdentity
-        entry={entry}
-        onEdit={() => {
-          setEditing(true);
-        }}
-        onDelete={() => {
-          setDeleting(true);
-        }}
-      />
-
-      <Oleaje />
-
-      {entry.remindAt && (
-        <ReminderCard
-          remindAt={entry.remindAt}
-          remindText={entry.remindText}
-          remindDoneAt={entry.remindDoneAt}
-          isMarking={update.isPending}
-          onMarkDone={markDone}
-        />
-      )}
-
-      <EntryAnnotation entry={entry} />
-      <EntryAudios audios={entry.audios} />
-
-      {editing && (
-        <EntryForm
-          open
-          entryId={entry.id}
-          onClose={() => {
-            setEditing(false);
-          }}
-        />
-      )}
-
-      <DeleteEntryDialog
-        entry={deleting ? entry : null}
-        onClose={() => {
-          setDeleting(false);
-        }}
-        onDeleted={() => {
-          void navigate('/journal/list');
-        }}
-      />
-    </section>
-  );
 }

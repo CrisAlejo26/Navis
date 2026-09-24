@@ -11,10 +11,10 @@ import { roleAccent, useRoleLabel } from '@/lib/roles';
 const STEPS = ROLE_LEVELS.length;
 
 interface RoleBadgeProps {
-  slug: RoleSlug;
-  /** La fila del catálogo, si se tiene: de ahí salen el nombre y el nivel. */
-  role?: RoleRow;
-  className?: string;
+    slug: RoleSlug;
+    /** La fila del catálogo, si se tiene: de ahí salen el nombre y el nivel. */
+    role?: RoleRow;
+    className?: string;
 }
 
 /**
@@ -28,26 +28,30 @@ interface RoleBadgeProps {
  * informa solo.
  */
 export function RoleBadge({ slug, role, className }: RoleBadgeProps) {
-  const label = useRoleLabel();
-  const level = role?.level ?? -1;
+    const label = useRoleLabel();
+    const level = role?.level ?? -1;
 
-  return (
-    <span
-      style={role ? accentVars(roleAccent(role.level)) : undefined}
-      className={cn('gap-2 inline-flex items-center', className)}
-    >
-      <span aria-hidden className="flex gap-[3px]">
-        {Array.from({ length: STEPS }, (_, index) => (
-          <span
-            key={index}
-            className={cn(
-              'h-1.5 w-1.5 rounded-full',
-              index <= level ? (role ? ACCENT_RAIL : 'bg-primary') : 'bg-muted-foreground/25',
-            )}
-          />
-        ))}
-      </span>
-      <span className="text-sm">{label(role ?? { slug })}</span>
-    </span>
-  );
+    return (
+        <span
+            style={role ? accentVars(roleAccent(role.level)) : undefined}
+            className={cn('gap-2 inline-flex items-center', className)}
+        >
+            <span aria-hidden className="flex gap-[3px]">
+                {Array.from({ length: STEPS }, (_, index) => (
+                    <span
+                        key={index}
+                        className={cn(
+                            'h-1.5 w-1.5 rounded-full',
+                            index <= level
+                                ? role
+                                    ? ACCENT_RAIL
+                                    : 'bg-primary'
+                                : 'bg-muted-foreground/25',
+                        )}
+                    />
+                ))}
+            </span>
+            <span className="text-sm">{label(role ?? { slug })}</span>
+        </span>
+    );
 }

@@ -8,7 +8,7 @@ export const LIST_TABS = ['people', 'stats', 'share'] as const;
 export type ListTab = (typeof LIST_TABS)[number];
 
 function isListTab(value: string | null): value is ListTab {
-  return (LIST_TABS as readonly string[]).includes(value ?? '');
+    return (LIST_TABS as readonly string[]).includes(value ?? '');
 }
 
 /**
@@ -24,37 +24,37 @@ function isListTab(value: string | null): value is ListTab {
  * estabas, y un enlace a «Compartir» se puede pegar en un mensaje.
  */
 export function useListScreen(): {
-  detail: ListDetail | undefined;
-  listId: string;
-  isLoading: boolean;
-  notFound: boolean;
-  tab: ListTab;
-  setTab: (tab: ListTab) => void;
+    detail: ListDetail | undefined;
+    listId: string;
+    isLoading: boolean;
+    notFound: boolean;
+    tab: ListTab;
+    setTab: (tab: ListTab) => void;
 } {
-  const { slug = '' } = useParams();
-  const [params, setParams] = useSearchParams();
-  const { data: lists, isLoading: cargandoTablon } = useLists(api);
+    const { slug = '' } = useParams();
+    const [params, setParams] = useSearchParams();
+    const { data: lists, isLoading: cargandoTablon } = useLists(api);
 
-  const list = lists?.find((one) => one.slug === slug);
-  const { data: detail, isLoading: cargandoFicha } = useList(api, list?.id ?? '', Boolean(list));
+    const list = lists?.find((one) => one.slug === slug);
+    const { data: detail, isLoading: cargandoFicha } = useList(api, list?.id ?? '', Boolean(list));
 
-  const raw = params.get('tab');
+    const raw = params.get('tab');
 
-  return {
-    detail,
-    listId: list?.id ?? '',
-    isLoading: cargandoTablon || (Boolean(list) && cargandoFicha),
-    notFound: !cargandoTablon && !list,
-    tab: isListTab(raw) ? raw : 'people',
-    setTab: (tab) => {
-      setParams(
-        (current) => {
-          const next = new URLSearchParams(current);
-          next.set('tab', tab);
-          return next;
+    return {
+        detail,
+        listId: list?.id ?? '',
+        isLoading: cargandoTablon || (Boolean(list) && cargandoFicha),
+        notFound: !cargandoTablon && !list,
+        tab: isListTab(raw) ? raw : 'people',
+        setTab: (tab) => {
+            setParams(
+                (current) => {
+                    const next = new URLSearchParams(current);
+                    next.set('tab', tab);
+                    return next;
+                },
+                { replace: true },
+            );
         },
-        { replace: true },
-      );
-    },
-  };
+    };
 }

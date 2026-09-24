@@ -25,52 +25,52 @@ import { toast } from '@/lib/toast';
  * nadie: recargar es siempre una pulsación.
  */
 export function PwaUpdatePrompt() {
-  const { t } = useTranslation();
-  const {
-    needRefresh: [needRefresh, setNeedRefresh],
-    offlineReady: [offlineReady, setOfflineReady],
-    updateServiceWorker,
-  } = useRegisterSW();
+    const { t } = useTranslation();
+    const {
+        needRefresh: [needRefresh, setNeedRefresh],
+        offlineReady: [offlineReady, setOfflineReady],
+        updateServiceWorker,
+    } = useRegisterSW();
 
-  useEffect(() => {
-    if (!offlineReady) return;
+    useEffect(() => {
+        if (!offlineReady) return;
 
-    toast.info(t('pwa.offlineReady'));
-    // Se baja la bandera al anunciarlo: sin esto, cualquier render posterior
-    // volvería a lanzar el mismo aviso.
-    setOfflineReady(false);
-  }, [offlineReady, setOfflineReady, t]);
+        toast.info(t('pwa.offlineReady'));
+        // Se baja la bandera al anunciarlo: sin esto, cualquier render posterior
+        // volvería a lanzar el mismo aviso.
+        setOfflineReady(false);
+    }, [offlineReady, setOfflineReady, t]);
 
-  if (!needRefresh) return null;
+    if (!needRefresh) return null;
 
-  return (
-    <div className="inset-x-4 bottom-4 sm:right-auto sm:w-96 pointer-events-none fixed z-50">
-      <div
-        role="status"
-        className="gap-3 p-4 shadow-lg animate-rise-in pointer-events-auto flex items-center rounded-xl border bg-popover text-popover-foreground"
-      >
-        <p className="text-sm flex-1">{t('pwa.updateAvailable')}</p>
+    return (
+        <div className="inset-x-4 bottom-4 sm:right-auto sm:w-96 pointer-events-none fixed z-50">
+            <div
+                role="status"
+                className="gap-3 p-4 shadow-lg animate-rise-in pointer-events-auto flex items-center rounded-xl border bg-popover text-popover-foreground"
+            >
+                <p className="text-sm flex-1">{t('pwa.updateAvailable')}</p>
 
-        <Button
-          size="sm"
-          onClick={() => {
-            void updateServiceWorker(true);
-          }}
-        >
-          {t('pwa.reload')}
-        </Button>
+                <Button
+                    size="sm"
+                    onClick={() => {
+                        void updateServiceWorker(true);
+                    }}
+                >
+                    {t('pwa.reload')}
+                </Button>
 
-        <button
-          type="button"
-          aria-label={t('common.close')}
-          onClick={() => {
-            setNeedRefresh(false);
-          }}
-          className="h-7 w-7 -mr-1 inline-flex shrink-0 cursor-pointer items-center justify-center rounded-md text-muted-foreground hover:text-foreground"
-        >
-          <X size={15} aria-hidden />
-        </button>
-      </div>
-    </div>
-  );
+                <button
+                    type="button"
+                    aria-label={t('common.close')}
+                    onClick={() => {
+                        setNeedRefresh(false);
+                    }}
+                    className="h-7 w-7 -mr-1 inline-flex shrink-0 cursor-pointer items-center justify-center rounded-md text-muted-foreground hover:text-foreground"
+                >
+                    <X size={15} aria-hidden />
+                </button>
+            </div>
+        </div>
+    );
 }

@@ -4,9 +4,9 @@
  * y la transcripción de una conversación (RFC 0019).
  */
 export function toPlainDateTime(iso: string): string {
-  const date = new Date(iso);
-  if (Number.isNaN(date.getTime())) return iso;
+    const date = new Date(iso);
+    if (Number.isNaN(date.getTime())) return iso;
 
-  const dos = (value: number) => String(value).padStart(2, '0');
-  return `${String(date.getFullYear())}-${dos(date.getMonth() + 1)}-${dos(date.getDate())} ${dos(date.getHours())}:${dos(date.getMinutes())}`;
+    const dos = (value: number) => String(value).padStart(2, '0');
+    return `${String(date.getFullYear())}-${dos(date.getMonth() + 1)}-${dos(date.getDate())} ${dos(date.getHours())}:${dos(date.getMinutes())}`;
 }

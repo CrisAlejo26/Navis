@@ -20,58 +20,58 @@ import { toast } from '@/lib/toast';
  * edita.
  */
 export function EditChurchDialog({
-  church,
-  open,
-  onClose,
+    church,
+    open,
+    onClose,
 }: {
-  church: Church;
-  open: boolean;
-  onClose: () => void;
+    church: Church;
+    open: boolean;
+    onClose: () => void;
 }) {
-  const { t } = useTranslation();
-  const updateChurch = useUpdateChurch(api);
-  const [error, setError] = useState<string | null>(null);
+    const { t } = useTranslation();
+    const updateChurch = useUpdateChurch(api);
+    const [error, setError] = useState<string | null>(null);
 
-  const submit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+    const submit = (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
 
-    const leído = readChurchForm(new FormData(event.currentTarget));
-    if (!leído.ok) {
-      setError(leído.message ?? t('errors.validation'));
-      return;
-    }
+        const leído = readChurchForm(new FormData(event.currentTarget));
+        if (!leído.ok) {
+            setError(leído.message ?? t('errors.validation'));
+            return;
+        }
 
-    setError(null);
-    updateChurch.mutate(
-      { id: church.id, ...leído.data },
-      {
-        onSuccess: () => {
-          onClose();
-          toast.success(t('church.updated'));
-        },
-        onError: () => {
-          setError(t('errors.generic'));
-        },
-      },
+        setError(null);
+        updateChurch.mutate(
+            { id: church.id, ...leído.data },
+            {
+                onSuccess: () => {
+                    onClose();
+                    toast.success(t('church.updated'));
+                },
+                onError: () => {
+                    setError(t('errors.generic'));
+                },
+            },
+        );
+    };
+
+    return (
+        <Dialog open={open} onClose={onClose} title={t('church.edit')} description={church.name}>
+            <form onSubmit={submit} className="gap-4 flex flex-col" noValidate>
+                <ChurchFormFields church={church} />
+
+                <FormError message={error} />
+
+                <div className="mt-1 gap-2 flex justify-end">
+                    <Button variant="ghost" onClick={onClose} disabled={updateChurch.isPending}>
+                        {t('common.cancel')}
+                    </Button>
+                    <Button type="submit" isLoading={updateChurch.isPending}>
+                        {t('common.save')}
+                    </Button>
+                </div>
+            </form>
+        </Dialog>
     );
-  };
-
-  return (
-    <Dialog open={open} onClose={onClose} title={t('church.edit')} description={church.name}>
-      <form onSubmit={submit} className="gap-4 flex flex-col" noValidate>
-        <ChurchFormFields church={church} />
-
-        <FormError message={error} />
-
-        <div className="mt-1 gap-2 flex justify-end">
-          <Button variant="ghost" onClick={onClose} disabled={updateChurch.isPending}>
-            {t('common.cancel')}
-          </Button>
-          <Button type="submit" isLoading={updateChurch.isPending}>
-            {t('common.save')}
-          </Button>
-        </div>
-      </form>
-    </Dialog>
-  );
 }

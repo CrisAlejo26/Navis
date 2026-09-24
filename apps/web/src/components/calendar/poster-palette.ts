@@ -8,23 +8,23 @@ import { themeColorsHex, type ResolvedTheme } from '@navis/theme';
  * usan la barra de estado y el splash: no se elige ningún color a ojo.
  */
 export interface PosterPalette {
-  theme: ResolvedTheme;
-  background: string;
-  card: string;
-  foreground: string;
-  muted: string;
-  border: string;
+    theme: ResolvedTheme;
+    background: string;
+    card: string;
+    foreground: string;
+    muted: string;
+    border: string;
 }
 
 export function posterPalette(theme: ResolvedTheme): PosterPalette {
-  const colors = themeColorsHex[theme];
+    const colors = themeColorsHex[theme];
 
-  return {
-    theme,
-    background: colors.background,
-    card: colors.card,
-    foreground: colors.foreground,
-    muted: colors.mutedForeground,
-    border: colors.border,
-  };
+    return {
+        theme,
+        background: colors.background,
+        card: colors.card,
+        foreground: colors.foreground,
+        muted: colors.mutedForeground,
+        border: colors.border,
+    };
 }

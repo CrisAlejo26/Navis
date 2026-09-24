@@ -15,78 +15,78 @@ import { auth } from './auth/auth';
 import { env, isProduction } from './config/env';
 
 async function bootstrap(): Promise<void> {
-  // bodyParser: false es obligatorio — Better Auth necesita leer el cuerpo
-  // crudo de la petición, así que su handler se monta ANTES del parser JSON.
-  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
-    bodyParser: false,
-    bufferLogs: true,
-  });
-
-  app.useLogger(app.get(Logger));
-
-  // El chat (RFC 0016) va por Socket.IO: el adaptador es el que engancha el
-  // WebSocketGateway al mismo servidor HTTP, con su propio CORS por gateway.
-  app.useWebSocketAdapter(new IoAdapter(app));
-
-  // Detrás de nginx o Traefik, la IP real viaja en X-Forwarded-For: sin esto,
-  // el limitador de peticiones ve a todo el mundo como la misma IP.
-  if (env.TRUST_PROXY) app.set('trust proxy', 1);
-
-  app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
-  app.enableCors({
-    origin: env.CORS_ORIGINS,
-    credentials: true, // imprescindible para la cookie de sesión
-  });
-
-  // 1) Better Auth: /api/auth/**  (sign-up, sign-in, sesión, OAuth…)
-  app.use('/api/auth', toNodeHandler(auth));
-
-  // 2) A partir de aquí sí queremos el cuerpo parseado.
-  app.use(express.json({ limit: '1mb' }));
-  app.use(express.urlencoded({ extended: true }));
-
-  /*
-   * `/l/<token>` queda fuera del prefijo y del versionado, como `/health`
-   * (RFC 0010 D14): con `/api/v1/l/…` el enlace dejaría de ser el enlace, y ese
-   * enlace es lo que se pega en un chat. Las tres rutas van escritas una a una
-   * en vez de con comodín: es la superficie pública del proyecto y conviene que
-   * se lea exactamente cuál es.
-   */
-  app.setGlobalPrefix(env.API_PREFIX, {
-    exclude: ['health', 'l/:token', 'l/:token/card.png', 'l/:token/photos/:believerId'],
-  });
-  app.enableVersioning({ type: VersioningType.URI, defaultVersion: env.API_VERSION });
-
-  app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true,
-      forbidNonWhitelisted: true,
-      transform: true,
-      transformOptions: { enableImplicitConversion: true },
-    }),
-  );
-
-  app.enableShutdownHooks();
-
-  if (!isProduction) {
-    const config = new DocumentBuilder()
-      .setTitle('Navis API')
-      .setDescription(
-        'API de Navis. La autenticación vive en /api/auth (Better Auth); ' +
-          'su propia referencia OpenAPI está en /api/auth/reference.',
-      )
-      .setVersion('0.1.0')
-      .addCookieAuth('better-auth.session_token')
-      .build();
-
-    SwaggerModule.setup('api/docs', app, SwaggerModule.createDocument(app, config), {
-      swaggerOptions: { persistAuthorization: true },
+    // bodyParser: false es obligatorio — Better Auth necesita leer el cuerpo
+    // crudo de la petición, así que su handler se monta ANTES del parser JSON.
+    const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+        bodyParser: false,
+        bufferLogs: true,
     });
-  }
 
-  await app.listen(env.API_PORT, '0.0.0.0');
-  // eslint-disable-next-line no-console
-  console.log(`✅ API en http://localhost:${String(env.API_PORT)} (docs: /api/docs)`);
+    app.useLogger(app.get(Logger));
+
+    // El chat (RFC 0016) va por Socket.IO: el adaptador es el que engancha el
+    // WebSocketGateway al mismo servidor HTTP, con su propio CORS por gateway.
+    app.useWebSocketAdapter(new IoAdapter(app));
+
+    // Detrás de nginx o Traefik, la IP real viaja en X-Forwarded-For: sin esto,
+    // el limitador de peticiones ve a todo el mundo como la misma IP.
+    if (env.TRUST_PROXY) app.set('trust proxy', 1);
+
+    app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
+    app.enableCors({
+        origin: env.CORS_ORIGINS,
+        credentials: true, // imprescindible para la cookie de sesión
+    });
+
+    // 1) Better Auth: /api/auth/**  (sign-up, sign-in, sesión, OAuth…)
+    app.use('/api/auth', toNodeHandler(auth));
+
+    // 2) A partir de aquí sí queremos el cuerpo parseado.
+    app.use(express.json({ limit: '1mb' }));
+    app.use(express.urlencoded({ extended: true }));
+
+    /*
+     * `/l/<token>` queda fuera del prefijo y del versionado, como `/health`
+     * (RFC 0010 D14): con `/api/v1/l/…` el enlace dejaría de ser el enlace, y ese
+     * enlace es lo que se pega en un chat. Las tres rutas van escritas una a una
+     * en vez de con comodín: es la superficie pública del proyecto y conviene que
+     * se lea exactamente cuál es.
+     */
+    app.setGlobalPrefix(env.API_PREFIX, {
+        exclude: ['health', 'l/:token', 'l/:token/card.png', 'l/:token/photos/:believerId'],
+    });
+    app.enableVersioning({ type: VersioningType.URI, defaultVersion: env.API_VERSION });
+
+    app.useGlobalPipes(
+        new ValidationPipe({
+            whitelist: true,
+            forbidNonWhitelisted: true,
+            transform: true,
+            transformOptions: { enableImplicitConversion: true },
+        }),
+    );
+
+    app.enableShutdownHooks();
+
+    if (!isProduction) {
+        const config = new DocumentBuilder()
+            .setTitle('Navis API')
+            .setDescription(
+                'API de Navis. La autenticación vive en /api/auth (Better Auth); ' +
+                    'su propia referencia OpenAPI está en /api/auth/reference.',
+            )
+            .setVersion('0.1.0')
+            .addCookieAuth('better-auth.session_token')
+            .build();
+
+        SwaggerModule.setup('api/docs', app, SwaggerModule.createDocument(app, config), {
+            swaggerOptions: { persistAuthorization: true },
+        });
+    }
+
+    await app.listen(env.API_PORT, '0.0.0.0');
+    // eslint-disable-next-line no-console
+    console.log(`✅ API en http://localhost:${String(env.API_PORT)} (docs: /api/docs)`);
 }
 
 void bootstrap();

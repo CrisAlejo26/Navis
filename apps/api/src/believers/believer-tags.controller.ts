@@ -21,41 +21,41 @@ import { CreateBelieverTagDto, UpdateBelieverTagDto } from './dto/believer-tag.d
 @Controller('believer-tags')
 @UseGuards(ActiveChurchGuard)
 export class BelieverTagsController {
-  constructor(private readonly tags: BelieverTagsService) {}
+    constructor(private readonly tags: BelieverTagsService) {}
 
-  @Get()
-  @RequirePermissions('believers.view')
-  @ApiOperation({ summary: 'El catálogo, en su orden' })
-  @ApiOkResponse({ description: 'Listado de etiquetas de creyente' })
-  async list(@CurrentChurch() churchId: string): Promise<BelieverTagView[]> {
-    return (await this.tags.list(churchId)).map(toBelieverTagView);
-  }
+    @Get()
+    @RequirePermissions('believers.view')
+    @ApiOperation({ summary: 'El catálogo, en su orden' })
+    @ApiOkResponse({ description: 'Listado de etiquetas de creyente' })
+    async list(@CurrentChurch() churchId: string): Promise<BelieverTagView[]> {
+        return (await this.tags.list(churchId)).map(toBelieverTagView);
+    }
 
-  @Post()
-  @RequirePermissions('believers.manage')
-  @ApiOperation({ summary: 'Añade una etiqueta al catálogo' })
-  async create(
-    @CurrentChurch() churchId: string,
-    @Body() dto: CreateBelieverTagDto,
-  ): Promise<BelieverTagView> {
-    return toBelieverTagView(await this.tags.create(churchId, dto));
-  }
+    @Post()
+    @RequirePermissions('believers.manage')
+    @ApiOperation({ summary: 'Añade una etiqueta al catálogo' })
+    async create(
+        @CurrentChurch() churchId: string,
+        @Body() dto: CreateBelieverTagDto,
+    ): Promise<BelieverTagView> {
+        return toBelieverTagView(await this.tags.create(churchId, dto));
+    }
 
-  @Patch(':id')
-  @RequirePermissions('believers.manage')
-  @ApiOperation({ summary: 'Renombra, recolorea, activa o desactiva' })
-  async update(
-    @CurrentChurch() churchId: string,
-    @Param('id') id: string,
-    @Body() dto: UpdateBelieverTagDto,
-  ): Promise<BelieverTagView> {
-    return toBelieverTagView(await this.tags.update(churchId, id, dto));
-  }
+    @Patch(':id')
+    @RequirePermissions('believers.manage')
+    @ApiOperation({ summary: 'Renombra, recolorea, activa o desactiva' })
+    async update(
+        @CurrentChurch() churchId: string,
+        @Param('id') id: string,
+        @Body() dto: UpdateBelieverTagDto,
+    ): Promise<BelieverTagView> {
+        return toBelieverTagView(await this.tags.update(churchId, id, dto));
+    }
 
-  @Delete(':id')
-  @RequirePermissions('believers.manage')
-  @ApiOperation({ summary: 'Borra una etiqueta del catálogo' })
-  remove(@CurrentChurch() churchId: string, @Param('id') id: string): Promise<void> {
-    return this.tags.remove(churchId, id);
-  }
+    @Delete(':id')
+    @RequirePermissions('believers.manage')
+    @ApiOperation({ summary: 'Borra una etiqueta del catálogo' })
+    remove(@CurrentChurch() churchId: string, @Param('id') id: string): Promise<void> {
+        return this.tags.remove(churchId, id);
+    }
 }

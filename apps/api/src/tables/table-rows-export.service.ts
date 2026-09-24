@@ -12,8 +12,8 @@ import { TableColumnsService } from './table-columns.service';
 import { toColumnView } from './tables.mapper';
 
 export interface TableExportQuery {
-  search?: string;
-  filters?: string;
+    search?: string;
+    filters?: string;
 }
 
 /**
@@ -27,69 +27,74 @@ export interface TableExportQuery {
  */
 @Injectable()
 export class TableRowsExportService {
-  constructor(
-    @InjectRepository(CustomTableRow) private readonly rows: Repository<CustomTableRow>,
-    private readonly columnsService: TableColumnsService,
-  ) {}
+    constructor(
+        @InjectRepository(CustomTableRow) private readonly rows: Repository<CustomTableRow>,
+        private readonly columnsService: TableColumnsService,
+    ) {}
 
-  async export(
-    tableId: string,
-    query: TableExportQuery,
-    includePasswords: boolean,
-  ): Promise<ExportResponse<RowData>> {
-    const columns = (await this.columnsService.listActive(tableId)).map(toColumnView);
+    async export(
+        tableId: string,
+        query: TableExportQuery,
+        includePasswords: boolean,
+    ): Promise<ExportResponse<RowData>> {
+        const columns = (await this.columnsService.listActive(tableId)).map(toColumnView);
 
-    const builder = this.rows
-      .createQueryBuilder('row')
-      .where('row.tableId = :tableId', { tableId });
-    if (query.search) {
-      builder.andWhere('LOWER(row.data) LIKE LOWER(:search)', { search: `%${query.search}%` });
+        const builder = this.rows
+            .createQueryBuilder('row')
+            .where('row.tableId = :tableId', { tableId });
+        if (query.search) {
+            builder.andWhere('LOWER(row.data) LIKE LOWER(:search)', {
+                search: `%${query.search}%`,
+            });
+        }
+        parseRowFilters(query.filters).forEach((filter, index) => {
+            applyRowFilter(builder, columns, filter, index);
+        });
+
+        const total = await builder.getCount();
+        const entities = await builder
+            .orderBy('row.createdAt', 'ASC')
+            .limit(EXPORT_MAX_ROWS)
+            .getMany();
+
+        const passwordKeys = new Set(
+            columns.filter((one) => one.type === 'password').map((one) => one.key),
+        );
+        const rows = entities.map((row) =>
+            exportRow(
+                row,
+                columns.map((one) => one.key),
+                passwordKeys,
+                includePasswords,
+            ),
+        );
+
+        return { rows, total, returned: rows.length, truncated: total > rows.length };
     }
-    parseRowFilters(query.filters).forEach((filter, index) => {
-      applyRowFilter(builder, columns, filter, index);
-    });
-
-    const total = await builder.getCount();
-    const entities = await builder.orderBy('row.createdAt', 'ASC').limit(EXPORT_MAX_ROWS).getMany();
-
-    const passwordKeys = new Set(
-      columns.filter((one) => one.type === 'password').map((one) => one.key),
-    );
-    const rows = entities.map((row) =>
-      exportRow(
-        row,
-        columns.map((one) => one.key),
-        passwordKeys,
-        includePasswords,
-      ),
-    );
-
-    return { rows, total, returned: rows.length, truncated: total > rows.length };
-  }
 }
 
 function exportRow(
-  row: CustomTableRow,
-  keys: readonly string[],
-  passwordKeys: ReadonlySet<string>,
-  includePasswords: boolean,
+    row: CustomTableRow,
+    keys: readonly string[],
+    passwordKeys: ReadonlySet<string>,
+    includePasswords: boolean,
 ): RowData {
-  const raw = parseRowData(row.data);
-  const out: RowData = {};
+    const raw = parseRowData(row.data);
+    const out: RowData = {};
 
-  for (const key of keys) {
-    if (!(key in raw)) continue;
-    if (!passwordKeys.has(key)) {
-      out[key] = raw[key];
-      continue;
+    for (const key of keys) {
+        if (!(key in raw)) continue;
+        if (!passwordKeys.has(key)) {
+            out[key] = raw[key];
+            continue;
+        }
+        if (includePasswords) out[key] = plainOf(raw[key]);
     }
-    if (includePasswords) out[key] = plainOf(raw[key]);
-  }
 
-  return out;
+    return out;
 }
 
 function plainOf(value: unknown): string {
-  if (typeof value !== 'string' || !value) return '';
-  return isEncryptedTableField(value) ? decryptTableField(value) : value;
+    if (typeof value !== 'string' || !value) return '';
+    return isEncryptedTableField(value) ? decryptTableField(value) : value;
 }

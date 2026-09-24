@@ -7,19 +7,19 @@ const STORAGE_KEY = 'navis.locale';
  * Si el usuario elige otro manualmente, esa preferencia manda a partir de ahí.
  */
 export const i18n = createI18n({
-  deviceLocale: globalThis.navigator?.language,
-  storedLocale: globalThis.localStorage?.getItem(STORAGE_KEY),
-  debug: import.meta.env.DEV,
+    deviceLocale: globalThis.navigator?.language,
+    storedLocale: globalThis.localStorage?.getItem(STORAGE_KEY),
+    debug: import.meta.env.DEV,
 });
 
 export function setLocale(locale: Locale): void {
-  globalThis.localStorage?.setItem(STORAGE_KEY, locale);
-  void i18n.changeLanguage(locale);
-  document.documentElement.lang = locale;
+    globalThis.localStorage?.setItem(STORAGE_KEY, locale);
+    void i18n.changeLanguage(locale);
+    document.documentElement.lang = locale;
 }
 
 export function getLocale(): string {
-  return i18n.resolvedLanguage ?? i18n.language;
+    return i18n.resolvedLanguage ?? i18n.language;
 }
 
 document.documentElement.lang = getLocale();

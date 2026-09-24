@@ -33,26 +33,32 @@ import { MessagesService } from './messages.service';
  * resuelve quién puede chatear a partir de los permisos de cada rol (§2).
  */
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Channel, ChannelMember, Message, MessageAttachment, MessageReaction]),
-    ChurchesModule,
-    RolesModule,
-    MediaModule,
-  ],
-  controllers: [ChannelsController, MessagesController, AttachmentsController],
-  providers: [
-    ChatParticipantsService,
-    ChannelAccessService,
-    ChannelStatsService,
-    ChannelsService,
-    ChannelsListService,
-    ChannelsArchiveService,
-    MessagesService,
-    MessageReactionsService,
-    MessageForwardService,
-    AttachmentsService,
-    ChatGateway,
-    { provide: CHAT_BROADCASTER, useExisting: ChatGateway },
-  ],
+    imports: [
+        TypeOrmModule.forFeature([
+            Channel,
+            ChannelMember,
+            Message,
+            MessageAttachment,
+            MessageReaction,
+        ]),
+        ChurchesModule,
+        RolesModule,
+        MediaModule,
+    ],
+    controllers: [ChannelsController, MessagesController, AttachmentsController],
+    providers: [
+        ChatParticipantsService,
+        ChannelAccessService,
+        ChannelStatsService,
+        ChannelsService,
+        ChannelsListService,
+        ChannelsArchiveService,
+        MessagesService,
+        MessageReactionsService,
+        MessageForwardService,
+        AttachmentsService,
+        ChatGateway,
+        { provide: CHAT_BROADCASTER, useExisting: ChatGateway },
+    ],
 })
 export class ChatModule {}

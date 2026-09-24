@@ -17,27 +17,27 @@ import { PERMISSIONS_KEY } from '../decorators/permissions.decorator';
  */
 @Injectable()
 export class PermissionsGuard implements CanActivate {
-  constructor(
-    private readonly reflector: Reflector,
-    private readonly roles: RolesService,
-  ) {}
+    constructor(
+        private readonly reflector: Reflector,
+        private readonly roles: RolesService,
+    ) {}
 
-  async canActivate(context: ExecutionContext): Promise<boolean> {
-    const required = this.reflector.getAllAndOverride<Permission[]>(PERMISSIONS_KEY, [
-      context.getHandler(),
-      context.getClass(),
-    ]);
+    async canActivate(context: ExecutionContext): Promise<boolean> {
+        const required = this.reflector.getAllAndOverride<Permission[]>(PERMISSIONS_KEY, [
+            context.getHandler(),
+            context.getClass(),
+        ]);
 
-    if (!required?.length) return true;
+        if (!required?.length) return true;
 
-    const request = context.switchToHttp().getRequest<Request>();
-    const slug = request.user?.role ?? DEFAULT_ROLE;
-    const granted = await this.roles.permissionsOf(slug);
+        const request = context.switchToHttp().getRequest<Request>();
+        const slug = request.user?.role ?? DEFAULT_ROLE;
+        const granted = await this.roles.permissionsOf(slug);
 
-    if (!granted || !hasEveryPermission(granted, required)) {
-      throw new ForbiddenException('No tienes permisos para esta acción');
+        if (!granted || !hasEveryPermission(granted, required)) {
+            throw new ForbiddenException('No tienes permisos para esta acción');
+        }
+
+        return true;
     }
-
-    return true;
-  }
 }

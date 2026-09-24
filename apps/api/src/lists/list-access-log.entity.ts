@@ -19,30 +19,30 @@ import { TIMESTAMP, UUID } from '../database/column-types';
 @Entity('list_access_log')
 @Index('IDX_list_access_log_recent', ['listId', 'at'])
 export class ListAccessLog {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+    @PrimaryGeneratedColumn('uuid')
+    id: string;
 
-  @ApiProperty()
-  @Column({ name: 'list_id', type: UUID })
-  listId: string;
+    @ApiProperty()
+    @Column({ name: 'list_id', type: UUID })
+    listId: string;
 
-  @ApiPropertyOptional({ description: 'Nulo cuando el usuario ni existe' })
-  @Column({ name: 'viewer_id', type: UUID, nullable: true })
-  viewerId: string | null;
+    @ApiPropertyOptional({ description: 'Nulo cuando el usuario ni existe' })
+    @Column({ name: 'viewer_id', type: UUID, nullable: true })
+    viewerId: string | null;
 
-  @ApiProperty({ description: 'Lo que se tecleó, para poder leer el registro' })
-  @Column({ type: 'text' })
-  username: string;
+    @ApiProperty({ description: 'Lo que se tecleó, para poder leer el registro' })
+    @Column({ type: 'text' })
+    username: string;
 
-  @ApiProperty({ description: 'ok | bad_credentials | no_grant | throttled' })
-  @Column({ type: 'text' })
-  outcome: ListAccessOutcome;
+    @ApiProperty({ description: 'ok | bad_credentials | no_grant | throttled' })
+    @Column({ type: 'text' })
+    outcome: ListAccessOutcome;
 
-  @ApiProperty({ description: 'Nunca la IP entera (D32)' })
-  @Column({ name: 'ip_prefix', type: 'text', default: '' })
-  ipPrefix: string;
+    @ApiProperty({ description: 'Nunca la IP entera (D32)' })
+    @Column({ name: 'ip_prefix', type: 'text', default: '' })
+    ipPrefix: string;
 
-  @ApiProperty()
-  @Column({ type: TIMESTAMP })
-  at: Date;
+    @ApiProperty()
+    @Column({ type: TIMESTAMP })
+    at: Date;
 }

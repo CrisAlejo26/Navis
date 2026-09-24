@@ -8,8 +8,8 @@ import { toast } from '@/lib/toast';
 
 /** Lo mínimo para confirmar. El título puede no existir: no es obligatorio (D17). */
 export interface DeletableDream {
-  id: string;
-  title: string | null;
+    id: string;
+    title: string | null;
 }
 
 /**
@@ -18,43 +18,43 @@ export interface DeletableDream {
  * pulsar, y aquí no hay copia de seguridad que valga.
  */
 export function DeleteDreamDialog({
-  dream,
-  onClose,
-  onDeleted,
+    dream,
+    onClose,
+    onDeleted,
 }: {
-  dream: DeletableDream | null;
-  onClose: () => void;
-  /** Desde la ficha hay que volver al listado; desde el listado, no. */
-  onDeleted?: () => void;
+    dream: DeletableDream | null;
+    onClose: () => void;
+    /** Desde la ficha hay que volver al listado; desde el listado, no. */
+    onDeleted?: () => void;
 }) {
-  const { t } = useTranslation();
-  const remove = useDeleteDream(api);
-  const [error, setError] = useState<string | null>(null);
+    const { t } = useTranslation();
+    const remove = useDeleteDream(api);
+    const [error, setError] = useState<string | null>(null);
 
-  return (
-    <ConfirmDialog
-      open={Boolean(dream)}
-      onClose={onClose}
-      destructive
-      isPending={remove.isPending}
-      error={error}
-      title={t('dreams.deleteTitle', { title: dream?.title ?? t('dreams.untitled') })}
-      description={t('dreams.deleteBody')}
-      confirmLabel={t('common.delete')}
-      onConfirm={() => {
-        if (!dream) return;
+    return (
+        <ConfirmDialog
+            open={Boolean(dream)}
+            onClose={onClose}
+            destructive
+            isPending={remove.isPending}
+            error={error}
+            title={t('dreams.deleteTitle', { title: dream?.title ?? t('dreams.untitled') })}
+            description={t('dreams.deleteBody')}
+            confirmLabel={t('common.delete')}
+            onConfirm={() => {
+                if (!dream) return;
 
-        remove.mutate(dream.id, {
-          onSuccess: () => {
-            toast.success(t('dreams.removed'));
-            onClose();
-            onDeleted?.();
-          },
-          onError: () => {
-            setError(t('errors.generic'));
-          },
-        });
-      }}
-    />
-  );
+                remove.mutate(dream.id, {
+                    onSuccess: () => {
+                        toast.success(t('dreams.removed'));
+                        onClose();
+                        onDeleted?.();
+                    },
+                    onError: () => {
+                        setError(t('errors.generic'));
+                    },
+                });
+            }}
+        />
+    );
 }

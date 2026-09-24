@@ -61,8 +61,8 @@ import { Task } from '../tasks/task.entity';
 import { Teaching } from '../teachings/teaching.entity';
 
 const logging: DataSourceOptions['logging'] = isProduction
-  ? ['error', 'warn']
-  : ['error', 'warn', 'migration'];
+    ? ['error', 'warn']
+    : ['error', 'warn', 'migration'];
 
 /**
  * Entidades listadas a mano, no con un glob.
@@ -73,62 +73,62 @@ const logging: DataSourceOptions['logging'] = isProduction
  * token». Al añadir una entidad nueva, se añade aquí.
  */
 const entities = [
-  Profile,
-  Role,
-  Church,
-  ChurchMember,
-  Calendar,
-  Congregation,
-  Believer,
-  BelieverMinistry,
-  Gift,
-  BelieverGift,
-  BelieverTag,
-  BelieverTagLink,
-  BelieverNote,
-  NoteAudio,
-  Ministry,
-  MeetingPattern,
-  PatternPhase,
-  Meeting,
-  MeetingSlot,
-  Prophecy,
-  ProphecyFulfillment,
-  Dream,
-  Emotion,
-  DreamEmotion,
-  DreamAudio,
-  JournalEntry,
-  JournalEntryAudio,
-  List,
-  ListMember,
-  ListViewer,
-  ListGrant,
-  ListView,
-  ListAccessLog,
-  HolidayCache,
-  Channel,
-  ChannelMember,
-  Message,
-  MessageAttachment,
-  MessageReaction,
-  Tag,
-  Task,
-  TaskTag,
-  TaskOccurrence,
-  TaskReminder,
-  TaskReminderTag,
-  Habit,
-  HabitTag,
-  HabitOccurrence,
-  HabitReminder,
-  HabitReminderTag,
-  TaskStreakCache,
-  CustomTable,
-  CustomTableColumn,
-  CustomTableRow,
-  CustomTableView,
-  Teaching,
+    Profile,
+    Role,
+    Church,
+    ChurchMember,
+    Calendar,
+    Congregation,
+    Believer,
+    BelieverMinistry,
+    Gift,
+    BelieverGift,
+    BelieverTag,
+    BelieverTagLink,
+    BelieverNote,
+    NoteAudio,
+    Ministry,
+    MeetingPattern,
+    PatternPhase,
+    Meeting,
+    MeetingSlot,
+    Prophecy,
+    ProphecyFulfillment,
+    Dream,
+    Emotion,
+    DreamEmotion,
+    DreamAudio,
+    JournalEntry,
+    JournalEntryAudio,
+    List,
+    ListMember,
+    ListViewer,
+    ListGrant,
+    ListView,
+    ListAccessLog,
+    HolidayCache,
+    Channel,
+    ChannelMember,
+    Message,
+    MessageAttachment,
+    MessageReaction,
+    Tag,
+    Task,
+    TaskTag,
+    TaskOccurrence,
+    TaskReminder,
+    TaskReminderTag,
+    Habit,
+    HabitTag,
+    HabitOccurrence,
+    HabitReminder,
+    HabitReminderTag,
+    TaskStreakCache,
+    CustomTable,
+    CustomTableColumn,
+    CustomTableRow,
+    CustomTableView,
+    Teaching,
 ];
 
 /**
@@ -148,41 +148,41 @@ const migrations = [`${__dirname}/migrations/*.${__filename.endsWith('.ts') ? 't
  * solo cambia mediante migraciones revisadas en un pull request.
  */
 export const dataSourceOptions: DataSourceOptions =
-  env.DB_DRIVER === 'postgres'
-    ? {
-        type: 'postgres',
-        host: env.POSTGRES_HOST,
-        port: env.POSTGRES_PORT,
-        username: env.POSTGRES_USER,
-        password: env.POSTGRES_PASSWORD,
-        database: env.POSTGRES_DB,
-        synchronize: false,
-        logging,
-        entities,
-        migrations,
-        migrationsTableName: 'typeorm_migrations',
-        ssl:
-          isProduction && process.env.POSTGRES_SSL === 'true'
-            ? { rejectUnauthorized: false }
-            : false,
-      }
-    : {
-        type: 'better-sqlite3',
-        database: sqlitePath,
-        synchronize: false,
-        logging,
-        entities,
-        migrations,
-        migrationsTableName: 'typeorm_migrations',
-        // WAL permite leer mientras se escribe: sin él, la app de escritorio
-        // se bloquea a sí misma en cuanto hay dos consultas a la vez.
-        enableWAL: true,
-      };
+    env.DB_DRIVER === 'postgres'
+        ? {
+              type: 'postgres',
+              host: env.POSTGRES_HOST,
+              port: env.POSTGRES_PORT,
+              username: env.POSTGRES_USER,
+              password: env.POSTGRES_PASSWORD,
+              database: env.POSTGRES_DB,
+              synchronize: false,
+              logging,
+              entities,
+              migrations,
+              migrationsTableName: 'typeorm_migrations',
+              ssl:
+                  isProduction && process.env.POSTGRES_SSL === 'true'
+                      ? { rejectUnauthorized: false }
+                      : false,
+          }
+        : {
+              type: 'better-sqlite3',
+              database: sqlitePath,
+              synchronize: false,
+              logging,
+              entities,
+              migrations,
+              migrationsTableName: 'typeorm_migrations',
+              // WAL permite leer mientras se escribe: sin él, la app de escritorio
+              // se bloquea a sí misma en cuanto hay dos consultas a la vez.
+              enableWAL: true,
+          };
 
 /** Crea el directorio del fichero .sqlite la primera vez que se arranca. */
 export function ensureSqliteDirectory(): void {
-  if (env.DB_DRIVER !== 'sqlite') return;
-  mkdirSync(dirname(sqlitePath), { recursive: true });
+    if (env.DB_DRIVER !== 'sqlite') return;
+    mkdirSync(dirname(sqlitePath), { recursive: true });
 }
 
 ensureSqliteDirectory();

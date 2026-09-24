@@ -12,17 +12,17 @@ const ALTO = 24;
  * ficha, con su tabla; aquí solo acompaña.
  */
 export function MiniWake({ views }: { views: readonly number[] }) {
-  const shape = wakeShape(views, ANCHO, ALTO);
-  if (!shape.area) return null;
+    const shape = wakeShape(views, ANCHO, ALTO);
+    if (!shape.area) return null;
 
-  return (
-    <svg
-      viewBox={`0 0 ${String(ANCHO)} ${String(ALTO)}`}
-      preserveAspectRatio="none"
-      aria-hidden
-      className="h-6 -mx-5 -mb-5 pointer-events-none w-[calc(100%+2.5rem)]"
-    >
-      <path d={shape.area} fill="var(--acento-fg)" fillOpacity={0.4} />
-    </svg>
-  );
+    return (
+        <svg
+            viewBox={`0 0 ${String(ANCHO)} ${String(ALTO)}`}
+            preserveAspectRatio="none"
+            aria-hidden
+            className="h-6 -mx-5 -mb-5 pointer-events-none w-[calc(100%+2.5rem)]"
+        >
+            <path d={shape.area} fill="var(--acento-fg)" fillOpacity={0.4} />
+        </svg>
+    );
 }

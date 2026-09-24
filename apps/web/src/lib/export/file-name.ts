@@ -11,8 +11,8 @@ import { slugify } from '@/lib/share/files';
  * servidor: es el día que va a buscar en su carpeta de descargas.
  */
 export function exportFileName(label: string, extension: string, hint?: string): string {
-  const hoy = todayIn(Intl.DateTimeFormat().resolvedOptions().timeZone);
-  const partes = ['navis', slugify(label), hint ? slugify(hint) : '', hoy].filter(Boolean);
+    const hoy = todayIn(Intl.DateTimeFormat().resolvedOptions().timeZone);
+    const partes = ['navis', slugify(label), hint ? slugify(hint) : '', hoy].filter(Boolean);
 
-  return `${partes.join('-')}.${extension}`;
+    return `${partes.join('-')}.${extension}`;
 }

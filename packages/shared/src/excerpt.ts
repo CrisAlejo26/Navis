@@ -12,10 +12,10 @@ const EXCERPT_LENGTH = 160;
  * el mismo caso, y se queda donde está.
  */
 export function toExcerpt(text: string): string {
-  const flat = text.replace(/\s+/g, ' ').trim();
-  if (flat.length <= EXCERPT_LENGTH) return flat;
+    const flat = text.replace(/\s+/g, ' ').trim();
+    if (flat.length <= EXCERPT_LENGTH) return flat;
 
-  const cut = flat.slice(0, EXCERPT_LENGTH);
-  const lastSpace = cut.lastIndexOf(' ');
-  return `${lastSpace > EXCERPT_LENGTH / 2 ? cut.slice(0, lastSpace) : cut}…`;
+    const cut = flat.slice(0, EXCERPT_LENGTH);
+    const lastSpace = cut.lastIndexOf(' ');
+    return `${lastSpace > EXCERPT_LENGTH / 2 ? cut.slice(0, lastSpace) : cut}…`;
 }

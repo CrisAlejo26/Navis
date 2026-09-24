@@ -15,12 +15,12 @@ import { NEUTRAL_ACCENT } from '@/lib/export/columns';
  * en caliente de Vite, que quiere módulos que solo exporten componentes.
  */
 export const STATE_ICON: Record<DreamState, LucideIcon> = {
-  /** Una luna: está escrito y ahí se queda. */
-  apuntado: MoonStar,
-  /** Una brújula: se le está buscando el sentido. */
-  estudio: Compass,
-  /** El amanecer: pasó. */
-  cumplido: Sunrise,
+    /** Una luna: está escrito y ahí se queda. */
+    apuntado: MoonStar,
+    /** Una brújula: se le está buscando el sentido. */
+    estudio: Compass,
+    /** El amanecer: pasó. */
+    cumplido: Sunrise,
 };
 
 /**
@@ -29,16 +29,16 @@ export const STATE_ICON: Record<DreamState, LucideIcon> = {
  * lámina (RFC 0009 D9). Sale de aquí y no se vuelve a elegir.
  */
 export const STATE_ACCENT: Record<DreamState, string> = {
-  apuntado: NEUTRAL_ACCENT,
-  estudio: 'primary',
-  cumplido: 'success',
+    apuntado: NEUTRAL_ACCENT,
+    estudio: 'primary',
+    cumplido: 'success',
 };
 
 /** El color de cada estado, del token que le toca. */
 export const STATE_TONE: Record<DreamState, string> = {
-  apuntado: 'text-muted-foreground',
-  estudio: 'text-primary',
-  cumplido: 'text-success',
+    apuntado: 'text-muted-foreground',
+    estudio: 'text-primary',
+    cumplido: 'text-success',
 };
 
 /**
@@ -51,5 +51,5 @@ export const STATE_TONE: Record<DreamState, string> = {
 export const NIGHT_TONE = ['bg-muted', 'bg-primary/45', 'bg-primary/70', 'bg-primary'] as const;
 
 export function nightTone(count: number): string {
-  return NIGHT_TONE[Math.min(count, NIGHT_TONE.length - 1)] ?? NIGHT_TONE[0];
+    return NIGHT_TONE[Math.min(count, NIGHT_TONE.length - 1)] ?? NIGHT_TONE[0];
 }

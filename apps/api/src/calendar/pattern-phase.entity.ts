@@ -17,25 +17,25 @@ import type { MeetingPattern } from './meeting-pattern.entity';
 @Entity('pattern_phases')
 @Index('IDX_pattern_phases_order', ['patternId', 'position'])
 export class PatternPhase extends BaseEntity {
-  @ApiProperty()
-  @Column({ name: 'pattern_id', type: UUID })
-  patternId: string;
+    @ApiProperty()
+    @Column({ name: 'pattern_id', type: UUID })
+    patternId: string;
 
-  /*
-   * El otro lado se referencia **por nombre** y el tipo va envuelto en
-   * `Relation<>`: con la clase importada de verdad, `emitDecoratorMetadata`
-   * la evalúa al cargar el módulo y el par padre-hijo se queda en un ciclo
-   * («Cannot access 'MeetingPattern' before initialization»).
-   */
-  @ManyToOne('MeetingPattern', 'phases', { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'pattern_id' })
-  pattern: Relation<MeetingPattern>;
+    /*
+     * El otro lado se referencia **por nombre** y el tipo va envuelto en
+     * `Relation<>`: con la clase importada de verdad, `emitDecoratorMetadata`
+     * la evalúa al cargar el módulo y el par padre-hijo se queda en un ciclo
+     * («Cannot access 'MeetingPattern' before initialization»).
+     */
+    @ManyToOne('MeetingPattern', 'phases', { onDelete: 'CASCADE' })
+    @JoinColumn({ name: 'pattern_id' })
+    pattern: Relation<MeetingPattern>;
 
-  @ApiProperty({ example: 'Enseñanza' })
-  @Column({ type: 'text' })
-  name: string;
+    @ApiProperty({ example: 'Enseñanza' })
+    @Column({ type: 'text' })
+    name: string;
 
-  @ApiProperty({ description: 'Orden dentro de la reunión, empezando en 0' })
-  @Column({ type: 'int' })
-  position: number;
+    @ApiProperty({ description: 'Orden dentro de la reunión, empezando en 0' })
+    @Column({ type: 'int' })
+    position: number;
 }

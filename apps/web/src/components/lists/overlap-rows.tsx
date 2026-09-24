@@ -15,57 +15,60 @@ import { accentVars } from '@/lib/accents';
  * ninguna parte es un adorno.
  */
 export function OverlapRows({ overlap }: { overlap: ListStats['overlap'] }) {
-  const { t } = useTranslation();
+    const { t } = useTranslation();
 
-  if (overlap.inOtherLists.length === 0 && overlap.sharedWith.length === 0) return null;
+    if (overlap.inOtherLists.length === 0 && overlap.sharedWith.length === 0) return null;
 
-  return (
-    <div className="p-5 gap-4 flex flex-col rounded-xl border bg-card">
-      <h3 className="text-sm font-semibold">{t('lists.overlap')}</h3>
+    return (
+        <div className="p-5 gap-4 flex flex-col rounded-xl border bg-card">
+            <h3 className="text-sm font-semibold">{t('lists.overlap')}</h3>
 
-      {overlap.inOtherLists.length > 0 && (
-        <div className="gap-1.5 flex flex-col">
-          <p className="text-xs text-muted-foreground">{t('lists.inSeveralLists')}</p>
-          <ul className="gap-1 flex flex-col">
-            {overlap.inOtherLists.map((one) => (
-              <li
-                key={one.believerId}
-                className="gap-2 text-sm flex items-baseline justify-between"
-              >
-                <Link
-                  to={`/believers/${one.believerId}`}
-                  className="truncate underline-offset-4 hover:underline"
-                >
-                  {one.name}
-                </Link>
-                <span className="font-medium shrink-0 text-muted-foreground tabular-nums">
-                  {t('lists.inNLists', { count: one.listCount })}
-                </span>
-              </li>
-            ))}
-          </ul>
+            {overlap.inOtherLists.length > 0 && (
+                <div className="gap-1.5 flex flex-col">
+                    <p className="text-xs text-muted-foreground">{t('lists.inSeveralLists')}</p>
+                    <ul className="gap-1 flex flex-col">
+                        {overlap.inOtherLists.map((one) => (
+                            <li
+                                key={one.believerId}
+                                className="gap-2 text-sm flex items-baseline justify-between"
+                            >
+                                <Link
+                                    to={`/believers/${one.believerId}`}
+                                    className="truncate underline-offset-4 hover:underline"
+                                >
+                                    {one.name}
+                                </Link>
+                                <span className="font-medium shrink-0 text-muted-foreground tabular-nums">
+                                    {t('lists.inNLists', { count: one.listCount })}
+                                </span>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            )}
+
+            {overlap.sharedWith.length > 0 && (
+                <div className="gap-1.5 flex flex-col">
+                    <p className="text-xs text-muted-foreground">{t('lists.sharedWith')}</p>
+                    <ul className="gap-1.5 flex flex-wrap">
+                        {overlap.sharedWith.map((one) => (
+                            <li key={one.listId}>
+                                <span
+                                    style={accentVars(one.accent)}
+                                    className="h-7 gap-1.5 px-2.5 text-xs inline-flex items-center rounded-full bg-[var(--acento)]/12 text-foreground"
+                                >
+                                    <span
+                                        aria-hidden
+                                        className="size-2 rounded-full bg-[var(--acento)]"
+                                    />
+                                    {one.name}
+                                    <span className="font-semibold tabular-nums">{one.count}</span>
+                                </span>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            )}
         </div>
-      )}
-
-      {overlap.sharedWith.length > 0 && (
-        <div className="gap-1.5 flex flex-col">
-          <p className="text-xs text-muted-foreground">{t('lists.sharedWith')}</p>
-          <ul className="gap-1.5 flex flex-wrap">
-            {overlap.sharedWith.map((one) => (
-              <li key={one.listId}>
-                <span
-                  style={accentVars(one.accent)}
-                  className="h-7 gap-1.5 px-2.5 text-xs inline-flex items-center rounded-full bg-[var(--acento)]/12 text-foreground"
-                >
-                  <span aria-hidden className="size-2 rounded-full bg-[var(--acento)]" />
-                  {one.name}
-                  <span className="font-semibold tabular-nums">{one.count}</span>
-                </span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-    </div>
-  );
+    );
 }

@@ -8,9 +8,9 @@ import { IsObject } from 'class-validator';
  * con `rowValueMatchesType` contra las columnas activas.
  */
 export class CreateTableRowDto {
-  @ApiProperty({ description: '{ [columnKey]: valor }' })
-  @IsObject()
-  data: Record<string, unknown>;
+    @ApiProperty({ description: '{ [columnKey]: valor }' })
+    @IsObject()
+    data: Record<string, unknown>;
 }
 
 /** Un `PATCH` es una fusión: las claves que no vienen conservan su valor. */

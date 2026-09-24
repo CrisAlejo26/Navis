@@ -2,15 +2,15 @@ import { NEUTRAL_ACCENT, type ExportCell } from '@/lib/export/columns';
 import type { ExportDocument } from '@/lib/export/document';
 
 export interface SummaryEntry {
-  label: string;
-  count: number;
-  accent: string;
+    label: string;
+    count: number;
+    accent: string;
 }
 
 export interface SummaryBlock {
-  /** El encabezado de la columna de la que sale: «Estado», «Sede», «Dones». */
-  label: string;
-  entries: SummaryEntry[];
+    /** El encabezado de la columna de la que sale: «Estado», «Sede», «Dones». */
+    label: string;
+    entries: SummaryEntry[];
 }
 
 /**
@@ -24,37 +24,38 @@ export interface SummaryBlock {
  * ningún módulo tenga que declarar sus propios bloques.
  */
 export function buildSummary(doc: ExportDocument, emptyLabel: string): SummaryBlock[] {
-  return doc.headers
-    .map((label, index) => ({ label, entries: countColumn(doc.rows, index, emptyLabel) }))
-    .filter((block) => block.entries.length > 0);
+    return doc.headers
+        .map((label, index) => ({ label, entries: countColumn(doc.rows, index, emptyLabel) }))
+        .filter((block) => block.entries.length > 0);
 }
 
 function countColumn(
-  rows: readonly ExportCell[][],
-  index: number,
-  emptyLabel: string,
+    rows: readonly ExportCell[][],
+    index: number,
+    emptyLabel: string,
 ): SummaryEntry[] {
-  const counts = new Map<string, SummaryEntry>();
-  let isTagColumn = false;
+    const counts = new Map<string, SummaryEntry>();
+    let isTagColumn = false;
 
-  for (const row of rows) {
-    const cell = row[index];
-    if (cell?.kind !== 'tags') continue;
-    isTagColumn = true;
+    for (const row of rows) {
+        const cell = row[index];
+        if (cell?.kind !== 'tags') continue;
+        isTagColumn = true;
 
-    // Sin ninguna etiqueta cuenta igual, y bajo su propio nombre: «sin sede» es
-    // de las cuentas que más se miran, y callarla la haría desaparecer.
-    const tags = cell.tags.length > 0 ? cell.tags : [{ text: emptyLabel, accent: NEUTRAL_ACCENT }];
-    for (const tag of tags) add(counts, tag.text, tag.accent);
-  }
+        // Sin ninguna etiqueta cuenta igual, y bajo su propio nombre: «sin sede» es
+        // de las cuentas que más se miran, y callarla la haría desaparecer.
+        const tags =
+            cell.tags.length > 0 ? cell.tags : [{ text: emptyLabel, accent: NEUTRAL_ACCENT }];
+        for (const tag of tags) add(counts, tag.text, tag.accent);
+    }
 
-  if (!isTagColumn) return [];
+    if (!isTagColumn) return [];
 
-  return [...counts.values()].sort((one, other) => other.count - one.count);
+    return [...counts.values()].sort((one, other) => other.count - one.count);
 }
 
 function add(counts: Map<string, SummaryEntry>, label: string, accent: string): void {
-  const found = counts.get(label);
-  if (found) found.count += 1;
-  else counts.set(label, { label, count: 1, accent });
+    const found = counts.get(label);
+    if (found) found.count += 1;
+    else counts.set(label, { label, count: 1, accent });
 }

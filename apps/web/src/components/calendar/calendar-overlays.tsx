@@ -16,93 +16,93 @@ import type { useCalendarScreen } from '@/components/calendar/use-calendar-scree
  * y no en una lista de seis modales (Regla 6).
  */
 export function CalendarOverlays({
-  screen,
-  congregations,
-  churchName,
-  canManage,
-  congregationName,
-  calendarId,
-  calendarName,
-  ministry,
+    screen,
+    congregations,
+    churchName,
+    canManage,
+    congregationName,
+    calendarId,
+    calendarName,
+    ministry,
 }: {
-  screen: ReturnType<typeof useCalendarScreen>;
-  congregations: readonly Congregation[];
-  churchName: string;
-  canManage: boolean;
-  congregationName: (id: string) => string | undefined;
-  calendarId: string;
-  calendarName: string;
-  ministry: string | null;
+    screen: ReturnType<typeof useCalendarScreen>;
+    congregations: readonly Congregation[];
+    churchName: string;
+    canManage: boolean;
+    congregationName: (id: string) => string | undefined;
+    calendarId: string;
+    calendarName: string;
+    ministry: string | null;
 }) {
-  const { params } = screen;
-  const day = screen.calendar.data?.days.find((one) => one.date === screen.openDay);
+    const { params } = screen;
+    const day = screen.calendar.data?.days.find((one) => one.date === screen.openDay);
 
-  return (
-    <>
-      <DayPanel
-        date={screen.openDay}
-        day={day}
-        congregations={congregations}
-        canManage={canManage}
-        onClose={() => {
-          screen.setOpenDay(null);
-        }}
-        onPick={screen.pick}
-        onAddFor={screen.setAddMeetingFor}
-      />
+    return (
+        <>
+            <DayPanel
+                date={screen.openDay}
+                day={day}
+                congregations={congregations}
+                canManage={canManage}
+                onClose={() => {
+                    screen.setOpenDay(null);
+                }}
+                onPick={screen.pick}
+                onAddFor={screen.setAddMeetingFor}
+            />
 
-      <PreacherPicker
-        target={screen.target}
-        range={params.range}
-        calendarId={calendarId}
-        ministry={ministry}
-        congregationName={(id) => (id ? congregationName(id) : undefined)}
-        onClose={() => {
-          screen.setTarget(null);
-        }}
-        onAssign={screen.applyAssignment}
-      />
+            <PreacherPicker
+                target={screen.target}
+                range={params.range}
+                calendarId={calendarId}
+                ministry={ministry}
+                congregationName={(id) => (id ? congregationName(id) : undefined)}
+                onClose={() => {
+                    screen.setTarget(null);
+                }}
+                onAssign={screen.applyAssignment}
+            />
 
-      <ShareSheet
-        open={screen.shareOpen}
-        onClose={() => {
-          screen.setShareOpen(false);
-        }}
-        anchor={params.anchor}
-        selectedDate={screen.openDay}
-        churchName={churchName}
-        congregations={congregations}
-        congregationIds={params.filters.congregationIds}
-        calendarId={calendarId}
-        calendarName={calendarName}
-      />
+            <ShareSheet
+                open={screen.shareOpen}
+                onClose={() => {
+                    screen.setShareOpen(false);
+                }}
+                anchor={params.anchor}
+                selectedDate={screen.openDay}
+                churchName={churchName}
+                congregations={congregations}
+                congregationIds={params.filters.congregationIds}
+                calendarId={calendarId}
+                calendarName={calendarName}
+            />
 
-      <BalancePanel
-        open={screen.balanceOpen}
-        onClose={() => {
-          screen.setBalanceOpen(false);
-        }}
-        range={params.range}
-        calendarId={calendarId}
-        congregationIds={params.filters.congregationIds}
-      />
+            <BalancePanel
+                open={screen.balanceOpen}
+                onClose={() => {
+                    screen.setBalanceOpen(false);
+                }}
+                range={params.range}
+                calendarId={calendarId}
+                congregationIds={params.filters.congregationIds}
+            />
 
-      <CongregationForm
-        open={screen.addCongregation}
-        onClose={() => {
-          screen.setAddCongregation(false);
-        }}
-      />
+            <CongregationForm
+                open={screen.addCongregation}
+                onClose={() => {
+                    screen.setAddCongregation(false);
+                }}
+            />
 
-      <AddMeetingDialog
-        date={screen.addMeetingFor ? screen.openDay : null}
-        calendarId={calendarId}
-        congregations={congregations}
-        congregationId={screen.addMeetingFor ?? ''}
-        onClose={() => {
-          screen.setAddMeetingFor(null);
-        }}
-      />
-    </>
-  );
+            <AddMeetingDialog
+                date={screen.addMeetingFor ? screen.openDay : null}
+                calendarId={calendarId}
+                congregations={congregations}
+                congregationId={screen.addMeetingFor ?? ''}
+                onClose={() => {
+                    screen.setAddMeetingFor(null);
+                }}
+            />
+        </>
+    );
 }

@@ -17,43 +17,43 @@ const RETIRADOS = ['dreams.view', 'dreams.manage'];
  * no es un error: es el caso normal en instalaciones nuevas.
  */
 export class DropChurchDreamPermissions1787443200000 implements MigrationInterface {
-  name = 'DropChurchDreamPermissions1787443200000';
+    name = 'DropChurchDreamPermissions1787443200000';
 
-  async up(queryRunner: QueryRunner): Promise<void> {
-    const isPostgres = queryRunner.connection.options.type === 'postgres';
-    // Los marcadores de parámetro no se escriben igual en los dos motores.
-    const mark = (index: number) => (isPostgres ? `$${String(index)}` : '?');
+    async up(queryRunner: QueryRunner): Promise<void> {
+        const isPostgres = queryRunner.connection.options.type === 'postgres';
+        // Los marcadores de parámetro no se escriben igual en los dos motores.
+        const mark = (index: number) => (isPostgres ? `$${String(index)}` : '?');
 
-    // `queryRunner.query` devuelve `any` y no acepta genérico (CLAUDE.md):
-    // lo que sale se comprueba antes de usarlo (Regla 10).
-    const rows: unknown = await queryRunner.query('SELECT "id", "permissions" FROM "roles"');
-    if (!Array.isArray(rows)) return;
+        // `queryRunner.query` devuelve `any` y no acepta genérico (CLAUDE.md):
+        // lo que sale se comprueba antes de usarlo (Regla 10).
+        const rows: unknown = await queryRunner.query('SELECT "id", "permissions" FROM "roles"');
+        if (!Array.isArray(rows)) return;
 
-    for (const row of rows) {
-      if (typeof row !== 'object' || row === null) continue;
-      const { id, permissions } = row as { id?: unknown; permissions?: unknown };
-      if (typeof id !== 'string') continue;
+        for (const row of rows) {
+            if (typeof row !== 'object' || row === null) continue;
+            const { id, permissions } = row as { id?: unknown; permissions?: unknown };
+            if (typeof id !== 'string') continue;
 
-      const granted = parsePermissions(permissions);
-      if (granted === null) continue;
+            const granted = parsePermissions(permissions);
+            if (granted === null) continue;
 
-      const kept = granted.filter((permission) => !RETIRADOS.includes(permission));
-      if (kept.length === granted.length) continue;
+            const kept = granted.filter((permission) => !RETIRADOS.includes(permission));
+            if (kept.length === granted.length) continue;
 
-      await queryRunner.query(
-        `UPDATE "roles" SET "permissions" = ${mark(1)} WHERE "id" = ${mark(2)}`,
-        [JSON.stringify(kept), id],
-      );
+            await queryRunner.query(
+                `UPDATE "roles" SET "permissions" = ${mark(1)} WHERE "id" = ${mark(2)}`,
+                [JSON.stringify(kept), id],
+            );
+        }
     }
-  }
 
-  /**
-   * No los devuelve, igual que su gemela: reponerlos sería adivinar a qué roles
-   * pertenecían, y un permiso que ya no está en `PERMISSIONS` no concede nada.
-   */
-  async down(): Promise<void> {
-    return Promise.resolve();
-  }
+    /**
+     * No los devuelve, igual que su gemela: reponerlos sería adivinar a qué roles
+     * pertenecían, y un permiso que ya no está en `PERMISSIONS` no concede nada.
+     */
+    async down(): Promise<void> {
+        return Promise.resolve();
+    }
 }
 
 /**
@@ -62,15 +62,15 @@ export class DropChurchDreamPermissions1787443200000 implements MigrationInterfa
  * se descarta lo que no sea una lista de cadenas.
  */
 function parsePermissions(value: unknown): string[] | null {
-  const parsed: unknown = typeof value === 'string' ? safeParse(value) : value;
-  if (!Array.isArray(parsed)) return null;
-  return parsed.filter((one): one is string => typeof one === 'string');
+    const parsed: unknown = typeof value === 'string' ? safeParse(value) : value;
+    if (!Array.isArray(parsed)) return null;
+    return parsed.filter((one): one is string => typeof one === 'string');
 }
 
 function safeParse(value: string): unknown {
-  try {
-    return JSON.parse(value);
-  } catch {
-    return null;
-  }
+    try {
+        return JSON.parse(value);
+    } catch {
+        return null;
+    }
 }

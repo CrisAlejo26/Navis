@@ -18,40 +18,40 @@ import { api } from '@/lib/api';
  * llamada al servidor.
  */
 export function DashboardPage() {
-  const { t } = useTranslation();
-  const { data, isLoading } = useDashboardSummary(api);
+    const { t } = useTranslation();
+    const { data, isLoading } = useDashboardSummary(api);
 
-  if (isLoading || !data) return <PageSkeleton />;
+    if (isLoading || !data) return <PageSkeleton />;
 
-  return (
-    <section className="gap-6 animate-page-in flex flex-col">
-      <WelcomeHeader />
+    return (
+        <section className="gap-6 animate-page-in flex flex-col">
+            <WelcomeHeader />
 
-      <div className="gap-4 sm:grid-cols-2 lg:grid-cols-4 grid">
-        <StatusCard
-          believers={data.believers}
-          attention={data.attention}
-          className="sm:col-span-2 lg:col-span-2"
-        />
-        <EventsCard events={data.upcomingEvents} />
-        <NotesCard notes={data.recentNotes} />
-        <TodayTasksCard
-          tasks={data.todayTasks}
-          streak={data.taskStreak}
-          className="sm:col-span-2 lg:col-span-4"
-        />
-      </div>
+            <div className="gap-4 sm:grid-cols-2 lg:grid-cols-4 grid">
+                <StatusCard
+                    believers={data.believers}
+                    attention={data.attention}
+                    className="sm:col-span-2 lg:col-span-2"
+                />
+                <EventsCard events={data.upcomingEvents} />
+                <NotesCard notes={data.recentNotes} />
+                <TodayTasksCard
+                    tasks={data.todayTasks}
+                    streak={data.taskStreak}
+                    className="sm:col-span-2 lg:col-span-4"
+                />
+            </div>
 
-      <WeekCalendar />
+            <WeekCalendar />
 
-      <div>
-        <h2 className="mb-3 text-sm font-semibold text-muted-foreground">
-          {t('home.composition')}
-        </h2>
-        <CompositionSection composition={data.composition} />
-      </div>
+            <div>
+                <h2 className="mb-3 text-sm font-semibold text-muted-foreground">
+                    {t('home.composition')}
+                </h2>
+                <CompositionSection composition={data.composition} />
+            </div>
 
-      <ActivityCard weeks={data.weeklyActivity} />
-    </section>
-  );
+            <ActivityCard weeks={data.weeklyActivity} />
+        </section>
+    );
 }

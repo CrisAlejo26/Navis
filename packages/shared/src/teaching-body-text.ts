@@ -9,36 +9,36 @@ import type { TeachingBody } from './schemas/teachings';
  * web lo usa para la postal que se exporta como imagen (RFC 0022 §4.5).
  */
 export interface TeachingBodyText {
-  /** Todo el texto, en el orden en que aparece, separado por espacios. */
-  text: string;
-  checklist: { checked: number; total: number } | null;
+    /** Todo el texto, en el orden en que aparece, separado por espacios. */
+    text: string;
+    checklist: { checked: number; total: number } | null;
 }
 
 export function extractTeachingBodyText(body: TeachingBody): TeachingBodyText {
-  const words: string[] = [];
-  let checked = 0;
-  let total = 0;
+    const words: string[] = [];
+    let checked = 0;
+    let total = 0;
 
-  for (const block of body.content) {
-    if (block.type === 'paragraph') {
-      collectFromParagraph(block, words);
-    } else if (block.type === 'taskList') {
-      for (const item of block.content) {
-        total += 1;
-        if (item.attrs.checked) checked += 1;
-        for (const paragraph of item.content) collectFromParagraph(paragraph, words);
-      }
-    } else {
-      // bulletList / orderedList
-      for (const item of block.content) {
-        for (const paragraph of item.content) collectFromParagraph(paragraph, words);
-      }
+    for (const block of body.content) {
+        if (block.type === 'paragraph') {
+            collectFromParagraph(block, words);
+        } else if (block.type === 'taskList') {
+            for (const item of block.content) {
+                total += 1;
+                if (item.attrs.checked) checked += 1;
+                for (const paragraph of item.content) collectFromParagraph(paragraph, words);
+            }
+        } else {
+            // bulletList / orderedList
+            for (const item of block.content) {
+                for (const paragraph of item.content) collectFromParagraph(paragraph, words);
+            }
+        }
     }
-  }
 
-  return { text: words.join(' '), checklist: total > 0 ? { checked, total } : null };
+    return { text: words.join(' '), checklist: total > 0 ? { checked, total } : null };
 }
 
 function collectFromParagraph(paragraph: { content?: { text: string }[] }, into: string[]): void {
-  for (const node of paragraph.content ?? []) into.push(node.text);
+    for (const node of paragraph.content ?? []) into.push(node.text);
 }

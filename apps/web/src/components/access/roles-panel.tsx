@@ -27,115 +27,115 @@ const CATALOG_LIMIT = 100;
  * cuentas lo tienen, y su alta, edición y baja.
  */
 export function RolesPanel() {
-  const { t } = useTranslation();
-  const query = useTableQuery({ fields: ROLE_SORT_FIELDS, sort: 'level', order: 'asc' });
+    const { t } = useTranslation();
+    const query = useTableQuery({ fields: ROLE_SORT_FIELDS, sort: 'level', order: 'asc' });
 
-  const { data, isFetching, isError, refetch } = useRoles(api, {
-    page: 1,
-    limit: CATALOG_LIMIT,
-    sort: 'level',
-    order: 'asc',
-  });
+    const { data, isFetching, isError, refetch } = useRoles(api, {
+        page: 1,
+        limit: CATALOG_LIMIT,
+        sort: 'level',
+        order: 'asc',
+    });
 
-  const [editing, setEditing] = useState<RoleRow | null>(null);
-  const [creating, setCreating] = useState(false);
-  const [deleting, setDeleting] = useState<RoleRow | null>(null);
+    const [editing, setEditing] = useState<RoleRow | null>(null);
+    const [creating, setCreating] = useState(false);
+    const [deleting, setDeleting] = useState<RoleRow | null>(null);
 
-  const rows = useRoleRows({
-    roles: data?.items,
-    search: query.search,
-    sort: query.sort,
-    order: query.order,
-  });
+    const rows = useRoleRows({
+        roles: data?.items,
+        search: query.search,
+        sort: query.sort,
+        order: query.order,
+    });
 
-  const totalPages = Math.max(1, Math.ceil(rows.length / query.limit));
-  const page = Math.min(query.page, totalPages);
-  const visible = rows.slice((page - 1) * query.limit, page * query.limit);
+    const totalPages = Math.max(1, Math.ceil(rows.length / query.limit));
+    const page = Math.min(query.page, totalPages);
+    const visible = rows.slice((page - 1) * query.limit, page * query.limit);
 
-  /** Lo mismo alimenta la fila de la tabla y la ficha de móvil. */
-  const cells = (role: RoleRow) => ({
-    role,
-    onEdit: () => {
-      setEditing(role);
-    },
-    onDelete: () => {
-      setDeleting(role);
-    },
-  });
+    /** Lo mismo alimenta la fila de la tabla y la ficha de móvil. */
+    const cells = (role: RoleRow) => ({
+        role,
+        onEdit: () => {
+            setEditing(role);
+        },
+        onDelete: () => {
+            setDeleting(role);
+        },
+    });
 
-  const columns = [
-    { field: 'slug', label: t('roles.columnRole') },
-    { field: 'level', label: t('roles.columnLevel') },
-    { field: 'usersCount', label: t('roles.columnAccounts'), align: 'right' },
-  ] as const;
+    const columns = [
+        { field: 'slug', label: t('roles.columnRole') },
+        { field: 'level', label: t('roles.columnLevel') },
+        { field: 'usersCount', label: t('roles.columnAccounts'), align: 'right' },
+    ] as const;
 
-  return (
-    <>
-      <DataTable
-        items={visible}
-        isLoading={isFetching && !data}
-        isError={isError}
-        onRetry={() => void refetch()}
-        columnCount={columns.length + 2}
-        getKey={(role) => role.id}
-        emptyIcon={SearchX}
-        emptyTitle={t('roles.noRoles')}
-        // El filete de cada fila lleva el color de su nivel (`roleAccent`): la
-        // misma jerarquía que ya dibuja `RoleBadge` en puntos, ahora también
-        // en el borde de la fila (Regla 9 §3).
-        rowClassName={() => 'border-l-[var(--acento)]'}
-        rowStyle={(role) => accentVars(roleAccent(role.level))}
-        toolbar={
-          <RolesToolbar
-            search={query.search}
-            onSearchChange={query.setSearch}
-            onCreate={() => {
-              setCreating(true);
-            }}
-          />
-        }
-        columns={
-          <>
-            <SortableColumns
-              columns={columns}
-              sort={query.sort}
-              order={query.order}
-              onToggle={query.toggleSort}
+    return (
+        <>
+            <DataTable
+                items={visible}
+                isLoading={isFetching && !data}
+                isError={isError}
+                onRetry={() => void refetch()}
+                columnCount={columns.length + 2}
+                getKey={(role) => role.id}
+                emptyIcon={SearchX}
+                emptyTitle={t('roles.noRoles')}
+                // El filete de cada fila lleva el color de su nivel (`roleAccent`): la
+                // misma jerarquía que ya dibuja `RoleBadge` en puntos, ahora también
+                // en el borde de la fila (Regla 9 §3).
+                rowClassName={() => 'border-l-[var(--acento)]'}
+                rowStyle={(role) => accentVars(roleAccent(role.level))}
+                toolbar={
+                    <RolesToolbar
+                        search={query.search}
+                        onSearchChange={query.setSearch}
+                        onCreate={() => {
+                            setCreating(true);
+                        }}
+                    />
+                }
+                columns={
+                    <>
+                        <SortableColumns
+                            columns={columns}
+                            sort={query.sort}
+                            order={query.order}
+                            onToggle={query.toggleSort}
+                        />
+                        <TableHeader className="text-right">{t('roles.columnKind')}</TableHeader>
+                        <TableHeader className="text-right">
+                            <span className="sr-only">{t('common.actions')}</span>
+                        </TableHeader>
+                    </>
+                }
+                renderRow={(role) => <RoleCells {...cells(role)} />}
+                renderCard={(role) => <RoleCard {...cells(role)} />}
+                footer={
+                    <Pagination
+                        page={page}
+                        limit={query.limit}
+                        total={rows.length}
+                        totalPages={totalPages}
+                        onPageChange={query.setPage}
+                        onLimitChange={query.setLimit}
+                    />
+                }
             />
-            <TableHeader className="text-right">{t('roles.columnKind')}</TableHeader>
-            <TableHeader className="text-right">
-              <span className="sr-only">{t('common.actions')}</span>
-            </TableHeader>
-          </>
-        }
-        renderRow={(role) => <RoleCells {...cells(role)} />}
-        renderCard={(role) => <RoleCard {...cells(role)} />}
-        footer={
-          <Pagination
-            page={page}
-            limit={query.limit}
-            total={rows.length}
-            totalPages={totalPages}
-            onPageChange={query.setPage}
-            onLimitChange={query.setLimit}
-          />
-        }
-      />
 
-      <RoleDialog
-        role={editing}
-        open={creating || editing !== null}
-        onClose={() => {
-          setCreating(false);
-          setEditing(null);
-        }}
-      />
-      <DeleteRoleDialog
-        role={deleting}
-        onClose={() => {
-          setDeleting(null);
-        }}
-      />
-    </>
-  );
+            <RoleDialog
+                role={editing}
+                open={creating || editing !== null}
+                onClose={() => {
+                    setCreating(false);
+                    setEditing(null);
+                }}
+            />
+            <DeleteRoleDialog
+                role={deleting}
+                onClose={() => {
+                    setDeleting(null);
+                }}
+            />
+        </>
+    );
 }

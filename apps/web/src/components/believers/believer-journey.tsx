@@ -21,62 +21,62 @@ import { formatMonth } from '@/lib/format';
  * prometiendo datos que nadie ha rellenado es peor que no tenerla.
  */
 export function BelieverJourney({
-  believer,
-  gifts,
+    believer,
+    gifts,
 }: {
-  believer: BelieverListItem;
-  gifts: readonly Gift[];
+    believer: BelieverListItem;
+    gifts: readonly Gift[];
 }) {
-  const { t } = useTranslation();
-  const { data: ministries = [] } = useMinistries(api);
-  const steps = journeyOf(believer, gifts, ministries, t('believers.journey.arrived'));
+    const { t } = useTranslation();
+    const { data: ministries = [] } = useMinistries(api);
+    const steps = journeyOf(believer, gifts, ministries, t('believers.journey.arrived'));
 
-  const cuentas =
-    believer.bibleReadings !== null ||
-    believer.vivenciasReadings !== null ||
-    believer.bibleInstituteTimes !== null;
+    const cuentas =
+        believer.bibleReadings !== null ||
+        believer.vivenciasReadings !== null ||
+        believer.bibleInstituteTimes !== null;
 
-  if (steps.length === 0 && !cuentas && !believer.arrivalSite) return null;
+    if (steps.length === 0 && !cuentas && !believer.arrivalSite) return null;
 
-  return (
-    <section className="p-5 gap-5 flex flex-col rounded-xl border bg-card">
-      <div className="gap-1 flex flex-col">
-        <h2 className="font-semibold text-[11px] tracking-[0.14em] text-muted-foreground uppercase">
-          {t('believers.journey.title')}
-        </h2>
-        {believer.arrivalSite && (
-          <p className="text-sm">
-            {t('believers.journey.arrivedAtSite', { site: believer.arrivalSite })}
-          </p>
-        )}
-      </div>
+    return (
+        <section className="p-5 gap-5 flex flex-col rounded-xl border bg-card">
+            <div className="gap-1 flex flex-col">
+                <h2 className="font-semibold text-[11px] tracking-[0.14em] text-muted-foreground uppercase">
+                    {t('believers.journey.title')}
+                </h2>
+                {believer.arrivalSite && (
+                    <p className="text-sm">
+                        {t('believers.journey.arrivedAtSite', { site: believer.arrivalSite })}
+                    </p>
+                )}
+            </div>
 
-      <JourneyCounts believer={believer} />
+            <JourneyCounts believer={believer} />
 
-      {steps.length > 0 && (
-        <ol className="gap-3 flex flex-col">
-          {steps.map((step) => (
-            <li key={step.key} className="gap-3 flex items-baseline">
-              {/* El punto lleva el color de su don o de su labor: el mismo con
+            {steps.length > 0 && (
+                <ol className="gap-3 flex flex-col">
+                    {steps.map((step) => (
+                        <li key={step.key} className="gap-3 flex items-baseline">
+                            {/* El punto lleva el color de su don o de su labor: el mismo con
                   el que sale en las etiquetas de arriba, para que se reconozca
                   sin leerlo. */}
-              <span
-                aria-hidden
-                style={step.accent ? accentVars(step.accent) : undefined}
-                className={`mt-1 size-2 shrink-0 rounded-full ${
-                  step.accent ? 'bg-[var(--acento)]' : 'bg-muted-foreground'
-                }`}
-              />
-              <span className="min-w-0 text-sm flex-1">
-                {t(`believers.journey.${step.kind}Line`, { what: step.label })}
-              </span>
-              <span className="text-xs shrink-0 text-muted-foreground tabular-nums">
-                {formatMonth(step.date)}
-              </span>
-            </li>
-          ))}
-        </ol>
-      )}
-    </section>
-  );
+                            <span
+                                aria-hidden
+                                style={step.accent ? accentVars(step.accent) : undefined}
+                                className={`mt-1 size-2 shrink-0 rounded-full ${
+                                    step.accent ? 'bg-[var(--acento)]' : 'bg-muted-foreground'
+                                }`}
+                            />
+                            <span className="min-w-0 text-sm flex-1">
+                                {t(`believers.journey.${step.kind}Line`, { what: step.label })}
+                            </span>
+                            <span className="text-xs shrink-0 text-muted-foreground tabular-nums">
+                                {formatMonth(step.date)}
+                            </span>
+                        </li>
+                    ))}
+                </ol>
+            )}
+        </section>
+    );
 }

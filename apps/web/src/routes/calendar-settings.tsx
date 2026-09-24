@@ -22,139 +22,143 @@ import { useActiveCalendar } from '@/lib/calendar/use-active-calendar';
  * en la pantalla principal, donde estorbaría todos los días.
  */
 export function CalendarSettingsPage() {
-  const { t } = useTranslation();
-  const navigate = useNavigate();
-  const { calendar, calendars } = useActiveCalendar();
-  const { data: congregations = [] } = useCongregations(api);
-  const { data: patterns = [] } = usePatterns(api, calendar?.id ?? '');
+    const { t } = useTranslation();
+    const navigate = useNavigate();
+    const { calendar, calendars } = useActiveCalendar();
+    const { data: congregations = [] } = useCongregations(api);
+    const { data: patterns = [] } = usePatterns(api, calendar?.id ?? '');
 
-  const [congregation, setCongregation] = useState<Congregation | null>(null);
-  const [addCongregation, setAddCongregation] = useState(false);
-  const [renaming, setRenaming] = useState(false);
-  const [pattern, setPattern] = useState<MeetingPattern | null>(null);
-  const [creating, setCreating] = useState(false);
-  const [borrarCalendario, setBorrarCalendario] = useState(false);
-  const [borrarSede, setBorrarSede] = useState<Congregation | null>(null);
-  const [borrarPatron, setBorrarPatron] = useState<MeetingPattern | null>(null);
+    const [congregation, setCongregation] = useState<Congregation | null>(null);
+    const [addCongregation, setAddCongregation] = useState(false);
+    const [renaming, setRenaming] = useState(false);
+    const [pattern, setPattern] = useState<MeetingPattern | null>(null);
+    const [creating, setCreating] = useState(false);
+    const [borrarCalendario, setBorrarCalendario] = useState(false);
+    const [borrarSede, setBorrarSede] = useState<Congregation | null>(null);
+    const [borrarPatron, setBorrarPatron] = useState<MeetingPattern | null>(null);
 
-  const volver = `/calendar/${calendar?.slug ?? ''}`;
+    const volver = `/calendar/${calendar?.slug ?? ''}`;
 
-  return (
-    <section className="max-w-2xl gap-6 flex flex-col">
-      <div className="gap-3 flex items-center">
-        <Link
-          to={volver}
-          aria-label={t('common.back')}
-          className="h-9 w-9 inline-flex items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground"
-        >
-          <ChevronLeft size={18} aria-hidden />
-        </Link>
-        <h1 className="text-2xl font-semibold">{calendar?.name ?? t('calendar.settings')}</h1>
+    return (
+        <section className="max-w-2xl gap-6 flex flex-col">
+            <div className="gap-3 flex items-center">
+                <Link
+                    to={volver}
+                    aria-label={t('common.back')}
+                    className="h-9 w-9 inline-flex items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground"
+                >
+                    <ChevronLeft size={18} aria-hidden />
+                </Link>
+                <h1 className="text-2xl font-semibold">
+                    {calendar?.name ?? t('calendar.settings')}
+                </h1>
 
-        <div className="gap-1 ml-auto flex">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => {
-              setRenaming(true);
-            }}
-          >
-            <Pencil size={15} aria-hidden />
-            {t('calendar.renameCalendar')}
-          </Button>
+                <div className="gap-1 ml-auto flex">
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                            setRenaming(true);
+                        }}
+                    >
+                        <Pencil size={15} aria-hidden />
+                        {t('calendar.renameCalendar')}
+                    </Button>
 
-          {calendars.length > 1 && calendar && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => {
-                setBorrarCalendario(true);
-              }}
-            >
-              <Trash2 size={15} aria-hidden />
-              {t('common.delete')}
-            </Button>
-          )}
-        </div>
-      </div>
+                    {calendars.length > 1 && calendar && (
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                                setBorrarCalendario(true);
+                            }}
+                        >
+                            <Trash2 size={15} aria-hidden />
+                            {t('common.delete')}
+                        </Button>
+                    )}
+                </div>
+            </div>
 
-      <Card>
-        <div className="gap-3 mb-2 flex items-center justify-between">
-          <CardTitle className="text-base">{t('calendar.patterns')}</CardTitle>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => {
-              setCreating(true);
-            }}
-          >
-            <Plus size={15} aria-hidden />
-            {t('calendar.addPattern')}
-          </Button>
-        </div>
+            <Card>
+                <div className="gap-3 mb-2 flex items-center justify-between">
+                    <CardTitle className="text-base">{t('calendar.patterns')}</CardTitle>
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                            setCreating(true);
+                        }}
+                    >
+                        <Plus size={15} aria-hidden />
+                        {t('calendar.addPattern')}
+                    </Button>
+                </div>
 
-        {patterns.length === 0 ? (
-          <EmptyState icon={CalendarClock} title={t('calendar.empty')}>
-            {t('calendar.emptyHint')}
-          </EmptyState>
-        ) : (
-          <PatternRows
-            patterns={patterns}
-            congregations={congregations}
-            onEdit={setPattern}
-            onDelete={setBorrarPatron}
-          />
-        )}
-      </Card>
+                {patterns.length === 0 ? (
+                    <EmptyState icon={CalendarClock} title={t('calendar.empty')}>
+                        {t('calendar.emptyHint')}
+                    </EmptyState>
+                ) : (
+                    <PatternRows
+                        patterns={patterns}
+                        congregations={congregations}
+                        onEdit={setPattern}
+                        onDelete={setBorrarPatron}
+                    />
+                )}
+            </Card>
 
-      <Card>
-        <div className="gap-3 mb-2 flex items-center justify-between">
-          <CardTitle className="text-base">{t('calendar.congregations')}</CardTitle>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => {
-              setAddCongregation(true);
-            }}
-          >
-            <Plus size={15} aria-hidden />
-            {t('calendar.addCongregation')}
-          </Button>
-        </div>
+            <Card>
+                <div className="gap-3 mb-2 flex items-center justify-between">
+                    <CardTitle className="text-base">{t('calendar.congregations')}</CardTitle>
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                            setAddCongregation(true);
+                        }}
+                    >
+                        <Plus size={15} aria-hidden />
+                        {t('calendar.addCongregation')}
+                    </Button>
+                </div>
 
-        <p className="mb-2 text-sm text-muted-foreground">{t('calendar.congregationsHint')}</p>
-        <CongregationRows
-          congregations={congregations}
-          onEdit={setCongregation}
-          onDelete={setBorrarSede}
-        />
-      </Card>
+                <p className="mb-2 text-sm text-muted-foreground">
+                    {t('calendar.congregationsHint')}
+                </p>
+                <CongregationRows
+                    congregations={congregations}
+                    onEdit={setCongregation}
+                    onDelete={setBorrarSede}
+                />
+            </Card>
 
-      <CalendarSettingsDialogs
-        state={{
-          calendar,
-          congregations,
-          renaming,
-          setRenaming,
-          congregation,
-          addCongregation,
-          setCongregation,
-          setAddCongregation,
-          pattern,
-          setPattern,
-          creating,
-          setCreating,
-          borrarCalendario,
-          setBorrarCalendario,
-          borrarSede,
-          setBorrarSede,
-          borrarPatron,
-          setBorrarPatron,
-          onCalendarDeleted: () => {
-            void navigate('/calendar');
-          },
-        }}
-      />
-    </section>
-  );
+            <CalendarSettingsDialogs
+                state={{
+                    calendar,
+                    congregations,
+                    renaming,
+                    setRenaming,
+                    congregation,
+                    addCongregation,
+                    setCongregation,
+                    setAddCongregation,
+                    pattern,
+                    setPattern,
+                    creating,
+                    setCreating,
+                    borrarCalendario,
+                    setBorrarCalendario,
+                    borrarSede,
+                    setBorrarSede,
+                    borrarPatron,
+                    setBorrarPatron,
+                    onCalendarDeleted: () => {
+                        void navigate('/calendar');
+                    },
+                }}
+            />
+        </section>
+    );
 }

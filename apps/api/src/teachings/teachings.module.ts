@@ -15,8 +15,8 @@ import { TeachingsService } from './teachings.service';
  * cuelga de la iglesia activa (D1 de la RFC 0004, mismo modelo aquí).
  */
 @Module({
-  imports: [TypeOrmModule.forFeature([Teaching])],
-  controllers: [TeachingsController],
-  providers: [TeachingsRepository, TeachingsService, TeachingsPageService, TeachingStatsService],
+    imports: [TypeOrmModule.forFeature([Teaching])],
+    controllers: [TeachingsController],
+    providers: [TeachingsRepository, TeachingsService, TeachingsPageService, TeachingStatsService],
 })
 export class TeachingsModule {}

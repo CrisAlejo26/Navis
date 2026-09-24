@@ -26,7 +26,7 @@ export const LIST_PASSWORD_MIN_LENGTH = 8;
  * espera que cuenten.
  */
 export function normalizeListPassword(value: string): string {
-  return value.replace(/[\s-]+/g, '');
+    return value.replace(/[\s-]+/g, '');
 }
 
 /**
@@ -35,14 +35,15 @@ export function normalizeListPassword(value: string): string {
  * probaría primero.
  */
 function pick(): string {
-  const limit = 256 - (256 % LIST_PASSWORD_ALPHABET.length);
-  const buffer = new Uint8Array(1);
+    const limit = 256 - (256 % LIST_PASSWORD_ALPHABET.length);
+    const buffer = new Uint8Array(1);
 
-  for (;;) {
-    globalThis.crypto.getRandomValues(buffer);
-    const byte = buffer[0] ?? 0;
-    if (byte < limit) return LIST_PASSWORD_ALPHABET[byte % LIST_PASSWORD_ALPHABET.length] ?? 'a';
-  }
+    for (;;) {
+        globalThis.crypto.getRandomValues(buffer);
+        const byte = buffer[0] ?? 0;
+        if (byte < limit)
+            return LIST_PASSWORD_ALPHABET[byte % LIST_PASSWORD_ALPHABET.length] ?? 'a';
+    }
 }
 
 /**
@@ -50,16 +51,16 @@ function pick(): string {
  * nunca de `Math.random`.
  */
 export function generateListPassword(): string {
-  return Array.from({ length: LIST_PASSWORD_GROUPS }, () =>
-    Array.from({ length: LIST_PASSWORD_GROUP_SIZE }, pick).join(''),
-  ).join('-');
+    return Array.from({ length: LIST_PASSWORD_GROUPS }, () =>
+        Array.from({ length: LIST_PASSWORD_GROUP_SIZE }, pick).join(''),
+    ).join('-');
 }
 
 /** Se mide **normalizada**: `abcd-efgh` son ocho caracteres, no nueve. */
 export const listPasswordSchema = z
-  .string()
-  .max(200)
-  .refine(
-    (value) => normalizeListPassword(value).length >= LIST_PASSWORD_MIN_LENGTH,
-    `La contraseña necesita al menos ${String(LIST_PASSWORD_MIN_LENGTH)} caracteres`,
-  );
+    .string()
+    .max(200)
+    .refine(
+        (value) => normalizeListPassword(value).length >= LIST_PASSWORD_MIN_LENGTH,
+        `La contraseña necesita al menos ${String(LIST_PASSWORD_MIN_LENGTH)} caracteres`,
+    );

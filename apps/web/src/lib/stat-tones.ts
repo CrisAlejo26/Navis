@@ -19,12 +19,12 @@ export const STAT_ACCENTS = ['primary', 'success', 'accent', 'warning'] as const
 export type StatAccent = (typeof STAT_ACCENTS)[number];
 
 export interface StatToneClasses {
-  /** El filo de color de arriba, que es lo que se ve de lejos. */
-  edge: string;
-  /** La pastilla del icono. Nunca por debajo del 12 % (§7.1.3). */
-  chip: string;
-  /** El número. Vacío cuando el color no da contraste como texto (ver abajo). */
-  value: string;
+    /** El filo de color de arriba, que es lo que se ve de lejos. */
+    edge: string;
+    /** La pastilla del icono. Nunca por debajo del 12 % (§7.1.3). */
+    chip: string;
+    /** El número. Vacío cuando el color no da contraste como texto (ver abajo). */
+    value: string;
 }
 
 /**
@@ -42,26 +42,26 @@ export interface StatToneClasses {
  * casi del color del fondo, y desaparece.
  */
 export const ACCENT_TONE: Record<StatAccent, StatToneClasses> = {
-  primary: {
-    edge: 'border-t-[3px] border-t-primary',
-    chip: 'bg-primary/12 text-primary',
-    value: 'text-primary',
-  },
-  success: {
-    edge: 'border-t-[3px] border-t-success',
-    chip: 'bg-success/15 text-success',
-    value: 'text-success',
-  },
-  accent: {
-    edge: 'border-t-[3px] border-t-accent',
-    chip: 'bg-accent text-accent-foreground',
-    value: '',
-  },
-  warning: {
-    edge: 'border-t-[3px] border-t-warning',
-    chip: 'bg-warning text-warning-foreground',
-    value: '',
-  },
+    primary: {
+        edge: 'border-t-[3px] border-t-primary',
+        chip: 'bg-primary/12 text-primary',
+        value: 'text-primary',
+    },
+    success: {
+        edge: 'border-t-[3px] border-t-success',
+        chip: 'bg-success/15 text-success',
+        value: 'text-success',
+    },
+    accent: {
+        edge: 'border-t-[3px] border-t-accent',
+        chip: 'bg-accent text-accent-foreground',
+        value: '',
+    },
+    warning: {
+        edge: 'border-t-[3px] border-t-warning',
+        chip: 'bg-warning text-warning-foreground',
+        value: '',
+    },
 };
 
 /**
@@ -70,8 +70,8 @@ export const ACCENT_TONE: Record<StatAccent, StatToneClasses> = {
  * quedarse sin contraste en uno de los dos temas.
  */
 export const FILLED_TONE = {
-  card: 'border-primary bg-primary text-primary-foreground',
-  chip: 'bg-primary-foreground/15 text-primary-foreground',
-  label: 'text-primary-foreground/75',
-  cta: 'text-primary-foreground',
+    card: 'border-primary bg-primary text-primary-foreground',
+    chip: 'bg-primary-foreground/15 text-primary-foreground',
+    label: 'text-primary-foreground/75',
+    cta: 'text-primary-foreground',
 } as const;

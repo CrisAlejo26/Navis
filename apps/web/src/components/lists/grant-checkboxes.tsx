@@ -13,41 +13,48 @@ import { accentVars } from '@/lib/accents';
  * sin cambiar ninguna contraseña ni avisar a nadie.
  */
 export function GrantCheckboxes({
-  lists,
-  selected,
-  onChange,
-  label,
+    lists,
+    selected,
+    onChange,
+    label,
 }: {
-  lists: readonly ListSummary[];
-  selected: readonly string[];
-  onChange: (ids: string[]) => void;
-  label: string;
+    lists: readonly ListSummary[];
+    selected: readonly string[];
+    onChange: (ids: string[]) => void;
+    label: string;
 }) {
-  const { t } = useTranslation();
+    const { t } = useTranslation();
 
-  if (lists.length === 0) return null;
+    if (lists.length === 0) return null;
 
-  return (
-    <fieldset className="gap-1 flex flex-col">
-      <legend className="mb-1 text-sm font-medium">{label}</legend>
+    return (
+        <fieldset className="gap-1 flex flex-col">
+            <legend className="mb-1 text-sm font-medium">{label}</legend>
 
-      {lists.map((list) => (
-        <div key={list.id} style={accentVars(list.accent)} className="gap-2 flex items-center">
-          <span aria-hidden className="size-2.5 shrink-0 rounded-full bg-[var(--acento)]" />
-          <Checkbox
-            className="order-first"
-            checked={selected.includes(list.id)}
-            label={`${list.name} · ${t('lists.people', { count: list.memberCount })}`}
-            onChange={(event) => {
-              onChange(
-                event.target.checked
-                  ? [...selected, list.id]
-                  : selected.filter((one) => one !== list.id),
-              );
-            }}
-          />
-        </div>
-      ))}
-    </fieldset>
-  );
+            {lists.map((list) => (
+                <div
+                    key={list.id}
+                    style={accentVars(list.accent)}
+                    className="gap-2 flex items-center"
+                >
+                    <span
+                        aria-hidden
+                        className="size-2.5 shrink-0 rounded-full bg-[var(--acento)]"
+                    />
+                    <Checkbox
+                        className="order-first"
+                        checked={selected.includes(list.id)}
+                        label={`${list.name} · ${t('lists.people', { count: list.memberCount })}`}
+                        onChange={(event) => {
+                            onChange(
+                                event.target.checked
+                                    ? [...selected, list.id]
+                                    : selected.filter((one) => one !== list.id),
+                            );
+                        }}
+                    />
+                </div>
+            ))}
+        </fieldset>
+    );
 }

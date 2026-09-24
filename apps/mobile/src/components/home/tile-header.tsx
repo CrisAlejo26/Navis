@@ -17,38 +17,40 @@ export type TileTone = 'filled' | 'primary' | 'success' | 'warning' | 'accent';
  * `Icon` (Fase 2), que resuelve tono a partir del tema, no del contenedor.
  */
 export function TileHeader({
-  icon,
-  label,
-  tone,
-  palette,
+    icon,
+    label,
+    tone,
+    palette,
 }: {
-  icon: IoniconName;
-  label: string;
-  tone: TileTone;
-  palette: ThemeColors;
+    icon: IoniconName;
+    label: string;
+    tone: TileTone;
+    palette: ThemeColors;
 }) {
-  const filled = tone === 'filled';
+    const filled = tone === 'filled';
 
-  return (
-    <View className="gap-2 flex-row items-center">
-      {tone === 'filled' ? (
-        <View
-          className="h-7 w-7 items-center justify-center rounded-lg"
-          style={{ backgroundColor: hexAlpha(palette.primaryForeground, 0.15) }}
-        >
-          <Ionicons name={icon} size={15} color={palette.primaryForeground} />
+    return (
+        <View className="gap-2 flex-row items-center">
+            {tone === 'filled' ? (
+                <View
+                    className="h-7 w-7 items-center justify-center rounded-lg"
+                    style={{ backgroundColor: hexAlpha(palette.primaryForeground, 0.15) }}
+                >
+                    <Ionicons name={icon} size={15} color={palette.primaryForeground} />
+                </View>
+            ) : (
+                <Icon name={icon} tone={tone} background="soft" shape="square" size="sm" />
+            )}
+            <Text
+                className="text-sm font-medium"
+                style={{
+                    color: filled
+                        ? hexAlpha(palette.primaryForeground, 0.85)
+                        : palette.mutedForeground,
+                }}
+            >
+                {label}
+            </Text>
         </View>
-      ) : (
-        <Icon name={icon} tone={tone} background="soft" shape="square" size="sm" />
-      )}
-      <Text
-        className="text-sm font-medium"
-        style={{
-          color: filled ? hexAlpha(palette.primaryForeground, 0.85) : palette.mutedForeground,
-        }}
-      >
-        {label}
-      </Text>
-    </View>
-  );
+    );
 }

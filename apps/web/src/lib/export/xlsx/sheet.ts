@@ -21,54 +21,54 @@ const FIRST_DATA_ROW = 5;
  * `sheetData`, `autoFilter`, `mergeCells`— y no se puede alterar.
  */
 export function buildDataSheet(doc: ExportDocument, styles: XlsxStyles): string {
-  const columns = Math.max(1, doc.headers.length);
-  const last = columnLetter(columns);
-  const lastRow = HEADER_ROW + doc.rows.length;
+    const columns = Math.max(1, doc.headers.length);
+    const last = columnLetter(columns);
+    const lastRow = HEADER_ROW + doc.rows.length;
 
-  const filas = [
-    banda(TITLE_ROW, columns, doc.title, STYLE.title, 34),
-    banda(SUBTITLE_ROW, columns, doc.subtitle, STYLE.subtitle, 18),
-    `<row r="3" ht="6" customHeight="1"/>`,
-    fila(
-      HEADER_ROW,
-      doc.headers.map((header) => ({ kind: 'text', text: header }) satisfies ExportCell),
-      () => STYLE.header,
-      28,
-    ),
-    ...doc.rows.map((row, index) =>
-      fila(FIRST_DATA_ROW + index, row, (cell) => styleFor(cell, index % 2 === 1, styles)),
-    ),
-  ];
+    const filas = [
+        banda(TITLE_ROW, columns, doc.title, STYLE.title, 34),
+        banda(SUBTITLE_ROW, columns, doc.subtitle, STYLE.subtitle, 18),
+        `<row r="3" ht="6" customHeight="1"/>`,
+        fila(
+            HEADER_ROW,
+            doc.headers.map((header) => ({ kind: 'text', text: header }) satisfies ExportCell),
+            () => STYLE.header,
+            28,
+        ),
+        ...doc.rows.map((row, index) =>
+            fila(FIRST_DATA_ROW + index, row, (cell) => styleFor(cell, index % 2 === 1, styles)),
+        ),
+    ];
 
-  return [
-    XML_HEADER,
-    '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">',
-    `<dimension ref="A1:${last}${String(Math.max(lastRow, HEADER_ROW))}"/>`,
-    '<sheetViews><sheetView showGridLines="0" tabSelected="1" workbookViewId="0">',
-    // La fila de encabezados se queda arriba al bajar: es lo primero que hace
-    // cualquiera al abrir un listado largo.
-    `<pane ySplit="${String(HEADER_ROW)}" topLeftCell="A${String(FIRST_DATA_ROW)}" activePane="bottomLeft" state="frozen"/>`,
-    '</sheetView></sheetViews>',
-    '<sheetFormatPr defaultRowHeight="15"/>',
-    cols(doc.widths),
-    `<sheetData>${filas.join('')}</sheetData>`,
-    `<autoFilter ref="A${String(HEADER_ROW)}:${last}${String(Math.max(lastRow, HEADER_ROW))}"/>`,
-    `<mergeCells count="2"><mergeCell ref="A1:${last}1"/><mergeCell ref="A2:${last}2"/></mergeCells>`,
-    '</worksheet>',
-  ].join('');
+    return [
+        XML_HEADER,
+        '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">',
+        `<dimension ref="A1:${last}${String(Math.max(lastRow, HEADER_ROW))}"/>`,
+        '<sheetViews><sheetView showGridLines="0" tabSelected="1" workbookViewId="0">',
+        // La fila de encabezados se queda arriba al bajar: es lo primero que hace
+        // cualquiera al abrir un listado largo.
+        `<pane ySplit="${String(HEADER_ROW)}" topLeftCell="A${String(FIRST_DATA_ROW)}" activePane="bottomLeft" state="frozen"/>`,
+        '</sheetView></sheetViews>',
+        '<sheetFormatPr defaultRowHeight="15"/>',
+        cols(doc.widths),
+        `<sheetData>${filas.join('')}</sheetData>`,
+        `<autoFilter ref="A${String(HEADER_ROW)}:${last}${String(Math.max(lastRow, HEADER_ROW))}"/>`,
+        `<mergeCells count="2"><mergeCell ref="A1:${last}1"/><mergeCell ref="A2:${last}2"/></mergeCells>`,
+        '</worksheet>',
+    ].join('');
 }
 
 function cols(widths: readonly number[]): string {
-  if (widths.length === 0) return '';
+    if (widths.length === 0) return '';
 
-  const items = widths
-    .map(
-      (width, index) =>
-        `<col min="${String(index + 1)}" max="${String(index + 1)}" width="${String(width)}" customWidth="1"/>`,
-    )
-    .join('');
+    const items = widths
+        .map(
+            (width, index) =>
+                `<col min="${String(index + 1)}" max="${String(index + 1)}" width="${String(width)}" customWidth="1"/>`,
+        )
+        .join('');
 
-  return `<cols>${items}</cols>`;
+    return `<cols>${items}</cols>`;
 }
 
 /**
@@ -77,27 +77,27 @@ function cols(widths: readonly number[]): string {
  * ellas, la combinación pinta solo la primera columna.
  */
 function banda(row: number, columns: number, text: string, style: number, height: number): string {
-  const cells = Array.from({ length: columns }, (_unused, index) =>
-    index === 0
-      ? cellXml(cellRef(1, row), style, { kind: 'text', text })
-      : `<c r="${cellRef(index + 1, row)}" s="${String(style)}"/>`,
-  ).join('');
+    const cells = Array.from({ length: columns }, (_unused, index) =>
+        index === 0
+            ? cellXml(cellRef(1, row), style, { kind: 'text', text })
+            : `<c r="${cellRef(index + 1, row)}" s="${String(style)}"/>`,
+    ).join('');
 
-  return `<row r="${String(row)}" ht="${String(height)}" customHeight="1">${cells}</row>`;
+    return `<row r="${String(row)}" ht="${String(height)}" customHeight="1">${cells}</row>`;
 }
 
 function fila(
-  row: number,
-  cells: readonly ExportCell[],
-  styleOf: (cell: ExportCell) => number,
-  height?: number,
+    row: number,
+    cells: readonly ExportCell[],
+    styleOf: (cell: ExportCell) => number,
+    height?: number,
 ): string {
-  const contenido = cells
-    .map((cell, index) => cellXml(cellRef(index + 1, row), styleOf(cell), cell))
-    .join('');
-  const alto = height === undefined ? '' : ` ht="${String(height)}" customHeight="1"`;
+    const contenido = cells
+        .map((cell, index) => cellXml(cellRef(index + 1, row), styleOf(cell), cell))
+        .join('');
+    const alto = height === undefined ? '' : ` ht="${String(height)}" customHeight="1"`;
 
-  return `<row r="${String(row)}"${alto}>${contenido}</row>`;
+    return `<row r="${String(row)}"${alto}>${contenido}</row>`;
 }
 
 /**
@@ -109,33 +109,33 @@ function fila(
  * media de otro no existe en Excel.
  */
 function styleFor(cell: ExportCell, alt: boolean, styles: XlsxStyles): number {
-  if (cell.kind === 'number') return alt ? STYLE.numberAlt : STYLE.number;
-  if (cell.kind === 'day') return alt ? STYLE.dateAlt : STYLE.date;
+    if (cell.kind === 'number') return alt ? STYLE.numberAlt : STYLE.number;
+    if (cell.kind === 'day') return alt ? STYLE.dateAlt : STYLE.date;
 
-  if (cell.kind === 'tags') {
-    const accents = new Set(cell.tags.map((tag) => tag.accent));
-    if (accents.size === 1) {
-      const [accent] = [...accents];
-      if (accent) return styles.tagStyle(accent);
+    if (cell.kind === 'tags') {
+        const accents = new Set(cell.tags.map((tag) => tag.accent));
+        if (accents.size === 1) {
+            const [accent] = [...accents];
+            if (accent) return styles.tagStyle(accent);
+        }
     }
-  }
 
-  return alt ? STYLE.textAlt : STYLE.text;
+    return alt ? STYLE.textAlt : STYLE.text;
 }
 
 function cellXml(ref: string, style: number, cell: ExportCell): string {
-  const attrs = `r="${ref}" s="${String(style)}"`;
+    const attrs = `r="${ref}" s="${String(style)}"`;
 
-  if (cell.kind === 'number') return `<c ${attrs}><v>${String(cell.value)}</v></c>`;
+    if (cell.kind === 'number') return `<c ${attrs}><v>${String(cell.value)}</v></c>`;
 
-  if (cell.kind === 'day') {
-    const serial = toExcelSerial(cell.iso);
-    // Una fecha que no se puede convertir se escribe tal cual y no se pierde.
-    if (serial === null) return inlineString(attrs, cell.iso);
-    return `<c ${attrs}><v>${String(serial)}</v></c>`;
-  }
+    if (cell.kind === 'day') {
+        const serial = toExcelSerial(cell.iso);
+        // Una fecha que no se puede convertir se escribe tal cual y no se pierde.
+        if (serial === null) return inlineString(attrs, cell.iso);
+        return `<c ${attrs}><v>${String(serial)}</v></c>`;
+    }
 
-  return inlineString(attrs, plainText(cell));
+    return inlineString(attrs, plainText(cell));
 }
 
 /**
@@ -144,6 +144,6 @@ function cellXml(ref: string, style: number, cell: ExportCell): string {
  * nota.
  */
 function inlineString(attrs: string, value: string): string {
-  if (value === '') return `<c ${attrs}/>`;
-  return `<c ${attrs} t="inlineStr"><is><t xml:space="preserve">${escapeXml(value)}</t></is></c>`;
+    if (value === '') return `<c ${attrs}/>`;
+    return `<c ${attrs} t="inlineStr"><is><t xml:space="preserve">${escapeXml(value)}</t></is></c>`;
 }

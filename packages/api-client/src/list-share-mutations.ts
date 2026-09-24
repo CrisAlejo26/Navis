@@ -12,36 +12,36 @@ import { queryKeys } from './query-keys';
  * tocan el enlace.
  */
 function refresh(client: ReturnType<typeof useQueryClient>) {
-  return client.invalidateQueries({ queryKey: queryKeys.lists.all });
+    return client.invalidateQueries({ queryKey: queryKeys.lists.all });
 }
 
 export function useShareList(api: ApiClient) {
-  const client = useQueryClient();
+    const client = useQueryClient();
 
-  return useMutation({
-    mutationFn: ({ listId, ...input }: ShareListInput & { listId: string }) =>
-      api.post<ListShareState>(`/lists/${listId}/share`, { ...input }),
-    onSuccess: () => refresh(client),
-  });
+    return useMutation({
+        mutationFn: ({ listId, ...input }: ShareListInput & { listId: string }) =>
+            api.post<ListShareState>(`/lists/${listId}/share`, { ...input }),
+        onSuccess: () => refresh(client),
+    });
 }
 
 /** Mantiene la lista publicada y el modo: solo tira el token viejo (D11). */
 export function useRotateListLink(api: ApiClient) {
-  const client = useQueryClient();
+    const client = useQueryClient();
 
-  return useMutation({
-    mutationFn: (listId: string) => api.post<ListShareState>(`/lists/${listId}/share/rotate`),
-    onSuccess: () => refresh(client),
-  });
+    return useMutation({
+        mutationFn: (listId: string) => api.post<ListShareState>(`/lists/${listId}/share/rotate`),
+        onSuccess: () => refresh(client),
+    });
 }
 
 export function useUnshareList(api: ApiClient) {
-  const client = useQueryClient();
+    const client = useQueryClient();
 
-  return useMutation({
-    mutationFn: (listId: string) => api.delete<ListShareState>(`/lists/${listId}/share`),
-    onSuccess: () => refresh(client),
-  });
+    return useMutation({
+        mutationFn: (listId: string) => api.delete<ListShareState>(`/lists/${listId}/share`),
+        onSuccess: () => refresh(client),
+    });
 }
 
 /**
@@ -51,15 +51,15 @@ export function useUnshareList(api: ApiClient) {
  * que escribirlo él para incluir el `boundary` del multipart.
  */
 export function useUploadListCover(api: ApiClient) {
-  const client = useQueryClient();
+    const client = useQueryClient();
 
-  return useMutation({
-    mutationFn: ({ listId, file }: { listId: string; file: Blob }) => {
-      const form = new FormData();
-      form.append('file', file, 'cover.png');
+    return useMutation({
+        mutationFn: ({ listId, file }: { listId: string; file: Blob }) => {
+            const form = new FormData();
+            form.append('file', file, 'cover.png');
 
-      return api.post<void>(`/lists/${listId}/cover`, undefined, { body: form });
-    },
-    onSuccess: () => refresh(client),
-  });
+            return api.post<void>(`/lists/${listId}/cover`, undefined, { body: form });
+        },
+        onSuccess: () => refresh(client),
+    });
 }

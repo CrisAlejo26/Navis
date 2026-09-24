@@ -7,9 +7,9 @@ import { Title } from '@/components/ui/title';
 import { buildDateGrid } from '@/lib/ui/date-grid';
 
 interface CalendarNavProps {
-  month: IsoDate;
-  onPrevious: () => void;
-  onNext: () => void;
+    month: IsoDate;
+    onPrevious: () => void;
+    onNext: () => void;
 }
 
 /**
@@ -18,21 +18,21 @@ interface CalendarNavProps {
  * los dos ficheros en vez de repetirse (Regla 1 §5).
  */
 export function CalendarNav({ month, onPrevious, onNext }: CalendarNavProps) {
-  const { t } = useTranslation();
+    const { t } = useTranslation();
 
-  return (
-    <View className="flex-row items-center justify-between">
-      <IconButton
-        icon="chevron-back"
-        accessibilityLabel={t('common.previousMonth')}
-        onPress={onPrevious}
-      />
-      <Title size="md">{buildDateGrid(month).monthLabel}</Title>
-      <IconButton
-        icon="chevron-forward"
-        accessibilityLabel={t('common.nextMonth')}
-        onPress={onNext}
-      />
-    </View>
-  );
+    return (
+        <View className="flex-row items-center justify-between">
+            <IconButton
+                icon="chevron-back"
+                accessibilityLabel={t('common.previousMonth')}
+                onPress={onPrevious}
+            />
+            <Title size="md">{buildDateGrid(month).monthLabel}</Title>
+            <IconButton
+                icon="chevron-forward"
+                accessibilityLabel={t('common.nextMonth')}
+                onPress={onNext}
+            />
+        </View>
+    );
 }

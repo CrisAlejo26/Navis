@@ -20,86 +20,87 @@ import { useStatusBarClaim } from '@/lib/status-bar';
  * principal: es lo que más se pulsa y se pulsa de pie.
  */
 export default function BelieverDetailScreen() {
-  const { t } = useTranslation();
-  const { id } = useLocalSearchParams<{ id: string }>();
-  const { data: believer, isPending, isError, refetch } = useBeliever(id);
-  const congregations = useCongregations();
-  const updateBeliever = useUpdateBeliever();
-  const deleteBeliever = useDeleteBeliever();
-  const [editOpen, setEditOpen] = useState(false);
-  // La cabecera con datos va sobre el degradado azul: iconos blancos. El
-  // esqueleto de carga y el error van sobre blanco: oscuros. Se reclama por
-  // foco y se reevalúa cuando llega (o se va) el dato.
-  useStatusBarClaim(isPending || isError || !believer ? 'dark' : 'light');
+    const { t } = useTranslation();
+    const { id } = useLocalSearchParams<{ id: string }>();
+    const { data: believer, isPending, isError, refetch } = useBeliever(id);
+    const congregations = useCongregations();
+    const updateBeliever = useUpdateBeliever();
+    const deleteBeliever = useDeleteBeliever();
+    const [editOpen, setEditOpen] = useState(false);
+    // La cabecera con datos va sobre el degradado azul: iconos blancos. El
+    // esqueleto de carga y el error van sobre blanco: oscuros. Se reclama por
+    // foco y se reevalúa cuando llega (o se va) el dato.
+    useStatusBarClaim(isPending || isError || !believer ? 'dark' : 'light');
 
-  if (isPending) {
+    if (isPending) {
+        return (
+            <View className="flex-1 bg-background">
+                <AppBar title={t('believers.title')} />
+                <View className="gap-3 p-4">
+                    <Skeleton className="h-12 w-2/3 rounded-xl" />
+                    <Skeleton className="h-4 w-full rounded-lg" />
+                    <Skeleton className="h-40 rounded-2xl w-full" />
+                </View>
+            </View>
+        );
+    }
+
+    if (isError || !believer) {
+        return (
+            <View className="flex-1 bg-background">
+                <AppBar title={t('believers.title')} />
+                <EmptyState
+                    icon="person-outline"
+                    title={t('believers.notFound')}
+                    action={{ label: t('common.retry'), onPress: () => void refetch() }}
+                />
+            </View>
+        );
+    }
+
+    const name = believerName(believer);
+    const believerId = believer.id;
+
+    function confirmDelete() {
+        Alert.alert(t('believers.deleteTitle', { name }), t('believers.deleteBody'), [
+            { text: t('common.cancel'), style: 'cancel' },
+            {
+                text: t('common.delete'),
+                style: 'destructive',
+                onPress: () => {
+                    void deleteBeliever.mutateAsync(believerId);
+                    router.back();
+                },
+            },
+        ]);
+    }
+
     return (
-      <View className="flex-1 bg-background">
-        <AppBar title={t('believers.title')} />
-        <View className="gap-3 p-4">
-          <Skeleton className="h-12 w-2/3 rounded-xl" />
-          <Skeleton className="h-4 w-full rounded-lg" />
-          <Skeleton className="h-40 rounded-2xl w-full" />
+        <View className="flex-1 bg-background">
+            <ScrollView contentContainerClassName="gap-5 pb-16">
+                <BelieverHeader
+                    believer={believer}
+                    congregationName={
+                        congregations.data?.find((one) => one.id === believer.congregationId)
+                            ?.name ?? null
+                    }
+                    onEdit={() => setEditOpen(true)}
+                    onDelete={confirmDelete}
+                />
+
+                <View className="px-4">
+                    <NotesBitacora believerId={believerId} believerName={name} />
+                </View>
+            </ScrollView>
+
+            <BelieverFormSheet
+                visible={editOpen}
+                onClose={() => setEditOpen(false)}
+                believer={believer}
+                onSave={async (values) => {
+                    await updateBeliever.mutateAsync({ id: believerId, input: toInput(values) });
+                }}
+            />
         </View>
-      </View>
     );
-  }
-
-  if (isError || !believer) {
-    return (
-      <View className="flex-1 bg-background">
-        <AppBar title={t('believers.title')} />
-        <EmptyState
-          icon="person-outline"
-          title={t('believers.notFound')}
-          action={{ label: t('common.retry'), onPress: () => void refetch() }}
-        />
-      </View>
-    );
-  }
-
-  const name = believerName(believer);
-  const believerId = believer.id;
-
-  function confirmDelete() {
-    Alert.alert(t('believers.deleteTitle', { name }), t('believers.deleteBody'), [
-      { text: t('common.cancel'), style: 'cancel' },
-      {
-        text: t('common.delete'),
-        style: 'destructive',
-        onPress: () => {
-          void deleteBeliever.mutateAsync(believerId);
-          router.back();
-        },
-      },
-    ]);
-  }
-
-  return (
-    <View className="flex-1 bg-background">
-      <ScrollView contentContainerClassName="gap-5 pb-16">
-        <BelieverHeader
-          believer={believer}
-          congregationName={
-            congregations.data?.find((one) => one.id === believer.congregationId)?.name ?? null
-          }
-          onEdit={() => setEditOpen(true)}
-          onDelete={confirmDelete}
-        />
-
-        <View className="px-4">
-          <NotesBitacora believerId={believerId} believerName={name} />
-        </View>
-      </ScrollView>
-
-      <BelieverFormSheet
-        visible={editOpen}
-        onClose={() => setEditOpen(false)}
-        believer={believer}
-        onSave={async (values) => {
-          await updateBeliever.mutateAsync({ id: believerId, input: toInput(values) });
-        }}
-      />
-    </View>
-  );
 }

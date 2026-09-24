@@ -10,15 +10,15 @@ import { z } from 'zod';
  * elegir la ciudad pueda rellenar la zona horaria por cortesía.
  */
 export const geocodedCitySchema = z.object({
-  name: z.string(),
-  /** ISO 3166-1 alfa-2, tal y como lo da el proveedor. */
-  countryCode: z.string(),
-  /** El nombre de la comunidad/provincia, en el idioma que dio el proveedor. */
-  region: z.string().nullable(),
-  latitude: z.number(),
-  longitude: z.number(),
-  /** Zona horaria IANA de la ciudad. */
-  timezone: z.string(),
+    name: z.string(),
+    /** ISO 3166-1 alfa-2, tal y como lo da el proveedor. */
+    countryCode: z.string(),
+    /** El nombre de la comunidad/provincia, en el idioma que dio el proveedor. */
+    region: z.string().nullable(),
+    latitude: z.number(),
+    longitude: z.number(),
+    /** Zona horaria IANA de la ciudad. */
+    timezone: z.string(),
 });
 
 export type GeocodedCity = z.infer<typeof geocodedCitySchema>;

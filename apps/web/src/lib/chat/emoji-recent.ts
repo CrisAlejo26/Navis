@@ -7,8 +7,8 @@ export const RECENT_EMOJI_STORAGE_KEY = 'navis.chat.recentEmoji';
 const MAX_RECENT = 24;
 
 interface RecentEmojiState {
-  recent: string[];
-  addRecent: (emoji: string) => void;
+    recent: string[];
+    addRecent: (emoji: string) => void;
 }
 
 /**
@@ -17,18 +17,21 @@ interface RecentEmojiState {
  * no algo que viaje con el mensaje.
  */
 export const useRecentEmojiStore = create<RecentEmojiState>()(
-  persist(
-    (set) => ({
-      recent: [],
-      addRecent: (emoji) => {
-        set((state) => ({
-          recent: [emoji, ...state.recent.filter((one) => one !== emoji)].slice(0, MAX_RECENT),
-        }));
-      },
-    }),
-    {
-      name: RECENT_EMOJI_STORAGE_KEY,
-      storage: createJSONStorage(() => globalThis.localStorage),
-    },
-  ),
+    persist(
+        (set) => ({
+            recent: [],
+            addRecent: (emoji) => {
+                set((state) => ({
+                    recent: [emoji, ...state.recent.filter((one) => one !== emoji)].slice(
+                        0,
+                        MAX_RECENT,
+                    ),
+                }));
+            },
+        }),
+        {
+            name: RECENT_EMOJI_STORAGE_KEY,
+            storage: createJSONStorage(() => globalThis.localStorage),
+        },
+    ),
 );

@@ -9,24 +9,27 @@ import { cn } from '@/lib/cn';
  * distingue la fila de esta sección de las de profecías o el cuaderno.
  */
 export function TeachingChecklistBadge({
-  checklist,
+    checklist,
 }: {
-  checklist: { checked: number; total: number } | null;
+    checklist: { checked: number; total: number } | null;
 }) {
-  const { t } = useTranslation();
-  if (!checklist) return <span className="text-muted-foreground">—</span>;
+    const { t } = useTranslation();
+    if (!checklist) return <span className="text-muted-foreground">—</span>;
 
-  const done = checklist.checked === checklist.total;
+    const done = checklist.checked === checklist.total;
 
-  return (
-    <span
-      className={cn(
-        'gap-1 px-2 py-0.5 text-xs font-medium inline-flex items-center rounded-full tabular-nums',
-        done ? 'bg-success/15 text-success' : 'bg-warning/15 text-warning',
-      )}
-    >
-      <ListChecks size={12} aria-hidden />
-      {t('teachings.stats.checklistValue', { checked: checklist.checked, total: checklist.total })}
-    </span>
-  );
+    return (
+        <span
+            className={cn(
+                'gap-1 px-2 py-0.5 text-xs font-medium inline-flex items-center rounded-full tabular-nums',
+                done ? 'bg-success/15 text-success' : 'bg-warning/15 text-warning',
+            )}
+        >
+            <ListChecks size={12} aria-hidden />
+            {t('teachings.stats.checklistValue', {
+                checked: checklist.checked,
+                total: checklist.total,
+            })}
+        </span>
+    );
 }

@@ -23,13 +23,13 @@ if (!container) throw new Error('No se encontró #root en index.html');
 linkPublicListManifest();
 
 createRoot(container).render(
-  <StrictMode>
-    <I18nextProvider i18n={i18n}>
-      <QueryClientProvider client={queryClient}>
-        <RouterProvider router={router} />
-        <Toaster />
-        <PwaUpdatePrompt />
-      </QueryClientProvider>
-    </I18nextProvider>
-  </StrictMode>,
+    <StrictMode>
+        <I18nextProvider i18n={i18n}>
+            <QueryClientProvider client={queryClient}>
+                <RouterProvider router={router} />
+                <Toaster />
+                <PwaUpdatePrompt />
+            </QueryClientProvider>
+        </I18nextProvider>
+    </StrictMode>,
 );

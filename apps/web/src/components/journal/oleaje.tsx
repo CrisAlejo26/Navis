@@ -3,34 +3,34 @@ const HEIGHT = 32;
 
 /** Una onda suave, de un borde al otro de la banda. */
 function wavePath(y: number, amplitude: number): string {
-  const top = y - amplitude;
-  const bottom = y + amplitude;
-  return `M0 ${String(y)} C${String(WIDTH / 4)} ${String(top)} ${String((WIDTH * 3) / 4)} ${String(bottom)} ${String(WIDTH)} ${String(y)}`;
+    const top = y - amplitude;
+    const bottom = y + amplitude;
+    return `M0 ${String(y)} C${String(WIDTH / 4)} ${String(top)} ${String((WIDTH * 3) / 4)} ${String(bottom)} ${String(WIDTH)} ${String(y)}`;
 }
 
 /** Dos trazos, cada uno con su opacidad: es lo único que lleva esta cinta. */
 function Band() {
-  return (
-    <svg
-      viewBox={`0 0 ${String(WIDTH)} ${String(HEIGHT)}`}
-      preserveAspectRatio="none"
-      className="h-full w-1/2 shrink-0"
-      fill="none"
-    >
-      <path
-        d={wavePath(HEIGHT / 2, 7)}
-        className="stroke-primary/35"
-        strokeWidth={1.5}
-        vectorEffect="non-scaling-stroke"
-      />
-      <path
-        d={wavePath(HEIGHT / 2 + 5, 5)}
-        className="stroke-primary/15"
-        strokeWidth={1.5}
-        vectorEffect="non-scaling-stroke"
-      />
-    </svg>
-  );
+    return (
+        <svg
+            viewBox={`0 0 ${String(WIDTH)} ${String(HEIGHT)}`}
+            preserveAspectRatio="none"
+            className="h-full w-1/2 shrink-0"
+            fill="none"
+        >
+            <path
+                d={wavePath(HEIGHT / 2, 7)}
+                className="stroke-primary/35"
+                strokeWidth={1.5}
+                vectorEffect="non-scaling-stroke"
+            />
+            <path
+                d={wavePath(HEIGHT / 2 + 5, 5)}
+                className="stroke-primary/15"
+                strokeWidth={1.5}
+                vectorEffect="non-scaling-stroke"
+            />
+        </svg>
+    );
 }
 
 /**
@@ -50,12 +50,12 @@ function Band() {
  * costura, cualquier fotograma se sigue leyendo como una línea de horizonte.
  */
 export function Oleaje({ className }: { className?: string }) {
-  return (
-    <div aria-hidden className={className ?? 'h-8 w-full overflow-hidden'}>
-      <div className="animate-oleaje flex h-full w-[200%]">
-        <Band />
-        <Band />
-      </div>
-    </div>
-  );
+    return (
+        <div aria-hidden className={className ?? 'h-8 w-full overflow-hidden'}>
+            <div className="animate-oleaje flex h-full w-[200%]">
+                <Band />
+                <Band />
+            </div>
+        </div>
+    );
 }

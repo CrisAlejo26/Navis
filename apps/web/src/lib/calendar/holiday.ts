@@ -20,13 +20,13 @@ import { useRegionNames } from '@/lib/geo/regions';
  * no dejan llamarlo condicionalmente.
  */
 export function useHolidayScopeLabel(holiday: Holiday | null | undefined): string {
-  const { t } = useTranslation();
-  const names = useRegionNames(holiday?.scope === 'regional' ? holiday.regions : []);
+    const { t } = useTranslation();
+    const names = useRegionNames(holiday?.scope === 'regional' ? holiday.regions : []);
 
-  if (!holiday) return '';
-  if (holiday.scope === 'national') return t('calendar.holidayNational');
+    if (!holiday) return '';
+    if (holiday.scope === 'national') return t('calendar.holidayNational');
 
-  return t('calendar.holidayRegional', {
-    region: holiday.regions.map((code) => names[code] ?? regionLabel(code)).join(', '),
-  });
+    return t('calendar.holidayRegional', {
+        region: holiday.regions.map((code) => names[code] ?? regionLabel(code)).join(', '),
+    });
 }

@@ -16,40 +16,40 @@
  * sola regla y no es configurable: eres el dueño o no lo eres.
  */
 export const PERMISSIONS = [
-  'dashboard.view',
-  'calendar.view',
-  'calendar.manage',
-  'believers.view',
-  'believers.manage',
-  // El cuaderno de la iglesia no cuelga de `believers.*` (RFC 0017 D10): es
-  // información más sensible que la agenda de un creyente, y mezclarlas daría
-  // acceso a quien solo debería gestionar personas.
-  'journal.view',
-  'journal.manage',
-  // Tareas y hábitos son de la cuenta, dentro de la iglesia activa, no un
-  // tablón compartido (RFC 0018 D6): gestionar es siempre gestionar lo
-  // propio, así que un solo permiso basta — no hace falta el par
-  // `view`/`manage` de siempre (D7).
-  'tasks.view',
-  'lists.view',
-  'lists.manage',
-  // Editar una lista y **echarla a internet** no son la misma acción (RFC 0010
-  // D8), así que publicar tiene permiso propio. Gestionar accesos va con él:
-  // repartir llaves es parte de abrir la puerta.
-  'lists.share',
-  // Tres niveles, como listas (RFC 0021): ver, añadir/editar filas y tocar la
-  // estructura (columnas) son decisiones de personas distintas.
-  'tables.view',
-  'tables.edit',
-  'tables.manage',
-  'communications.view',
-  'communications.manage',
-  'users.view',
-  'users.manage',
-  'roles.manage',
-  'churches.view',
-  'churches.manage',
-  'ai.use',
+    'dashboard.view',
+    'calendar.view',
+    'calendar.manage',
+    'believers.view',
+    'believers.manage',
+    // El cuaderno de la iglesia no cuelga de `believers.*` (RFC 0017 D10): es
+    // información más sensible que la agenda de un creyente, y mezclarlas daría
+    // acceso a quien solo debería gestionar personas.
+    'journal.view',
+    'journal.manage',
+    // Tareas y hábitos son de la cuenta, dentro de la iglesia activa, no un
+    // tablón compartido (RFC 0018 D6): gestionar es siempre gestionar lo
+    // propio, así que un solo permiso basta — no hace falta el par
+    // `view`/`manage` de siempre (D7).
+    'tasks.view',
+    'lists.view',
+    'lists.manage',
+    // Editar una lista y **echarla a internet** no son la misma acción (RFC 0010
+    // D8), así que publicar tiene permiso propio. Gestionar accesos va con él:
+    // repartir llaves es parte de abrir la puerta.
+    'lists.share',
+    // Tres niveles, como listas (RFC 0021): ver, añadir/editar filas y tocar la
+    // estructura (columnas) son decisiones de personas distintas.
+    'tables.view',
+    'tables.edit',
+    'tables.manage',
+    'communications.view',
+    'communications.manage',
+    'users.view',
+    'users.manage',
+    'roles.manage',
+    'churches.view',
+    'churches.manage',
+    'ai.use',
 ] as const;
 
 export type Permission = (typeof PERMISSIONS)[number];
@@ -62,30 +62,30 @@ export type Permission = (typeof PERMISSIONS)[number];
 export const ALL_PERMISSIONS = '*';
 
 export function isPermission(value: string): value is Permission {
-  return (PERMISSIONS as readonly string[]).includes(value);
+    return (PERMISSIONS as readonly string[]).includes(value);
 }
 
 /** Los módulos, en el orden en que se agrupan en la pantalla de roles. */
 export const PERMISSION_MODULES = [
-  'dashboard',
-  'calendar',
-  'believers',
-  'journal',
-  'tasks',
-  'lists',
-  'tables',
-  'communications',
-  'users',
-  'roles',
-  'churches',
-  'ai',
+    'dashboard',
+    'calendar',
+    'believers',
+    'journal',
+    'tasks',
+    'lists',
+    'tables',
+    'communications',
+    'users',
+    'roles',
+    'churches',
+    'ai',
 ] as const;
 
 export type PermissionModule = (typeof PERMISSION_MODULES)[number];
 
 /** Los permisos de un módulo, para pintarlos juntos. */
 export function permissionsOfModule(module: PermissionModule): Permission[] {
-  return PERMISSIONS.filter((permission) => permission.startsWith(`${module}.`));
+    return PERMISSIONS.filter((permission) => permission.startsWith(`${module}.`));
 }
 
 /**
@@ -96,13 +96,13 @@ export function permissionsOfModule(module: PermissionModule): Permission[] {
  * anterior. Uno que ya no existe no casa con nada y por tanto no concede nada.
  */
 export function hasPermission(granted: readonly string[], required: Permission): boolean {
-  return granted.includes(ALL_PERMISSIONS) || granted.includes(required);
+    return granted.includes(ALL_PERMISSIONS) || granted.includes(required);
 }
 
 /** Si los cubre todos. Es lo que exige un endpoint con varios permisos. */
 export function hasEveryPermission(
-  granted: readonly string[],
-  required: readonly Permission[],
+    granted: readonly string[],
+    required: readonly Permission[],
 ): boolean {
-  return required.every((permission) => hasPermission(granted, permission));
+    return required.every((permission) => hasPermission(granted, permission));
 }

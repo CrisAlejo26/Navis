@@ -216,13 +216,13 @@ apps/mobile/app/(auth)/
 2. Se autentica la cuenta contra ese servidor: si el email local ya existe
    allí, login; si no, registro con la misma contraseña.
 3. **Migración local → servidor**, en orden de dependencias:
-   1. Crear la iglesia en el servidor con los datos de la local (si el usuario
-      ya tiene una, se elige: usar esa o crear otra).
-   2. Subir creyentes, notas, etiquetas, listas y demás módulos locales,
-      atribuidos a la iglesia y al usuario del servidor.
-   3. Al terminar, la base local se **conserva** como copia de respaldo (no
-      se borra): si la migración se corta a medias, nada se ha perdido y se
-      puede reintentar.
+    1. Crear la iglesia en el servidor con los datos de la local (si el usuario
+       ya tiene una, se elige: usar esa o crear otra).
+    2. Subir creyentes, notas, etiquetas, listas y demás módulos locales,
+       atribuidos a la iglesia y al usuario del servidor.
+    3. Al terminar, la base local se **conserva** como copia de respaldo (no
+       se borra): si la migración se corta a medias, nada se ha perdido y se
+       puede reintentar.
 4. La app pasa a modo conectado: los repositorios leen de la API y el
    `api-client` apunta a la URL guardada (SecureStore).
 

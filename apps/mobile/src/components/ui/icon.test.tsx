@@ -8,13 +8,13 @@ import { Icon } from '@/components/ui/icon';
  * se oculta para no leerse dos veces junto al texto que ya lo acompaña.
  */
 describe('Icon', () => {
-  it('expone accessibilityLabel cuando el icono va solo, sin texto al lado', async () => {
-    await render(<Icon name="checkmark" accessibilityLabel="Correcto" />);
-    expect(screen.getByLabelText('Correcto')).toBeTruthy();
-  });
+    it('expone accessibilityLabel cuando el icono va solo, sin texto al lado', async () => {
+        await render(<Icon name="checkmark" accessibilityLabel="Correcto" />);
+        expect(screen.getByLabelText('Correcto')).toBeTruthy();
+    });
 
-  it('se oculta del lector de pantalla cuando no lleva etiqueta', async () => {
-    await render(<Icon name="checkmark" />);
-    expect(screen.queryAllByLabelText(/.+/)).toHaveLength(0);
-  });
+    it('se oculta del lector de pantalla cuando no lleva etiqueta', async () => {
+        await render(<Icon name="checkmark" />);
+        expect(screen.queryAllByLabelText(/.+/)).toHaveLength(0);
+    });
 });

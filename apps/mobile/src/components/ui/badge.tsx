@@ -10,26 +10,26 @@ import { useThemeStore } from '@/lib/theme';
 type BadgeTone = 'primary' | 'accent' | 'success' | 'warning' | 'destructive' | 'muted';
 
 const TEXT_KEY: Record<BadgeTone, keyof ThemeColors> = {
-  primary: 'primary',
-  accent: 'accent',
-  success: 'success',
-  warning: 'warning',
-  destructive: 'destructive',
-  muted: 'mutedForeground',
+    primary: 'primary',
+    accent: 'accent',
+    success: 'success',
+    warning: 'warning',
+    destructive: 'destructive',
+    muted: 'mutedForeground',
 };
 
 interface BadgeProps {
-  label: string;
-  tone?: BadgeTone;
-  /** Icono decorativo delante del texto: se oculta del lector de pantalla (Regla 2). */
-  icon?: IoniconName;
-  className?: string;
-  /**
-   * Sobre una escena de fondo (el retrato de la ficha): pastilla blanca
-   * sólida con el texto en el tono — el tinte suave desaparece contra el
-   * degradado.
-   */
-  onScene?: boolean;
+    label: string;
+    tone?: BadgeTone;
+    /** Icono decorativo delante del texto: se oculta del lector de pantalla (Regla 2). */
+    icon?: IoniconName;
+    className?: string;
+    /**
+     * Sobre una escena de fondo (el retrato de la ficha): pastilla blanca
+     * sólida con el texto en el tono — el tinte suave desaparece contra el
+     * degradado.
+     */
+    onScene?: boolean;
 }
 
 /**
@@ -40,28 +40,28 @@ interface BadgeProps {
  * va solo, siempre con el texto que lo explica (Regla 3 §7).
  */
 export function Badge({ label, tone = 'muted', icon, className, onScene = false }: BadgeProps) {
-  const palette = themeColorsHex[useThemeStore((state) => state.resolvedTheme)];
-  const toneHex = palette[TEXT_KEY[tone]];
+    const palette = themeColorsHex[useThemeStore((state) => state.resolvedTheme)];
+    const toneHex = palette[TEXT_KEY[tone]];
 
-  return (
-    <View
-      accessibilityRole="text"
-      className={cn('px-2.5 py-1 gap-1 flex-row items-center rounded-full', className)}
-      style={{
-        backgroundColor: onScene ? 'rgba(255,255,255,0.92)' : hexAlpha(toneHex, 0.14),
-      }}
-    >
-      {icon ? (
-        <Icon
-          name={icon}
-          size="sm"
-          color={onScene ? toneHex : undefined}
-          tone={onScene ? undefined : tone === 'muted' ? 'default' : tone}
-        />
-      ) : null}
-      <Text className="text-xs font-sans-medium" style={{ color: toneHex }}>
-        {label}
-      </Text>
-    </View>
-  );
+    return (
+        <View
+            accessibilityRole="text"
+            className={cn('px-2.5 py-1 gap-1 flex-row items-center rounded-full', className)}
+            style={{
+                backgroundColor: onScene ? 'rgba(255,255,255,0.92)' : hexAlpha(toneHex, 0.14),
+            }}
+        >
+            {icon ? (
+                <Icon
+                    name={icon}
+                    size="sm"
+                    color={onScene ? toneHex : undefined}
+                    tone={onScene ? undefined : tone === 'muted' ? 'default' : tone}
+                />
+            ) : null}
+            <Text className="text-xs font-sans-medium" style={{ color: toneHex }}>
+                {label}
+            </Text>
+        </View>
+    );
 }

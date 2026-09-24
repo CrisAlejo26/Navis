@@ -18,40 +18,44 @@ import { toast } from '@/lib/toast';
  * nada más.
  */
 export function useBatchMarkdownExport() {
-  const { t } = useTranslation();
-  const [pending, setPending] = useState(false);
+    const { t } = useTranslation();
+    const [pending, setPending] = useState(false);
 
-  const exportSelection = async (ids: readonly string[]): Promise<void> => {
-    if (ids.length === 0) return;
+    const exportSelection = async (ids: readonly string[]): Promise<void> => {
+        if (ids.length === 0) return;
 
-    setPending(true);
-    try {
-      const params = new URLSearchParams();
-      for (const id of ids) params.append('ids', id);
+        setPending(true);
+        try {
+            const params = new URLSearchParams();
+            for (const id of ids) params.append('ids', id);
 
-      const response = await api.get<ExportResponse<JournalExportRow>>(
-        `/journal/export?${params.toString()}`,
-      );
+            const response = await api.get<ExportResponse<JournalExportRow>>(
+                `/journal/export?${params.toString()}`,
+            );
 
-      const zip = toEntriesZip(response.rows, (row) => t(ENTRY_KIND_STYLES[row.kind].labelKey), {
-        frontmatterTitle: t('journal.export.frontmatterTitle'),
-        frontmatterKind: t('journal.export.frontmatterKind'),
-        frontmatterDate: t('journal.export.frontmatterDate'),
-        frontmatterReminder: t('journal.export.frontmatterReminder'),
-        annotationHeading: t('journal.export.annotationHeading'),
-        learnedHeading: t('journal.export.learnedHeading'),
-      });
+            const zip = toEntriesZip(
+                response.rows,
+                (row) => t(ENTRY_KIND_STYLES[row.kind].labelKey),
+                {
+                    frontmatterTitle: t('journal.export.frontmatterTitle'),
+                    frontmatterKind: t('journal.export.frontmatterKind'),
+                    frontmatterDate: t('journal.export.frontmatterDate'),
+                    frontmatterReminder: t('journal.export.frontmatterReminder'),
+                    annotationHeading: t('journal.export.annotationHeading'),
+                    learnedHeading: t('journal.export.learnedHeading'),
+                },
+            );
 
-      // El nombre no se traduce: es un identificador de fichero, no un texto
-      // que se lea (Regla 2 §6).
-      downloadFile(zip, exportFileName('cuaderno', 'zip'));
-      toast.success(t('export.done'));
-    } catch {
-      toast.error(t('export.failed'));
-    } finally {
-      setPending(false);
-    }
-  };
+            // El nombre no se traduce: es un identificador de fichero, no un texto
+            // que se lea (Regla 2 §6).
+            downloadFile(zip, exportFileName('cuaderno', 'zip'));
+            toast.success(t('export.done'));
+        } catch {
+            toast.error(t('export.failed'));
+        } finally {
+            setPending(false);
+        }
+    };
 
-  return { pending, exportSelection };
+    return { pending, exportSelection };
 }

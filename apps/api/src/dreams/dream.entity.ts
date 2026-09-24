@@ -22,41 +22,41 @@ import { DreamEmotion } from './dream-emotion.entity';
 @Index('IDX_dreams_owner_fulfilled', ['ownerId', 'fulfilledAt'])
 @Index('IDX_dreams_owner_search', ['ownerId', 'searchText'])
 export class Dream extends BaseEntity {
-  @ApiProperty({ description: 'De quién es. La única barrera de acceso que hay (D1)' })
-  @Column({ name: 'owner_id', type: 'text' })
-  ownerId: string;
+    @ApiProperty({ description: 'De quién es. La única barrera de acceso que hay (D1)' })
+    @Column({ name: 'owner_id', type: 'text' })
+    ownerId: string;
 
-  @ApiPropertyOptional({ description: 'Opcional: a las cuatro de la mañana nadie titula (D17)' })
-  @Column({ type: 'text', nullable: true })
-  title: string | null;
+    @ApiPropertyOptional({ description: 'Opcional: a las cuatro de la mañana nadie titula (D17)' })
+    @Column({ type: 'text', nullable: true })
+    title: string | null;
 
-  @ApiProperty({ description: 'El sueño tal y como se recuerda. Texto plano' })
-  @Column({ type: 'text' })
-  body: string;
+    @ApiProperty({ description: 'El sueño tal y como se recuerda. Texto plano' })
+    @Column({ type: 'text' })
+    body: string;
 
-  @ApiProperty({ description: 'Título, cuerpo e interpretación, sin acentos (§6.1)' })
-  @Column({ name: 'search_text', type: 'text' })
-  searchText: string;
+    @ApiProperty({ description: 'Título, cuerpo e interpretación, sin acentos (§6.1)' })
+    @Column({ name: 'search_text', type: 'text' })
+    searchText: string;
 
-  @ApiProperty({ description: 'La noche en que se soñó', example: '2026-03-14' })
-  @Column({ name: 'dreamed_at', type: 'date' })
-  dreamedAt: string;
+    @ApiProperty({ description: 'La noche en que se soñó', example: '2026-03-14' })
+    @Column({ name: 'dreamed_at', type: 'date' })
+    dreamedAt: string;
 
-  @ApiPropertyOptional({ description: 'La posible interpretación. Se escribe después' })
-  @Column({ type: 'text', nullable: true })
-  interpretation: string | null;
+    @ApiPropertyOptional({ description: 'La posible interpretación. Se escribe después' })
+    @Column({ type: 'text', nullable: true })
+    interpretation: string | null;
 
-  @ApiPropertyOptional({ description: 'Cuándo se cumplió. Nulo ⇒ no ha pasado (D8)' })
-  @Column({ name: 'fulfilled_at', type: 'date', nullable: true })
-  fulfilledAt: string | null;
+    @ApiPropertyOptional({ description: 'Cuándo se cumplió. Nulo ⇒ no ha pasado (D8)' })
+    @Column({ name: 'fulfilled_at', type: 'date', nullable: true })
+    fulfilledAt: string | null;
 
-  @ApiPropertyOptional({ description: 'Qué significó, escrito al cerrarlo (D10)' })
-  @Column({ name: 'fulfillment_meaning', type: 'text', nullable: true })
-  fulfillmentMeaning: string | null;
+    @ApiPropertyOptional({ description: 'Qué significó, escrito al cerrarlo (D10)' })
+    @Column({ name: 'fulfillment_meaning', type: 'text', nullable: true })
+    fulfillmentMeaning: string | null;
 
-  @OneToMany(() => DreamEmotion, (link) => link.dream, { cascade: true })
-  emotions: DreamEmotion[];
+    @OneToMany(() => DreamEmotion, (link) => link.dream, { cascade: true })
+    emotions: DreamEmotion[];
 
-  @OneToMany(() => DreamAudio, (audio) => audio.dream)
-  audios: DreamAudio[];
+    @OneToMany(() => DreamAudio, (audio) => audio.dream)
+    audios: DreamAudio[];
 }

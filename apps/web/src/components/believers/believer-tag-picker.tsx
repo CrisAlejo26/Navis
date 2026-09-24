@@ -19,111 +19,115 @@ import { cn } from '@/lib/cn';
  * se destaca ninguna.
  */
 export function BelieverTagPicker({
-  tags,
-  selected,
-  featuredId,
-  onToggle,
-  onSetFeatured,
-  label,
+    tags,
+    selected,
+    featuredId,
+    onToggle,
+    onSetFeatured,
+    label,
 }: {
-  tags: readonly BelieverTag[];
-  selected: readonly string[];
-  featuredId: string | null;
-  onToggle: (id: string) => void;
-  onSetFeatured: (id: string | null) => void;
-  label: string;
+    tags: readonly BelieverTag[];
+    selected: readonly string[];
+    featuredId: string | null;
+    onToggle: (id: string) => void;
+    onSetFeatured: (id: string | null) => void;
+    label: string;
 }) {
-  const { t } = useTranslation();
-  const shown = tags.filter((tag) => tag.isActive || selected.includes(tag.id));
-  const assigned = tags.filter((tag) => selected.includes(tag.id));
+    const { t } = useTranslation();
+    const shown = tags.filter((tag) => tag.isActive || selected.includes(tag.id));
+    const assigned = tags.filter((tag) => selected.includes(tag.id));
 
-  return (
-    <fieldset className="gap-2 flex flex-col">
-      <legend className="text-sm font-medium">{label}</legend>
+    return (
+        <fieldset className="gap-2 flex flex-col">
+            <legend className="text-sm font-medium">{label}</legend>
 
-      {shown.length === 0 ? (
-        <p className="text-xs text-muted-foreground">{t('believerTags.empty')}</p>
-      ) : (
-        <>
-          <div className="gap-1.5 flex flex-wrap">
-            {shown.map((tag) => {
-              const active = selected.includes(tag.id);
+            {shown.length === 0 ? (
+                <p className="text-xs text-muted-foreground">{t('believerTags.empty')}</p>
+            ) : (
+                <>
+                    <div className="gap-1.5 flex flex-wrap">
+                        {shown.map((tag) => {
+                            const active = selected.includes(tag.id);
 
-              return (
-                <button
-                  key={tag.id}
-                  type="button"
-                  aria-pressed={active}
-                  style={accentVars(tag.accent)}
-                  onClick={() => {
-                    onToggle(tag.id);
-                  }}
-                  className={cn(
-                    'h-8 gap-1.5 px-3 text-xs inline-flex cursor-pointer items-center rounded-full border',
-                    'transition-[background-color,border-color] duration-200',
-                    'focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none',
-                    active
-                      ? 'border-[var(--acento)] bg-[color-mix(in_oklab,var(--acento)_14%,transparent)] text-foreground'
-                      : 'border-transparent bg-muted text-muted-foreground hover:text-foreground',
-                  )}
-                >
-                  <span
-                    aria-hidden
-                    className={cn(
-                      'h-1.5 w-1.5 rounded-full',
-                      active ? 'bg-[var(--acento)]' : 'bg-current opacity-40',
+                            return (
+                                <button
+                                    key={tag.id}
+                                    type="button"
+                                    aria-pressed={active}
+                                    style={accentVars(tag.accent)}
+                                    onClick={() => {
+                                        onToggle(tag.id);
+                                    }}
+                                    className={cn(
+                                        'h-8 gap-1.5 px-3 text-xs inline-flex cursor-pointer items-center rounded-full border',
+                                        'transition-[background-color,border-color] duration-200',
+                                        'focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none',
+                                        active
+                                            ? 'border-[var(--acento)] bg-[color-mix(in_oklab,var(--acento)_14%,transparent)] text-foreground'
+                                            : 'border-transparent bg-muted text-muted-foreground hover:text-foreground',
+                                    )}
+                                >
+                                    <span
+                                        aria-hidden
+                                        className={cn(
+                                            'h-1.5 w-1.5 rounded-full',
+                                            active ? 'bg-[var(--acento)]' : 'bg-current opacity-40',
+                                        )}
+                                    />
+                                    {tag.name}
+                                </button>
+                            );
+                        })}
+                    </div>
+
+                    {assigned.length > 0 && (
+                        <div className="gap-1.5 flex flex-col">
+                            <span className="gap-1 text-xs flex items-center text-muted-foreground">
+                                <Star size={12} aria-hidden />
+                                {t('believerTags.tableLabel')}
+                            </span>
+
+                            <div className="gap-1.5 flex flex-wrap">
+                                {assigned.map((tag) => {
+                                    const featured = tag.id === featuredId;
+
+                                    return (
+                                        <button
+                                            key={tag.id}
+                                            type="button"
+                                            aria-pressed={featured}
+                                            title={t('believerTags.tableHint')}
+                                            style={accentVars(tag.accent)}
+                                            onClick={() => {
+                                                onSetFeatured(featured ? null : tag.id);
+                                            }}
+                                            className={cn(
+                                                'h-8 gap-1.5 px-3 text-xs inline-flex cursor-pointer items-center rounded-full border',
+                                                'transition-[background-color,border-color] duration-200',
+                                                'focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none',
+                                                featured
+                                                    ? 'border-[var(--acento)] bg-[color-mix(in_oklab,var(--acento)_14%,transparent)] text-foreground'
+                                                    : 'border-transparent bg-muted text-muted-foreground hover:text-foreground',
+                                            )}
+                                        >
+                                            <Star
+                                                size={12}
+                                                aria-hidden
+                                                className={
+                                                    featured
+                                                        ? 'fill-[var(--acento)] text-[var(--acento)]'
+                                                        : ''
+                                                }
+                                            />
+                                            {tag.name}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </div>
                     )}
-                  />
-                  {tag.name}
-                </button>
-              );
-            })}
-          </div>
-
-          {assigned.length > 0 && (
-            <div className="gap-1.5 flex flex-col">
-              <span className="gap-1 text-xs flex items-center text-muted-foreground">
-                <Star size={12} aria-hidden />
-                {t('believerTags.tableLabel')}
-              </span>
-
-              <div className="gap-1.5 flex flex-wrap">
-                {assigned.map((tag) => {
-                  const featured = tag.id === featuredId;
-
-                  return (
-                    <button
-                      key={tag.id}
-                      type="button"
-                      aria-pressed={featured}
-                      title={t('believerTags.tableHint')}
-                      style={accentVars(tag.accent)}
-                      onClick={() => {
-                        onSetFeatured(featured ? null : tag.id);
-                      }}
-                      className={cn(
-                        'h-8 gap-1.5 px-3 text-xs inline-flex cursor-pointer items-center rounded-full border',
-                        'transition-[background-color,border-color] duration-200',
-                        'focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none',
-                        featured
-                          ? 'border-[var(--acento)] bg-[color-mix(in_oklab,var(--acento)_14%,transparent)] text-foreground'
-                          : 'border-transparent bg-muted text-muted-foreground hover:text-foreground',
-                      )}
-                    >
-                      <Star
-                        size={12}
-                        aria-hidden
-                        className={featured ? 'fill-[var(--acento)] text-[var(--acento)]' : ''}
-                      />
-                      {tag.name}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-        </>
-      )}
-    </fieldset>
-  );
+                </>
+            )}
+        </fieldset>
+    );
 }

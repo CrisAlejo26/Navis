@@ -2,17 +2,17 @@ import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import type {
-  BelieverExportRow,
-  BelieverListItem,
-  BelieverNote,
-  BelieverTag,
-  BelieversSummary,
-  ExportResponse,
-  Gift,
-  NoteAudio,
-  NoteCounts,
-  NoteDay,
-  Paginated,
+    BelieverExportRow,
+    BelieverListItem,
+    BelieverNote,
+    BelieverTag,
+    BelieversSummary,
+    ExportResponse,
+    Gift,
+    NoteAudio,
+    NoteCounts,
+    NoteDay,
+    Paginated,
 } from '@navis/shared';
 import { toNodeHandler } from 'better-auth/node';
 import express from 'express';
@@ -32,7 +32,7 @@ const body = <T>(response: { body: unknown }): T => response.body as T;
  * con el simple paso del tiempo real — ya rompió `needsAttention` una vez.
  */
 const diasAtras = (n: number): string =>
-  new Date(Date.now() - n * 86_400_000).toISOString().slice(0, 10);
+    new Date(Date.now() - n * 86_400_000).toISOString().slice(0, 10);
 
 const NOTA_UNO = diasAtras(5);
 const NOTA_DOS = diasAtras(4);
@@ -48,497 +48,503 @@ const NOTA_TRES = diasAtras(2);
  * (RFC 0003).
  */
 describe('Creyentes y notas (e2e)', () => {
-  let app: NestExpressApplication;
-  const email = `creyentes-${String(Date.now())}@navis.test`;
-  const password = 'Rebano2026Seguro';
-  let cookie = '';
-  let jesus = '';
-  let sanidad = '';
-
-  const post = (path: string, payload: object) =>
-    request(app.getHttpServer()).post(path).set('Cookie', cookie).send(payload);
-  const get = (path: string) => request(app.getHttpServer()).get(path).set('Cookie', cookie);
-  const patch = (path: string, payload: object) =>
-    request(app.getHttpServer()).patch(path).set('Cookie', cookie).send(payload);
-
-  beforeAll(async () => {
-    const moduleRef = await Test.createTestingModule({ imports: [AppModule] }).compile();
-
-    app = moduleRef.createNestApplication<NestExpressApplication>({ bodyParser: false });
-    app.use('/api/auth', toNodeHandler(auth));
-    app.use(express.json());
-    app.setGlobalPrefix('api', { exclude: ['health'] });
-    app.enableVersioning({ type: VersioningType.URI, defaultVersion: '1' });
-    app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
-
-    await app.init();
-
-    await request(app.getHttpServer())
-      .post('/api/auth/sign-up/email')
-      .send({ email, password, name: 'Quien acompaña' })
-      .expect(200);
-
-    // Quien se registra nace `creyente`; se le sube el rol y se vuelve a entrar,
-    // porque la sesión se cachea en cookie (ver `calendar.e2e-spec.ts`).
-    const dataSource = app.get(DataSource);
-    const marca = dataSource.options.type === 'postgres' ? '$1' : '?';
-    await dataSource.query(`UPDATE "user" SET "role" = 'superadmin' WHERE "email" = ${marca}`, [
-      email,
-    ]);
-
-    const entrada = await request(app.getHttpServer())
-      .post('/api/auth/sign-in/email')
-      .send({ email, password })
-      .expect(200);
-
-    const setCookie = entrada.headers['set-cookie'];
-    cookie = (Array.isArray(setCookie) ? setCookie : [setCookie]).join('; ');
-
-    await post('/api/v1/churches', {
-      name: `Iglesia ${String(Date.now())}`,
-      city: 'Elda',
-    }).expect(201);
-  });
-
-  afterAll(async () => {
-    await app.close();
-  });
-
-  it('cada iglesia nace con los siete dones de serie, que no se borran', async () => {
-    const respuesta = await get('/api/v1/gifts').expect(200);
-    const dones = body<Gift[]>(respuesta);
-
-    expect(dones).toHaveLength(7);
-    expect(dones.every((one) => one.isSystem)).toBe(true);
-
-    sanidad = dones.find((one) => one.name === 'Sanidad')?.id ?? '';
-    expect(sanidad).not.toBe('');
-
-    await request(app.getHttpServer())
-      .delete(`/api/v1/gifts/${sanidad}`)
-      .set('Cookie', cookie)
-      .expect(400);
-
-    // Uno propio de la iglesia sí se borra.
-    const propio = await post('/api/v1/gifts', { name: 'Interpretación de lenguas' }).expect(201);
-    await request(app.getHttpServer())
-      .delete(`/api/v1/gifts/${body<Gift>(propio).id}`)
-      .set('Cookie', cookie)
-      .expect(200);
-  });
-
-  it('da de alta a tres hermanos con su estado y su margen', async () => {
-    const uno = await post('/api/v1/believers', {
-      firstName: 'Jesús',
-      lastName: 'Peña',
-      status: 'nuevo',
-      alertAfterDays: 20,
-    }).expect(201);
-
-    jesus = body<BelieverListItem>(uno).id;
-    expect(body<BelieverListItem>(uno).status).toBe('nuevo');
-    expect(body<BelieverListItem>(uno).lastNoteAt).toBeNull();
-
-    await post('/api/v1/believers', { firstName: 'Andrés', lastName: 'Molina' }).expect(201);
-    await post('/api/v1/believers', {
-      firstName: 'María',
-      lastName: 'Fernández',
-      alertAfterDays: null,
-    }).expect(201);
-  });
-
-  /*
-   * La trayectoria (RFC 0012): las cinco columnas y, sobre todo, que la fecha
-   * de una labor viaje **con** la labor. El cierre que se prueba al final es el
-   * que sostiene el diseño: una fecha de algo que no está en la lista se cae, y
-   * no puede quedar la fecha de una labor que esa persona ya no hace.
-   */
-  it('guarda la trayectoria, y una fecha sin su labor no se queda', async () => {
-    const catálogo = body<{ id: string; name: string }[]>(await get('/api/v1/gifts').expect(200));
-    const profecía = catálogo.find((one) => one.name === 'Profecía')?.id ?? '';
-
-    const creado = body<BelieverListItem>(
-      await post('/api/v1/believers', {
-        firstName: 'Yolanda',
-        lastName: 'Zapata Duque',
-        arrivedAt: '2004-11-01',
-        arrivalSite: 'Manizales, Caldas',
-        bibleReadings: 5,
-        vivenciasReadings: 3,
-        bibleInstituteTimes: 1,
-        email: 'Yolanda.Zapata@Gmail.COM',
-        ministries: ['ofrenda'],
-        ministryDates: { ofrenda: '2012-02-01', sonido: '1999-01-01' },
-        giftIds: [profecía],
-        giftDates: { [profecía]: '2017-09-01' },
-      }).expect(201),
-    );
-
-    expect(creado.arrivedAt).toBe('2004-11-01');
-    expect(creado.arrivalSite).toBe('Manizales, Caldas');
-    expect(creado.bibleReadings).toBe(5);
-    expect(creado.vivenciasReadings).toBe(3);
-    expect(creado.bibleInstituteTimes).toBe(1);
-    // Se normaliza a minúsculas, como el correo de acceso (D11).
-    expect(creado.email).toBe('yolanda.zapata@gmail.com');
-    expect(creado.ministryDates).toEqual({ ofrenda: '2012-02-01' });
-    expect(creado.giftDates).toEqual({ [profecía]: '2017-09-01' });
-
-    // Quitarle la labor se lleva su fecha por delante, sin dejar rastro.
-    const editado = body<BelieverListItem>(
-      await patch(`/api/v1/believers/${creado.id}`, { ministries: [] }).expect(200),
-    );
-
-    expect(editado.ministries).toEqual([]);
-    expect(editado.ministryDates).toEqual({});
-
-    // Y se va: los tests de aquí abajo cuentan con que la iglesia tiene tres.
-    await request(app.getHttpServer())
-      .delete(`/api/v1/believers/${creado.id}`)
-      .set('Cookie', cookie)
-      .expect(200);
-  });
-
-  it('un correo con formato inválido no se guarda', async () => {
-    await post('/api/v1/believers', {
-      firstName: 'Sin',
-      lastName: 'Correo',
-      email: 'no-es-un-correo',
-    }).expect(400);
-  });
-
-  it('«jesus» encuentra «Jesús», sin acentos y sin mayúsculas', async () => {
-    const respuesta = await get('/api/v1/believers?search=jesus').expect(200);
-    const pagina = body<Paginated<BelieverListItem>>(respuesta);
-
-    expect(pagina.total).toBe(1);
-    expect(pagina.items[0]?.id).toBe(jesus);
-  });
-
-  // Regresión: la búsqueda se guarda normalizada (D14) pero llegó a compararse
-  // sin normalizar el texto de la consulta. En Postgres `LIKE` distingue
-  // mayúsculas y acentos, así que escribir el nombre como lo escribe
-  // cualquiera —con mayúscula inicial y su tilde— dejaba de encontrar a nadie.
-  it('«Jesús», tal y como lo escribe cualquiera, también lo encuentra', async () => {
-    const respuesta = await get(`/api/v1/believers?search=${encodeURIComponent('Jesús')}`).expect(
-      200,
-    );
-    const pagina = body<Paginated<BelieverListItem>>(respuesta);
-
-    expect(pagina.total).toBe(1);
-    expect(pagina.items[0]?.id).toBe(jesus);
-  });
-
-  it('quien no tiene ninguna nota va primero al ordenar por última nota', async () => {
-    await post(`/api/v1/believers/${jesus}/notes`, {
-      kind: 'seguimiento',
-      occurredAt: NOTA_UNO,
-      told: 'Me contó que le va bien en el trabajo nuevo',
-      advice: 'Que venga al grupo de los jueves',
-    }).expect(201);
-
-    const respuesta = await get('/api/v1/believers?sort=lastNote&order=asc').expect(200);
-    const items = body<Paginated<BelieverListItem>>(respuesta).items;
-
-    // Los tres son de esta iglesia; los dos sin nota, delante.
-    expect(items.at(-1)?.id).toBe(jesus);
-    expect(items.slice(0, -1).every((one) => one.lastNoteAt === null)).toBe(true);
-  });
-
-  it('escribir una nota vacía la sonda de esa persona', async () => {
-    const respuesta = await get(`/api/v1/believers/${jesus}`).expect(200);
-    const ficha = body<BelieverListItem>(respuesta);
-
-    expect(ficha.lastNoteAt).toBe(NOTA_UNO);
-    expect(ficha.notesCount).toBe(1);
-    expect(ficha.needsAttention).toBe(false);
-  });
-
-  it('una nota de tipo don se lo añade a la ficha, y borrarla no se lo quita', async () => {
-    const creada = await post(`/api/v1/believers/${jesus}/notes`, {
-      kind: 'don',
-      occurredAt: NOTA_DOS,
-      told: 'Pidió oración por su espalda',
-      advice: 'Oramos por él y quedó bien',
-      giftId: sanidad,
-    }).expect(201);
-
-    const nota = body<BelieverNote>(creada);
-    expect(nota.giftName).toBe('Sanidad');
-
-    const conDon = await get(`/api/v1/believers/${jesus}`).expect(200);
-    expect(body<BelieverListItem>(conDon).gifts.map((one) => one.id)).toEqual([sanidad]);
-
-    await request(app.getHttpServer())
-      .delete(`/api/v1/believers/${jesus}/notes/${nota.id}`)
-      .set('Cookie', cookie)
-      .expect(200);
-
-    const despues = await get(`/api/v1/believers/${jesus}`).expect(200);
-    expect(body<BelieverListItem>(despues).gifts.map((one) => one.id)).toEqual([sanidad]);
-    // Y el margen vuelve a contar desde la nota que queda.
-    expect(body<BelieverListItem>(despues).lastNoteAt).toBe(NOTA_UNO);
-  });
-
-  it('una nota de tipo don sin don elegido no se guarda', async () => {
-    await post(`/api/v1/believers/${jesus}/notes`, {
-      kind: 'don',
-      occurredAt: '2026-08-03',
-      told: 'Sin decir cuál',
-    }).expect(400);
-  });
-
-  it('la bitácora se lee hacia atrás y trae sus cuentas por tipo', async () => {
-    const respuesta = await get(`/api/v1/believers/${jesus}/notes?limit=20`).expect(200);
-    const pagina = body<Paginated<BelieverNote> & { counts: NoteCounts }>(respuesta);
-
-    expect(pagina.total).toBe(1);
-    expect(pagina.counts.seguimiento).toBe(1);
-    expect(pagina.counts.don).toBe(0);
-    expect(pagina.items[0]?.authorName).toBe('Quien acompaña');
-    // El cuerpo son dos campos, no uno (D15).
-    expect(pagina.items[0]?.told).toContain('trabajo nuevo');
-    expect(pagina.items[0]?.advice).toContain('grupo de los jueves');
-  });
-
-  it('la bitácora se busca en el servidor, no en lo que ya se ha traído', async () => {
-    const encontrada = await get(`/api/v1/believers/${jesus}/notes?search=JUEVES`).expect(200);
-    // Busca también en la indicación dada, y sin distinguir mayúsculas.
-    expect(body<Paginated<BelieverNote>>(encontrada).total).toBe(1);
-
-    const vacia = await get(`/api/v1/believers/${jesus}/notes?search=zzzz`).expect(200);
-    expect(body<Paginated<BelieverNote>>(vacia).total).toBe(0);
-  });
-
-  it('un recordatorio guarda día y hora, y se puede dar por atendido', async () => {
-    const creada = await post(`/api/v1/believers/${jesus}/notes`, {
-      kind: 'seguimiento',
-      occurredAt: NOTA_TRES,
-      told: 'Está preocupado por su madre',
-      remindAt: `${diasAtras(-8)}T19:00`,
-      remindText: 'Preguntarle cómo sigue su madre',
-    }).expect(201);
-
-    const nota = body<BelieverNote>(creada);
-    expect(nota.remindAt).not.toBeNull();
-    expect(new Date(nota.remindAt ?? '').getHours()).toBe(19);
-    expect(nota.remindDoneAt).toBeNull();
-
-    const atendida = await request(app.getHttpServer())
-      .patch(`/api/v1/believers/${jesus}/notes/${nota.id}`)
-      .set('Cookie', cookie)
-      .send({ remindDone: true })
-      .expect(200);
-
-    expect(body<BelieverNote>(atendida).remindDoneAt).not.toBeNull();
-
-    // Y se limpia para no dejar el resumen contaminado en los tests de abajo.
-    await request(app.getHttpServer())
-      .delete(`/api/v1/believers/${jesus}/notes/${nota.id}`)
-      .set('Cookie', cookie)
-      .expect(200);
-  });
-
-  it('los días con notas alimentan la vista de calendario', async () => {
-    // Un tramo ancho alrededor de hoy, no un año fijo: NOTA_UNO cae en el
-    // año que le toque según cuándo se ejecute el test.
-    const año = new Date().getFullYear();
-    const respuesta = await get(
-      `/api/v1/believers/${jesus}/notes/days?from=${String(año - 1)}-01-01&to=${String(año + 1)}-12-31`,
-    ).expect(200);
-
-    const dias = body<NoteDay[]>(respuesta);
-    expect(dias.map((one) => one.date)).toContain(NOTA_UNO);
-    expect(dias.find((one) => one.date === NOTA_UNO)?.kinds).toEqual(['seguimiento']);
-  });
-
-  it('graba un audio en la nota y lo devuelve al descargarlo', async () => {
-    const pagina = await get(`/api/v1/believers/${jesus}/notes`).expect(200);
-    const nota = body<Paginated<BelieverNote>>(pagina).items[0];
-    expect(nota).toBeDefined();
-
-    const subida = await request(app.getHttpServer())
-      .post(`/api/v1/believers/${jesus}/notes/${nota?.id ?? ''}/audios`)
-      .set('Cookie', cookie)
-      .field('recorded', 'true')
-      .field('durationSeconds', '12')
-      .attach('file', Buffer.from('esto-hace-de-audio'), {
-        filename: 'nota.webm',
-        contentType: 'audio/webm',
-      })
-      .expect(201);
-
-    const audio = body<NoteAudio>(subida);
-    expect(audio.recorded).toBe(true);
-    expect(audio.durationSeconds).toBe(12);
-
-    const descarga = await get(`/api/v1/audios/${audio.id}`).expect(200);
-    expect(descarga.headers['content-type']).toContain('audio/webm');
-
-    // Y aparece colgando de su nota, sin una consulta por línea.
-    const conAudio = await get(`/api/v1/believers/${jesus}/notes`).expect(200);
-    expect(body<Paginated<BelieverNote>>(conAudio).items[0]?.audios).toHaveLength(1);
-  });
-
-  it('un fichero que no es audio no se guarda', async () => {
-    const pagina = await get(`/api/v1/believers/${jesus}/notes`).expect(200);
-    const nota = body<Paginated<BelieverNote>>(pagina).items[0];
-
-    await request(app.getHttpServer())
-      .post(`/api/v1/believers/${jesus}/notes/${nota?.id ?? ''}/audios`)
-      .set('Cookie', cookie)
-      .attach('file', Buffer.from('MZ'), {
-        filename: 'virus.exe',
-        contentType: 'application/x-msdownload',
-      })
-      .expect(400);
-  });
-
-  it('las cuentas de la cabecera salen de una consulta y cuadran', async () => {
-    const respuesta = await get('/api/v1/believers/summary').expect(200);
-    const resumen = body<BelieversSummary>(respuesta);
-
-    expect(resumen.total).toBe(3);
-    expect(resumen.byStatus.nuevo).toBe(1);
-    expect(resumen.byStatus.activo).toBe(2);
-    // Se acaban de crear: los tres son de este mes.
-    expect(resumen.newThisMonth).toBe(3);
-  });
-
-  it('el filtro por estado y el de atención acotan de verdad', async () => {
-    const nuevos = await get('/api/v1/believers?status=nuevo').expect(200);
-    expect(body<Paginated<BelieverListItem>>(nuevos).total).toBe(1);
-
-    // Nadie ha agotado su margen todavía: se acaban de dar de alta.
-    const piden = await get('/api/v1/believers?attention=true').expect(200);
-    expect(body<Paginated<BelieverListItem>>(piden).total).toBe(0);
-  });
-
-  /**
-   * Exportar es otra forma del mismo listado (RFC 0009): los mismos filtros,
-   * el mismo guard de iglesia y el mismo permiso. Lo propio es que no pagina y
-   * que una selección manda sobre todo lo demás (D1).
-   */
-  describe('exportar (RFC 0009)', () => {
-    it('trae las filas del filtro sin paginar y dice cuántas hay', async () => {
-      const salida = body<ExportResponse<BelieverExportRow>>(
-        await get('/api/v1/believers/export').expect(200),
-      );
-
-      expect(salida.total).toBe(3);
-      expect(salida.returned).toBe(3);
-      expect(salida.truncated).toBe(false);
-      // Lo que se lleva es la ficha entera: dones y labores resueltos.
-      expect(salida.rows.every((row) => Array.isArray(row.gifts))).toBe(true);
+    let app: NestExpressApplication;
+    const email = `creyentes-${String(Date.now())}@navis.test`;
+    const password = 'Rebano2026Seguro';
+    let cookie = '';
+    let jesus = '';
+    let sanidad = '';
+
+    const post = (path: string, payload: object) =>
+        request(app.getHttpServer()).post(path).set('Cookie', cookie).send(payload);
+    const get = (path: string) => request(app.getHttpServer()).get(path).set('Cookie', cookie);
+    const patch = (path: string, payload: object) =>
+        request(app.getHttpServer()).patch(path).set('Cookie', cookie).send(payload);
+
+    beforeAll(async () => {
+        const moduleRef = await Test.createTestingModule({ imports: [AppModule] }).compile();
+
+        app = moduleRef.createNestApplication<NestExpressApplication>({ bodyParser: false });
+        app.use('/api/auth', toNodeHandler(auth));
+        app.use(express.json());
+        app.setGlobalPrefix('api', { exclude: ['health'] });
+        app.enableVersioning({ type: VersioningType.URI, defaultVersion: '1' });
+        app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
+
+        await app.init();
+
+        await request(app.getHttpServer())
+            .post('/api/auth/sign-up/email')
+            .send({ email, password, name: 'Quien acompaña' })
+            .expect(200);
+
+        // Quien se registra nace `creyente`; se le sube el rol y se vuelve a entrar,
+        // porque la sesión se cachea en cookie (ver `calendar.e2e-spec.ts`).
+        const dataSource = app.get(DataSource);
+        const marca = dataSource.options.type === 'postgres' ? '$1' : '?';
+        await dataSource.query(`UPDATE "user" SET "role" = 'superadmin' WHERE "email" = ${marca}`, [
+            email,
+        ]);
+
+        const entrada = await request(app.getHttpServer())
+            .post('/api/auth/sign-in/email')
+            .send({ email, password })
+            .expect(200);
+
+        const setCookie = entrada.headers['set-cookie'];
+        cookie = (Array.isArray(setCookie) ? setCookie : [setCookie]).join('; ');
+
+        await post('/api/v1/churches', {
+            name: `Iglesia ${String(Date.now())}`,
+            city: 'Elda',
+        }).expect(201);
     });
 
-    it('respeta los mismos filtros que el listado', async () => {
-      const salida = body<ExportResponse<BelieverExportRow>>(
-        await get('/api/v1/believers/export?status=nuevo').expect(200),
-      );
-
-      expect(salida.total).toBe(1);
-      expect(salida.rows.map((row) => row.status)).toEqual(['nuevo']);
+    afterAll(async () => {
+        await app.close();
     });
 
-    it('con una selección manda la selección y se ignora el filtro', async () => {
-      const salida = body<ExportResponse<BelieverExportRow>>(
-        await get(`/api/v1/believers/export?ids=${jesus}&status=inactivo`).expect(200),
-      );
+    it('cada iglesia nace con los siete dones de serie, que no se borran', async () => {
+        const respuesta = await get('/api/v1/gifts').expect(200);
+        const dones = body<Gift[]>(respuesta);
 
-      expect(salida.rows.map((row) => row.id)).toEqual([jesus]);
+        expect(dones).toHaveLength(7);
+        expect(dones.every((one) => one.isSystem)).toBe(true);
+
+        sanidad = dones.find((one) => one.name === 'Sanidad')?.id ?? '';
+        expect(sanidad).not.toBe('');
+
+        await request(app.getHttpServer())
+            .delete(`/api/v1/gifts/${sanidad}`)
+            .set('Cookie', cookie)
+            .expect(400);
+
+        // Uno propio de la iglesia sí se borra.
+        const propio = await post('/api/v1/gifts', { name: 'Interpretación de lenguas' }).expect(
+            201,
+        );
+        await request(app.getHttpServer())
+            .delete(`/api/v1/gifts/${body<Gift>(propio).id}`)
+            .set('Cookie', cookie)
+            .expect(200);
     });
 
-    /** Quien marcó filas y las desmarcó no espera que le salgan las doscientas. */
-    it('una selección de nadie no se convierte en «pues entonces todo»', async () => {
-      const salida = body<ExportResponse<BelieverExportRow>>(
-        await get('/api/v1/believers/export?ids=8f14e45f-ceea-467a-9a4a-1a0b5f6e4e2b').expect(200),
-      );
+    it('da de alta a tres hermanos con su estado y su margen', async () => {
+        const uno = await post('/api/v1/believers', {
+            firstName: 'Jesús',
+            lastName: 'Peña',
+            status: 'nuevo',
+            alertAfterDays: 20,
+        }).expect(201);
 
-      expect(salida.total).toBe(0);
-      expect(salida.rows).toEqual([]);
-    });
-  });
+        jesus = body<BelieverListItem>(uno).id;
+        expect(body<BelieverListItem>(uno).status).toBe('nuevo');
+        expect(body<BelieverListItem>(uno).lastNoteAt).toBeNull();
 
-  /**
-   * Las etiquetas de creyente: catálogo propio, y **una** destacada por
-   * persona que es la única que viaja para la tabla. Lo que se comprueba aquí
-   * y no con dobles es el cierre del destacado: si llega uno que no está entre
-   * las suyas —o se le quitó— se cae, que es lo que evita que la tabla enseñe
-   * una etiqueta que esa persona ya no tiene.
-   */
-  describe('etiquetas de creyente', () => {
-    it('el catálogo nace vacío y cada iglesia crea las suyas', async () => {
-      const vacio = body<BelieverTag[]>(await get('/api/v1/believer-tags').expect(200));
-
-      expect(vacio).toEqual([]);
+        await post('/api/v1/believers', { firstName: 'Andrés', lastName: 'Molina' }).expect(201);
+        await post('/api/v1/believers', {
+            firstName: 'María',
+            lastName: 'Fernández',
+            alertAfterDays: null,
+        }).expect(201);
     });
 
-    it('se cuelgan de una persona, y solo una sale en la tabla', async () => {
-      const primera = body<BelieverTag>(
-        await post('/api/v1/believer-tags', { name: 'En busca de trabajo' }).expect(201),
-      );
-      const segunda = body<BelieverTag>(
-        await post('/api/v1/believer-tags', { name: 'Voluntario' }).expect(201),
-      );
+    /*
+     * La trayectoria (RFC 0012): las cinco columnas y, sobre todo, que la fecha
+     * de una labor viaje **con** la labor. El cierre que se prueba al final es el
+     * que sostiene el diseño: una fecha de algo que no está en la lista se cae, y
+     * no puede quedar la fecha de una labor que esa persona ya no hace.
+     */
+    it('guarda la trayectoria, y una fecha sin su labor no se queda', async () => {
+        const catálogo = body<{ id: string; name: string }[]>(
+            await get('/api/v1/gifts').expect(200),
+        );
+        const profecía = catálogo.find((one) => one.name === 'Profecía')?.id ?? '';
 
-      // Dos etiquetas, y la segunda es la destacada.
-      const conEtiquetas = body<BelieverListItem>(
-        await patch(`/api/v1/believers/${jesus}`, {
-          tagIds: [primera.id, segunda.id],
-          featuredTagId: segunda.id,
-        }).expect(200),
-      );
-      expect(conEtiquetas.tags.map((one) => one.id)).toEqual([primera.id, segunda.id]);
-      expect(conEtiquetas.featuredTagId).toBe(segunda.id);
+        const creado = body<BelieverListItem>(
+            await post('/api/v1/believers', {
+                firstName: 'Yolanda',
+                lastName: 'Zapata Duque',
+                arrivedAt: '2004-11-01',
+                arrivalSite: 'Manizales, Caldas',
+                bibleReadings: 5,
+                vivenciasReadings: 3,
+                bibleInstituteTimes: 1,
+                email: 'Yolanda.Zapata@Gmail.COM',
+                ministries: ['ofrenda'],
+                ministryDates: { ofrenda: '2012-02-01', sonido: '1999-01-01' },
+                giftIds: [profecía],
+                giftDates: { [profecía]: '2017-09-01' },
+            }).expect(201),
+        );
 
-      // El listado trae la misma forma: la fila no vuelve a pedir nada.
-      const listado = body<Paginated<BelieverListItem>>(
-        await get('/api/v1/believers?search=jesus').expect(200),
-      );
-      expect(listado.items[0]?.featuredTagId).toBe(segunda.id);
-      expect(listado.items[0]?.tags.map((one) => one.id)).toEqual([primera.id, segunda.id]);
+        expect(creado.arrivedAt).toBe('2004-11-01');
+        expect(creado.arrivalSite).toBe('Manizales, Caldas');
+        expect(creado.bibleReadings).toBe(5);
+        expect(creado.vivenciasReadings).toBe(3);
+        expect(creado.bibleInstituteTimes).toBe(1);
+        // Se normaliza a minúsculas, como el correo de acceso (D11).
+        expect(creado.email).toBe('yolanda.zapata@gmail.com');
+        expect(creado.ministryDates).toEqual({ ofrenda: '2012-02-01' });
+        expect(creado.giftDates).toEqual({ [profecía]: '2017-09-01' });
 
-      // El filtro por etiqueta deja a quien la tiene, aunque no sea la destacada.
-      const porSegunda = body<Paginated<BelieverListItem>>(
-        await get(`/api/v1/believers?tagId=${segunda.id}`).expect(200),
-      );
-      expect(porSegunda.total).toBe(1);
-      expect(porSegunda.items[0]?.id).toBe(jesus);
-      const porPrimera = body<Paginated<BelieverListItem>>(
-        await get(`/api/v1/believers?tagId=${primera.id}`).expect(200),
-      );
-      expect(porPrimera.items.map((one) => one.id)).toContain(jesus);
+        // Quitarle la labor se lleva su fecha por delante, sin dejar rastro.
+        const editado = body<BelieverListItem>(
+            await patch(`/api/v1/believers/${creado.id}`, { ministries: [] }).expect(200),
+        );
 
-      // Quitar la destacada deja de destacarla: no queda apuntando a nada.
-      const sinDestacada = body<BelieverListItem>(
-        await patch(`/api/v1/believers/${jesus}`, {
-          tagIds: [primera.id],
-          featuredTagId: null,
-        }).expect(200),
-      );
-      expect(sinDestacada.tags.map((one) => one.id)).toEqual([primera.id]);
-      expect(sinDestacada.featuredTagId).toBeNull();
+        expect(editado.ministries).toEqual([]);
+        expect(editado.ministryDates).toEqual({});
 
-      // Un destacado que no está entre las suyas se cae en el servidor.
-      const rechazado = body<BelieverListItem>(
-        await patch(`/api/v1/believers/${jesus}`, {
-          tagIds: [primera.id],
-          featuredTagId: segunda.id,
-        }).expect(200),
-      );
-      expect(rechazado.featuredTagId).toBeNull();
+        // Y se va: los tests de aquí abajo cuentan con que la iglesia tiene tres.
+        await request(app.getHttpServer())
+            .delete(`/api/v1/believers/${creado.id}`)
+            .set('Cookie', cookie)
+            .expect(200);
     });
 
-    it('el catálogo no deja repetir el nombre de una etiqueta', async () => {
-      await post('/api/v1/believer-tags', { name: 'En busca de trabajo' }).expect(400);
+    it('un correo con formato inválido no se guarda', async () => {
+        await post('/api/v1/believers', {
+            firstName: 'Sin',
+            lastName: 'Correo',
+            email: 'no-es-un-correo',
+        }).expect(400);
     });
-  });
 
-  it('un creyente de otra iglesia no existe para quien pregunta', async () => {
-    await request(app.getHttpServer())
-      .get('/api/v1/believers/8f14e45f-ceea-467a-9a4a-1a0b5f6e4e2b')
-      .set('Cookie', cookie)
-      .expect(404);
-  });
+    it('«jesus» encuentra «Jesús», sin acentos y sin mayúsculas', async () => {
+        const respuesta = await get('/api/v1/believers?search=jesus').expect(200);
+        const pagina = body<Paginated<BelieverListItem>>(respuesta);
+
+        expect(pagina.total).toBe(1);
+        expect(pagina.items[0]?.id).toBe(jesus);
+    });
+
+    // Regresión: la búsqueda se guarda normalizada (D14) pero llegó a compararse
+    // sin normalizar el texto de la consulta. En Postgres `LIKE` distingue
+    // mayúsculas y acentos, así que escribir el nombre como lo escribe
+    // cualquiera —con mayúscula inicial y su tilde— dejaba de encontrar a nadie.
+    it('«Jesús», tal y como lo escribe cualquiera, también lo encuentra', async () => {
+        const respuesta = await get(
+            `/api/v1/believers?search=${encodeURIComponent('Jesús')}`,
+        ).expect(200);
+        const pagina = body<Paginated<BelieverListItem>>(respuesta);
+
+        expect(pagina.total).toBe(1);
+        expect(pagina.items[0]?.id).toBe(jesus);
+    });
+
+    it('quien no tiene ninguna nota va primero al ordenar por última nota', async () => {
+        await post(`/api/v1/believers/${jesus}/notes`, {
+            kind: 'seguimiento',
+            occurredAt: NOTA_UNO,
+            told: 'Me contó que le va bien en el trabajo nuevo',
+            advice: 'Que venga al grupo de los jueves',
+        }).expect(201);
+
+        const respuesta = await get('/api/v1/believers?sort=lastNote&order=asc').expect(200);
+        const items = body<Paginated<BelieverListItem>>(respuesta).items;
+
+        // Los tres son de esta iglesia; los dos sin nota, delante.
+        expect(items.at(-1)?.id).toBe(jesus);
+        expect(items.slice(0, -1).every((one) => one.lastNoteAt === null)).toBe(true);
+    });
+
+    it('escribir una nota vacía la sonda de esa persona', async () => {
+        const respuesta = await get(`/api/v1/believers/${jesus}`).expect(200);
+        const ficha = body<BelieverListItem>(respuesta);
+
+        expect(ficha.lastNoteAt).toBe(NOTA_UNO);
+        expect(ficha.notesCount).toBe(1);
+        expect(ficha.needsAttention).toBe(false);
+    });
+
+    it('una nota de tipo don se lo añade a la ficha, y borrarla no se lo quita', async () => {
+        const creada = await post(`/api/v1/believers/${jesus}/notes`, {
+            kind: 'don',
+            occurredAt: NOTA_DOS,
+            told: 'Pidió oración por su espalda',
+            advice: 'Oramos por él y quedó bien',
+            giftId: sanidad,
+        }).expect(201);
+
+        const nota = body<BelieverNote>(creada);
+        expect(nota.giftName).toBe('Sanidad');
+
+        const conDon = await get(`/api/v1/believers/${jesus}`).expect(200);
+        expect(body<BelieverListItem>(conDon).gifts.map((one) => one.id)).toEqual([sanidad]);
+
+        await request(app.getHttpServer())
+            .delete(`/api/v1/believers/${jesus}/notes/${nota.id}`)
+            .set('Cookie', cookie)
+            .expect(200);
+
+        const despues = await get(`/api/v1/believers/${jesus}`).expect(200);
+        expect(body<BelieverListItem>(despues).gifts.map((one) => one.id)).toEqual([sanidad]);
+        // Y el margen vuelve a contar desde la nota que queda.
+        expect(body<BelieverListItem>(despues).lastNoteAt).toBe(NOTA_UNO);
+    });
+
+    it('una nota de tipo don sin don elegido no se guarda', async () => {
+        await post(`/api/v1/believers/${jesus}/notes`, {
+            kind: 'don',
+            occurredAt: '2026-08-03',
+            told: 'Sin decir cuál',
+        }).expect(400);
+    });
+
+    it('la bitácora se lee hacia atrás y trae sus cuentas por tipo', async () => {
+        const respuesta = await get(`/api/v1/believers/${jesus}/notes?limit=20`).expect(200);
+        const pagina = body<Paginated<BelieverNote> & { counts: NoteCounts }>(respuesta);
+
+        expect(pagina.total).toBe(1);
+        expect(pagina.counts.seguimiento).toBe(1);
+        expect(pagina.counts.don).toBe(0);
+        expect(pagina.items[0]?.authorName).toBe('Quien acompaña');
+        // El cuerpo son dos campos, no uno (D15).
+        expect(pagina.items[0]?.told).toContain('trabajo nuevo');
+        expect(pagina.items[0]?.advice).toContain('grupo de los jueves');
+    });
+
+    it('la bitácora se busca en el servidor, no en lo que ya se ha traído', async () => {
+        const encontrada = await get(`/api/v1/believers/${jesus}/notes?search=JUEVES`).expect(200);
+        // Busca también en la indicación dada, y sin distinguir mayúsculas.
+        expect(body<Paginated<BelieverNote>>(encontrada).total).toBe(1);
+
+        const vacia = await get(`/api/v1/believers/${jesus}/notes?search=zzzz`).expect(200);
+        expect(body<Paginated<BelieverNote>>(vacia).total).toBe(0);
+    });
+
+    it('un recordatorio guarda día y hora, y se puede dar por atendido', async () => {
+        const creada = await post(`/api/v1/believers/${jesus}/notes`, {
+            kind: 'seguimiento',
+            occurredAt: NOTA_TRES,
+            told: 'Está preocupado por su madre',
+            remindAt: `${diasAtras(-8)}T19:00`,
+            remindText: 'Preguntarle cómo sigue su madre',
+        }).expect(201);
+
+        const nota = body<BelieverNote>(creada);
+        expect(nota.remindAt).not.toBeNull();
+        expect(new Date(nota.remindAt ?? '').getHours()).toBe(19);
+        expect(nota.remindDoneAt).toBeNull();
+
+        const atendida = await request(app.getHttpServer())
+            .patch(`/api/v1/believers/${jesus}/notes/${nota.id}`)
+            .set('Cookie', cookie)
+            .send({ remindDone: true })
+            .expect(200);
+
+        expect(body<BelieverNote>(atendida).remindDoneAt).not.toBeNull();
+
+        // Y se limpia para no dejar el resumen contaminado en los tests de abajo.
+        await request(app.getHttpServer())
+            .delete(`/api/v1/believers/${jesus}/notes/${nota.id}`)
+            .set('Cookie', cookie)
+            .expect(200);
+    });
+
+    it('los días con notas alimentan la vista de calendario', async () => {
+        // Un tramo ancho alrededor de hoy, no un año fijo: NOTA_UNO cae en el
+        // año que le toque según cuándo se ejecute el test.
+        const año = new Date().getFullYear();
+        const respuesta = await get(
+            `/api/v1/believers/${jesus}/notes/days?from=${String(año - 1)}-01-01&to=${String(año + 1)}-12-31`,
+        ).expect(200);
+
+        const dias = body<NoteDay[]>(respuesta);
+        expect(dias.map((one) => one.date)).toContain(NOTA_UNO);
+        expect(dias.find((one) => one.date === NOTA_UNO)?.kinds).toEqual(['seguimiento']);
+    });
+
+    it('graba un audio en la nota y lo devuelve al descargarlo', async () => {
+        const pagina = await get(`/api/v1/believers/${jesus}/notes`).expect(200);
+        const nota = body<Paginated<BelieverNote>>(pagina).items[0];
+        expect(nota).toBeDefined();
+
+        const subida = await request(app.getHttpServer())
+            .post(`/api/v1/believers/${jesus}/notes/${nota?.id ?? ''}/audios`)
+            .set('Cookie', cookie)
+            .field('recorded', 'true')
+            .field('durationSeconds', '12')
+            .attach('file', Buffer.from('esto-hace-de-audio'), {
+                filename: 'nota.webm',
+                contentType: 'audio/webm',
+            })
+            .expect(201);
+
+        const audio = body<NoteAudio>(subida);
+        expect(audio.recorded).toBe(true);
+        expect(audio.durationSeconds).toBe(12);
+
+        const descarga = await get(`/api/v1/audios/${audio.id}`).expect(200);
+        expect(descarga.headers['content-type']).toContain('audio/webm');
+
+        // Y aparece colgando de su nota, sin una consulta por línea.
+        const conAudio = await get(`/api/v1/believers/${jesus}/notes`).expect(200);
+        expect(body<Paginated<BelieverNote>>(conAudio).items[0]?.audios).toHaveLength(1);
+    });
+
+    it('un fichero que no es audio no se guarda', async () => {
+        const pagina = await get(`/api/v1/believers/${jesus}/notes`).expect(200);
+        const nota = body<Paginated<BelieverNote>>(pagina).items[0];
+
+        await request(app.getHttpServer())
+            .post(`/api/v1/believers/${jesus}/notes/${nota?.id ?? ''}/audios`)
+            .set('Cookie', cookie)
+            .attach('file', Buffer.from('MZ'), {
+                filename: 'virus.exe',
+                contentType: 'application/x-msdownload',
+            })
+            .expect(400);
+    });
+
+    it('las cuentas de la cabecera salen de una consulta y cuadran', async () => {
+        const respuesta = await get('/api/v1/believers/summary').expect(200);
+        const resumen = body<BelieversSummary>(respuesta);
+
+        expect(resumen.total).toBe(3);
+        expect(resumen.byStatus.nuevo).toBe(1);
+        expect(resumen.byStatus.activo).toBe(2);
+        // Se acaban de crear: los tres son de este mes.
+        expect(resumen.newThisMonth).toBe(3);
+    });
+
+    it('el filtro por estado y el de atención acotan de verdad', async () => {
+        const nuevos = await get('/api/v1/believers?status=nuevo').expect(200);
+        expect(body<Paginated<BelieverListItem>>(nuevos).total).toBe(1);
+
+        // Nadie ha agotado su margen todavía: se acaban de dar de alta.
+        const piden = await get('/api/v1/believers?attention=true').expect(200);
+        expect(body<Paginated<BelieverListItem>>(piden).total).toBe(0);
+    });
+
+    /**
+     * Exportar es otra forma del mismo listado (RFC 0009): los mismos filtros,
+     * el mismo guard de iglesia y el mismo permiso. Lo propio es que no pagina y
+     * que una selección manda sobre todo lo demás (D1).
+     */
+    describe('exportar (RFC 0009)', () => {
+        it('trae las filas del filtro sin paginar y dice cuántas hay', async () => {
+            const salida = body<ExportResponse<BelieverExportRow>>(
+                await get('/api/v1/believers/export').expect(200),
+            );
+
+            expect(salida.total).toBe(3);
+            expect(salida.returned).toBe(3);
+            expect(salida.truncated).toBe(false);
+            // Lo que se lleva es la ficha entera: dones y labores resueltos.
+            expect(salida.rows.every((row) => Array.isArray(row.gifts))).toBe(true);
+        });
+
+        it('respeta los mismos filtros que el listado', async () => {
+            const salida = body<ExportResponse<BelieverExportRow>>(
+                await get('/api/v1/believers/export?status=nuevo').expect(200),
+            );
+
+            expect(salida.total).toBe(1);
+            expect(salida.rows.map((row) => row.status)).toEqual(['nuevo']);
+        });
+
+        it('con una selección manda la selección y se ignora el filtro', async () => {
+            const salida = body<ExportResponse<BelieverExportRow>>(
+                await get(`/api/v1/believers/export?ids=${jesus}&status=inactivo`).expect(200),
+            );
+
+            expect(salida.rows.map((row) => row.id)).toEqual([jesus]);
+        });
+
+        /** Quien marcó filas y las desmarcó no espera que le salgan las doscientas. */
+        it('una selección de nadie no se convierte en «pues entonces todo»', async () => {
+            const salida = body<ExportResponse<BelieverExportRow>>(
+                await get(
+                    '/api/v1/believers/export?ids=8f14e45f-ceea-467a-9a4a-1a0b5f6e4e2b',
+                ).expect(200),
+            );
+
+            expect(salida.total).toBe(0);
+            expect(salida.rows).toEqual([]);
+        });
+    });
+
+    /**
+     * Las etiquetas de creyente: catálogo propio, y **una** destacada por
+     * persona que es la única que viaja para la tabla. Lo que se comprueba aquí
+     * y no con dobles es el cierre del destacado: si llega uno que no está entre
+     * las suyas —o se le quitó— se cae, que es lo que evita que la tabla enseñe
+     * una etiqueta que esa persona ya no tiene.
+     */
+    describe('etiquetas de creyente', () => {
+        it('el catálogo nace vacío y cada iglesia crea las suyas', async () => {
+            const vacio = body<BelieverTag[]>(await get('/api/v1/believer-tags').expect(200));
+
+            expect(vacio).toEqual([]);
+        });
+
+        it('se cuelgan de una persona, y solo una sale en la tabla', async () => {
+            const primera = body<BelieverTag>(
+                await post('/api/v1/believer-tags', { name: 'En busca de trabajo' }).expect(201),
+            );
+            const segunda = body<BelieverTag>(
+                await post('/api/v1/believer-tags', { name: 'Voluntario' }).expect(201),
+            );
+
+            // Dos etiquetas, y la segunda es la destacada.
+            const conEtiquetas = body<BelieverListItem>(
+                await patch(`/api/v1/believers/${jesus}`, {
+                    tagIds: [primera.id, segunda.id],
+                    featuredTagId: segunda.id,
+                }).expect(200),
+            );
+            expect(conEtiquetas.tags.map((one) => one.id)).toEqual([primera.id, segunda.id]);
+            expect(conEtiquetas.featuredTagId).toBe(segunda.id);
+
+            // El listado trae la misma forma: la fila no vuelve a pedir nada.
+            const listado = body<Paginated<BelieverListItem>>(
+                await get('/api/v1/believers?search=jesus').expect(200),
+            );
+            expect(listado.items[0]?.featuredTagId).toBe(segunda.id);
+            expect(listado.items[0]?.tags.map((one) => one.id)).toEqual([primera.id, segunda.id]);
+
+            // El filtro por etiqueta deja a quien la tiene, aunque no sea la destacada.
+            const porSegunda = body<Paginated<BelieverListItem>>(
+                await get(`/api/v1/believers?tagId=${segunda.id}`).expect(200),
+            );
+            expect(porSegunda.total).toBe(1);
+            expect(porSegunda.items[0]?.id).toBe(jesus);
+            const porPrimera = body<Paginated<BelieverListItem>>(
+                await get(`/api/v1/believers?tagId=${primera.id}`).expect(200),
+            );
+            expect(porPrimera.items.map((one) => one.id)).toContain(jesus);
+
+            // Quitar la destacada deja de destacarla: no queda apuntando a nada.
+            const sinDestacada = body<BelieverListItem>(
+                await patch(`/api/v1/believers/${jesus}`, {
+                    tagIds: [primera.id],
+                    featuredTagId: null,
+                }).expect(200),
+            );
+            expect(sinDestacada.tags.map((one) => one.id)).toEqual([primera.id]);
+            expect(sinDestacada.featuredTagId).toBeNull();
+
+            // Un destacado que no está entre las suyas se cae en el servidor.
+            const rechazado = body<BelieverListItem>(
+                await patch(`/api/v1/believers/${jesus}`, {
+                    tagIds: [primera.id],
+                    featuredTagId: segunda.id,
+                }).expect(200),
+            );
+            expect(rechazado.featuredTagId).toBeNull();
+        });
+
+        it('el catálogo no deja repetir el nombre de una etiqueta', async () => {
+            await post('/api/v1/believer-tags', { name: 'En busca de trabajo' }).expect(400);
+        });
+    });
+
+    it('un creyente de otra iglesia no existe para quien pregunta', async () => {
+        await request(app.getHttpServer())
+            .get('/api/v1/believers/8f14e45f-ceea-467a-9a4a-1a0b5f6e4e2b')
+            .set('Cookie', cookie)
+            .expect(404);
+    });
 });

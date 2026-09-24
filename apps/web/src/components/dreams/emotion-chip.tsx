@@ -15,30 +15,30 @@ import { useEmotionLabel } from '@/lib/dreams/emotion-label';
  * §7), que además es lo único que dice cuál es en cada idioma (D4).
  */
 export function EmotionChip({
-  emotion,
-  size = 'md',
-  className,
+    emotion,
+    size = 'md',
+    className,
 }: {
-  emotion: Emotion;
-  size?: 'sm' | 'md';
-  className?: string;
+    emotion: Emotion;
+    size?: 'sm' | 'md';
+    className?: string;
 }) {
-  const label = useEmotionLabel();
+    const label = useEmotionLabel();
 
-  return (
-    <span
-      style={accentVars(emotion.accent)}
-      className={cn(
-        'gap-1.5 font-medium inline-flex items-center rounded-full border',
-        // El borde y el fondo salen del propio color, muy diluidos: es lo que
-        // hace que doce pastillas seguidas se distingan sin gritar.
-        'border-[var(--acento)]/35 bg-[var(--acento)]/10',
-        size === 'sm' ? 'px-1.5 py-0.5 text-[10px]' : 'px-2 py-0.5 text-[11px]',
-        className,
-      )}
-    >
-      <span aria-hidden className={cn('size-1.5 shrink-0 rounded-full', ACCENT_RAIL)} />
-      {label(emotion)}
-    </span>
-  );
+    return (
+        <span
+            style={accentVars(emotion.accent)}
+            className={cn(
+                'gap-1.5 font-medium inline-flex items-center rounded-full border',
+                // El borde y el fondo salen del propio color, muy diluidos: es lo que
+                // hace que doce pastillas seguidas se distingan sin gritar.
+                'border-[var(--acento)]/35 bg-[var(--acento)]/10',
+                size === 'sm' ? 'px-1.5 py-0.5 text-[10px]' : 'px-2 py-0.5 text-[11px]',
+                className,
+            )}
+        >
+            <span aria-hidden className={cn('size-1.5 shrink-0 rounded-full', ACCENT_RAIL)} />
+            {label(emotion)}
+        </span>
+    );
 }

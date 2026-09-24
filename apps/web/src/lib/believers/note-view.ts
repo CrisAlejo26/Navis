@@ -17,8 +17,8 @@ export const NOTES_VIEWS = ['log', 'list', 'cards', 'calendar'] as const;
 export type NotesView = (typeof NOTES_VIEWS)[number];
 
 interface ViewState {
-  view: NotesView;
-  setView: (view: NotesView) => void;
+    view: NotesView;
+    setView: (view: NotesView) => void;
 }
 
 /**
@@ -26,16 +26,16 @@ interface ViewState {
  * manda, así que se guarda y no va en la URL.
  */
 export const useNotesViewStore = create<ViewState>()(
-  persist(
-    (set) => ({
-      view: 'log',
-      setView: (view) => {
-        set({ view });
-      },
-    }),
-    {
-      name: NOTES_VIEW_STORAGE_KEY,
-      storage: createJSONStorage(() => globalThis.localStorage),
-    },
-  ),
+    persist(
+        (set) => ({
+            view: 'log',
+            setView: (view) => {
+                set({ view });
+            },
+        }),
+        {
+            name: NOTES_VIEW_STORAGE_KEY,
+            storage: createJSONStorage(() => globalThis.localStorage),
+        },
+    ),
 );

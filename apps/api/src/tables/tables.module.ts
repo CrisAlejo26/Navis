@@ -20,24 +20,24 @@ import { TablesService } from './tables.service';
 
 /** Las tablas personalizadas de la iglesia (RFC 0021). */
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([CustomTable, CustomTableColumn, CustomTableRow, CustomTableView]),
-    ChurchesModule,
-  ],
-  controllers: [
-    TablesController,
-    TableColumnsController,
-    TableRowsController,
-    TableExportController,
-    TableViewsController,
-  ],
-  providers: [
-    TablesService,
-    TableColumnsService,
-    TableRowsService,
-    TableRowsPageService,
-    TableRowsExportService,
-    TableViewsService,
-  ],
+    imports: [
+        TypeOrmModule.forFeature([CustomTable, CustomTableColumn, CustomTableRow, CustomTableView]),
+        ChurchesModule,
+    ],
+    controllers: [
+        TablesController,
+        TableColumnsController,
+        TableRowsController,
+        TableExportController,
+        TableViewsController,
+    ],
+    providers: [
+        TablesService,
+        TableColumnsService,
+        TableRowsService,
+        TableRowsPageService,
+        TableRowsExportService,
+        TableViewsService,
+    ],
 })
 export class TablesModule {}

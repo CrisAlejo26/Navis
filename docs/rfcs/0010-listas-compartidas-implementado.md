@@ -170,12 +170,12 @@ es el criterio.
   `CreateRoles` documentada en `CLAUDE.md`. Y `ChurchesService` las siembra al
   crear una iglesia, igual que ya hace con dones y labores.
 
-  Su color **es el de su labor** en el catálogo de la iglesia, cuando existe:
-  así «Púlpito» es del mismo color en el calendario, en la etiqueta de un
-  creyente y en su lista. Como eso se lee de la base de datos dentro de la
-  migración, lo que devuelva `queryRunner.query` **se comprueba antes de
-  usarlo** —devuelve `any` y no acepta genérico (Regla 10, `CLAUDE.md`)—, y si
-  la labor no está, se cae a un color de `ACCENT_PALETTE` por posición.
+    Su color **es el de su labor** en el catálogo de la iglesia, cuando existe:
+    así «Púlpito» es del mismo color en el calendario, en la etiqueta de un
+    creyente y en su lista. Como eso se lee de la base de datos dentro de la
+    migración, lo que devuelva `queryRunner.query` **se comprueba antes de
+    usarlo** —devuelve `any` y no acepta genérico (Regla 10, `CLAUDE.md`)—, y si
+    la labor no está, se cae a un color de `ACCENT_PALETTE` por posición.
 
 - **D5 — La pertenencia es manual y explícita. No hay listas dinámicas.** La
   tentación es evidente: una lista es «los que tienen la labor púlpito» y se
@@ -183,9 +183,9 @@ es el criterio.
   edita la ficha de un hermano un martes y desaparece de un cartel que lleva
   circulando por WhatsApp desde el domingo, sin que nadie lo haya decidido.
 
-  Lo que sí se hace es **llenarla con los filtros**: desde creyentes, se filtra
-  por labor, sede, don o estado, se marcan los que interesan y se añaden. El
-  filtro es la herramienta; la pertenencia es la decisión.
+    Lo que sí se hace es **llenarla con los filtros**: desde creyentes, se filtra
+    por labor, sede, don o estado, se marcan los que interesan y se añaden. El
+    filtro es la herramienta; la pertenencia es la decisión.
 
 - **D6 — El orden es una columna, y se toca a mano.** `position`, entero. En una
   lista de púlpito el orden es el mes; en una de recepción, el turno. Se arrastra
@@ -205,48 +205,48 @@ es el criterio.
   recepción, ver y gestionar; los demás, ver. Gestionar accesos va con
   `lists.share`: repartir llaves es parte de abrir la puerta.
 
-  La interfaz lo trata como lo que es: publicar abre una confirmación que dice
-  **qué campos van a salir y quién va a poder verlos**. Mientras está publicada,
-  la ficha lleva una banda permanente —no un aviso que se va— con el enlace, el
-  modo y el botón de dejar de compartir.
+    La interfaz lo trata como lo que es: publicar abre una confirmación que dice
+    **qué campos van a salir y quién va a poder verlos**. Mientras está publicada,
+    la ficha lleva una banda permanente —no un aviso que se va— con el enlace, el
+    modo y el botón de dejar de compartir.
 
 - **D9 — Tres modos de visibilidad, no un interruptor.** Una columna
   `visibility` con tres valores:
 
-  | Valor        | En la interfaz   | Qué significa                                 |
-  | ------------ | ---------------- | --------------------------------------------- |
-  | `private`    | **Sin publicar** | Solo se ve dentro. No hay enlace              |
-  | `link`       | **Abierta**      | Cualquiera con el enlace la ve                |
-  | `restricted` | **Con acceso**   | El enlace lleva a una puerta; hay que abrirla |
+    | Valor        | En la interfaz   | Qué significa                                 |
+    | ------------ | ---------------- | --------------------------------------------- |
+    | `private`    | **Sin publicar** | Solo se ve dentro. No hay enlace              |
+    | `link`       | **Abierta**      | Cualquiera con el enlace la ve                |
+    | `restricted` | **Con acceso**   | El enlace lleva a una puerta; hay que abrirla |
 
-  Tres estados y no un booleano «pública sí/no» más otro «pide contraseña
-  sí/no»: dos banderas dan cuatro combinaciones y una de ellas —«no pública
-  pero con contraseña»— no significa nada. Un estado con tres valores no puede
-  quedarse en una combinación imposible.
+    Tres estados y no un booleano «pública sí/no» más otro «pide contraseña
+    sí/no»: dos banderas dan cuatro combinaciones y una de ellas —«no pública
+    pero con contraseña»— no significa nada. Un estado con tres valores no puede
+    quedarse en una combinación imposible.
 
-  `visibility` es **la** fuente de verdad del estado; `share_token` es el
-  secreto, no el estado. Los dos se escriben en el mismo servicio y en la misma
-  transacción. Los valores van en inglés porque son internos y la interfaz los
-  traduce, a diferencia de los estados de un sueño o una profecía, que son
-  vocabulario del oficio.
+    `visibility` es **la** fuente de verdad del estado; `share_token` es el
+    secreto, no el estado. Los dos se escriben en el mismo servicio y en la misma
+    transacción. Los valores van en inglés porque son internos y la interfaz los
+    traduce, a diferencia de los estados de un sueño o una profecía, que son
+    vocabulario del oficio.
 
 - **D10 — El enlace es un secreto, no un nombre.** `/l/<token>`, con 16 bytes de
   `randomBytes` en base64url (22 caracteres). **No**
   `/l/iglesia-el-faro/pulpito`: un enlace adivinable no es un enlace privado, y
   aquí hay nombres de personas detrás.
 
-  Y por eso mismo: `<meta name="robots" content="noindex, nofollow">` y una
-  `robots.txt` que excluye `/l/`. **Un enlace público no es un sitio web
-  público**: se comparte con quien se comparte, y no se busca en Google.
+    Y por eso mismo: `<meta name="robots" content="noindex, nofollow">` y una
+    `robots.txt` que excluye `/l/`. **Un enlace público no es un sitio web
+    público**: se comparte con quien se comparte, y no se busca en Google.
 
 - **D11 — Dejar de compartir mata el enlace de verdad, y rotarlo es otra acción.**
   Al despublicar, el token se borra, las sesiones abiertas se invalidan (D28) y
   la URL pasa a dar 404 —no un «esta lista ya no está disponible», que también
   cuenta algo—. Volver a publicar da un token **nuevo**.
 
-  Y aparte, **«Cambiar el enlace»**: mantiene la lista publicada y el modo, y
-  solo tira el token viejo. Es lo que hace falta cuando un enlace se filtra y no
-  se quiere cerrar la lista a quien la usa bien.
+    Y aparte, **«Cambiar el enlace»**: mantiene la lista publicada y el modo, y
+    solo tira el token viejo. Es lo que hace falta cuando un enlace se filtra y no
+    se quiere cerrar la lista a quien la usa bien.
 
 - **D12 — Pasar de abierta a restringida cambia el enlace, obligatoriamente.**
   Es un fallo que se cuela solo. WhatsApp **cachea la tarjeta** —imagen, título
@@ -255,10 +255,10 @@ es el criterio.
   cincuenta personas, y cambiada después a restringida seguiría enseñando en ese
   chat la imagen con los nombres dentro.
 
-  Como el caché va por URL, la única defensa real es **que la URL deje de ser la
-  misma**: al pasar a `restricted` se rota el token (D11) y se dice en el
-  diálogo, porque significa volver a repartir el enlace. Al revés —de
-  restringida a abierta— no hace falta.
+    Como el caché va por URL, la única defensa real es **que la URL deje de ser la
+    misma**: al pasar a `restricted` se rota el token (D11) y se dice en el
+    diálogo, porque significa volver a repartir el enlace. Al revés —de
+    restringida a abierta— no hace falta.
 
 - **D13 — Caducidad opcional.** `share_expires_at`, nulo por defecto. Una lista
   de un retiro concreto caduca; la del sonido, no. Caducada se comporta igual
@@ -269,29 +269,29 @@ es el criterio.
 - **D14 — La vista previa de WhatsApp obliga a que conteste el servidor.** Es el
   punto técnico que decide la arquitectura de esta funcionalidad:
 
-  La web es una SPA de Vite servida como ficheros estáticos por nginx, con un
-  `index.html` fijo. **Los rastreadores de WhatsApp, Telegram, Twitter o Slack
-  no ejecutan JavaScript**: leen el HTML que llega y se van. Una etiqueta `og:`
-  puesta por React no la ve nadie. Sin esto, el enlace se pega y sale el título
-  genérico de Navis para las cinco listas.
+    La web es una SPA de Vite servida como ficheros estáticos por nginx, con un
+    `index.html` fijo. **Los rastreadores de WhatsApp, Telegram, Twitter o Slack
+    no ejecutan JavaScript**: leen el HTML que llega y se van. Una etiqueta `og:`
+    puesta por React no la ve nadie. Sin esto, el enlace se pega y sale el título
+    genérico de Navis para las cinco listas.
 
-  Así que **`/l/<token>` lo sirve la API**:
+    Así que **`/l/<token>` lo sirve la API**:
 
-  1. nginx gana un `location /l/` que apunta al contenedor de la API, **antes**
-     del `location /` que lo manda todo a la web.
-  2. En `main.ts`, `/l` se añade al `exclude` de `setGlobalPrefix` —donde hoy
-     solo está `health`— y la ruta va **`VERSION_NEUTRAL`**: con el prefijo y el
-     versionado por URI quedaría en `/api/v1/l/…` y el enlace dejaría de ser el
-     enlace. Es la misma decisión que ya está tomada para `/health`
-     (`CLAUDE.md`).
-  3. La API devuelve un documento pequeño con las `og:` de esa lista, el
-     `noindex` de D10, un `<noscript>` con lo que corresponda según el modo, y
-     una redirección a `/lists/s/<token>`, que es la ruta bonita de la SPA.
-  4. La SPA la pinta como Dios manda y pide el JSON a `/api/v1/public/lists/…`.
+    1. nginx gana un `location /l/` que apunta al contenedor de la API, **antes**
+       del `location /` que lo manda todo a la web.
+    2. En `main.ts`, `/l` se añade al `exclude` de `setGlobalPrefix` —donde hoy
+       solo está `health`— y la ruta va **`VERSION_NEUTRAL`**: con el prefijo y el
+       versionado por URI quedaría en `/api/v1/l/…` y el enlace dejaría de ser el
+       enlace. Es la misma decisión que ya está tomada para `/health`
+       (`CLAUDE.md`).
+    3. La API devuelve un documento pequeño con las `og:` de esa lista, el
+       `noindex` de D10, un `<noscript>` con lo que corresponda según el modo, y
+       una redirección a `/lists/s/<token>`, que es la ruta bonita de la SPA.
+    4. La SPA la pinta como Dios manda y pide el JSON a `/api/v1/public/lists/…`.
 
-  Y un efecto secundario que sale gratis y que es justo lo que hace falta: **el
-  rastreador se queda en el documento y no llega al JSON**, así que las vistas
-  previas de WhatsApp **no cuentan como visitas** (D31).
+    Y un efecto secundario que sale gratis y que es justo lo que hace falta: **el
+    rastreador se queda en el documento y no llega al JSON**, así que las vistas
+    previas de WhatsApp **no cuentan como visitas** (D31).
 
 - **D15 — El service worker se come el enlace si no se le dice que no.** El
   `vite.config.ts` de hoy tiene `navigateFallback: '/index.html'` **sin
@@ -301,47 +301,47 @@ es el criterio.
   funcionaría en un teléfono cualquiera y fallaría justo en el de quien tiene la
   aplicación instalada, que es quien la comparte.
 
-  Se añade `navigateFallbackDenylist: [/^\/l\//, /^\/api\//]`. Es primo de la
-  trampa de Playwright que ya está en `CLAUDE.md` —«un service worker activo se
-  come los `page.route`»— y merece su propio spec.
+    Se añade `navigateFallbackDenylist: [/^\/l\//, /^\/api\//]`. Es primo de la
+    trampa de Playwright que ya está en `CLAUDE.md` —«un service worker activo se
+    come los `page.route`»— y merece su propio spec.
 
 - **D16 — Lo que sale en público está en una lista blanca cerrada.** El mapeador
   público construye la respuesta **campo a campo**, no filtrando el creyente
   entero. Con una lista negra, la columna que alguien añada mañana saldría
   publicada por omisión.
 
-  | Puede salir                        | No sale nunca, y no hay opción para activarlo |
-  | ---------------------------------- | --------------------------------------------- |
-  | Nombre (entero o con inicial)      | Teléfono y correo                             |
-  | Posición en la lista               | Cumpleaños                                    |
-  | Nota de la lista («solo domingos») | Estado, dones, alertas                        |
-  | Sede _(opcional, apagado)_         | Las notas de la bitácora                      |
-  | Labor _(opcional, apagado)_        | Cualquier identificador interno               |
-  | Foto _(opcional, apagado)_         | Si esa persona tiene acceso, y a qué          |
+    | Puede salir                        | No sale nunca, y no hay opción para activarlo |
+    | ---------------------------------- | --------------------------------------------- |
+    | Nombre (entero o con inicial)      | Teléfono y correo                             |
+    | Posición en la lista               | Cumpleaños                                    |
+    | Nota de la lista («solo domingos») | Estado, dones, alertas                        |
+    | Sede _(opcional, apagado)_         | Las notas de la bitácora                      |
+    | Labor _(opcional, apagado)_        | Cualquier identificador interno               |
+    | Foto _(opcional, apagado)_         | Si esa persona tiene acceso, y a qué          |
 
-  Por defecto sale **el nombre y la posición**, y nada más. La foto viene
-  apagada a propósito: publicar la cara de alguien —que puede ser menor— en una
-  URL abierta se decide a conciencia, no en una casilla que ya estaba marcada.
+    Por defecto sale **el nombre y la posición**, y nada más. La foto viene
+    apagada a propósito: publicar la cara de alguien —que puede ser menor— en una
+    URL abierta se decide a conciencia, no en una casilla que ya estaba marcada.
 
-  Y **un creyente con `deleted_at` no sale nunca**, aunque su fila siga en
-  `list_members`. El borrado lógico tiene que llegar hasta el cartel; si no,
-  alguien a quien se dio de baja sigue publicado.
+    Y **un creyente con `deleted_at` no sale nunca**, aunque su fila siga en
+    `list_members`. El borrado lógico tiene que llegar hasta el cartel; si no,
+    alguien a quien se dio de baja sigue publicado.
 
 - **D17 — Las fotos públicas necesitan su propia puerta.** Es un fallo que el
   plan tenía y que solo se ve mirando el código: hoy la foto se sirve en
   `GET /believer-photos/:id`, con `ActiveChurchGuard` y `believers.view`. Desde
   la página pública **eso devuelve 401 y la foto no carga**.
 
-  Hace falta una ruta propia, `GET /l/:token/photos/:believerId`, que compruebe
-  en este orden: que el token vale, que la lista está publicada y no caducada,
-  que en modo restringido hay cookie con concesión, que la foto está activada en
-  `public_fields`, y que ese creyente **está en esa lista**. Cinco condiciones,
-  y la última es la que impide usar el token de una lista para sacar la foto de
-  cualquiera.
+    Hace falta una ruta propia, `GET /l/:token/photos/:believerId`, que compruebe
+    en este orden: que el token vale, que la lista está publicada y no caducada,
+    que en modo restringido hay cookie con concesión, que la foto está activada en
+    `public_fields`, y que ese creyente **está en esa lista**. Cinco condiciones,
+    y la última es la que impide usar el token de una lista para sacar la foto de
+    cualquiera.
 
-  Y para la lámina que se rasteriza hay otra consecuencia: `rasterize.ts` exige
-  que el nodo sea autocontenido —«imágenes en `data:`»—, así que la portada
-  incrusta las fotos como `data:` y no como `src` remotos.
+    Y para la lámina que se rasteriza hay otra consecuencia: `rasterize.ts` exige
+    que el nodo sea autocontenido —«imágenes en `data:`»—, así que la portada
+    incrusta las fotos como `data:` y no como `src` remotos.
 
 - **D18 — La imagen de la tarjeta la hace el navegador de quien comparte.** Para
   que WhatsApp enseñe una tarjeta bonita hace falta un PNG, y generarlo en el
@@ -352,14 +352,14 @@ es el criterio.
   `churches/<churchId>/`, donde ya viven las fotos, y se sirve en
   `/l/<token>/card.png`.
 
-  Sin portada todavía, la tarjeta cae al `/og-image.png` de siempre: se degrada,
-  no se rompe.
+    Sin portada todavía, la tarjeta cae al `/og-image.png` de siempre: se degrada,
+    no se rompe.
 
-  **En modo restringido la portada es otra**: el color de la lista, el nombre de
-  la iglesia, el nombre de la lista y una línea diciendo que hace falta acceso.
-  Ni un nombre, ni el número de personas. El `<noscript>` de D14, igual: el
-  formulario, no la lista. Y la descripción de la tarjeta es la que escribió su
-  dueño o una genérica —**nunca una generada a partir del contenido**—.
+    **En modo restringido la portada es otra**: el color de la lista, el nombre de
+    la iglesia, el nombre de la lista y una línea diciendo que hace falta acceso.
+    Ni un nombre, ni el número de personas. El `<noscript>` de D14, igual: el
+    formulario, no la lista. Y la descripción de la tarjeta es la que escribió su
+    dueño o una genérica —**nunca una generada a partir del contenido**—.
 
 ### Quién puede verla
 
@@ -371,83 +371,83 @@ entero.
 - **D19 — Los accesos son de la iglesia, y un mismo acceso abre las listas que se
   le concedan.** Es la decisión central. Dos tablas:
 
-  - `list_viewers` — el **directorio** de la iglesia: usuario, contraseña
-    cifrada, nombre para reconocerlo, caducidad, activo.
-  - `list_grants` — **qué acceso abre qué lista**: `(viewer_id, list_id)`.
+    - `list_viewers` — el **directorio** de la iglesia: usuario, contraseña
+      cifrada, nombre para reconocerlo, caducidad, activo.
+    - `list_grants` — **qué acceso abre qué lista**: `(viewer_id, list_id)`.
 
-  Con esto, dar a los ancianos las cuatro listas que les tocan es **marcar
-  cuatro casillas**, no crear cuatro usuarios con cuatro contraseñas. Y quitarles
-  una es desmarcar una: las otras tres siguen igual, sin cambiar ninguna
-  contraseña ni avisar a nadie.
+    Con esto, dar a los ancianos las cuatro listas que les tocan es **marcar
+    cuatro casillas**, no crear cuatro usuarios con cuatro contraseñas. Y quitarles
+    una es desmarcar una: las otras tres siguen igual, sin cambiar ninguna
+    contraseña ni avisar a nadie.
 
-  La alternativa era guardar usuario y contraseña dentro de cada lista. Se
-  descarta por dos motivos, y el segundo es el que manda:
+    La alternativa era guardar usuario y contraseña dentro de cada lista. Se
+    descarta por dos motivos, y el segundo es el que manda:
 
-  1. Los mismos ancianos van a ver cuatro listas, y con credenciales por lista
-     habría cuatro contraseñas que repartir y que cambiar cuatro veces.
-  2. **Es lo que hace posible la regla que se pidió.** Con un directorio, «este
-     usuario y contraseña son válidos, pero no para esta lista» es una consulta
-     de una línea a `list_grants`. Con credenciales por lista, la misma pareja
-     escrita en dos listas serían dos secretos distintos que casualmente
-     coinciden, y comprobar que uno no vale en la otra sería comprobar que no
-     coinciden: funcionaría por accidente hasta el día en que alguien reutilizara
-     la contraseña.
+    1. Los mismos ancianos van a ver cuatro listas, y con credenciales por lista
+       habría cuatro contraseñas que repartir y que cambiar cuatro veces.
+    2. **Es lo que hace posible la regla que se pidió.** Con un directorio, «este
+       usuario y contraseña son válidos, pero no para esta lista» es una consulta
+       de una línea a `list_grants`. Con credenciales por lista, la misma pareja
+       escrita en dos listas serían dos secretos distintos que casualmente
+       coinciden, y comprobar que uno no vale en la otra sería comprobar que no
+       coinciden: funcionaría por accidente hasta el día en que alguien reutilizara
+       la contraseña.
 
-  El usuario es único por iglesia. Y no hay directorio entre iglesias: un acceso
-  pertenece a una y no existe fuera de ella (D1).
+    El usuario es único por iglesia. Y no hay directorio entre iglesias: un acceso
+    pertenece a una y no existe fuera de ella (D1).
 
 - **D20 — Un acceso puede ser de un creyente, o no serlo.** `believer_id`,
   nulo permitido:
 
-  - **Enlazado a un creyente**: se elige a la persona en el buscador de siempre,
-    y el acceso hereda su nombre y su foto. El usuario se propone a partir del
-    nombre (`juan.perez`, con sufijo si ya existe) y se puede cambiar. Es lo que
-    convierte «alguien entró ayer a las 21:14» en «**Juan Pérez** entró ayer a
-    las 21:14», con su cara al lado (D35).
-  - **Sin creyente**: un acceso de grupo —«Ancianos», «Responsables de sede»—,
-    que es lo que hace falta cuando la llave la comparten varios y no interesa
-    saber cuál de ellos abrió.
+    - **Enlazado a un creyente**: se elige a la persona en el buscador de siempre,
+      y el acceso hereda su nombre y su foto. El usuario se propone a partir del
+      nombre (`juan.perez`, con sufijo si ya existe) y se puede cambiar. Es lo que
+      convierte «alguien entró ayer a las 21:14» en «**Juan Pérez** entró ayer a
+      las 21:14», con su cara al lado (D35).
+    - **Sin creyente**: un acceso de grupo —«Ancianos», «Responsables de sede»—,
+      que es lo que hace falta cuando la llave la comparten varios y no interesa
+      saber cuál de ellos abrió.
 
-  Los dos conviven en el mismo directorio porque son la misma cosa —una llave— y
-  se usan igual. Un creyente tiene **como mucho un acceso**; el índice único va
-  sobre `(church_id, believer_id)`, y como los nulos no chocan entre sí en
-  ninguno de los dos motores, eso permite a la vez «uno por creyente» y «tantos
-  sin creyente como haga falta».
+    Los dos conviven en el mismo directorio porque son la misma cosa —una llave— y
+    se usan igual. Un creyente tiene **como mucho un acceso**; el índice único va
+    sobre `(church_id, believer_id)`, y como los nulos no chocan entre sí en
+    ninguno de los dos motores, eso permite a la vez «uno por creyente» y «tantos
+    sin creyente como haga falta».
 
-  El creyente tiene que ser **de la iglesia activa**: se comprueba en el
-  servicio, no solo en la interfaz.
+    El creyente tiene que ser **de la iglesia activa**: se comprueba en el
+    servicio, no solo en la interfaz.
 
 - **D21 — Estar en una lista y poder verla son cosas distintas, y no se enlazan
   solas.** Añadir a Juan a la lista de púlpito **no** le da acceso a abrirla, y
   darle acceso **no** lo mete en la lista. Son dos tablas, dos gestos y dos
   pantallas.
 
-  Es la decisión más fácil de romper «por comodidad» y la que más caro saldría:
-  quien está en una lista de personas a las que hay que llamar no debería poder
-  leerla, y quien la lee —una secretaria, un anciano— casi nunca sale en ella.
-  Enlazarlas convertiría cada alta de miembro en un alta de credenciales sin
-  que nadie lo hubiera pedido.
+    Es la decisión más fácil de romper «por comodidad» y la que más caro saldría:
+    quien está en una lista de personas a las que hay que llamar no debería poder
+    leerla, y quien la lee —una secretaria, un anciano— casi nunca sale en ella.
+    Enlazarlas convertiría cada alta de miembro en un alta de credenciales sin
+    que nadie lo hubiera pedido.
 
-  Lo que sí hay es **un atajo explícito**, que es distinto de un automatismo:
-  desde la lista, «Dar acceso a los de esta lista» (D29). Se pulsa, se ve a
-  quién va a afectar y se confirma.
+    Lo que sí hay es **un atajo explícito**, que es distinto de un automatismo:
+    desde la lista, «Dar acceso a los de esta lista» (D29). Se pulsa, se ve a
+    quién va a afectar y se confirma.
 
 - **D22 — Un acceso no es una cuenta.** No entra en `user`, no es Better Auth,
   no tiene rol, ni perfil, ni sesión de aplicación, ni correo, ni recuperación
   de contraseña. Es **una llave de una puerta concreta**, y lo único que puede
   hacer en todo el sistema es leer las listas que se le hayan concedido.
 
-  Se dice aquí porque es la confusión que va a llegar sola: en cuanto exista un
-  campo «usuario» y otro «contraseña» —y más aún estando enlazado a un
-  creyente—, alguien va a querer que esa persona «entre en la aplicación». La
-  respuesta es no: para eso se le crea una cuenta de verdad, con su rol, que es
-  otra pantalla y ya existe.
+    Se dice aquí porque es la confusión que va a llegar sola: en cuanto exista un
+    campo «usuario» y otro «contraseña» —y más aún estando enlazado a un
+    creyente—, alguien va a querer que esa persona «entre en la aplicación». La
+    respuesta es no: para eso se le crea una cuenta de verdad, con su rol, que es
+    otra pantalla y ya existe.
 
-  Consecuencia práctica y no negociable: **las dos autenticaciones no comparten
-  nada**. Ni tabla, ni cookie, ni guard, ni servicio, ni clave de firma. Un
-  fallo en una no puede abrir la otra. Y si un creyente tiene además cuenta de
-  la aplicación, son dos identidades distintas que da la casualidad de que son
-  la misma persona.
+    Consecuencia práctica y no negociable: **las dos autenticaciones no comparten
+    nada**. Ni tabla, ni cookie, ni guard, ni servicio, ni clave de firma. Un
+    fallo en una no puede abrir la otra. Y si un creyente tiene además cuenta de
+    la aplicación, son dos identidades distintas que da la casualidad de que son
+    la misma persona.
 
 - **D23 — La cookie dice quién eres, nunca qué puedes ver.** Al acertar la
   contraseña se devuelve una cookie `HttpOnly`, `Secure`, `SameSite=Lax`,
@@ -455,21 +455,21 @@ entero.
   más. En **cada** petición a una lista restringida se vuelve a consultar
   `list_grants`.
 
-  No es un detalle de implementación, es lo que hace que se cumpla lo que se
-  pidió. Si la cookie llevara dentro «puede ver A y B», quitarle el permiso a
-  alguien no tendría efecto hasta que caducara, y una cookie manipulada valdría
-  para lo que dijera ella. La autorización se comprueba **al servir**, contra la
-  base de datos, siempre.
+    No es un detalle de implementación, es lo que hace que se cumpla lo que se
+    pidió. Si la cookie llevara dentro «puede ver A y B», quitarle el permiso a
+    alguien no tendría efecto hasta que caducara, y una cookie manipulada valdría
+    para lo que dijera ella. La autorización se comprueba **al servir**, contra la
+    base de datos, siempre.
 
-  De aquí sale, gratis, la otra mitad de lo que se pidió: **una sola entrada
-  abre todas sus listas**. Quien ya entró en púlpito abre el enlace de sonido y
-  no le pide nada, porque la cookie ya dice quién es y la concesión existe. Si
-  no existe, ve el mensaje de D26 sin escribir nada.
+    De aquí sale, gratis, la otra mitad de lo que se pidió: **una sola entrada
+    abre todas sus listas**. Quien ya entró en púlpito abre el enlace de sonido y
+    no le pide nada, porque la cookie ya dice quién es y la concesión existe. Si
+    no existe, ve el mensaje de D26 sin escribir nada.
 
-  Se firma con HMAC sobre una clave derivada de `BETTER_AUTH_SECRET` con una
-  etiqueta propia (`'list-access'`): sin variable de entorno nueva y sin que las
-  dos claves sean la misma. Dura **12 horas**, sin renovación automática: es una
-  puerta que se abre para una consulta, no una sesión de trabajo.
+    Se firma con HMAC sobre una clave derivada de `BETTER_AUTH_SECRET` con una
+    etiqueta propia (`'list-access'`): sin variable de entorno nueva y sin que las
+    dos claves sean la misma. Dura **12 horas**, sin renovación automática: es una
+    puerta que se abre para una consulta, no una sesión de trabajo.
 
 - **D24 — La contraseña se guarda con `scrypt` y se enseña una sola vez.**
   `crypto.scrypt` está en la biblioteca estándar de Node —sin dependencia nueva,
@@ -477,97 +477,97 @@ entero.
   sal **por acceso**. Se guarda `scrypt$N$r$p$sal$clave`, con los parámetros
   dentro, para poder subirlos dentro de unos años sin invalidar lo que ya hay.
 
-  `2^14` y no `2^15` a propósito: son unos 50 ms, el bucle de eventos de Node
-  reparte `scrypt` en un pool de **cuatro** hilos por defecto, y esto cuelga de
-  un endpoint público. Con `2^15` bastarían diez intentos simultáneos para dejar
-  la API sorda un segundo. Se usa siempre la versión **asíncrona**, nunca
-  `scryptSync`, y el freno de D27 acota el resto.
+    `2^14` y no `2^15` a propósito: son unos 50 ms, el bucle de eventos de Node
+    reparte `scrypt` en un pool de **cuatro** hilos por defecto, y esto cuelga de
+    un endpoint público. Con `2^15` bastarían diez intentos simultáneos para dejar
+    la API sorda un segundo. Se usa siempre la versión **asíncrona**, nunca
+    `scryptSync`, y el freno de D27 acota el resto.
 
-  Se enseña **una sola vez**, al crearla o al regenerarla, con su botón de copiar
-  y el aviso de que no va a volver a verse. Es lo que se hace con una clave de
-  API, y por el mismo motivo: una contraseña que se puede volver a leer desde
-  una pantalla es una contraseña que está en claro en alguna parte. Perderla no
-  es un problema: se regenera.
+    Se enseña **una sola vez**, al crearla o al regenerarla, con su botón de copiar
+    y el aviso de que no va a volver a verse. Es lo que se hace con una clave de
+    API, y por el mismo motivo: una contraseña que se puede volver a leer desde
+    una pantalla es una contraseña que está en claro en alguna parte. Perderla no
+    es un problema: se regenera.
 
-  La comparación es en **tiempo constante** (`timingSafeEqual`), y cuando el
-  usuario no existe **se compara igual contra un hash de mentira**, para que
-  tardar menos no delate que ese usuario no está.
+    La comparación es en **tiempo constante** (`timingSafeEqual`), y cuando el
+    usuario no existe **se compara igual contra un hash de mentira**, para que
+    tardar menos no delate que ese usuario no está.
 
 - **D25 — La contraseña se genera sola, y se genera para escribirla en un
   teléfono.** El campo nace **ya relleno** con una generada: es la opción por
   defecto, no un botón escondido. Y se genera pensando en que alguien la va a
   leer en voz alta y otro la va a teclear con el pulgar:
 
-  - Alfabeto sin caracteres que se confunden: fuera `0 O o`, `1 l I`, `5 S`,
-    `2 Z`.
-  - Doce caracteres en **tres grupos de cuatro separados por guiones**:
-    `k7fr-m3np-t9wx`. Se lee, se dicta y se comprueba a simple vista.
-  - De `crypto.getRandomValues`, nunca de `Math.random`.
-  - Los guiones **no cuentan al comprobarla**: quien la escriba sin ellos entra
-    igual. La normalización vive en `packages/shared` y la usan los dos lados.
+    - Alfabeto sin caracteres que se confunden: fuera `0 O o`, `1 l I`, `5 S`,
+      `2 Z`.
+    - Doce caracteres en **tres grupos de cuatro separados por guiones**:
+      `k7fr-m3np-t9wx`. Se lee, se dicta y se comprueba a simple vista.
+    - De `crypto.getRandomValues`, nunca de `Math.random`.
+    - Los guiones **no cuentan al comprobarla**: quien la escriba sin ellos entra
+      igual. La normalización vive en `packages/shared` y la usan los dos lados.
 
-  Quien prefiera escribirla a mano puede, con un mínimo de ocho caracteres. El
-  botón de volver a tirarla está siempre al lado.
+    Quien prefiera escribirla a mano puede, con un mínimo de ocho caracteres. El
+    botón de volver a tirarla está siempre al lado.
 
 - **D26 — Autenticar y autorizar son dos pasos, y dan dos mensajes distintos.**
   Primero quién eres, después si esta lista es tuya:
 
-  | Situación                                  | Respuesta | Mensaje                             |
-  | ------------------------------------------ | --------- | ----------------------------------- |
-  | Usuario que no existe, o clave incorrecta  | 401       | «Usuario o contraseña incorrectos»  |
-  | Acceso caducado o desactivado              | 401       | El mismo mensaje                    |
-  | Correctos, pero sin concesión a esta lista | 403       | «Este acceso no incluye esta lista» |
+    | Situación                                  | Respuesta | Mensaje                             |
+    | ------------------------------------------ | --------- | ----------------------------------- |
+    | Usuario que no existe, o clave incorrecta  | 401       | «Usuario o contraseña incorrectos»  |
+    | Acceso caducado o desactivado              | 401       | El mismo mensaje                    |
+    | Correctos, pero sin concesión a esta lista | 403       | «Este acceso no incluye esta lista» |
 
-  Los dos primeros dan **el mismo texto** a propósito: distinguirlos convierte el
-  formulario en una máquina de averiguar qué usuarios existen.
+    Los dos primeros dan **el mismo texto** a propósito: distinguirlos convierte el
+    formulario en una máquina de averiguar qué usuarios existen.
 
-  El tercero sí se distingue, y es un compromiso deliberado que conviene tener
-  escrito. Lo que se filtra es: **quien ya tiene credenciales válidas** puede
-  averiguar si le alcanzan para otra lista. No es un atacante anónimo, es
-  alguien a quien ya se le dio una llave. A cambio, quien tiene acceso legítimo
-  y se equivoca de enlace lee «este acceso no incluye esta lista» en vez de
-  «contraseña incorrecta», que le haría teclear la buena diez veces y acabar
-  llamando por teléfono. El intercambio compensa; si algún día no compensara, se
-  cambia a 401 y una línea.
+    El tercero sí se distingue, y es un compromiso deliberado que conviene tener
+    escrito. Lo que se filtra es: **quien ya tiene credenciales válidas** puede
+    averiguar si le alcanzan para otra lista. No es un atacante anónimo, es
+    alguien a quien ya se le dio una llave. A cambio, quien tiene acceso legítimo
+    y se equivoca de enlace lee «este acceso no incluye esta lista» en vez de
+    «contraseña incorrecta», que le haría teclear la buena diez veces y acabar
+    llamando por teléfono. El intercambio compensa; si algún día no compensara, se
+    cambia a 401 y una línea.
 
 - **D27 — Contra la fuerza bruta se frena el origen, no la cuenta.** Bloquear un
   acceso tras cinco fallos suena prudente y es un regalo: cualquiera con el
   enlace podría dejar fuera a los ancianos fallando cinco veces a propósito. Lo
   que se frena es **de dónde vienen los intentos**:
 
-  - Diez intentos por prefijo de IP y lista cada quince minutos; pasado eso,
-    `429` con el tiempo que falta.
-  - Un retardo pequeño y creciente a partir del tercer fallo, del lado del
-    servidor.
-  - Cada intento —bueno o malo— se apunta con su resultado (§6.7), y la ficha lo
-    enseña: veinte fallos seguidos desde un sitio son una noticia.
+    - Diez intentos por prefijo de IP y lista cada quince minutos; pasado eso,
+      `429` con el tiempo que falta.
+    - Un retardo pequeño y creciente a partir del tercer fallo, del lado del
+      servidor.
+    - Cada intento —bueno o malo— se apunta con su resultado (§6.7), y la ficha lo
+      enseña: veinte fallos seguidos desde un sitio son una noticia.
 
-  El acceso solo se desactiva si lo desactiva una persona. Y esto **depende de
-  que la IP sea la de verdad**: ver D32 y §11.
+    El acceso solo se desactiva si lo desactiva una persona. Y esto **depende de
+    que la IP sea la de verdad**: ver D32 y §11.
 
 - **D28 — Revocar revoca de verdad.** Cada acceso lleva un
   `sessions_valid_from`. Al regenerar la contraseña, desactivar el acceso,
   borrarlo, quitarle una concesión o despublicar la lista, se pone a la hora
   actual y **todas las cookies emitidas antes dejan de valer al instante**.
 
-  Quitar **una** concesión no necesitaría tocar la marca —la comprobación
-  contra `list_grants` de D23 ya lo cubre en la petición siguiente— y aun así se
-  toca, porque el coste es cero y así «revocar» significa lo mismo en los cinco
-  casos. Lo que nadie espera al pulsar «Revocar» es que tarde doce horas.
+    Quitar **una** concesión no necesitaría tocar la marca —la comprobación
+    contra `list_grants` de D23 ya lo cubre en la petición siguiente— y aun así se
+    toca, porque el coste es cero y así «revocar» significa lo mismo en los cinco
+    casos. Lo que nadie espera al pulsar «Revocar» es que tarde doce horas.
 
 - **D29 — Alta en lote, con la hoja de credenciales de una vez.** Desde una
   lista: **«Dar acceso a los de esta lista»**. Enseña a quién va a afectar
   —solo a los miembros que **no** tienen ya acceso—, crea un acceso por persona
   con su contraseña, y les concede **esa** lista.
 
-  Y como esas contraseñas se enseñan una sola vez (D24), lo que se genera es una
-  **hoja de credenciales**: una tabla de nombre, usuario y contraseña que se
-  copia o se exporta con el juego del RFC 0009, para repartir. Se dice claro lo
-  que es: un fichero con contraseñas en claro, que se manda y se borra. Es el
-  único sitio de todo el proyecto donde sale una contraseña a un fichero, y es
-  la alternativa a teclear treinta a mano.
+    Y como esas contraseñas se enseñan una sola vez (D24), lo que se genera es una
+    **hoja de credenciales**: una tabla de nombre, usuario y contraseña que se
+    copia o se exporta con el juego del RFC 0009, para repartir. Se dice claro lo
+    que es: un fichero con contraseñas en claro, que se manda y se borra. Es el
+    único sitio de todo el proyecto donde sale una contraseña a un fichero, y es
+    la alternativa a teclear treinta a mano.
 
-  El atajo es explícito y confirmado, no automático (D21).
+    El atajo es explícito y confirmado, no automático (D21).
 
 - **D30 — Borrar un acceso es borrado lógico, y libera el nombre.** Se borra
   lógicamente para que las visitas antiguas sigan diciendo quién entró (§6.6). Y
@@ -584,44 +584,44 @@ entero.
   enlace en un chat, y contar eso convertiría la métrica en ruido. El JSON lo
   pide el navegador de una persona.
 
-  El coste es honesto y se dice: **quien lea la lista con JavaScript desactivado
-  (el `<noscript>`) no se cuenta**. Son cuatro personas en el mundo y es mejor
-  eso que contar bots.
+    El coste es honesto y se dice: **quien lea la lista con JavaScript desactivado
+    (el `<noscript>`) no se cuenta**. Son cuatro personas en el mundo y es mejor
+    eso que contar bots.
 
 - **D32 — No se guarda la dirección IP entera.** De cada visita se guardan:
 
-  - `visitor_hash` = sha256(sal del día + IP + user-agent), truncado. Sirve para
-    **contar personas distintas** y deja de servir para identificar a nadie en
-    cuanto la sal rota, a medianoche.
-  - `ip_prefix`, el /24 en IPv4 y el /48 en IPv6: `81.34.12.0`. Dice el operador
-    y la zona aproximada, que es lo que de verdad se mira.
-  - Lo derivado del user-agent: **móvil / tablet / escritorio**, el sistema, y el
-    dominio de procedencia (`wa.me`, `t.co`, «directo»).
+    - `visitor_hash` = sha256(sal del día + IP + user-agent), truncado. Sirve para
+      **contar personas distintas** y deja de servir para identificar a nadie en
+      cuanto la sal rota, a medianoche.
+    - `ip_prefix`, el /24 en IPv4 y el /48 en IPv6: `81.34.12.0`. Dice el operador
+      y la zona aproximada, que es lo que de verdad se mira.
+    - Lo derivado del user-agent: **móvil / tablet / escritorio**, el sistema, y el
+      dominio de procedencia (`wa.me`, `t.co`, «directo»).
 
-  La razón no es solo legal —una IP identifica a una persona y esto es Europa—:
-  es que **la IP entera no contesta ninguna pregunta que el prefijo y el hash no
-  contesten ya**. Y en las restringidas hay algo mejor que una IP, que es el
-  nombre de quien entró (D35). Si algún día hiciera falta la completa, es una
-  columna y una decisión suya, escrita en un ADR y con su aviso en la página.
+    La razón no es solo legal —una IP identifica a una persona y esto es Europa—:
+    es que **la IP entera no contesta ninguna pregunta que el prefijo y el hash no
+    contesten ya**. Y en las restringidas hay algo mejor que una IP, que es el
+    nombre de quien entró (D35). Si algún día hiciera falta la completa, es una
+    columna y una decisión suya, escrita en un ADR y con su aviso en la página.
 
-  **De dónde se saca la IP, que es donde estaba el error.** Detrás de nginx
-  llega `X-Forwarded-For`, y hay que coger **el último elemento, no el primero**:
-  nginx usa `proxy_add_x_forwarded_for`, que **añade** el `remote_addr` real al
-  final de lo que venga. El primero es lo que mandó el cliente —es decir, lo que
-  cualquiera puede inventarse— y usarlo dejaría el freno de D27 y el recuento de
-  visitantes al alcance de una cabecera falsa. Con `trust proxy` a 1, que ya se
-  aplica en `main.ts` cuando `TRUST_PROXY` está puesto, `request.ip` de Express
-  ya hace exactamente eso, así que se usa **`request.ip`** y no se lee la
-  cabecera a mano. Y en producción `TRUST_PROXY` **tiene que estar** (§11).
+    **De dónde se saca la IP, que es donde estaba el error.** Detrás de nginx
+    llega `X-Forwarded-For`, y hay que coger **el último elemento, no el primero**:
+    nginx usa `proxy_add_x_forwarded_for`, que **añade** el `remote_addr` real al
+    final de lo que venga. El primero es lo que mandó el cliente —es decir, lo que
+    cualquiera puede inventarse— y usarlo dejaría el freno de D27 y el recuento de
+    visitantes al alcance de una cabecera falsa. Con `trust proxy` a 1, que ya se
+    aplica en `main.ts` cuando `TRUST_PROXY` está puesto, `request.ip` de Express
+    ya hace exactamente eso, así que se usa **`request.ip`** y no se lee la
+    cabecera a mano. Y en producción `TRUST_PROXY` **tiene que estar** (§11).
 
 - **D33 — Una visita por visitante y media hora.** Si no, recargar cinco veces
   son cinco visitas y el número deja de significar nada. Dentro de la ventana se
   actualiza la fila que ya hay en vez de crear otra. De paso, es el freno natural
   de una ruta pública que escribe en la base de datos.
 
-  «Visitante» es `viewer_id` cuando lo hay y `visitor_hash` cuando no: en una
-  lista restringida, dos personas detrás del mismo router son dos visitantes si
-  entraron con accesos distintos.
+    «Visitante» es `viewer_id` cuando lo hay y `visitor_hash` cuando no: en una
+    lista restringida, dos personas detrás del mismo router son dos visitantes si
+    entraron con accesos distintos.
 
 - **D34 — Las visitas y los intentos se podan a los 180 días.** Medio año da para
   ver el año litúrgico entero y no convierte la tabla en un archivo. La poda
@@ -642,9 +642,9 @@ entero.
   la misma gente**. Quien sale en cinco se está quemando, y hoy eso no lo sabe
   nadie hasta que se cae.
 
-  Sale en las estadísticas de cada lista y, en la portada, como una línea
-  directa: «7 personas están en 4 listas o más», que **es un enlace** al listado
-  de creyentes filtrado.
+    Sale en las estadísticas de cada lista y, en la portada, como una línea
+    directa: «7 personas están en 4 listas o más», que **es un enlace** al listado
+    de creyentes filtrado.
 
 ### La forma
 
@@ -655,26 +655,26 @@ entero.
   público, la propia puerta de acceso y el punto que sale junto al nombre en
   creyentes.
 
-  Esto es lo contrario de un degradado de relleno: **el color dice de qué lista
-  estás hablando** (Regla 9 §2, RFC 0005 §7.1.1). Y por eso los paneles de la
-  portada van **rellenos**, no en `bg-card` con un tinte al 8 % que sobre fondo
-  claro es blanco. Al crear una lista se propone un color que no esté usado.
+    Esto es lo contrario de un degradado de relleno: **el color dice de qué lista
+    estás hablando** (Regla 9 §2, RFC 0005 §7.1.1). Y por eso los paneles de la
+    portada van **rellenos**, no en `bg-card` con un tinte al 8 % que sobre fondo
+    claro es blanco. Al crear una lista se propone un color que no esté usado.
 
 - **D38 — Cuatro pantallas, tres firmas** (Regla 9 §4):
 
-  | Pantalla       | Firma                                                    |
-  | -------------- | -------------------------------------------------------- |
-  | `/lists`       | **El tablón**: paneles rellenos, uno por lista (§8.2)    |
-  | `/lists/:slug` | **La estela**: las visitas como el rastro de un barco    |
-  | `/l/<token>`   | **El pase de lista**: ordinales y nombres, en cascada    |
-  | La puerta      | Ninguna propia: **es el cartel con los nombres tapados** |
+    | Pantalla       | Firma                                                    |
+    | -------------- | -------------------------------------------------------- |
+    | `/lists`       | **El tablón**: paneles rellenos, uno por lista (§8.2)    |
+    | `/lists/:slug` | **La estela**: las visitas como el rastro de un barco    |
+    | `/l/<token>`   | **El pase de lista**: ordinales y nombres, en cascada    |
+    | La puerta      | Ninguna propia: **es el cartel con los nombres tapados** |
 
-  Que la puerta no tenga firma propia es deliberado, y es lo que la salva de ser
-  «la tarjeta centrada y sola sobre un fondo vacío», que la Regla 9 §2 nombra
-  como el formulario de acceso de todo el mundo (§8.6).
+    Que la puerta no tenga firma propia es deliberado, y es lo que la salva de ser
+    «la tarjeta centrada y sola sobre un fondo vacío», que la Regla 9 §2 nombra
+    como el formulario de acceso de todo el mundo (§8.6).
 
-  Ninguna se parece a la franja de sueños ni a la travesía de profecías: la
-  aplicación tiene que tener voz, no un tic.
+    Ninguna se parece a la franja de sueños ni a la travesía de profecías: la
+    aplicación tiene que tener voz, no un tic.
 
 - **D39 — La página pública se ve y se descarga igual.** Como la lámina del
   calendario: lo que se lee en pantalla y lo que sale en el PNG son la misma
@@ -699,12 +699,12 @@ entero.
   ni una petición nueva por cada letra, ni una visita de más por cada filtro
   que se toca (D31 sigue midiendo solo la carga inicial).
 
-  Los filtros **no son una lista fija de campos**: se calculan mirando lo que
-  esta lista en concreto ha compartido de verdad —si nadie tiene sede pública,
-  no hay filtro de sede—, y solo aparecen cuando distinguen a alguien (con una
-  única sede compartida, filtrar por ella no cambiaría nada, así que ni se
-  enseña). Es la misma lista blanca de D16 vista desde el otro lado: lo que
-  esa lista no publica, tampoco se puede usar para filtrarla.
+    Los filtros **no son una lista fija de campos**: se calculan mirando lo que
+    esta lista en concreto ha compartido de verdad —si nadie tiene sede pública,
+    no hay filtro de sede—, y solo aparecen cuando distinguen a alguien (con una
+    única sede compartida, filtrar por ella no cambiaría nada, así que ni se
+    enseña). Es la misma lista blanca de D16 vista desde el otro lado: lo que
+    esa lista no publica, tampoco se puede usar para filtrarla.
 
 ### Preguntas abiertas
 
@@ -1133,14 +1133,14 @@ La pestaña se lee de arriba abajo como una decisión, no como un panel de ajust
    interruptor con letra pequeña: tres opciones que se leen enteras antes de
    elegir.
 
-   ```
-   ○ Sin publicar   Solo se ve desde dentro.
-   ○ Abierta        Cualquiera con el enlace la ve.
-   ● Con acceso     Hay que entrar con usuario y contraseña.
-   ```
+    ```
+    ○ Sin publicar   Solo se ve desde dentro.
+    ○ Abierta        Cualquiera con el enlace la ve.
+    ● Con acceso     Hay que entrar con usuario y contraseña.
+    ```
 
-   Al pasar de abierta a con acceso, la confirmación dice que **el enlace va a
-   cambiar** y por qué (D12).
+    Al pasar de abierta a con acceso, la confirmación dice que **el enlace va a
+    cambiar** y por qué (D12).
 
 2. **El enlace**, con su botón de copiar y el de «Cambiar el enlace» (D11), y **la
    tarjeta tal y como la va a enseñar WhatsApp**: la imagen real, el título y la
@@ -1202,21 +1202,21 @@ De arriba abajo:
    cualquier titular del panel—; y una línea con «12 personas · actualizada el 3
    de agosto». La descripción, si la hay, debajo.
 
-   Esa tipografía es la decisión que hace que la página no parezca la aplicación.
-   En el panel todo es informativo y comedido; aquí es un cartel.
+    Esa tipografía es la decisión que hace que la página no parezca la aplicación.
+    En el panel todo es informativo y comedido; aquí es un cartel.
 
 2. **El pase de lista.** Ni tabla ni tarjetas: una columna de nombres, cada uno
    con **su ordinal a la izquierda en cifra grande y hueca**, en el color de la
    lista al 35 %, y el nombre al lado a tamaño de lectura. Debajo, en pequeño y
    apagado, lo que se haya activado: la sede, la labor, la nota.
 
-   Los ordinales están porque **el orden es el dato** (D6): en una lista de
-   púlpito, el primero predica primero. Es la única razón por la que se numera
-   algo en este proyecto; donde el orden no signifique nada, no se numera.
+    Los ordinales están porque **el orden es el dato** (D6): en una lista de
+    púlpito, el primero predica primero. Es la única razón por la que se numera
+    algo en este proyecto; donde el orden no signifique nada, no se numera.
 
-   Los nombres entran **uno a uno, 40 ms de diferencia**, como quien lee una
-   lista en voz alta. Es la única animación de la página y dura menos de medio
-   segundo en total.
+    Los nombres entran **uno a uno, 40 ms de diferencia**, como quien lee una
+    lista en voz alta. Es la única animación de la página y dura menos de medio
+    segundo en total.
 
 3. **Al pie**: la fecha de actualización, el botón de descargar —PDF e imagen, si
    `allow_download`—, y el barco con «Hecho con Navis», pequeño (D40). En una
@@ -1273,12 +1273,12 @@ cambia (Regla 3 §6, la distinción entre `brand` y `primary`).
   propio componente pequeño (Regla 6).
 - **En la ficha del creyente**, dos bloques que no se mezclan, y así es como se
   entiende D21 sin explicarla:
-  - **«Está en»** — sus listas, cada una enlazando, con un botón para quitarlo.
-    Las publicadas llevan su pastilla: quien mira una ficha tiene que ver de un
-    vistazo que ese nombre está hoy en internet.
-  - **«Puede ver»** — su acceso, si lo tiene: usuario, última entrada y las
-    listas que abre. Y si no lo tiene, el botón de crearlo, que abre el diálogo
-    de §8.5 con la persona ya elegida (D20).
+    - **«Está en»** — sus listas, cada una enlazando, con un botón para quitarlo.
+      Las publicadas llevan su pastilla: quien mira una ficha tiene que ver de un
+      vistazo que ese nombre está hoy en internet.
+    - **«Puede ver»** — su acceso, si lo tiene: usuario, última entrada y las
+      listas que abre. Y si no lo tiene, el botón de crearlo, que abre el diálogo
+      de §8.5 con la persona ya elegida (D20).
 
 Los puntos salen de `GET /lists/memberships`, una sola llamada por iglesia que se
 cachea con TanStack Query, y **no de un `join` dentro del listado paginado**: con

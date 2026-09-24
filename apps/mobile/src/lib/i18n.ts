@@ -18,19 +18,19 @@ const deviceLocale = getLocales()[0]?.languageCode ?? undefined;
 // En Jest `__DEV__` también es true, y i18next vuelca su configuración entera
 // en cada suite: se apaga ahí para que la salida de los tests sea legible.
 export const i18n = createI18n({
-  deviceLocale,
-  debug: __DEV__ && process.env.NODE_ENV !== 'test',
+    deviceLocale,
+    debug: __DEV__ && process.env.NODE_ENV !== 'test',
 });
 
 void AsyncStorage.getItem(STORAGE_KEY).then((stored) => {
-  if (stored && stored !== i18n.language) void i18n.changeLanguage(stored);
+    if (stored && stored !== i18n.language) void i18n.changeLanguage(stored);
 });
 
 export async function setLocale(locale: Locale): Promise<void> {
-  await AsyncStorage.setItem(STORAGE_KEY, locale);
-  await i18n.changeLanguage(locale);
+    await AsyncStorage.setItem(STORAGE_KEY, locale);
+    await i18n.changeLanguage(locale);
 }
 
 export function getLocale(): string {
-  return i18n.resolvedLanguage ?? i18n.language;
+    return i18n.resolvedLanguage ?? i18n.language;
 }

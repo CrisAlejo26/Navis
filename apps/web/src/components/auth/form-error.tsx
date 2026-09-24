@@ -6,15 +6,15 @@ import { TriangleAlert } from 'lucide-react';
  * solo no informa (Regla 3).
  */
 export function FormError({ message }: { message?: string | null }) {
-  if (!message) return null;
+    if (!message) return null;
 
-  return (
-    <p
-      role="alert"
-      className="gap-2.5 px-3.5 py-3 text-sm flex items-start rounded-lg border border-destructive/40 bg-destructive/10 text-destructive"
-    >
-      <TriangleAlert size={16} aria-hidden className="mt-0.5 shrink-0" />
-      {message}
-    </p>
-  );
+    return (
+        <p
+            role="alert"
+            className="gap-2.5 px-3.5 py-3 text-sm flex items-start rounded-lg border border-destructive/40 bg-destructive/10 text-destructive"
+        >
+            <TriangleAlert size={16} aria-hidden className="mt-0.5 shrink-0" />
+            {message}
+        </p>
+    );
 }

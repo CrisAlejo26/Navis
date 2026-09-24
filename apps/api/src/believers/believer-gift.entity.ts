@@ -16,25 +16,25 @@ import type { Believer } from './believer.entity';
 @Entity('believer_gifts')
 @Index('UQ_believer_gifts', ['believerId', 'giftId'], { unique: true })
 export class BelieverGift extends BaseEntity {
-  @ApiProperty()
-  @Column({ name: 'believer_id', type: UUID })
-  believerId: string;
+    @ApiProperty()
+    @Column({ name: 'believer_id', type: UUID })
+    believerId: string;
 
-  /* Por nombre y con `Relation<>`: ver `calendar/pattern-phase.entity.ts`. */
-  @ManyToOne('Believer', 'gifts', { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'believer_id' })
-  believer: Relation<Believer>;
+    /* Por nombre y con `Relation<>`: ver `calendar/pattern-phase.entity.ts`. */
+    @ManyToOne('Believer', 'gifts', { onDelete: 'CASCADE' })
+    @JoinColumn({ name: 'believer_id' })
+    believer: Relation<Believer>;
 
-  @ApiProperty()
-  @Index()
-  @Column({ name: 'gift_id', type: UUID })
-  giftId: string;
+    @ApiProperty()
+    @Index()
+    @Column({ name: 'gift_id', type: UUID })
+    giftId: string;
 
-  /**
-   * Mes y año en que lo recibió, con el día 1 (RFC 0012). Nulo es lo normal:
-   * casi nadie apunta la fecha, y el don se tiene igual.
-   */
-  @ApiPropertyOptional({ description: 'Cuándo lo recibió; se guarda el día 1 del mes' })
-  @Column({ name: 'received_at', type: 'date', nullable: true })
-  receivedAt: string | null;
+    /**
+     * Mes y año en que lo recibió, con el día 1 (RFC 0012). Nulo es lo normal:
+     * casi nadie apunta la fecha, y el don se tiene igual.
+     */
+    @ApiPropertyOptional({ description: 'Cuándo lo recibió; se guarda el día 1 del mes' })
+    @Column({ name: 'received_at', type: 'date', nullable: true })
+    receivedAt: string | null;
 }

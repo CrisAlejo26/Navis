@@ -28,18 +28,18 @@ import { signIn, useSession } from './auth-client';
  * Devuelve el mensaje de error a enseñar, o `null` si ha entrado.
  */
 export function useEnterApp(): (email: string, password: string) => Promise<string | null> {
-  const { t } = useTranslation();
-  const navigate = useNavigate();
-  const queryClient = useQueryClient();
-  const { refetch: refetchSession } = useSession();
+    const { t } = useTranslation();
+    const navigate = useNavigate();
+    const queryClient = useQueryClient();
+    const { refetch: refetchSession } = useSession();
 
-  return async (email, password) => {
-    const { error } = await signIn.email({ email, password, rememberMe: true });
-    if (error) return t('errors.generic');
+    return async (email, password) => {
+        const { error } = await signIn.email({ email, password, rememberMe: true });
+        if (error) return t('errors.generic');
 
-    await refetchSession();
-    queryClient.clear();
-    await navigate('/', { replace: true });
-    return null;
-  };
+        await refetchSession();
+        queryClient.clear();
+        await navigate('/', { replace: true });
+        return null;
+    };
 }

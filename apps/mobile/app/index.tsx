@@ -10,10 +10,10 @@ import { useLocalSession } from '@/stores/local-session';
  * spinner suelto sobre blanco.
  */
 export default function Index() {
-  const session = useLocalSession((state) => state.session);
-  const hydrated = useLocalSession((state) => state.hydrated);
+    const session = useLocalSession((state) => state.session);
+    const hydrated = useLocalSession((state) => state.hydrated);
 
-  if (!hydrated) return <BrandSplash />;
+    if (!hydrated) return <BrandSplash />;
 
-  return <Redirect href={session ? '/(tabs)' : '/(auth)/welcome'} />;
+    return <Redirect href={session ? '/(tabs)' : '/(auth)/welcome'} />;
 }

@@ -9,17 +9,17 @@ import type { Tag } from './tag.entity';
 @Entity('habit_tags')
 @Index('UQ_habit_tags', ['habitId', 'tagId'], { unique: true })
 export class HabitTag extends BaseEntity {
-  @Column({ name: 'habit_id', type: UUID })
-  habitId: string;
+    @Column({ name: 'habit_id', type: UUID })
+    habitId: string;
 
-  @Column({ name: 'tag_id', type: UUID })
-  tagId: string;
+    @Column({ name: 'tag_id', type: UUID })
+    tagId: string;
 
-  @ManyToOne('Habit', 'tags', { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'habit_id' })
-  habit: Relation<Habit>;
+    @ManyToOne('Habit', 'tags', { onDelete: 'CASCADE' })
+    @JoinColumn({ name: 'habit_id' })
+    habit: Relation<Habit>;
 
-  @ManyToOne('Tag', { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'tag_id' })
-  tag: Relation<Tag>;
+    @ManyToOne('Tag', { onDelete: 'CASCADE' })
+    @JoinColumn({ name: 'tag_id' })
+    tag: Relation<Tag>;
 }

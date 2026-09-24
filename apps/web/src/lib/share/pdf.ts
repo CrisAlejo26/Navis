@@ -24,67 +24,67 @@ const PUNTOS_POR_PIXEL = 0.75;
 const OBJETOS_POR_PAGINA = 3;
 
 export interface PdfImage {
-  /** El JPEG ya codificado. Sobre `ArrayBuffer` y no `ArrayBufferLike`: es lo
-   *  que acepta `Blob`, que no sabe de memoria compartida. */
-  bytes: Uint8Array<ArrayBuffer>;
-  width: number;
-  height: number;
+    /** El JPEG ya codificado. Sobre `ArrayBuffer` y no `ArrayBufferLike`: es lo
+     *  que acepta `Blob`, que no sabe de memoria compartida. */
+    bytes: Uint8Array<ArrayBuffer>;
+    width: number;
+    height: number;
 }
 
 interface Objeto {
-  cuerpo: string;
-  /** Lo que va entre `stream` y `endstream`, si el objeto lleva flujo. */
-  flujo?: Uint8Array<ArrayBuffer> | string;
+    cuerpo: string;
+    /** Lo que va entre `stream` y `endstream`, si el objeto lleva flujo. */
+    flujo?: Uint8Array<ArrayBuffer> | string;
 }
 
 export function buildPdf(pages: readonly PdfImage[]): Blob {
-  if (pages.length === 0) throw new Error('Un PDF necesita al menos una página');
+    if (pages.length === 0) throw new Error('Un PDF necesita al menos una página');
 
-  const objetos: Objeto[] = [
-    { cuerpo: '<< /Type /Catalog /Pages 2 0 R >>' },
-    { cuerpo: indicePaginas(pages.length) },
-  ];
+    const objetos: Objeto[] = [
+        { cuerpo: '<< /Type /Catalog /Pages 2 0 R >>' },
+        { cuerpo: indicePaginas(pages.length) },
+    ];
 
-  for (const [indice, page] of pages.entries()) objetos.push(...paginaDe(page, indice));
+    for (const [indice, page] of pages.entries()) objetos.push(...paginaDe(page, indice));
 
-  return ensamblar(objetos);
+    return ensamblar(objetos);
 }
 
 /** `<< /Type /Pages /Kids [3 0 R 6 0 R …] /Count 2 >>`. */
 function indicePaginas(total: number): string {
-  const kids = Array.from(
-    { length: total },
-    (_unused, indice) => `${String(primerObjetoDe(indice))} 0 R`,
-  ).join(' ');
+    const kids = Array.from(
+        { length: total },
+        (_unused, indice) => `${String(primerObjetoDe(indice))} 0 R`,
+    ).join(' ');
 
-  return `<< /Type /Pages /Kids [${kids}] /Count ${String(total)} >>`;
+    return `<< /Type /Pages /Kids [${kids}] /Count ${String(total)} >>`;
 }
 
 /** El primer objeto de una página: el catálogo y el índice ocupan el 1 y el 2. */
 function primerObjetoDe(indice: number): number {
-  return 3 + indice * OBJETOS_POR_PAGINA;
+    return 3 + indice * OBJETOS_POR_PAGINA;
 }
 
 function paginaDe(page: PdfImage, indice: number): Objeto[] {
-  const base = primerObjetoDe(indice);
-  const ancho = Math.round(page.width * PUNTOS_POR_PIXEL);
-  const alto = Math.round(page.height * PUNTOS_POR_PIXEL);
-  const dibujo = `q ${String(ancho)} 0 0 ${String(alto)} 0 0 cm /Im0 Do Q`;
+    const base = primerObjetoDe(indice);
+    const ancho = Math.round(page.width * PUNTOS_POR_PIXEL);
+    const alto = Math.round(page.height * PUNTOS_POR_PIXEL);
+    const dibujo = `q ${String(ancho)} 0 0 ${String(alto)} 0 0 cm /Im0 Do Q`;
 
-  return [
-    {
-      cuerpo:
-        `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${String(ancho)} ${String(alto)}] ` +
-        `/Resources << /XObject << /Im0 ${String(base + 1)} 0 R >> >> /Contents ${String(base + 2)} 0 R >>`,
-    },
-    {
-      cuerpo:
-        `<< /Type /XObject /Subtype /Image /Width ${String(page.width)} /Height ${String(page.height)} ` +
-        `/ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${String(page.bytes.length)} >>`,
-      flujo: page.bytes,
-    },
-    { cuerpo: `<< /Length ${String(dibujo.length)} >>`, flujo: dibujo },
-  ];
+    return [
+        {
+            cuerpo:
+                `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${String(ancho)} ${String(alto)}] ` +
+                `/Resources << /XObject << /Im0 ${String(base + 1)} 0 R >> >> /Contents ${String(base + 2)} 0 R >>`,
+        },
+        {
+            cuerpo:
+                `<< /Type /XObject /Subtype /Image /Width ${String(page.width)} /Height ${String(page.height)} ` +
+                `/ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${String(page.bytes.length)} >>`,
+            flujo: page.bytes,
+        },
+        { cuerpo: `<< /Length ${String(dibujo.length)} >>`, flujo: dibujo },
+    ];
 }
 
 /**
@@ -97,42 +97,42 @@ function paginaDe(page: PdfImage, indice: number): Objeto[] {
  * limitación, es una invariante.
  */
 function ensamblar(objetos: readonly Objeto[]): Blob {
-  const trozos: (Uint8Array<ArrayBuffer> | string)[] = ['%PDF-1.4\n'];
-  const posiciones: number[] = [];
-  let offset = trozos[0].length;
+    const trozos: (Uint8Array<ArrayBuffer> | string)[] = ['%PDF-1.4\n'];
+    const posiciones: number[] = [];
+    let offset = trozos[0].length;
 
-  const escribir = (trozo: Uint8Array<ArrayBuffer> | string) => {
-    trozos.push(trozo);
-    offset += trozo.length;
-  };
+    const escribir = (trozo: Uint8Array<ArrayBuffer> | string) => {
+        trozos.push(trozo);
+        offset += trozo.length;
+    };
 
-  objetos.forEach((objeto, indice) => {
-    posiciones.push(offset);
-    escribir(`${String(indice + 1)} 0 obj\n${objeto.cuerpo}\n`);
+    objetos.forEach((objeto, indice) => {
+        posiciones.push(offset);
+        escribir(`${String(indice + 1)} 0 obj\n${objeto.cuerpo}\n`);
 
-    if (objeto.flujo !== undefined) {
-      escribir('stream\n');
-      escribir(objeto.flujo);
-      escribir('\nendstream\n');
-    }
+        if (objeto.flujo !== undefined) {
+            escribir('stream\n');
+            escribir(objeto.flujo);
+            escribir('\nendstream\n');
+        }
 
-    escribir('endobj\n');
-  });
+        escribir('endobj\n');
+    });
 
-  const inicioXref = offset;
-  const total = objetos.length + 1;
-  escribir(
-    [
-      `xref\n0 ${String(total)}\n`,
-      '0000000000 65535 f \n',
-      ...posiciones.map((posicion) => `${posicion.toString().padStart(10, '0')} 00000 n \n`),
-      `trailer\n<< /Size ${String(total)} /Root 1 0 R >>\nstartxref\n${String(inicioXref)}\n%%EOF`,
-    ].join(''),
-  );
+    const inicioXref = offset;
+    const total = objetos.length + 1;
+    escribir(
+        [
+            `xref\n0 ${String(total)}\n`,
+            '0000000000 65535 f \n',
+            ...posiciones.map((posicion) => `${posicion.toString().padStart(10, '0')} 00000 n \n`),
+            `trailer\n<< /Size ${String(total)} /Root 1 0 R >>\nstartxref\n${String(inicioXref)}\n%%EOF`,
+        ].join(''),
+    );
 
-  const partes: BlobPart[] = trozos.map((trozo) =>
-    typeof trozo === 'string' ? CODIFICADOR.encode(trozo) : trozo,
-  );
+    const partes: BlobPart[] = trozos.map((trozo) =>
+        typeof trozo === 'string' ? CODIFICADOR.encode(trozo) : trozo,
+    );
 
-  return new Blob(partes, { type: 'application/pdf' });
+    return new Blob(partes, { type: 'application/pdf' });
 }

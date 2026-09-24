@@ -13,24 +13,24 @@ import { cn } from '@/lib/cn';
  * `auto` deja que mande el tema, que es lo que quieres casi siempre.
  */
 export function Logo({
-  variante = 'auto',
-  className,
+    variante = 'auto',
+    className,
 }: {
-  variante?: 'auto' | 'azul' | 'blanco';
-  className?: string;
+    variante?: 'auto' | 'azul' | 'blanco';
+    className?: string;
 }) {
-  const clases = cn('h-10 w-10 select-none', className);
+    const clases = cn('h-10 w-10 select-none', className);
 
-  if (variante !== 'auto') {
-    return <img src={variante === 'azul' ? azul : blanco} alt="Navis" className={clases} />;
-  }
+    if (variante !== 'auto') {
+        return <img src={variante === 'azul' ? azul : blanco} alt="Navis" className={clases} />;
+    }
 
-  // Dos imágenes y una escondida según el tema: un solo <img> con `src`
-  // dinámico parpadearía al cambiar de tema mientras carga la otra.
-  return (
-    <>
-      <img src={azul} alt="Navis" className={cn(clases, 'dark:hidden')} />
-      <img src={blanco} alt="" aria-hidden className={cn(clases, 'hidden dark:block')} />
-    </>
-  );
+    // Dos imágenes y una escondida según el tema: un solo <img> con `src`
+    // dinámico parpadearía al cambiar de tema mientras carga la otra.
+    return (
+        <>
+            <img src={azul} alt="Navis" className={cn(clases, 'dark:hidden')} />
+            <img src={blanco} alt="" aria-hidden className={cn(clases, 'hidden dark:block')} />
+        </>
+    );
 }

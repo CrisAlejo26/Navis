@@ -1,11 +1,11 @@
 import type {
-  ChurchDecision,
-  CreateManagedUserInput,
-  CreateRoleInput,
-  ManagedUser,
-  RoleRow,
-  UpdateManagedUserInput,
-  UpdateRoleInput,
+    ChurchDecision,
+    CreateManagedUserInput,
+    CreateRoleInput,
+    ManagedUser,
+    RoleRow,
+    UpdateManagedUserInput,
+    UpdateRoleInput,
 } from '@navis/shared';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
@@ -20,49 +20,49 @@ import { queryKeys } from './query-keys';
  * escrito una sola vez en `useAccessMutation`.
  */
 function useAccessMutation<TInput, TResult>(mutationFn: (input: TInput) => Promise<TResult>) {
-  const queryClient = useQueryClient();
+    const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn,
-    onSuccess: async () => {
-      await Promise.all([
-        queryClient.invalidateQueries({ queryKey: queryKeys.users.all }),
-        queryClient.invalidateQueries({ queryKey: queryKeys.roles.all }),
-      ]);
-    },
-  });
+    return useMutation({
+        mutationFn,
+        onSuccess: async () => {
+            await Promise.all([
+                queryClient.invalidateQueries({ queryKey: queryKeys.users.all }),
+                queryClient.invalidateQueries({ queryKey: queryKeys.roles.all }),
+            ]);
+        },
+    });
 }
 
 export function useCreateRole(api: ApiClient) {
-  return useAccessMutation((input: CreateRoleInput) => api.post<RoleRow>('/roles', { ...input }));
+    return useAccessMutation((input: CreateRoleInput) => api.post<RoleRow>('/roles', { ...input }));
 }
 
 export function useUpdateRole(api: ApiClient) {
-  return useAccessMutation(({ id, ...input }: UpdateRoleInput & { id: string }) =>
-    api.patch<RoleRow>(`/roles/${id}`, { ...input }),
-  );
+    return useAccessMutation(({ id, ...input }: UpdateRoleInput & { id: string }) =>
+        api.patch<RoleRow>(`/roles/${id}`, { ...input }),
+    );
 }
 
 export function useDeleteRole(api: ApiClient) {
-  return useAccessMutation(({ id }: { id: string }) => api.delete<void>(`/roles/${id}`));
+    return useAccessMutation(({ id }: { id: string }) => api.delete<void>(`/roles/${id}`));
 }
 
 export function useCreateUser(api: ApiClient) {
-  return useAccessMutation((input: CreateManagedUserInput) =>
-    api.post<ManagedUser>('/admin/users', { ...input }),
-  );
+    return useAccessMutation((input: CreateManagedUserInput) =>
+        api.post<ManagedUser>('/admin/users', { ...input }),
+    );
 }
 
 export function useUpdateUser(api: ApiClient) {
-  return useAccessMutation(({ id, ...input }: UpdateManagedUserInput & { id: string }) =>
-    api.patch<ManagedUser>(`/admin/users/${id}`, { ...input }),
-  );
+    return useAccessMutation(({ id, ...input }: UpdateManagedUserInput & { id: string }) =>
+        api.patch<ManagedUser>(`/admin/users/${id}`, { ...input }),
+    );
 }
 
 export function useSetUserPassword(api: ApiClient) {
-  return useAccessMutation(({ id, password }: { id: string; password: string }) =>
-    api.patch<void>(`/admin/users/${id}/password`, { password }),
-  );
+    return useAccessMutation(({ id, password }: { id: string; password: string }) =>
+        api.patch<void>(`/admin/users/${id}/password`, { password }),
+    );
 }
 
 /**
@@ -72,11 +72,14 @@ export function useSetUserPassword(api: ApiClient) {
  * `useSetActiveChurch` por el mismo motivo.
  */
 export function useDeleteUser(api: ApiClient) {
-  const queryClient = useQueryClient();
+    const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: ({ id, churchDecisions }: { id: string; churchDecisions?: ChurchDecision[] }) =>
-      api.delete<void>(`/admin/users/${id}`, churchDecisions ? { churchDecisions } : undefined),
-    onSuccess: () => queryClient.invalidateQueries(),
-  });
+    return useMutation({
+        mutationFn: ({ id, churchDecisions }: { id: string; churchDecisions?: ChurchDecision[] }) =>
+            api.delete<void>(
+                `/admin/users/${id}`,
+                churchDecisions ? { churchDecisions } : undefined,
+            ),
+        onSuccess: () => queryClient.invalidateQueries(),
+    });
 }

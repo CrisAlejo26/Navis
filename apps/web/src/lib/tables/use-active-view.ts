@@ -9,26 +9,26 @@ export const GRID_VIEW = 'grid';
  * en un mensaje, igual que la pestaña de una lista (RFC 0010 §8.3).
  */
 export function useActiveView(views: readonly CustomTableView[]): {
-  activeId: string;
-  active: CustomTableView | undefined;
-  setActiveId: (id: string) => void;
+    activeId: string;
+    active: CustomTableView | undefined;
+    setActiveId: (id: string) => void;
 } {
-  const [params, setParams] = useSearchParams();
-  const requested = params.get('view') ?? GRID_VIEW;
-  const active = views.find((one) => one.id === requested);
-  const activeId = requested === GRID_VIEW || active ? requested : GRID_VIEW;
+    const [params, setParams] = useSearchParams();
+    const requested = params.get('view') ?? GRID_VIEW;
+    const active = views.find((one) => one.id === requested);
+    const activeId = requested === GRID_VIEW || active ? requested : GRID_VIEW;
 
-  const setActiveId = (id: string) => {
-    setParams(
-      (prev) => {
-        const next = new URLSearchParams(prev);
-        if (id === GRID_VIEW) next.delete('view');
-        else next.set('view', id);
-        return next;
-      },
-      { replace: true },
-    );
-  };
+    const setActiveId = (id: string) => {
+        setParams(
+            (prev) => {
+                const next = new URLSearchParams(prev);
+                if (id === GRID_VIEW) next.delete('view');
+                else next.set('view', id);
+                return next;
+            },
+            { replace: true },
+        );
+    };
 
-  return { activeId, active, setActiveId };
+    return { activeId, active, setActiveId };
 }

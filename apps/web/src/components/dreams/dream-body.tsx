@@ -13,25 +13,27 @@ import { cn } from '@/lib/cn';
  * que echar un vistazo.
  */
 export function DreamBody({
-  dream,
-  size = 'normal',
+    dream,
+    size = 'normal',
 }: {
-  dream: Dream;
-  size?: 'normal' | 'lectura';
+    dream: Dream;
+    size?: 'normal' | 'lectura';
 }) {
-  return (
-    <article
-      style={{ animationDelay: '80ms' }}
-      className="p-4 sm:p-6 animate-rise-in rounded-xl border bg-card"
-    >
-      <p
-        className={cn(
-          'max-w-prose whitespace-pre-wrap',
-          size === 'lectura' ? 'text-[17px] leading-[1.75]' : 'leading-relaxed text-[15px]',
-        )}
-      >
-        {dream.body}
-      </p>
-    </article>
-  );
+    return (
+        <article
+            style={{ animationDelay: '80ms' }}
+            className="p-4 sm:p-6 animate-rise-in rounded-xl border bg-card"
+        >
+            <p
+                className={cn(
+                    'max-w-prose whitespace-pre-wrap',
+                    size === 'lectura'
+                        ? 'text-[17px] leading-[1.75]'
+                        : 'leading-relaxed text-[15px]',
+                )}
+            >
+                {dream.body}
+            </p>
+        </article>
+    );
 }

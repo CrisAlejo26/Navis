@@ -1,13 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  Index,
-  JoinColumn,
-  ManyToOne,
-  PrimaryColumn,
-  type Relation,
+    Column,
+    CreateDateColumn,
+    Entity,
+    Index,
+    JoinColumn,
+    ManyToOne,
+    PrimaryColumn,
+    type Relation,
 } from 'typeorm';
 
 import { TIMESTAMP, UUID } from '../database/column-types';
@@ -22,23 +22,23 @@ import type { Message } from './message.entity';
  */
 @Entity('message_reactions')
 export class MessageReaction {
-  @PrimaryColumn({ name: 'message_id', type: UUID })
-  messageId: string;
+    @PrimaryColumn({ name: 'message_id', type: UUID })
+    messageId: string;
 
-  /* Por nombre y con `Relation<>`: ver `list-member.entity.ts`. */
-  @ManyToOne('Message', 'reactions', { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'message_id' })
-  message: Relation<Message>;
+    /* Por nombre y con `Relation<>`: ver `list-member.entity.ts`. */
+    @ManyToOne('Message', 'reactions', { onDelete: 'CASCADE' })
+    @JoinColumn({ name: 'message_id' })
+    message: Relation<Message>;
 
-  @ApiProperty({ description: 'ID del usuario en Better Auth' })
-  @Index()
-  @PrimaryColumn({ name: 'user_id', type: 'text' })
-  userId: string;
+    @ApiProperty({ description: 'ID del usuario en Better Auth' })
+    @Index()
+    @PrimaryColumn({ name: 'user_id', type: 'text' })
+    userId: string;
 
-  @ApiProperty({ example: '👍' })
-  @PrimaryColumn({ type: 'text' })
-  emoji: string;
+    @ApiProperty({ example: '👍' })
+    @PrimaryColumn({ type: 'text' })
+    emoji: string;
 
-  @CreateDateColumn({ name: 'created_at', type: TIMESTAMP })
-  createdAt: Date;
+    @CreateDateColumn({ name: 'created_at', type: TIMESTAMP })
+    createdAt: Date;
 }

@@ -21,10 +21,10 @@ stack (Expo) y galerías de pantallas de apps reales.
   y motion (Regla 3).
 - **Nada de cruces** en iconos ni elementos decorativos (Regla 7).
 - La **sidebar web** (`apps/web/src/lib/nav.ts`) tiene 13 entradas:
-  - **General**: Panel, Profecías, Sueños, Enseñanzas.
-  - **Iglesia**: Calendario, Listas, Tablas, Creyentes, Cuaderno, Tareas,
-    Comunicaciones, Usuarios.
-  - **Sin bloque**: Ajustes.
+    - **General**: Panel, Profecías, Sueños, Enseñanzas.
+    - **Iglesia**: Calendario, Listas, Tablas, Creyentes, Cuaderno, Tareas,
+      Comunicaciones, Usuarios.
+    - **Sin bloque**: Ajustes.
 - La app móvil hoy usa **5 pestañas** (Inicio, Calendario, Creyentes, Más,
   Ajustes) y agrupa profecías/sueños/enseñanzas/comunicaciones en «Más»
   (`apps/mobile/app/(tabs)/_layout.tsx`).
@@ -56,14 +56,14 @@ stack (Expo) y galerías de pantallas de apps reales.
   https://designsignal.ai/articles/neo-brutalist-mobile-app-design
   No llevarlo entero (demasiado agresivo para una herramienta de iglesia), pero
   robar su energía:
-  - **Tipografía grande y segura** (headings 36-52px en móvil).
-  - **Bloques de color planos** con bordes de 2px y paletas restringidas (3-5
-    colores; uno dominante, un acento, negro/azul para borde y texto).
-  - **Botón con offset shadow**: la sombra sólida se desplaza 4-6px en diagonal
-    y colapsa en ~80ms al pulsar, con spring al soltar. Directamente
-    implementable con Reanimated.
-  - Transiciones de página duras (slide horizontal o flash de color) en vez de
-    fundidos.
+    - **Tipografía grande y segura** (headings 36-52px en móvil).
+    - **Bloques de color planos** con bordes de 2px y paletas restringidas (3-5
+      colores; uno dominante, un acento, negro/azul para borde y texto).
+    - **Botón con offset shadow**: la sombra sólida se desplaza 4-6px en diagonal
+      y colapsa en ~80ms al pulsar, con spring al soltar. Directamente
+      implementable con Reanimated.
+    - Transiciones de página duras (slide horizontal o flash de color) en vez de
+      fundidos.
 - **12 Mobile App UI/UX Design Trends 2026 — The Brands Bureau**
   https://thebrandsbureau.com/mobile-app-design-trends-2026/
   Colores bold + vibrantes, microinteracciones, neumorfismo selectivo, glassmorphism.
@@ -168,13 +168,13 @@ principal, contadores animados, y el tile de la iglesia activa usando los tintes
 - **Dead forms, live forms — Ruixen UI** (el mejor recurso)
   https://ruixen.com/blog/dead-forms-live-forms
   Sustituir cada transición CSS por **springs**:
-  - Focus ring que crece con overshoot (ripple).
-  - **Error con shake físico de amplitud decreciente** (`-8, 6, -4, 2, 0`) +
-    sonido tick.
-  - Labels flotantes con momentum (spring stiffness ~300, damping ~25).
-  - Botón de submit con estados: idle → loading (respira con spring) → éxito
-    (checkmark + celebración) → error (shake). Cada transición con un spring
-    distinto (stiff para press, suave para éxito, duro para error).
+    - Focus ring que crece con overshoot (ripple).
+    - **Error con shake físico de amplitud decreciente** (`-8, 6, -4, 2, 0`) +
+      sonido tick.
+    - Labels flotantes con momentum (spring stiffness ~300, damping ~25).
+    - Botón de submit con estados: idle → loading (respira con spring) → éxito
+      (checkmark + celebración) → error (shake). Cada transición con un spring
+      distinto (stiff para press, suave para éxito, duro para error).
 - **Animated Form Inputs with Floating Labels — Animation Patterns**
   https://animationpatterns.art/animations/animated-form-inputs/
   Tres variantes: outlined notch, underline slide (barra que se engrosa en
@@ -184,10 +184,10 @@ principal, contadores animados, y el tile de la iglesia activa usando los tintes
 - **Forms & Input Animation Principles — Animation Principles (skill)**
   https://skillselion.com/skills/dylantarre/animation-principles/forms-inputs
   Tabla de timing lista para usar:
-  - Focus border: 100-150ms · Label float: 150-200ms · Validación: 200ms ·
-    Error shake: 300ms (3-4 ciclos, 4-6px) · Success check: 250ms · Toggle: 150ms.
-  - Easing: focus `ease-out`, validación `ease-in-out`, label
-    `cubic-bezier(0.4, 0, 0.2, 1)`.
+    - Focus border: 100-150ms · Label float: 150-200ms · Validación: 200ms ·
+      Error shake: 300ms (3-4 ciclos, 4-6px) · Success check: 250ms · Toggle: 150ms.
+    - Easing: focus `ease-out`, validación `ease-in-out`, label
+      `cubic-bezier(0.4, 0, 0.2, 1)`.
 - **Ultimate Guide to Microinteractions in Forms — UXPin**
   https://www.uxpin.com/studio/blog/ultimate-guide-to-microinteractions-in-forms/
   Validación en tiempo real reduce errores ~22-30%; feedback en **capas**

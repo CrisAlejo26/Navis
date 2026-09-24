@@ -1,9 +1,9 @@
 import {
-  toSearchName,
-  windowStart,
-  type PropheciesQuery,
-  type ProphecySortField,
-  type ProphecyState,
+    toSearchName,
+    windowStart,
+    type PropheciesQuery,
+    type ProphecySortField,
+    type ProphecyState,
 } from '@navis/shared';
 import type { SelectQueryBuilder } from 'typeorm';
 
@@ -18,41 +18,41 @@ import type { Prophecy } from './prophecy.entity';
  * paginación equivocadas.
  */
 const STATE_SQL: Record<ProphecyState, string> = {
-  espera: 'prophecy.fulfilledAt IS NULL AND prophecy.lastFulfillmentAt IS NULL',
-  camino: 'prophecy.fulfilledAt IS NULL AND prophecy.lastFulfillmentAt IS NOT NULL',
-  cumplida: 'prophecy.fulfilledAt IS NOT NULL',
+    espera: 'prophecy.fulfilledAt IS NULL AND prophecy.lastFulfillmentAt IS NULL',
+    camino: 'prophecy.fulfilledAt IS NULL AND prophecy.lastFulfillmentAt IS NOT NULL',
+    cumplida: 'prophecy.fulfilledAt IS NOT NULL',
 };
 
 /** Por qué columna ordena cada campo. `lastMovement` es «lo último que se movió». */
 const SORT_SQL: Record<ProphecySortField, string> = {
-  received: 'prophecy.receivedAt',
-  fulfilled: 'prophecy.fulfilledAt',
-  title: 'prophecy.title',
-  lastMovement: 'COALESCE(prophecy.last_fulfillment_at, prophecy.received_at)',
+    received: 'prophecy.receivedAt',
+    fulfilled: 'prophecy.fulfilledAt',
+    title: 'prophecy.title',
+    lastMovement: 'COALESCE(prophecy.last_fulfillment_at, prophecy.received_at)',
 };
 
 /** Búsqueda, estados y ventana de tiempo, sobre un constructor ya acotado al dueño. */
 export function applyFilters(
-  builder: SelectQueryBuilder<Prophecy>,
-  query: PropheciesQuery,
-  today: string,
+    builder: SelectQueryBuilder<Prophecy>,
+    query: PropheciesQuery,
+    today: string,
 ): void {
-  if (query.search) {
-    builder.andWhere('prophecy.searchText LIKE :search', {
-      // La misma normalización con la que se guardó, o dejaría de encontrar.
-      search: `%${toSearchName(query.search)}%`,
-    });
-  }
+    if (query.search) {
+        builder.andWhere('prophecy.searchText LIKE :search', {
+            // La misma normalización con la que se guardó, o dejaría de encontrar.
+            search: `%${toSearchName(query.search)}%`,
+        });
+    }
 
-  const states = query.state ?? [];
-  if (states.length > 0) {
-    const clause = states.map((state) => `(${STATE_SQL[state]})`).join(' OR ');
-    builder.andWhere(`(${clause})`);
-  }
+    const states = query.state ?? [];
+    if (states.length > 0) {
+        const clause = states.map((state) => `(${STATE_SQL[state]})`).join(' OR ');
+        builder.andWhere(`(${clause})`);
+    }
 
-  const from = query.from ?? windowStart(query.window ?? 'all', today);
-  if (from) builder.andWhere('prophecy.receivedAt >= :from', { from });
-  if (query.to) builder.andWhere('prophecy.receivedAt <= :to', { to: query.to });
+    const from = query.from ?? windowStart(query.window ?? 'all', today);
+    if (from) builder.andWhere('prophecy.receivedAt >= :from', { from });
+    if (query.to) builder.andWhere('prophecy.receivedAt <= :to', { to: query.to });
 }
 
 /**
@@ -62,12 +62,12 @@ export function applyFilters(
  * páginas seguidas y una de ellas se repetiría mientras otra desaparece.
  */
 export function applyOrder(
-  builder: SelectQueryBuilder<Prophecy>,
-  sort: ProphecySortField,
-  order: 'asc' | 'desc',
+    builder: SelectQueryBuilder<Prophecy>,
+    sort: ProphecySortField,
+    order: 'asc' | 'desc',
 ): void {
-  const direction = order === 'asc' ? 'ASC' : 'DESC';
-  // `NULLS FIRST` no existe en SQLite: la cláusula se pone solo en Postgres.
-  builder.orderBy(SORT_SQL[sort], direction, nullsFor(direction));
-  builder.addOrderBy('prophecy.id', direction);
+    const direction = order === 'asc' ? 'ASC' : 'DESC';
+    // `NULLS FIRST` no existe en SQLite: la cláusula se pone solo en Postgres.
+    builder.orderBy(SORT_SQL[sort], direction, nullsFor(direction));
+    builder.addOrderBy('prophecy.id', direction);
 }

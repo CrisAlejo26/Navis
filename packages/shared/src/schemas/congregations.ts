@@ -9,12 +9,12 @@ import { z } from 'zod';
  * `themeColorsHex`.
  */
 export const CONGREGATION_ACCENTS = [
-  'primary',
-  'accent',
-  'success',
-  'warning',
-  'destructive',
-  'brand',
+    'primary',
+    'accent',
+    'success',
+    'warning',
+    'destructive',
+    'brand',
 ] as const;
 
 export type CongregationAccent = (typeof CONGREGATION_ACCENTS)[number];
@@ -22,7 +22,7 @@ export type CongregationAccent = (typeof CONGREGATION_ACCENTS)[number];
 export const DEFAULT_CONGREGATION_ACCENT: CongregationAccent = 'primary';
 
 export function isCongregationAccent(value: string): value is CongregationAccent {
-  return (CONGREGATION_ACCENTS as readonly string[]).includes(value);
+    return (CONGREGATION_ACCENTS as readonly string[]).includes(value);
 }
 
 /**
@@ -36,38 +36,38 @@ export function isCongregationAccent(value: string): value is CongregationAccent
  * Quien quiera otro lo escribe: cualquier `#rrggbb` vale (`accentSchema`).
  */
 export const ACCENT_PALETTE = [
-  '#2140cf',
-  '#0284c7',
-  '#0891b2',
-  '#0d9488',
-  '#16a34a',
-  '#65a30d',
-  '#ca8a04',
-  '#ea580c',
-  '#dc2626',
-  '#e11d48',
-  '#db2777',
-  '#c026d3',
-  '#9333ea',
-  '#6d28d9',
-  '#4f46e5',
-  '#57534e',
+    '#2140cf',
+    '#0284c7',
+    '#0891b2',
+    '#0d9488',
+    '#16a34a',
+    '#65a30d',
+    '#ca8a04',
+    '#ea580c',
+    '#dc2626',
+    '#e11d48',
+    '#db2777',
+    '#c026d3',
+    '#9333ea',
+    '#6d28d9',
+    '#4f46e5',
+    '#57534e',
 ] as const;
 
 const HEX = /^#[0-9a-fA-F]{6}$/;
 
 /** Un color de sede: uno de los tokens de siempre o un hexadecimal. */
 export function isAccent(value: string): boolean {
-  return isCongregationAccent(value) || HEX.test(value);
+    return isCongregationAccent(value) || HEX.test(value);
 }
 
 /** La misma comprobación para `class-validator`, que solo entiende expresiones. */
 export const ACCENT_PATTERN = new RegExp(`^(${CONGREGATION_ACCENTS.join('|')}|#[0-9a-fA-F]{6})$`);
 
 export const accentSchema = z
-  .string()
-  .trim()
-  .refine(isAccent, 'El color tiene que ser un token o un hexadecimal como #2140cf');
+    .string()
+    .trim()
+    .refine(isAccent, 'El color tiene que ser un token o un hexadecimal como #2140cf');
 
 /**
  * Una **sede**: un lugar de reunión de la iglesia (RFC 0002 §5.1).
@@ -78,31 +78,31 @@ export const accentSchema = z
  * darlo de alta dos veces.
  */
 export const congregationSchema = z.object({
-  id: z.uuid(),
-  churchId: z.uuid(),
-  name: z.string(),
-  city: z.string().nullable(),
-  accent: z.string(),
-  /** El orden en que se listan y se pintan. */
-  position: z.number().int(),
-  /** La que se propone al crear algo. Cada iglesia nace con una. */
-  isDefault: z.boolean(),
-  isActive: z.boolean(),
+    id: z.uuid(),
+    churchId: z.uuid(),
+    name: z.string(),
+    city: z.string().nullable(),
+    accent: z.string(),
+    /** El orden en que se listan y se pintan. */
+    position: z.number().int(),
+    /** La que se propone al crear algo. Cada iglesia nace con una. */
+    isDefault: z.boolean(),
+    isActive: z.boolean(),
 });
 
 export type Congregation = z.infer<typeof congregationSchema>;
 
 /** Dos campos: se crea desde el propio día que se está programando (§8.4). */
 export const createCongregationSchema = z.object({
-  name: z.string().trim().min(2, 'El nombre de la sede es obligatorio').max(80),
-  city: z.string().trim().max(120).optional(),
-  accent: accentSchema.optional(),
+    name: z.string().trim().min(2, 'El nombre de la sede es obligatorio').max(80),
+    city: z.string().trim().max(120).optional(),
+    accent: accentSchema.optional(),
 });
 
 export type CreateCongregationInput = z.infer<typeof createCongregationSchema>;
 
 export const updateCongregationSchema = createCongregationSchema.partial().extend({
-  isActive: z.boolean().optional(),
+    isActive: z.boolean().optional(),
 });
 
 export type UpdateCongregationInput = z.infer<typeof updateCongregationSchema>;

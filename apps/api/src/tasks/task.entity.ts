@@ -23,73 +23,73 @@ import { TaskTag } from './task-tag.entity';
 @Entity('tasks')
 @Index('IDX_tasks_church_owner_date', ['churchId', 'ownerId', 'date'])
 export class Task extends BaseEntity {
-  @ApiProperty()
-  @Index()
-  @Column({ name: 'church_id', type: UUID })
-  churchId: string;
+    @ApiProperty()
+    @Index()
+    @Column({ name: 'church_id', type: UUID })
+    churchId: string;
 
-  @ApiProperty({ description: 'De quién es (D6)' })
-  @Column({ name: 'owner_id', type: 'text' })
-  ownerId: string;
+    @ApiProperty({ description: 'De quién es (D6)' })
+    @Column({ name: 'owner_id', type: 'text' })
+    ownerId: string;
 
-  @ApiProperty()
-  @Column({ type: 'text' })
-  title: string;
+    @ApiProperty()
+    @Column({ type: 'text' })
+    title: string;
 
-  @ApiPropertyOptional()
-  @Column({ type: 'text', nullable: true })
-  description: string | null;
+    @ApiPropertyOptional()
+    @Column({ type: 'text', nullable: true })
+    description: string | null;
 
-  @ApiProperty({ description: 'El día, o el primero si es repetitiva', example: '2026-08-15' })
-  @Column({ type: 'date' })
-  date: string;
+    @ApiProperty({ description: 'El día, o el primero si es repetitiva', example: '2026-08-15' })
+    @Column({ type: 'date' })
+    date: string;
 
-  @ApiPropertyOptional({ description: 'Nulo: todo el día' })
-  @Column({ type: 'time', nullable: true })
-  time: string | null;
+    @ApiPropertyOptional({ description: 'Nulo: todo el día' })
+    @Column({ type: 'time', nullable: true })
+    time: string | null;
 
-  @ApiProperty({ enum: ['baja', 'media', 'alta'] })
-  @Column({ type: 'text', default: 'media' })
-  priority: TaskPriority;
+    @ApiProperty({ enum: ['baja', 'media', 'alta'] })
+    @Column({ type: 'text', default: 'media' })
+    priority: TaskPriority;
 
-  @ApiPropertyOptional({ description: 'Solo si NO es repetitiva (D4)' })
-  @Column({ type: 'text', nullable: true })
-  status: TaskStatus | null;
+    @ApiPropertyOptional({ description: 'Solo si NO es repetitiva (D4)' })
+    @Column({ type: 'text', nullable: true })
+    status: TaskStatus | null;
 
-  @ApiPropertyOptional({ description: 'Solo si NO es repetitiva' })
-  @Column({ name: 'completed_at', type: TIMESTAMP, nullable: true })
-  completedAt: Date | null;
+    @ApiPropertyOptional({ description: 'Solo si NO es repetitiva' })
+    @Column({ name: 'completed_at', type: TIMESTAMP, nullable: true })
+    completedAt: Date | null;
 
-  @ApiProperty()
-  @Column({ name: 'is_recurring', type: 'boolean', default: false })
-  isRecurring: boolean;
+    @ApiProperty()
+    @Column({ name: 'is_recurring', type: 'boolean', default: false })
+    isRecurring: boolean;
 
-  @ApiPropertyOptional({ enum: ['diaria', 'semanal', 'mensual'] })
-  @Column({ name: 'repeat_freq', type: 'text', nullable: true })
-  repeatFreq: TaskRepeatFreq | null;
+    @ApiPropertyOptional({ enum: ['diaria', 'semanal', 'mensual'] })
+    @Column({ name: 'repeat_freq', type: 'text', nullable: true })
+    repeatFreq: TaskRepeatFreq | null;
 
-  @ApiProperty({ description: 'Cada N días/semanas/meses: 2 es «cada 2 días»' })
-  @Column({ name: 'repeat_interval', type: 'int', default: 1 })
-  repeatInterval: number;
+    @ApiProperty({ description: 'Cada N días/semanas/meses: 2 es «cada 2 días»' })
+    @Column({ name: 'repeat_interval', type: 'int', default: 1 })
+    repeatInterval: number;
 
-  @ApiPropertyOptional({ enum: ['nunca', 'fecha', 'cantidad'] })
-  @Column({ name: 'repeat_end_type', type: 'text', nullable: true })
-  repeatEndType: TaskRepeatEndType | null;
+    @ApiPropertyOptional({ enum: ['nunca', 'fecha', 'cantidad'] })
+    @Column({ name: 'repeat_end_type', type: 'text', nullable: true })
+    repeatEndType: TaskRepeatEndType | null;
 
-  @ApiPropertyOptional()
-  @Column({ name: 'repeat_end_date', type: 'date', nullable: true })
-  repeatEndDate: string | null;
+    @ApiPropertyOptional()
+    @Column({ name: 'repeat_end_date', type: 'date', nullable: true })
+    repeatEndDate: string | null;
 
-  @ApiPropertyOptional()
-  @Column({ name: 'repeat_end_count', type: 'int', nullable: true })
-  repeatEndCount: number | null;
+    @ApiPropertyOptional()
+    @Column({ name: 'repeat_end_count', type: 'int', nullable: true })
+    repeatEndCount: number | null;
 
-  @OneToMany(() => TaskTag, (link) => link.task, { cascade: true })
-  tags: TaskTag[];
+    @OneToMany(() => TaskTag, (link) => link.task, { cascade: true })
+    tags: TaskTag[];
 
-  @OneToMany(() => TaskOccurrence, (occurrence) => occurrence.task)
-  occurrences: TaskOccurrence[];
+    @OneToMany(() => TaskOccurrence, (occurrence) => occurrence.task)
+    occurrences: TaskOccurrence[];
 
-  @OneToMany(() => TaskReminder, (reminder) => reminder.task, { cascade: true })
-  reminders: TaskReminder[];
+    @OneToMany(() => TaskReminder, (reminder) => reminder.task, { cascade: true })
+    reminders: TaskReminder[];
 }

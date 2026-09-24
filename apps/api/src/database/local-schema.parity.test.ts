@@ -1,8 +1,8 @@
 import {
-  LOCAL_TABLES,
-  LOCAL_USER_TABLE,
-  type LocalColumnType,
-  type LocalTable,
+    LOCAL_TABLES,
+    LOCAL_USER_TABLE,
+    type LocalColumnType,
+    type LocalTable,
 } from '@navis/shared';
 import { DataSource, type EntityMetadata } from 'typeorm';
 import { beforeAll, describe, expect, it } from 'vitest';
@@ -44,32 +44,32 @@ import { TaskTag } from '../tasks/task-tag.entity';
 
 /** Las entidades que participan en la comparación, más las que sus relaciones exigen registradas. */
 const ENTITIES = [
-  Church,
-  Congregation,
-  Calendar,
-  MeetingPattern,
-  PatternPhase,
-  Meeting,
-  MeetingSlot,
-  Believer,
-  BelieverNote,
-  BelieverTag,
-  Ministry,
-  Gift,
-  BelieverMinistry,
-  BelieverGift,
-  BelieverTagLink,
-  Task,
-  Tag,
-  TaskTag,
-  TaskOccurrence,
-  Prophecy,
-  ProphecyFulfillment,
-  // Objetivos de relación: TypeORM las exige en el registro de entidades para
-  // poder construir los metadatos, aunque no se comparen.
-  NoteAudio,
-  TaskReminder,
-  TaskReminderTag,
+    Church,
+    Congregation,
+    Calendar,
+    MeetingPattern,
+    PatternPhase,
+    Meeting,
+    MeetingSlot,
+    Believer,
+    BelieverNote,
+    BelieverTag,
+    Ministry,
+    Gift,
+    BelieverMinistry,
+    BelieverGift,
+    BelieverTagLink,
+    Task,
+    Tag,
+    TaskTag,
+    TaskOccurrence,
+    Prophecy,
+    ProphecyFulfillment,
+    // Objetivos de relación: TypeORM las exige en el registro de entidades para
+    // poder construir los metadatos, aunque no se comparen.
+    NoteAudio,
+    TaskReminder,
+    TaskReminderTag,
 ];
 
 /**
@@ -79,85 +79,90 @@ const ENTITIES = [
  * `packages/shared/src/local-schema.ts`.
  */
 const TYPE_MAP: Record<string, LocalColumnType> = {
-  text: 'text',
-  varchar: 'text',
-  uuid: 'text',
-  date: 'text',
-  time: 'text',
-  datetime: 'text',
-  timestamptz: 'text',
-  int: 'int',
-  integer: 'int',
-  boolean: 'bool',
-  real: 'real',
-  double: 'real',
-  float: 'real',
+    text: 'text',
+    varchar: 'text',
+    uuid: 'text',
+    date: 'text',
+    time: 'text',
+    datetime: 'text',
+    timestamptz: 'text',
+    int: 'int',
+    integer: 'int',
+    boolean: 'bool',
+    real: 'real',
+    double: 'real',
+    float: 'real',
 };
 
 function localTypeOf(metadata: EntityMetadata, columnName: string): LocalColumnType {
-  const column = metadata.columns.find((one) => one.databaseName === columnName);
-  if (!column)
-    throw new Error(`La entidad ${metadata.tableName} no tiene la columna ${columnName}`);
+    const column = metadata.columns.find((one) => one.databaseName === columnName);
+    if (!column)
+        throw new Error(`La entidad ${metadata.tableName} no tiene la columna ${columnName}`);
 
-  const raw = column.type;
-  const name = typeof raw === 'string' ? raw : (raw as { name: string }).name.toLowerCase();
-  const mapped = TYPE_MAP[name];
-  if (!mapped) throw new Error(`Tipo de TypeORM sin equivalente local: ${name}`);
-  return mapped;
+    const raw = column.type;
+    const name = typeof raw === 'string' ? raw : (raw as { name: string }).name.toLowerCase();
+    const mapped = TYPE_MAP[name];
+    if (!mapped) throw new Error(`Tipo de TypeORM sin equivalente local: ${name}`);
+    return mapped;
 }
 
 let dataSource: DataSource;
 
 beforeAll(async () => {
-  dataSource = new DataSource({
-    type: 'better-sqlite3',
-    database: ':memory:',
-    entities: ENTITIES,
-  });
-  // Los metadatos se construyen al inicializar; con un driver en memoria no
-  // llega a crear fichero ninguno.
-  await dataSource.initialize();
-  await dataSource.destroy();
+    dataSource = new DataSource({
+        type: 'better-sqlite3',
+        database: ':memory:',
+        entities: ENTITIES,
+    });
+    // Los metadatos se construyen al inicializar; con un driver en memoria no
+    // llega a crear fichero ninguno.
+    await dataSource.initialize();
+    await dataSource.destroy();
 });
 
 describe.each(LOCAL_TABLES)('paridad local ↔ TypeORM: $name', (localTable: LocalTable) => {
-  it('existe la entidad que espeja', () => {
-    expect(localTable.mirror).toBeDefined();
-    const metadata = dataSource.entityMetadatas.find((one) => one.tableName === localTable.name);
-    expect(metadata, `No hay entidad para la tabla ${localTable.name}`).toBeDefined();
-  });
+    it('existe la entidad que espeja', () => {
+        expect(localTable.mirror).toBeDefined();
+        const metadata = dataSource.entityMetadatas.find(
+            (one) => one.tableName === localTable.name,
+        );
+        expect(metadata, `No hay entidad para la tabla ${localTable.name}`).toBeDefined();
+    });
 
-  it('tiene las mismas columnas, con el mismo tipo y la misma anulabilidad', () => {
-    const metadata = dataSource.entityMetadatas.find((one) => one.tableName === localTable.name);
-    expect(metadata).toBeDefined();
-    if (!metadata) return;
+    it('tiene las mismas columnas, con el mismo tipo y la misma anulabilidad', () => {
+        const metadata = dataSource.entityMetadatas.find(
+            (one) => one.tableName === localTable.name,
+        );
+        expect(metadata).toBeDefined();
+        if (!metadata) return;
 
-    const entityColumns = metadata.columns.map((one) => one.databaseName).sort();
-    const localColumns = localTable.columns.map((one) => one.name).sort();
-    expect(localColumns).toEqual(entityColumns);
+        const entityColumns = metadata.columns.map((one) => one.databaseName).sort();
+        const localColumns = localTable.columns.map((one) => one.name).sort();
+        expect(localColumns).toEqual(entityColumns);
 
-    for (const column of localTable.columns) {
-      expect(localTypeOf(metadata, column.name), `${localTable.name}.${column.name}: tipo`).toBe(
-        column.type,
-      );
-      expect(
-        metadata.columns.find((one) => one.databaseName === column.name)!.isNullable,
-        `${localTable.name}.${column.name}: anulabilidad`,
-      ).toBe(Boolean(column.nullable));
-    }
-  });
+        for (const column of localTable.columns) {
+            expect(
+                localTypeOf(metadata, column.name),
+                `${localTable.name}.${column.name}: tipo`,
+            ).toBe(column.type);
+            expect(
+                metadata.columns.find((one) => one.databaseName === column.name)!.isNullable,
+                `${localTable.name}.${column.name}: anulabilidad`,
+            ).toBe(Boolean(column.nullable));
+        }
+    });
 });
 
 describe('la cuenta local', () => {
-  it('no espeja ninguna entidad: es propia del móvil', () => {
-    expect(LOCAL_USER_TABLE.mirror).toBeUndefined();
-    expect(LOCAL_USER_TABLE.columns.map((one) => one.name)).toEqual([
-      'id',
-      'name',
-      'email',
-      'password_hash',
-      'created_at',
-      'updated_at',
-    ]);
-  });
+    it('no espeja ninguna entidad: es propia del móvil', () => {
+        expect(LOCAL_USER_TABLE.mirror).toBeUndefined();
+        expect(LOCAL_USER_TABLE.columns.map((one) => one.name)).toEqual([
+            'id',
+            'name',
+            'email',
+            'password_hash',
+            'created_at',
+            'updated_at',
+        ]);
+    });
 });

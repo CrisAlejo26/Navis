@@ -8,8 +8,8 @@ import type { ProphecyWindow } from './schemas/prophecy-queries';
  * merece la pena duplicarla.
  */
 export function windowStart(window: ProphecyWindow, today: string): string | null {
-  if (window === '7d') return addDays(today, -7);
-  if (window === '30d') return addDays(today, -30);
-  if (window === 'year') return `${today.slice(0, 4)}-01-01`;
-  return null;
+    if (window === '7d') return addDays(today, -7);
+    if (window === '30d') return addDays(today, -30);
+    if (window === 'year') return `${today.slice(0, 4)}-01-01`;
+    return null;
 }

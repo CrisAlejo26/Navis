@@ -28,69 +28,69 @@ import { api } from '@/lib/api';
  * y el resto acompañando (D20).
  */
 export function DreamsPage() {
-  const { t } = useTranslation();
-  const { data: stats, isLoading } = useDreamsStats(api);
-  const [creating, setCreating] = useState(false);
-  // El día de quien mira, no el del servidor: es el que marca la franja, y en
-  // el cambio de día los dos pueden discrepar.
-  const today = todayIn(Intl.DateTimeFormat().resolvedOptions().timeZone);
+    const { t } = useTranslation();
+    const { data: stats, isLoading } = useDreamsStats(api);
+    const [creating, setCreating] = useState(false);
+    // El día de quien mira, no el del servidor: es el que marca la franja, y en
+    // el cambio de día los dos pueden discrepar.
+    const today = todayIn(Intl.DateTimeFormat().resolvedOptions().timeZone);
 
-  if (isLoading || !stats) return <PageSkeleton />;
+    if (isLoading || !stats) return <PageSkeleton />;
 
-  return (
-    <section className="gap-6 animate-page-in flex flex-col">
-      <DreamsHeader
-        stats={stats}
-        onAdd={() => {
-          setCreating(true);
-        }}
-      />
+    return (
+        <section className="gap-6 animate-page-in flex flex-col">
+            <DreamsHeader
+                stats={stats}
+                onAdd={() => {
+                    setCreating(true);
+                }}
+            />
 
-      {/* Con cero sueños no se enseñan cuatro tarjetas a cero: se enseña una
+            {/* Con cero sueños no se enseñan cuatro tarjetas a cero: se enseña una
           invitación. Una pantalla vacía invita a hacer algo (Regla 9 §6). */}
-      {stats.total === 0 ? (
-        <EmptyState
-          icon={MoonStar}
-          title={t('dreams.emptyTitle')}
-          action={
-            <Button
-              size="lg"
-              onClick={() => {
-                setCreating(true);
-              }}
-            >
-              {t('dreams.add')}
-            </Button>
-          }
-        >
-          {t('dreams.emptyBody')}
-        </EmptyState>
-      ) : (
-        <>
-          {/* Las cuentas primero: son lo que se viene a mirar. La franja va
+            {stats.total === 0 ? (
+                <EmptyState
+                    icon={MoonStar}
+                    title={t('dreams.emptyTitle')}
+                    action={
+                        <Button
+                            size="lg"
+                            onClick={() => {
+                                setCreating(true);
+                            }}
+                        >
+                            {t('dreams.add')}
+                        </Button>
+                    }
+                >
+                    {t('dreams.emptyBody')}
+                </EmptyState>
+            ) : (
+                <>
+                    {/* Las cuentas primero: son lo que se viene a mirar. La franja va
               debajo, que es donde se mira con calma. */}
-          <StatGrid stats={stats} />
+                    <StatGrid stats={stats} />
 
-          {/* Mitad y mitad: las dos responden a «cuándo sueño», y una más
+                    {/* Mitad y mitad: las dos responden a «cuándo sueño», y una más
               grande que la otra hacía que la pequeña se leyera como una nota al
               pie. Al ir en la misma fila salen además con el mismo alto. */}
-          <div className="gap-4 lg:grid-cols-2 grid">
-            <NightsStrip nights={stats.nights} weeks={stats.weeks} today={today} />
-            <WeekdayPanel days={stats.byWeekday} />
-          </div>
+                    <div className="gap-4 lg:grid-cols-2 grid">
+                        <NightsStrip nights={stats.nights} weeks={stats.weeks} today={today} />
+                        <WeekdayPanel days={stats.byWeekday} />
+                    </div>
 
-          <EmotionsMap emotions={stats.byEmotion} />
-        </>
-      )}
+                    <EmotionsMap emotions={stats.byEmotion} />
+                </>
+            )}
 
-      {creating && (
-        <DreamForm
-          open
-          onClose={() => {
-            setCreating(false);
-          }}
-        />
-      )}
-    </section>
-  );
+            {creating && (
+                <DreamForm
+                    open
+                    onClose={() => {
+                        setCreating(false);
+                    }}
+                />
+            )}
+        </section>
+    );
 }

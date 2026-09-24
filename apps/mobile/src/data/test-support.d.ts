@@ -7,23 +7,23 @@ import type { LocalDb } from './db';
  * `any` y el lint de tipos se queja.
  */
 export type LocalDbTestAdapter = Pick<
-  LocalDb,
-  'execAsync' | 'runAsync' | 'getFirstAsync' | 'getAllAsync' | 'withTransactionAsync'
+    LocalDb,
+    'execAsync' | 'runAsync' | 'getFirstAsync' | 'getAllAsync' | 'withTransactionAsync'
 >;
 
 export interface TestLocalDb {
-  adapter: LocalDbTestAdapter;
-  memory: {
-    exec(sql: string): void;
-    prepare(sql: string): { run(...params: unknown[]): unknown };
+    adapter: LocalDbTestAdapter;
+    memory: {
+        exec(sql: string): void;
+        prepare(sql: string): { run(...params: unknown[]): unknown };
+        close(): void;
+    };
+    clear(): Promise<void>;
     close(): void;
-  };
-  clear(): Promise<void>;
-  close(): void;
 }
 
 export function setupLocalDb(options: {
-  setDbForTests(fake: LocalDb | null): void;
-  /** El `openDatabaseAsync` simulado por `jest.mock` — su tipo real no se ve desde tsc. */
-  openDatabaseMock: unknown;
+    setDbForTests(fake: LocalDb | null): void;
+    /** El `openDatabaseAsync` simulado por `jest.mock` — su tipo real no se ve desde tsc. */
+    openDatabaseMock: unknown;
 }): Promise<TestLocalDb>;

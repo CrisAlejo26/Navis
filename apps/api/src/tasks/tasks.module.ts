@@ -36,40 +36,40 @@ import { TasksService } from './tasks.service';
  * no el del servidor.
  */
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([
-      Tag,
-      Task,
-      TaskTag,
-      TaskOccurrence,
-      TaskReminder,
-      TaskReminderTag,
-      TaskStreakCache,
-      Habit,
-      HabitTag,
-      HabitOccurrence,
-      HabitReminder,
-      HabitReminderTag,
-    ]),
-    ChurchesModule,
-  ],
-  controllers: [TagsController, TasksController, HabitsController],
-  providers: [
-    TagsService,
-    TasksService,
-    TasksExpansionService,
-    TasksListService,
-    TasksOccurrenceService,
-    TasksStreakService,
-    TasksStatsService,
-    HabitsService,
-    HabitsExpansionService,
-    HabitsListService,
-    HabitsOccurrenceService,
-    HabitsStatsService,
-  ],
-  // La tarjeta de tareas de hoy del panel de inicio (RFC 0018 §9.7) reutiliza
-  // la expansión y la racha en vez de duplicarlas.
-  exports: [TasksExpansionService, TasksStreakService],
+    imports: [
+        TypeOrmModule.forFeature([
+            Tag,
+            Task,
+            TaskTag,
+            TaskOccurrence,
+            TaskReminder,
+            TaskReminderTag,
+            TaskStreakCache,
+            Habit,
+            HabitTag,
+            HabitOccurrence,
+            HabitReminder,
+            HabitReminderTag,
+        ]),
+        ChurchesModule,
+    ],
+    controllers: [TagsController, TasksController, HabitsController],
+    providers: [
+        TagsService,
+        TasksService,
+        TasksExpansionService,
+        TasksListService,
+        TasksOccurrenceService,
+        TasksStreakService,
+        TasksStatsService,
+        HabitsService,
+        HabitsExpansionService,
+        HabitsListService,
+        HabitsOccurrenceService,
+        HabitsStatsService,
+    ],
+    // La tarjeta de tareas de hoy del panel de inicio (RFC 0018 §9.7) reutiliza
+    // la expansión y la racha en vez de duplicarlas.
+    exports: [TasksExpansionService, TasksStreakService],
 })
 export class TasksModule {}

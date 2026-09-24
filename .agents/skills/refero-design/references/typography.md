@@ -28,20 +28,20 @@ Before customizing anything, this works:
 
 ```css
 :root {
-  --font-family: 'Inter', system-ui, sans-serif;
-  --text-base: 16px;
-  --line-height: 1.55;
-  --scale: 1.2;
+    --font-family: 'Inter', system-ui, sans-serif;
+    --text-base: 16px;
+    --line-height: 1.55;
+    --scale: 1.2;
 
-  --font-weight-normal: 400;
-  --font-weight-medium: 500;
-  --font-weight-semibold: 600;
+    --font-weight-normal: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
 
-  --max-width: 65ch;
+    --max-width: 65ch;
 
-  --text-primary: #111;
-  --text-secondary: rgba(0, 0, 0, 0.7);
-  --text-tertiary: rgba(0, 0, 0, 0.5);
+    --text-primary: #111;
+    --text-secondary: rgba(0, 0, 0, 0.7);
+    --text-tertiary: rgba(0, 0, 0, 0.5);
 }
 ```
 
@@ -85,16 +85,16 @@ A consistent scale creates visual rhythm. Pick a ratio, stick to it.
 
 ```css
 :root {
-  --text-xs: 0.6875rem; /* 11px */
-  --text-sm: 0.8125rem; /* 13px */
-  --text-base: 1rem; /* 16px */
-  --text-lg: 1.1875rem; /* 19px */
-  --text-xl: 1.4375rem; /* 23px */
-  --text-2xl: 1.75rem; /* 28px */
-  --text-3xl: 2.0625rem; /* 33px */
-  --text-4xl: 2.5rem; /* 40px */
-  --text-5xl: 3rem; /* 48px */
-  --text-6xl: 3.5625rem; /* 57px */
+    --text-xs: 0.6875rem; /* 11px */
+    --text-sm: 0.8125rem; /* 13px */
+    --text-base: 1rem; /* 16px */
+    --text-lg: 1.1875rem; /* 19px */
+    --text-xl: 1.4375rem; /* 23px */
+    --text-2xl: 1.75rem; /* 28px */
+    --text-3xl: 2.0625rem; /* 33px */
+    --text-4xl: 2.5rem; /* 40px */
+    --text-5xl: 3rem; /* 48px */
+    --text-6xl: 3.5625rem; /* 57px */
 }
 ```
 
@@ -155,10 +155,10 @@ Typography in a vacuum doesn't exist. Most "bad" interfaces look bad because of 
 
 ```css
 :root {
-  --text-primary: #0b0b0b; /* 100% — headlines, body */
-  --text-secondary: rgba(0, 0, 0, 0.65); /* 65% — descriptions */
-  --text-tertiary: rgba(0, 0, 0, 0.45); /* 45% — metadata, captions */
-  --text-disabled: rgba(0, 0, 0, 0.3); /* 30% — disabled states (rare) */
+    --text-primary: #0b0b0b; /* 100% — headlines, body */
+    --text-secondary: rgba(0, 0, 0, 0.65); /* 65% — descriptions */
+    --text-tertiary: rgba(0, 0, 0, 0.45); /* 45% — metadata, captions */
+    --text-disabled: rgba(0, 0, 0, 0.3); /* 30% — disabled states (rare) */
 }
 ```
 
@@ -179,9 +179,9 @@ This almost always destroys readability. If it doesn't pass squint test, it's to
 
 ```css
 [data-theme='dark'] {
-  --text-primary: #f5f5f5;
-  --text-secondary: rgba(255, 255, 255, 0.7);
-  --text-tertiary: rgba(255, 255, 255, 0.5);
+    --text-primary: #f5f5f5;
+    --text-secondary: rgba(255, 255, 255, 0.7);
+    --text-tertiary: rgba(255, 255, 255, 0.5);
 }
 ```
 
@@ -241,12 +241,12 @@ Line height (leading) affects readability more than any other property.
 
 ```css
 :root {
-  --leading-none: 1;
-  --leading-tight: 1.15;
-  --leading-snug: 1.3;
-  --leading-normal: 1.5;
-  --leading-relaxed: 1.7;
-  --leading-loose: 2;
+    --leading-none: 1;
+    --leading-tight: 1.15;
+    --leading-snug: 1.3;
+    --leading-normal: 1.5;
+    --leading-relaxed: 1.7;
+    --leading-loose: 2;
 }
 ```
 
@@ -281,10 +281,10 @@ Spacing scale: 12 / 24 / 48
 
 ```css
 :root {
-  --space-xs: 12px; /* 0.5 × line-height */
-  --space-sm: 24px; /* 1 × line-height */
-  --space-md: 48px; /* 2 × line-height */
-  --space-lg: 72px; /* 3 × line-height */
+    --space-xs: 12px; /* 0.5 × line-height */
+    --space-sm: 24px; /* 1 × line-height */
+    --space-md: 48px; /* 2 × line-height */
+    --space-lg: 72px; /* 3 × line-height */
 }
 ```
 
@@ -330,12 +330,12 @@ Professional typography isn't just about choosing fonts—it's about the space B
 
 ```css
 :root {
-  --tracking-tighter: -0.02em;
-  --tracking-tight: -0.01em;
-  --tracking-normal: 0em;
-  --tracking-wide: 0.015em;
-  --tracking-wider: 0.02em;
-  --tracking-widest: 0.08em; /* caps */
+    --tracking-tighter: -0.02em;
+    --tracking-tight: -0.01em;
+    --tracking-normal: 0em;
+    --tracking-wide: 0.015em;
+    --tracking-wider: 0.02em;
+    --tracking-widest: 0.08em; /* caps */
 }
 ```
 
@@ -346,13 +346,13 @@ Uppercase text usually benefits from positive letter-spacing. Default behavior f
 ```css
 /* ❌ WRONG — cramped, amateur, unfinished */
 .badge {
-  text-transform: uppercase;
+    text-transform: uppercase;
 }
 
 /* ✅ RIGHT — polished, professional */
 .badge {
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
 }
 ```
 
@@ -363,13 +363,13 @@ Text below 14px needs extra tracking for readability:
 ```css
 /* ❌ WRONG — hard to read */
 .caption {
-  font-size: 12px;
+    font-size: 12px;
 }
 
 /* ✅ RIGHT — improved readability */
 .caption {
-  font-size: 12px;
-  letter-spacing: 0.015em;
+    font-size: 12px;
+    letter-spacing: 0.015em;
 }
 ```
 
@@ -411,12 +411,12 @@ Optimal reading width prevents eye fatigue.
 ```css
 /* Article content */
 .prose {
-  max-width: 65ch; /* ~65 characters */
+    max-width: 65ch; /* ~65 characters */
 }
 
 /* Compact UI */
 .card-description {
-  max-width: 45ch;
+    max-width: 45ch;
 }
 ```
 
@@ -447,7 +447,7 @@ When displaying numbers that need to align (tables, prices, stats):
 .price,
 .table-cell-number,
 .stats-value {
-  font-variant-numeric: tabular-nums;
+    font-variant-numeric: tabular-nums;
 }
 ```
 
@@ -464,12 +464,12 @@ h2,
 h3,
 .hero-title,
 .card-title {
-  text-wrap: balance; /* Balance short headings/display text */
+    text-wrap: balance; /* Balance short headings/display text */
 }
 
 .lead,
 .prose p {
-  text-wrap: pretty; /* Improve prose wrapping selectively */
+    text-wrap: pretty; /* Improve prose wrapping selectively */
 }
 ```
 
@@ -489,23 +489,23 @@ Text containers must handle long content:
 ```css
 /* Truncate single line */
 .truncate {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 /* Clamp to N lines */
 .line-clamp-2 {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
 /* Break long words (URLs, emails) */
 .break-words {
-  overflow-wrap: break-word;
-  word-break: break-word;
+    overflow-wrap: break-word;
+    word-break: break-word;
 }
 ```
 
@@ -514,13 +514,13 @@ Text containers must handle long content:
 ```css
 /* ❌ Text won't truncate */
 .flex-child {
-  flex: 1;
+    flex: 1;
 }
 
 /* ✅ Text truncates properly */
 .flex-child {
-  flex: 1;
-  min-width: 0;
+    flex: 1;
+    min-width: 0;
 }
 ```
 
@@ -534,11 +534,11 @@ Font size should respond to viewport, but not linearly.
 
 ```css
 :root {
-  /* Min 16px, preferred 2vw, max 20px */
-  --text-base: clamp(1rem, 1.5vw + 0.5rem, 1.25rem);
+    /* Min 16px, preferred 2vw, max 20px */
+    --text-base: clamp(1rem, 1.5vw + 0.5rem, 1.25rem);
 
-  /* Min 32px, scales with viewport, max 56px */
-  --text-hero: clamp(2rem, 5vw + 1rem, 3.5rem);
+    /* Min 32px, scales with viewport, max 56px */
+    --text-hero: clamp(2rem, 5vw + 1rem, 3.5rem);
 }
 ```
 
@@ -546,20 +546,20 @@ Font size should respond to viewport, but not linearly.
 
 ```css
 :root {
-  --text-base: 16px;
-  --text-h1: 36px;
+    --text-base: 16px;
+    --text-h1: 36px;
 }
 
 @media (min-width: 768px) {
-  :root {
-    --text-h1: 48px;
-  }
+    :root {
+        --text-h1: 48px;
+    }
 }
 
 @media (min-width: 1200px) {
-  :root {
-    --text-h1: 56px;
-  }
+    :root {
+        --text-h1: 56px;
+    }
 }
 ```
 
@@ -584,9 +584,9 @@ Beautiful typography on a slow page is bad typography.
 ```css
 /* Always use font-display: swap */
 @font-face {
-  font-family: 'Inter';
-  font-display: swap;
-  src: url('/fonts/inter.woff2') format('woff2');
+    font-family: 'Inter';
+    font-display: swap;
+    src: url('/fonts/inter.woff2') format('woff2');
 }
 ```
 
@@ -601,13 +601,13 @@ Beautiful typography on a slow page is bad typography.
 
 ```css
 font-family:
-  system-ui,
-  -apple-system,
-  BlinkMacSystemFont,
-  'Segoe UI',
-  Roboto,
-  'Helvetica Neue',
-  sans-serif;
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    'Helvetica Neue',
+    sans-serif;
 ```
 
 This loads instantly, looks native, and is perfectly professional.
@@ -704,49 +704,49 @@ Reference implementation with all tokens:
 
 ```css
 :root {
-  /* Font Families */
-  --font-body: 'Inter', system-ui, sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
+    /* Font Families */
+    --font-body: 'Inter', system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
 
-  /* Font Sizes (Minor Third scale) */
-  --text-xs: 0.6875rem; /* 11px */
-  --text-sm: 0.8125rem; /* 13px */
-  --text-base: 1rem; /* 16px */
-  --text-lg: 1.1875rem; /* 19px */
-  --text-xl: 1.4375rem; /* 23px */
-  --text-2xl: 1.75rem; /* 28px */
-  --text-3xl: 2.0625rem; /* 33px */
-  --text-4xl: 2.5rem; /* 40px */
+    /* Font Sizes (Minor Third scale) */
+    --text-xs: 0.6875rem; /* 11px */
+    --text-sm: 0.8125rem; /* 13px */
+    --text-base: 1rem; /* 16px */
+    --text-lg: 1.1875rem; /* 19px */
+    --text-xl: 1.4375rem; /* 23px */
+    --text-2xl: 1.75rem; /* 28px */
+    --text-3xl: 2.0625rem; /* 33px */
+    --text-4xl: 2.5rem; /* 40px */
 
-  /* Font Weights */
-  --font-normal: 400;
-  --font-medium: 500;
-  --font-semibold: 600;
+    /* Font Weights */
+    --font-normal: 400;
+    --font-medium: 500;
+    --font-semibold: 600;
 
-  /* Line Heights */
-  --leading-none: 1;
-  --leading-tight: 1.15;
-  --leading-snug: 1.3;
-  --leading-normal: 1.55;
-  --leading-relaxed: 1.7;
+    /* Line Heights */
+    --leading-none: 1;
+    --leading-tight: 1.15;
+    --leading-snug: 1.3;
+    --leading-normal: 1.55;
+    --leading-relaxed: 1.7;
 
-  /* Letter Spacing */
-  --tracking-tight: -0.01em;
-  --tracking-normal: 0em;
-  --tracking-wide: 0.015em;
-  --tracking-caps: 0.08em;
+    /* Letter Spacing */
+    --tracking-tight: -0.01em;
+    --tracking-normal: 0em;
+    --tracking-wide: 0.015em;
+    --tracking-caps: 0.08em;
 
-  /* Text Colors */
-  --text-primary: #0b0b0b;
-  --text-secondary: rgba(0, 0, 0, 0.65);
-  --text-tertiary: rgba(0, 0, 0, 0.45);
-  --text-disabled: rgba(0, 0, 0, 0.3);
+    /* Text Colors */
+    --text-primary: #0b0b0b;
+    --text-secondary: rgba(0, 0, 0, 0.65);
+    --text-tertiary: rgba(0, 0, 0, 0.45);
+    --text-disabled: rgba(0, 0, 0, 0.3);
 
-  /* Spacing (based on 24px line-height) */
-  --space-xs: 12px;
-  --space-sm: 24px;
-  --space-md: 48px;
-  --space-lg: 72px;
+    /* Spacing (based on 24px line-height) */
+    --space-xs: 12px;
+    --space-sm: 24px;
+    --space-md: 48px;
+    --space-lg: 72px;
 }
 ```
 

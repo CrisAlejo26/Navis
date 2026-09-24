@@ -11,11 +11,11 @@ import { paginationQuerySchema } from './common';
  * accesos.
  */
 export const roleSlugSchema = z
-  .string()
-  .trim()
-  .min(2)
-  .max(40)
-  .regex(/^[a-z0-9-]+$/, 'El identificador solo admite minúsculas, números y guiones');
+    .string()
+    .trim()
+    .min(2)
+    .max(40)
+    .regex(/^[a-z0-9-]+$/, 'El identificador solo admite minúsculas, números y guiones');
 
 /**
  * Fila del catálogo de roles (tabla `roles`, gestionada por TypeORM).
@@ -26,23 +26,23 @@ export const roleSlugSchema = z
  * traducción que valga para un nombre que se inventa quien lo crea.
  */
 export const roleSchema = z.object({
-  id: z.uuid(),
-  slug: roleSlugSchema,
-  /** Nombre propio. `null` en los de serie, que se traducen. */
-  name: z.string().nullable(),
-  description: z.string().nullable(),
-  /** Posición en la jerarquía: a mayor número, más privilegios. */
-  level: z.number().int(),
-  /**
-   * Qué puede hacer, vista por vista. `['*']` es el comodín del
-   * superadministrador. Puede traer permisos de una versión anterior: los que
-   * ya no existen en el catálogo no conceden nada (ver `hasPermission`).
-   */
-  permissions: z.array(z.string()),
-  /** Los roles de serie no se pueden borrar ni cambiar de nivel. */
-  isSystem: z.boolean(),
-  /** Cuántas cuentas lo tienen ahora mismo. */
-  usersCount: z.number().int(),
+    id: z.uuid(),
+    slug: roleSlugSchema,
+    /** Nombre propio. `null` en los de serie, que se traducen. */
+    name: z.string().nullable(),
+    description: z.string().nullable(),
+    /** Posición en la jerarquía: a mayor número, más privilegios. */
+    level: z.number().int(),
+    /**
+     * Qué puede hacer, vista por vista. `['*']` es el comodín del
+     * superadministrador. Puede traer permisos de una versión anterior: los que
+     * ya no existen en el catálogo no conceden nada (ver `hasPermission`).
+     */
+    permissions: z.array(z.string()),
+    /** Los roles de serie no se pueden borrar ni cambiar de nivel. */
+    isSystem: z.boolean(),
+    /** Cuántas cuentas lo tienen ahora mismo. */
+    usersCount: z.number().int(),
 });
 
 export type RoleRow = z.infer<typeof roleSchema>;
@@ -57,10 +57,10 @@ export const rolePermissionsSchema = z.array(z.enum(PERMISSIONS));
 
 /** Alta de un rol propio. El slug lo deriva el servidor a partir del nombre. */
 export const createRoleSchema = z.object({
-  name: z.string().trim().min(2, 'El nombre es obligatorio').max(60),
-  description: z.string().trim().max(200).optional(),
-  level: z.coerce.number().int().min(0).max(MAX_CUSTOM_ROLE_LEVEL),
-  permissions: rolePermissionsSchema.default([]),
+    name: z.string().trim().min(2, 'El nombre es obligatorio').max(60),
+    description: z.string().trim().max(200).optional(),
+    level: z.coerce.number().int().min(0).max(MAX_CUSTOM_ROLE_LEVEL),
+    permissions: rolePermissionsSchema.default([]),
 });
 
 export type CreateRoleInput = z.infer<typeof createRoleSchema>;
@@ -70,11 +70,11 @@ export type CreateRoleInput = z.infer<typeof createRoleSchema>;
  * el nivel, que descolocaría la jerarquía; la descripción y los permisos sí.
  */
 export const updateRoleSchema = z.object({
-  name: z.string().trim().min(2).max(60).optional(),
-  description: z.string().trim().max(200).nullable().optional(),
-  level: z.coerce.number().int().min(0).max(MAX_CUSTOM_ROLE_LEVEL).optional(),
-  /** Los permisos sí se cambian en los de serie: es para lo que está la pantalla. */
-  permissions: rolePermissionsSchema.optional(),
+    name: z.string().trim().min(2).max(60).optional(),
+    description: z.string().trim().max(200).nullable().optional(),
+    level: z.coerce.number().int().min(0).max(MAX_CUSTOM_ROLE_LEVEL).optional(),
+    /** Los permisos sí se cambian en los de serie: es para lo que está la pantalla. */
+    permissions: rolePermissionsSchema.optional(),
 });
 
 export type UpdateRoleInput = z.infer<typeof updateRoleSchema>;
@@ -85,20 +85,20 @@ export type UpdateRoleInput = z.infer<typeof updateRoleSchema>;
  * catálogo entero solo para saber lo suyo.
  */
 export const myRoleSchema = z.object({
-  slug: roleSlugSchema,
-  permissions: z.array(z.string()),
+    slug: roleSlugSchema,
+    permissions: z.array(z.string()),
 });
 
 export type MyRole = z.infer<typeof myRoleSchema>;
 
 /** Usuario tal y como lo ve la pantalla de administración de accesos. */
 export const managedUserSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  email: z.string(),
-  role: roleSlugSchema,
-  emailVerified: z.boolean(),
-  createdAt: z.coerce.date(),
+    id: z.string(),
+    name: z.string(),
+    email: z.string(),
+    role: roleSlugSchema,
+    emailVerified: z.boolean(),
+    createdAt: z.coerce.date(),
 });
 
 export type ManagedUser = z.infer<typeof managedUserSchema>;
@@ -109,19 +109,19 @@ export type UpdateUserRoleInput = z.infer<typeof updateUserRoleSchema>;
 
 /** Alta de una cuenta hecha por un administrador, con su rol desde el minuto uno. */
 export const createManagedUserSchema = z.object({
-  name: z.string().trim().min(2, 'El nombre es obligatorio').max(120),
-  email: emailSchema,
-  password: passwordSchema,
-  role: roleSlugSchema,
+    name: z.string().trim().min(2, 'El nombre es obligatorio').max(120),
+    email: emailSchema,
+    password: passwordSchema,
+    role: roleSlugSchema,
 });
 
 export type CreateManagedUserInput = z.infer<typeof createManagedUserSchema>;
 
 /** Edición completa de una cuenta desde la administración de accesos. */
 export const updateManagedUserSchema = z.object({
-  name: z.string().trim().min(2).max(120).optional(),
-  email: emailSchema.optional(),
-  role: roleSlugSchema.optional(),
+    name: z.string().trim().min(2).max(120).optional(),
+    email: emailSchema.optional(),
+    role: roleSlugSchema.optional(),
 });
 
 export type UpdateManagedUserInput = z.infer<typeof updateManagedUserSchema>;
@@ -137,9 +137,9 @@ export type SetUserPasswordInput = z.infer<typeof setUserPasswordSchema>;
  * exige entonces y lo rechaza si viene con `'delete'`.
  */
 export const churchDecisionSchema = z.object({
-  churchId: z.uuid(),
-  action: z.enum(['delete', 'transfer']),
-  targetChurchId: z.uuid().optional(),
+    churchId: z.uuid(),
+    action: z.enum(['delete', 'transfer']),
+    targetChurchId: z.uuid().optional(),
 });
 
 export type ChurchDecision = z.infer<typeof churchDecisionSchema>;
@@ -150,7 +150,7 @@ export type ChurchDecision = z.infer<typeof churchDecisionSchema>;
  * responde 409 (`OwnedChurchImpact[]` en `data`) en vez de borrar nada.
  */
 export const removeUserSchema = z.object({
-  churchDecisions: z.array(churchDecisionSchema).optional(),
+    churchDecisions: z.array(churchDecisionSchema).optional(),
 });
 
 export type RemoveUserInput = z.infer<typeof removeUserSchema>;
@@ -166,16 +166,16 @@ export type UserSortField = (typeof USER_SORT_FIELDS)[number];
 
 /** Filtros del listado de usuarios; se serializan tal cual en la query. */
 export const managedUsersQuerySchema = paginationQuerySchema.extend({
-  /** Busca a la vez en el nombre y en el correo. */
-  search: z.string().trim().max(120).optional(),
-  role: roleSlugSchema.optional(),
-  /**
-   * Deja solo las cuentas de esas iglesias. Vacío o ausente, todas las
-   * accesibles: el alcance de quien pregunta ya acota por sí solo.
-   */
-  churchIds: z.array(z.uuid()).optional(),
-  sort: z.enum(USER_SORT_FIELDS).default('createdAt'),
-  order: sortOrderSchema.default('desc'),
+    /** Busca a la vez en el nombre y en el correo. */
+    search: z.string().trim().max(120).optional(),
+    role: roleSlugSchema.optional(),
+    /**
+     * Deja solo las cuentas de esas iglesias. Vacío o ausente, todas las
+     * accesibles: el alcance de quien pregunta ya acota por sí solo.
+     */
+    churchIds: z.array(z.uuid()).optional(),
+    sort: z.enum(USER_SORT_FIELDS).default('createdAt'),
+    order: sortOrderSchema.default('desc'),
 });
 
 export type ManagedUsersQuery = z.infer<typeof managedUsersQuerySchema>;
@@ -185,9 +185,9 @@ export const ROLE_SORT_FIELDS = ['slug', 'level', 'usersCount'] as const;
 export type RoleSortField = (typeof ROLE_SORT_FIELDS)[number];
 
 export const rolesQuerySchema = paginationQuerySchema.extend({
-  search: z.string().trim().max(120).optional(),
-  sort: z.enum(ROLE_SORT_FIELDS).default('level'),
-  order: sortOrderSchema.default('asc'),
+    search: z.string().trim().max(120).optional(),
+    sort: z.enum(ROLE_SORT_FIELDS).default('level'),
+    order: sortOrderSchema.default('asc'),
 });
 
 export type RolesQuery = z.infer<typeof rolesQuerySchema>;

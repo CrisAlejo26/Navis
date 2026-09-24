@@ -6,19 +6,19 @@ import { BottomSheet } from '@/components/ui/bottom-sheet';
 import { Button } from '@/components/ui/button';
 
 interface FilterSheetProps {
-  visible: boolean;
-  onClose: () => void;
-  title: string;
-  onApply: () => void;
-  /**
-   * Con `onClear`, el pie ofrece «Quitar los filtros (n)» mientras haya
-   * activos — el «Clear all» de Shopify «Manage filters» — y la cancelación
-   * queda en la X o en el fondo, que cierran sin aplicar. Sin `onClear`,
-   * el pie es el de siempre: Cancelar/Aplicar.
-   */
-  activeCount?: number;
-  onClear?: () => void;
-  children: ReactNode;
+    visible: boolean;
+    onClose: () => void;
+    title: string;
+    onApply: () => void;
+    /**
+     * Con `onClear`, el pie ofrece «Quitar los filtros (n)» mientras haya
+     * activos — el «Clear all» de Shopify «Manage filters» — y la cancelación
+     * queda en la X o en el fondo, que cierran sin aplicar. Sin `onClear`,
+     * el pie es el de siempre: Cancelar/Aplicar.
+     */
+    activeCount?: number;
+    onClear?: () => void;
+    children: ReactNode;
 }
 
 /**
@@ -30,52 +30,52 @@ interface FilterSheetProps {
  * lista de filtros fija.
  */
 export function FilterSheet({
-  visible,
-  onClose,
-  title,
-  onApply,
-  activeCount,
-  onClear,
-  children,
+    visible,
+    onClose,
+    title,
+    onApply,
+    activeCount,
+    onClear,
+    children,
 }: FilterSheetProps) {
-  const { t } = useTranslation();
-  const { height } = useWindowDimensions();
-  const hasActive = Boolean(onClear) && (activeCount ?? 0) > 0;
+    const { t } = useTranslation();
+    const { height } = useWindowDimensions();
+    const hasActive = Boolean(onClear) && (activeCount ?? 0) > 0;
 
-  return (
-    <BottomSheet visible={visible} onClose={onClose} title={title}>
-      <ScrollView
-        style={{ maxHeight: height * 0.55 }}
-        contentContainerClassName="gap-4"
-        showsVerticalScrollIndicator={false}
-      >
-        {children}
-      </ScrollView>
-      <View className="gap-3 pt-2 flex-row">
-        {hasActive ? (
-          <Button
-            title={t('common.clearFilters', { total: activeCount })}
-            variant="outline"
-            className="flex-1"
-            onPress={onClear}
-          />
-        ) : (
-          <Button
-            title={t('common.cancel')}
-            variant="outline"
-            className="flex-1"
-            onPress={onClose}
-          />
-        )}
-        <Button
-          title={t('common.apply')}
-          className="flex-1"
-          onPress={() => {
-            onApply();
-            onClose();
-          }}
-        />
-      </View>
-    </BottomSheet>
-  );
+    return (
+        <BottomSheet visible={visible} onClose={onClose} title={title}>
+            <ScrollView
+                style={{ maxHeight: height * 0.55 }}
+                contentContainerClassName="gap-4"
+                showsVerticalScrollIndicator={false}
+            >
+                {children}
+            </ScrollView>
+            <View className="gap-3 pt-2 flex-row">
+                {hasActive ? (
+                    <Button
+                        title={t('common.clearFilters', { total: activeCount })}
+                        variant="outline"
+                        className="flex-1"
+                        onPress={onClear}
+                    />
+                ) : (
+                    <Button
+                        title={t('common.cancel')}
+                        variant="outline"
+                        className="flex-1"
+                        onPress={onClose}
+                    />
+                )}
+                <Button
+                    title={t('common.apply')}
+                    className="flex-1"
+                    onPress={() => {
+                        onApply();
+                        onClose();
+                    }}
+                />
+            </View>
+        </BottomSheet>
+    );
 }

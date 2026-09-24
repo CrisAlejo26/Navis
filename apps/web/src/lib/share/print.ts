@@ -9,26 +9,26 @@ import { serializeXhtml } from './rasterize';
  * imprimir.
  */
 export function printNode(node: HTMLElement, title: string, landscape: boolean): void {
-  const ventana = window.open('', '_blank', 'width=1024,height=768');
-  if (!ventana) throw new Error('El navegador ha bloqueado la ventana de impresión');
+    const ventana = window.open('', '_blank', 'width=1024,height=768');
+    if (!ventana) throw new Error('El navegador ha bloqueado la ventana de impresión');
 
-  const markup = serializeXhtml(node);
+    const markup = serializeXhtml(node);
 
-  ventana.document.write(
-    [
-      '<!doctype html><html><head><meta charset="utf-8">',
-      `<title>${title}</title>`,
-      `<style>@page{size:${landscape ? 'A4 landscape' : 'A4'};margin:8mm}`,
-      'body{margin:0}img{max-width:100%}</style>',
-      `</head><body>${markup}</body></html>`,
-    ].join(''),
-  );
+    ventana.document.write(
+        [
+            '<!doctype html><html><head><meta charset="utf-8">',
+            `<title>${title}</title>`,
+            `<style>@page{size:${landscape ? 'A4 landscape' : 'A4'};margin:8mm}`,
+            'body{margin:0}img{max-width:100%}</style>',
+            `</head><body>${markup}</body></html>`,
+        ].join(''),
+    );
 
-  ventana.document.close();
-  ventana.focus();
-  // Un respiro para que la imagen del logo termine de decodificarse: sin él,
-  // Chrome imprime el hueco en blanco.
-  setTimeout(() => {
-    ventana.print();
-  }, 300);
+    ventana.document.close();
+    ventana.focus();
+    // Un respiro para que la imagen del logo termine de decodificarse: sin él,
+    // Chrome imprime el hueco en blanco.
+    setTimeout(() => {
+        ventana.print();
+    }, 300);
 }

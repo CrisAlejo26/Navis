@@ -15,38 +15,38 @@ const VISIBLES = 4;
  * pasar por encima sale el de cada uno (Regla 3 §7).
  */
 export function ListDots({
-  lists,
-  listIds,
+    lists,
+    listIds,
 }: {
-  lists: readonly ListSummary[];
-  listIds: readonly string[] | undefined;
+    lists: readonly ListSummary[];
+    listIds: readonly string[] | undefined;
 }) {
-  const { t } = useTranslation();
+    const { t } = useTranslation();
 
-  const suyas = lists.filter((one) => listIds?.includes(one.id));
-  if (suyas.length === 0) return null;
+    const suyas = lists.filter((one) => listIds?.includes(one.id));
+    if (suyas.length === 0) return null;
 
-  const visibles = suyas.slice(0, VISIBLES);
-  const resto = suyas.length - visibles.length;
+    const visibles = suyas.slice(0, VISIBLES);
+    const resto = suyas.length - visibles.length;
 
-  return (
-    <span
-      className="gap-1 inline-flex shrink-0 items-center align-middle"
-      aria-label={t('lists.dots', { names: suyas.map((one) => one.name).join(', ') })}
-    >
-      {visibles.map((one) => (
+    return (
         <span
-          key={one.id}
-          title={one.name}
-          style={accentVars(one.accent)}
-          className="size-2 rounded-full bg-[var(--acento)]"
-        />
-      ))}
-      {resto > 0 && (
-        <span aria-hidden className="font-medium text-[10px] text-muted-foreground">
-          +{resto}
+            className="gap-1 inline-flex shrink-0 items-center align-middle"
+            aria-label={t('lists.dots', { names: suyas.map((one) => one.name).join(', ') })}
+        >
+            {visibles.map((one) => (
+                <span
+                    key={one.id}
+                    title={one.name}
+                    style={accentVars(one.accent)}
+                    className="size-2 rounded-full bg-[var(--acento)]"
+                />
+            ))}
+            {resto > 0 && (
+                <span aria-hidden className="font-medium text-[10px] text-muted-foreground">
+                    +{resto}
+                </span>
+            )}
         </span>
-      )}
-    </span>
-  );
+    );
 }

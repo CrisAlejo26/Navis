@@ -13,35 +13,35 @@ import { matchesQuery } from '@/lib/geo/match';
  * (`useCountryOptions`, vía `Intl.DisplayNames`).
  */
 export function CountryField({
-  defaultValue,
-  onChange,
+    defaultValue,
+    onChange,
 }: {
-  defaultValue: string;
-  onChange: (code: string) => void;
+    defaultValue: string;
+    onChange: (code: string) => void;
 }) {
-  const { t } = useTranslation();
-  const options = useCountryOptions();
-  const [value, setValue] = useState(defaultValue);
-  const [query, setQuery] = useState('');
+    const { t } = useTranslation();
+    const options = useCountryOptions();
+    const [value, setValue] = useState(defaultValue);
+    const [query, setQuery] = useState('');
 
-  const filtered = options.filter((option) => matchesQuery(option.label, option.hint, query));
+    const filtered = options.filter((option) => matchesQuery(option.label, option.hint, query));
 
-  return (
-    <Combobox
-      name="country"
-      label={t('church.country')}
-      hint={t('church.countryHint')}
-      placeholder={t('church.searchPlaceholder')}
-      required
-      value={value}
-      options={filtered}
-      query={query}
-      onQueryChange={setQuery}
-      onSelect={(next) => {
-        setValue(next);
-        onChange(next);
-      }}
-      emptyLabel={t('church.countryNoResults')}
-    />
-  );
+    return (
+        <Combobox
+            name="country"
+            label={t('church.country')}
+            hint={t('church.countryHint')}
+            placeholder={t('church.searchPlaceholder')}
+            required
+            value={value}
+            options={filtered}
+            query={query}
+            onQueryChange={setQuery}
+            onSelect={(next) => {
+                setValue(next);
+                onChange(next);
+            }}
+            emptyLabel={t('church.countryNoResults')}
+        />
+    );
 }

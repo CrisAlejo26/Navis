@@ -25,7 +25,7 @@ export const userScope = (id: string): FileScope => ({ kind: 'user', id });
  * ganar nada.
  */
 function scopePath(scope: FileScope): string {
-  return scope.kind === 'church' ? scope.id : join('users', scope.id);
+    return scope.kind === 'church' ? scope.id : join('users', scope.id);
 }
 
 /**
@@ -45,79 +45,79 @@ function scopePath(scope: FileScope): string {
  */
 @Injectable()
 export class FileStorageService {
-  /** Guarda el fichero y devuelve la clave con la que se vuelve a encontrar. */
-  async write(scope: FileScope, buffer: Buffer, extension: string): Promise<string> {
-    const folder = scopePath(scope);
-    const storageKey = join(folder, `${crypto.randomUUID()}.${extension}`);
+    /** Guarda el fichero y devuelve la clave con la que se vuelve a encontrar. */
+    async write(scope: FileScope, buffer: Buffer, extension: string): Promise<string> {
+        const folder = scopePath(scope);
+        const storageKey = join(folder, `${crypto.randomUUID()}.${extension}`);
 
-    await mkdir(join(uploadsPath, folder), { recursive: true });
-    await writeFile(this.pathOf(storageKey), buffer);
+        await mkdir(join(uploadsPath, folder), { recursive: true });
+        await writeFile(this.pathOf(storageKey), buffer);
 
-    return storageKey;
-  }
-
-  /** El fichero, para servirlo. 404 si el disco y la base ya no coinciden. */
-  read(storageKey: string): ReadStream {
-    const path = this.pathOf(storageKey);
-    if (!existsSync(path)) throw new NotFoundException('Ese fichero ya no está');
-
-    return createReadStream(path);
-  }
-
-  /** Borrar la ficha sin borrar el fichero deja basura que nadie recoge. */
-  async remove(storageKey: string): Promise<void> {
-    const path = this.pathOf(storageKey);
-    if (existsSync(path)) await unlink(path);
-  }
-
-  /**
-   * Mueve todos los ficheros de un ámbito a otro (RFC 0015: trasladar una
-   * iglesia entera). Fichero a fichero, no renombrando la carpeta entera: el
-   * destino puede ya tener ficheros propios, y un `rename` de directorio sobre
-   * uno que no está vacío falla. Devuelve cuántos movió.
-   */
-  async moveScope(origen: FileScope, destino: FileScope): Promise<number> {
-    const origenPath = join(uploadsPath, scopePath(origen));
-    if (!existsSync(origenPath)) return 0;
-
-    const destinoPath = join(uploadsPath, scopePath(destino));
-    await mkdir(destinoPath, { recursive: true });
-
-    const nombres = await readdir(origenPath);
-    await Promise.all(
-      nombres.map((nombre) => rename(join(origenPath, nombre), join(destinoPath, nombre))),
-    );
-    await rmdir(origenPath).catch(() => {
-      // La carpeta de origen puede no quedar vacía si algo escribió a la vez;
-      // no es motivo para que el traslado falle, es basura menor.
-    });
-
-    return nombres.length;
-  }
-
-  /**
-   * Reescribe el prefijo de una clave tras `moveScope`, sin volver a tocar
-   * disco. Separado de `moveScope` porque una clave se reescribe una a una, en
-   * la transacción de base de datos, mientras que el disco se mueve una vez.
-   */
-  rekey(storageKey: string, origen: FileScope, destino: FileScope): string {
-    const prefijoOrigen = scopePath(origen);
-    return join(scopePath(destino), storageKey.slice(prefijoOrigen.length + 1));
-  }
-
-  /**
-   * La ruta absoluta, comprobando que **de verdad** cae dentro de la carpeta.
-   *
-   * Es un cinturón sobre los tirantes: la clave la genera `write` y no puede
-   * traer `..`, pero esto es lo único que hay entre una clave manipulada y el
-   * resto del disco, y cuesta tres líneas.
-   */
-  private pathOf(storageKey: string): string {
-    const path = resolve(uploadsPath, storageKey);
-    if (!path.startsWith(resolve(uploadsPath))) {
-      throw new BadRequestException('Ruta de fichero inválida');
+        return storageKey;
     }
 
-    return path;
-  }
+    /** El fichero, para servirlo. 404 si el disco y la base ya no coinciden. */
+    read(storageKey: string): ReadStream {
+        const path = this.pathOf(storageKey);
+        if (!existsSync(path)) throw new NotFoundException('Ese fichero ya no está');
+
+        return createReadStream(path);
+    }
+
+    /** Borrar la ficha sin borrar el fichero deja basura que nadie recoge. */
+    async remove(storageKey: string): Promise<void> {
+        const path = this.pathOf(storageKey);
+        if (existsSync(path)) await unlink(path);
+    }
+
+    /**
+     * Mueve todos los ficheros de un ámbito a otro (RFC 0015: trasladar una
+     * iglesia entera). Fichero a fichero, no renombrando la carpeta entera: el
+     * destino puede ya tener ficheros propios, y un `rename` de directorio sobre
+     * uno que no está vacío falla. Devuelve cuántos movió.
+     */
+    async moveScope(origen: FileScope, destino: FileScope): Promise<number> {
+        const origenPath = join(uploadsPath, scopePath(origen));
+        if (!existsSync(origenPath)) return 0;
+
+        const destinoPath = join(uploadsPath, scopePath(destino));
+        await mkdir(destinoPath, { recursive: true });
+
+        const nombres = await readdir(origenPath);
+        await Promise.all(
+            nombres.map((nombre) => rename(join(origenPath, nombre), join(destinoPath, nombre))),
+        );
+        await rmdir(origenPath).catch(() => {
+            // La carpeta de origen puede no quedar vacía si algo escribió a la vez;
+            // no es motivo para que el traslado falle, es basura menor.
+        });
+
+        return nombres.length;
+    }
+
+    /**
+     * Reescribe el prefijo de una clave tras `moveScope`, sin volver a tocar
+     * disco. Separado de `moveScope` porque una clave se reescribe una a una, en
+     * la transacción de base de datos, mientras que el disco se mueve una vez.
+     */
+    rekey(storageKey: string, origen: FileScope, destino: FileScope): string {
+        const prefijoOrigen = scopePath(origen);
+        return join(scopePath(destino), storageKey.slice(prefijoOrigen.length + 1));
+    }
+
+    /**
+     * La ruta absoluta, comprobando que **de verdad** cae dentro de la carpeta.
+     *
+     * Es un cinturón sobre los tirantes: la clave la genera `write` y no puede
+     * traer `..`, pero esto es lo único que hay entre una clave manipulada y el
+     * resto del disco, y cuesta tres líneas.
+     */
+    private pathOf(storageKey: string): string {
+        const path = resolve(uploadsPath, storageKey);
+        if (!path.startsWith(resolve(uploadsPath))) {
+            throw new BadRequestException('Ruta de fichero inválida');
+        }
+
+        return path;
+    }
 }

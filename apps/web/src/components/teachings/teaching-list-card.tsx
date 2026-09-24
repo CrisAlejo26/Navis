@@ -15,27 +15,30 @@ import { checklistBorder } from '@/lib/teachings/checklist-border';
  * vistazo y sin abrir la fila.
  */
 export function TeachingListCard({ teaching, onEdit, onDelete }: TeachingCells) {
-  return (
-    <article
-      className={cn('gap-2 pl-3 flex flex-col border-l-2', checklistBorder(teaching.checklist))}
-    >
-      <div className="gap-2 flex items-start justify-between">
-        <Link
-          to={`/teachings/${teaching.id}`}
-          className="min-w-0 font-medium text-[15px] hover:underline"
+    return (
+        <article
+            className={cn(
+                'gap-2 pl-3 flex flex-col border-l-2',
+                checklistBorder(teaching.checklist),
+            )}
         >
-          {teaching.title}
-        </Link>
-        <TeachingChecklistBadge checklist={teaching.checklist} />
-      </div>
+            <div className="gap-2 flex items-start justify-between">
+                <Link
+                    to={`/teachings/${teaching.id}`}
+                    className="min-w-0 font-medium text-[15px] hover:underline"
+                >
+                    {teaching.title}
+                </Link>
+                <TeachingChecklistBadge checklist={teaching.checklist} />
+            </div>
 
-      <p className="line-clamp-3 text-[13px] text-muted-foreground">{teaching.excerpt}</p>
+            <p className="line-clamp-3 text-[13px] text-muted-foreground">{teaching.excerpt}</p>
 
-      <span className="text-xs text-muted-foreground tabular-nums">
-        {formatDay(teaching.receivedAt)}
-      </span>
+            <span className="text-xs text-muted-foreground tabular-nums">
+                {formatDay(teaching.receivedAt)}
+            </span>
 
-      <TeachingActions title={teaching.title} onEdit={onEdit} onDelete={onDelete} />
-    </article>
-  );
+            <TeachingActions title={teaching.title} onEdit={onEdit} onDelete={onDelete} />
+        </article>
+    );
 }

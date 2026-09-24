@@ -2,10 +2,10 @@ import { daysBetween, type IsoDate, type ProphecyListItem } from '@navis/shared'
 
 /** El tramo de tiempo que ocupa el eje: de la más antigua hasta hoy. */
 export interface TravesiaRange {
-  from: IsoDate;
-  to: IsoDate;
-  /** Los años que se rotulan en el eje, de menor a mayor. */
-  years: number[];
+    from: IsoDate;
+    to: IsoDate;
+    /** Los años que se rotulan en el eje, de menor a mayor. */
+    years: number[];
 }
 
 /** Al menos un mes de ancho: con un solo día, todo caería en el mismo punto. */
@@ -19,16 +19,16 @@ const MIN_SPAN_DAYS = 30;
  * trayectos apelotonados en el borde derecho.
  */
 export function travesiaRange(items: readonly ProphecyListItem[], today: IsoDate): TravesiaRange {
-  const days = items.map((one) => one.receivedAt).sort();
-  const from = days[0] ?? today;
-  const primero = Number(from.slice(0, 4));
-  const ultimo = Number(today.slice(0, 4));
+    const days = items.map((one) => one.receivedAt).sort();
+    const from = days[0] ?? today;
+    const primero = Number(from.slice(0, 4));
+    const ultimo = Number(today.slice(0, 4));
 
-  return {
-    from,
-    to: today,
-    years: Array.from({ length: ultimo - primero + 1 }, (_, index) => primero + index),
-  };
+    return {
+        from,
+        to: today,
+        years: Array.from({ length: ultimo - primero + 1 }, (_, index) => primero + index),
+    };
 }
 
 /**
@@ -38,14 +38,14 @@ export function travesiaRange(items: readonly ProphecyListItem[], today: IsoDate
  * puede pintarse fuera de la pista.
  */
 export function positionOf(day: IsoDate, range: TravesiaRange): number {
-  const span = Math.max(MIN_SPAN_DAYS, daysBetween(range.from, range.to));
-  const offset = daysBetween(range.from, day);
-  return Math.min(1, Math.max(0, offset / span));
+    const span = Math.max(MIN_SPAN_DAYS, daysBetween(range.from, range.to));
+    const offset = daysBetween(range.from, day);
+    return Math.min(1, Math.max(0, offset / span));
 }
 
 /** Como porcentaje, listo para un `style`. */
 export function percentOf(day: IsoDate, range: TravesiaRange): string {
-  return `${String(Math.round(positionOf(day, range) * 1000) / 10)}%`;
+    return `${String(Math.round(positionOf(day, range) * 1000) / 10)}%`;
 }
 
 /**
@@ -55,12 +55,12 @@ export function percentOf(day: IsoDate, range: TravesiaRange): string {
  * profecía recibida y cumplida el mismo día desaparecería de la vista.
  */
 export function trackOf(item: ProphecyListItem, range: TravesiaRange) {
-  const start = positionOf(item.receivedAt, range);
-  const end = positionOf(item.fulfilledAt ?? range.to, range);
+    const start = positionOf(item.receivedAt, range);
+    const end = positionOf(item.fulfilledAt ?? range.to, range);
 
-  return {
-    left: `${String(Math.round(start * 1000) / 10)}%`,
-    width: `${String(Math.max(0.8, Math.round((end - start) * 1000) / 10))}%`,
-    open: item.fulfilledAt === null,
-  };
+    return {
+        left: `${String(Math.round(start * 1000) / 10)}%`,
+        width: `${String(Math.max(0.8, Math.round((end - start) * 1000) / 10))}%`,
+        open: item.fulfilledAt === null,
+    };
 }

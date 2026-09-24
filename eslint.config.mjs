@@ -6,6 +6,6 @@ import { baseConfig } from '@navis/eslint-config';
  * Cada app tiene además su propio eslint.config.mjs (react/nest/expo).
  */
 export default [
-  ...baseConfig({ tsconfigRootDir: import.meta.dirname }),
-  { ignores: ['apps/**', 'packages/**'] },
+    ...baseConfig({ tsconfigRootDir: import.meta.dirname }),
+    { ignores: ['apps/**', 'packages/**'] },
 ];

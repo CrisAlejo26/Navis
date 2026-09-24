@@ -18,20 +18,20 @@ let sal = randomBytes(32);
 let salDe = '';
 
 function saltOf(day: string): Buffer {
-  if (day !== salDe) {
-    sal = randomBytes(32);
-    salDe = day;
-  }
-  return sal;
+    if (day !== salDe) {
+        sal = randomBytes(32);
+        salDe = day;
+    }
+    return sal;
 }
 
 export function visitorHash(day: string, ip: string, userAgent: string): string {
-  return createHash('sha256')
-    .update(saltOf(day))
-    .update(ip)
-    .update(userAgent)
-    .digest('hex')
-    .slice(0, 32);
+    return createHash('sha256')
+        .update(saltOf(day))
+        .update(ip)
+        .update(userAgent)
+        .digest('hex')
+        .slice(0, 32);
 }
 
 /**
@@ -39,43 +39,45 @@ export function visitorHash(day: string, ip: string, userAgent: string): string 
  * operador y la zona aproximada, que es lo que de verdad se mira.
  */
 export function ipPrefix(ip: string): string {
-  const limpia = ip.replace(/^::ffff:/i, '');
+    const limpia = ip.replace(/^::ffff:/i, '');
 
-  if (limpia.includes('.')) {
-    const partes = limpia.split('.');
-    return partes.length === 4 ? `${partes[0] ?? ''}.${partes[1] ?? ''}.${partes[2] ?? ''}.0` : '';
-  }
+    if (limpia.includes('.')) {
+        const partes = limpia.split('.');
+        return partes.length === 4
+            ? `${partes[0] ?? ''}.${partes[1] ?? ''}.${partes[2] ?? ''}.0`
+            : '';
+    }
 
-  if (!limpia.includes(':')) return '';
+    if (!limpia.includes(':')) return '';
 
-  return `${limpia.split(':').slice(0, 3).join(':')}::`;
+    return `${limpia.split(':').slice(0, 3).join(':')}::`;
 }
 
 export type Device = 'mobile' | 'tablet' | 'desktop';
 
 /** Lo poco que se saca del user-agent: aparato y sistema, nada más. */
 export function deviceOf(userAgent: string): Device {
-  if (/ipad|tablet|playbook|silk|(android(?!.*mobile))/i.test(userAgent)) return 'tablet';
-  if (/mobi|iphone|ipod|android|blackberry|windows phone/i.test(userAgent)) return 'mobile';
-  return 'desktop';
+    if (/ipad|tablet|playbook|silk|(android(?!.*mobile))/i.test(userAgent)) return 'tablet';
+    if (/mobi|iphone|ipod|android|blackberry|windows phone/i.test(userAgent)) return 'mobile';
+    return 'desktop';
 }
 
 export function platformOf(userAgent: string): string | null {
-  if (/android/i.test(userAgent)) return 'Android';
-  if (/iphone|ipad|ipod|ios/i.test(userAgent)) return 'iOS';
-  if (/mac os x|macintosh/i.test(userAgent)) return 'macOS';
-  if (/windows/i.test(userAgent)) return 'Windows';
-  if (/linux|x11/i.test(userAgent)) return 'Linux';
-  return null;
+    if (/android/i.test(userAgent)) return 'Android';
+    if (/iphone|ipad|ipod|ios/i.test(userAgent)) return 'iOS';
+    if (/mac os x|macintosh/i.test(userAgent)) return 'macOS';
+    if (/windows/i.test(userAgent)) return 'Windows';
+    if (/linux|x11/i.test(userAgent)) return 'Linux';
+    return null;
 }
 
 /** De dónde llega: `wa.me`, `t.co`… Nulo es «directo». */
 export function referrerHost(referrer: string | undefined): string | null {
-  if (!referrer) return null;
+    if (!referrer) return null;
 
-  try {
-    return new URL(referrer).hostname || null;
-  } catch {
-    return null;
-  }
+    try {
+        return new URL(referrer).hostname || null;
+    } catch {
+        return null;
+    }
 }

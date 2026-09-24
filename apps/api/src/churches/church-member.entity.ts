@@ -17,12 +17,12 @@ import { UUID } from '../database/column-types';
 @Entity('church_members')
 @Index('UQ_church_members', ['churchId', 'userId'], { unique: true })
 export class ChurchMember extends BaseEntity {
-  @ApiProperty()
-  @Column({ name: 'church_id', type: UUID })
-  churchId: string;
+    @ApiProperty()
+    @Column({ name: 'church_id', type: UUID })
+    churchId: string;
 
-  @ApiProperty({ description: 'ID del usuario en Better Auth' })
-  @Index()
-  @Column({ name: 'user_id', type: 'text' })
-  userId: string;
+    @ApiProperty({ description: 'ID del usuario en Better Auth' })
+    @Index()
+    @Column({ name: 'user_id', type: 'text' })
+    userId: string;
 }

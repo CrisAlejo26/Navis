@@ -18,63 +18,71 @@ import { formatDay } from '@/lib/format';
  * desde el panel (Regla 9 §7: el color entra por el dato).
  */
 const KIND_ACCENT: Record<NoteKind, string> = {
-  seguimiento: ACCENT_PALETTE[1] ?? ACCENT_PALETTE[0],
-  testimonio: ACCENT_PALETTE[10] ?? ACCENT_PALETTE[0],
-  sueno: ACCENT_PALETTE[13] ?? ACCENT_PALETTE[0],
-  vision: ACCENT_PALETTE[3] ?? ACCENT_PALETTE[0],
-  experiencia: ACCENT_PALETTE[7] ?? ACCENT_PALETTE[0],
-  don: ACCENT_PALETTE[4] ?? ACCENT_PALETTE[0],
-  correccion: ACCENT_PALETTE[8] ?? ACCENT_PALETTE[0],
+    seguimiento: ACCENT_PALETTE[1] ?? ACCENT_PALETTE[0],
+    testimonio: ACCENT_PALETTE[10] ?? ACCENT_PALETTE[0],
+    sueno: ACCENT_PALETTE[13] ?? ACCENT_PALETTE[0],
+    vision: ACCENT_PALETTE[3] ?? ACCENT_PALETTE[0],
+    experiencia: ACCENT_PALETTE[7] ?? ACCENT_PALETTE[0],
+    don: ACCENT_PALETTE[4] ?? ACCENT_PALETTE[0],
+    correccion: ACCENT_PALETTE[8] ?? ACCENT_PALETTE[0],
 };
 
 /** Las últimas entradas de la bitácora, de cualquier persona (RFC 0001). */
 export function NotesCard({
-  notes,
-  palette,
+    notes,
+    palette,
 }: {
-  notes: readonly DashboardNote[];
-  palette: ThemeColors;
+    notes: readonly DashboardNote[];
+    palette: ThemeColors;
 }) {
-  const { t } = useTranslation();
+    const { t } = useTranslation();
 
-  return (
-    <Pressable
-      onPress={() => router.push('/believers')}
-      className="gap-3 p-4 rounded-3xl bg-card active:opacity-90"
-      style={PANEL_SHADOW}
-    >
-      <TileHeader icon="book" label={t('home.recentNotes')} tone="success" palette={palette} />
+    return (
+        <Pressable
+            onPress={() => router.push('/believers')}
+            className="gap-3 p-4 rounded-3xl bg-card active:opacity-90"
+            style={PANEL_SHADOW}
+        >
+            <TileHeader
+                icon="book"
+                label={t('home.recentNotes')}
+                tone="success"
+                palette={palette}
+            />
 
-      {notes.length === 0 ? (
-        <EmptyRow icon="book-outline" label={t('home.noRecentNotes')} palette={palette} />
-      ) : (
-        <View className="gap-2.5">
-          {notes.map((note) => (
-            <View
-              key={note.id}
-              className="pl-3 border-l-[3px]"
-              style={{ borderLeftColor: KIND_ACCENT[note.kind] }}
-            >
-              <View className="gap-1.5 flex-row items-baseline">
-                <Text className="text-sm font-medium flex-1 text-foreground" numberOfLines={1}>
-                  {note.believerName}
-                </Text>
-                <Text className="text-xs text-muted-foreground">
-                  {formatDay(note.occurredAt, 'short')}
-                </Text>
-              </View>
-              <Text className="text-xs text-muted-foreground" numberOfLines={1}>
-                {note.excerpt}
-              </Text>
+            {notes.length === 0 ? (
+                <EmptyRow icon="book-outline" label={t('home.noRecentNotes')} palette={palette} />
+            ) : (
+                <View className="gap-2.5">
+                    {notes.map((note) => (
+                        <View
+                            key={note.id}
+                            className="pl-3 border-l-[3px]"
+                            style={{ borderLeftColor: KIND_ACCENT[note.kind] }}
+                        >
+                            <View className="gap-1.5 flex-row items-baseline">
+                                <Text
+                                    className="text-sm font-medium flex-1 text-foreground"
+                                    numberOfLines={1}
+                                >
+                                    {note.believerName}
+                                </Text>
+                                <Text className="text-xs text-muted-foreground">
+                                    {formatDay(note.occurredAt, 'short')}
+                                </Text>
+                            </View>
+                            <Text className="text-xs text-muted-foreground" numberOfLines={1}>
+                                {note.excerpt}
+                            </Text>
+                        </View>
+                    ))}
+                </View>
+            )}
+
+            <View className="gap-1 flex-row items-center self-start">
+                <Text className="text-xs font-medium text-primary">{t('home.believersLink')}</Text>
+                <Ionicons name="chevron-forward" size={13} color={palette.primary} />
             </View>
-          ))}
-        </View>
-      )}
-
-      <View className="gap-1 flex-row items-center self-start">
-        <Text className="text-xs font-medium text-primary">{t('home.believersLink')}</Text>
-        <Ionicons name="chevron-forward" size={13} color={palette.primary} />
-      </View>
-    </Pressable>
-  );
+        </Pressable>
+    );
 }

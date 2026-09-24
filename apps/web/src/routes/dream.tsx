@@ -31,112 +31,112 @@ import { toast } from '@/lib/toast';
  * cambian con la vista: están siempre.
  */
 export function DreamPage() {
-  const { t } = useTranslation();
-  const { id = '' } = useParams();
-  const navigate = useNavigate();
-  const { data: dream, isLoading } = useDream(api, id);
-  const update = useUpdateDream(api);
-  const view = useDreamDetailViewStore((state) => state.view);
+    const { t } = useTranslation();
+    const { id = '' } = useParams();
+    const navigate = useNavigate();
+    const { data: dream, isLoading } = useDream(api, id);
+    const update = useUpdateDream(api);
+    const view = useDreamDetailViewStore((state) => state.view);
 
-  const [editing, setEditing] = useState(false);
-  const [marking, setMarking] = useState(false);
-  const [deleting, setDeleting] = useState(false);
+    const [editing, setEditing] = useState(false);
+    const [marking, setMarking] = useState(false);
+    const [deleting, setDeleting] = useState(false);
 
-  if (isLoading || !dream) return <PageSkeleton />;
+    if (isLoading || !dream) return <PageSkeleton />;
 
-  /** Reabrirlo es quitar la fecha, y se lleva por delante lo que significó (D10). */
-  const reopen = () => {
-    update.mutate(
-      { id: dream.id, fulfilledAt: null },
-      {
-        onSuccess: () => {
-          toast.success(t('dreams.reopened'));
-        },
-      },
-    );
-  };
+    /** Reabrirlo es quitar la fecha, y se lleva por delante lo que significó (D10). */
+    const reopen = () => {
+        update.mutate(
+            { id: dream.id, fulfilledAt: null },
+            {
+                onSuccess: () => {
+                    toast.success(t('dreams.reopened'));
+                },
+            },
+        );
+    };
 
-  return (
-    <section className="gap-4 animate-page-in flex flex-col">
-      <BackLink to="/dreams/list" label={t('dreams.open')} />
+    return (
+        <section className="gap-4 animate-page-in flex flex-col">
+            <BackLink to="/dreams/list" label={t('dreams.open')} />
 
-      <DreamIdentity
-        dream={dream}
-        isReopening={update.isPending}
-        onEdit={() => {
-          setEditing(true);
-        }}
-        onDelete={() => {
-          setDeleting(true);
-        }}
-        onFulfill={() => {
-          setMarking(true);
-        }}
-        onReopen={reopen}
-      />
-
-      <div className="flex justify-end">
-        <DreamViewSwitch />
-      </div>
-
-      {/* La clave remonta al cambiar de vista y relanza la animación: es un
-          fundido, sin desplazamiento —no se está yendo a otro sitio— (§7.8). */}
-      <div key={view} className="gap-4 flex flex-col">
-        {view === 'completo' && (
-          <div className="gap-4 xl:grid-cols-[minmax(0,1fr)_24rem] grid items-start">
-            <DreamBody dream={dream} />
-            <div className="gap-4 flex flex-col">
-              <DreamInterpretation dream={dream} />
-              <DreamAudios audios={dream.audios} />
-              <DreamFulfillment
+            <DreamIdentity
                 dream={dream}
+                isReopening={update.isPending}
                 onEdit={() => {
-                  setMarking(true);
+                    setEditing(true);
                 }}
-              />
+                onDelete={() => {
+                    setDeleting(true);
+                }}
+                onFulfill={() => {
+                    setMarking(true);
+                }}
+                onReopen={reopen}
+            />
+
+            <div className="flex justify-end">
+                <DreamViewSwitch />
             </div>
-          </div>
-        )}
 
-        {view === 'lectura' && <DreamBody dream={dream} size="lectura" />}
+            {/* La clave remonta al cambiar de vista y relanza la animación: es un
+          fundido, sin desplazamiento —no se está yendo a otro sitio— (§7.8). */}
+            <div key={view} className="gap-4 flex flex-col">
+                {view === 'completo' && (
+                    <div className="gap-4 xl:grid-cols-[minmax(0,1fr)_24rem] grid items-start">
+                        <DreamBody dream={dream} />
+                        <div className="gap-4 flex flex-col">
+                            <DreamInterpretation dream={dream} />
+                            <DreamAudios audios={dream.audios} />
+                            <DreamFulfillment
+                                dream={dream}
+                                onEdit={() => {
+                                    setMarking(true);
+                                }}
+                            />
+                        </div>
+                    </div>
+                )}
 
-        {view === 'interpretacion' && (
-          <div className="gap-4 xl:grid-cols-2 grid items-start">
-            <DreamBody dream={dream} />
-            <DreamInterpretation dream={dream} />
-          </div>
-        )}
+                {view === 'lectura' && <DreamBody dream={dream} size="lectura" />}
 
-        {view === 'recorrido' && <DreamJourney dream={dream} />}
-      </div>
+                {view === 'interpretacion' && (
+                    <div className="gap-4 xl:grid-cols-2 grid items-start">
+                        <DreamBody dream={dream} />
+                        <DreamInterpretation dream={dream} />
+                    </div>
+                )}
 
-      {editing && (
-        <DreamForm
-          open
-          dreamId={dream.id}
-          onClose={() => {
-            setEditing(false);
-          }}
-        />
-      )}
+                {view === 'recorrido' && <DreamJourney dream={dream} />}
+            </div>
 
-      <FulfillDialog
-        dream={dream}
-        open={marking}
-        onClose={() => {
-          setMarking(false);
-        }}
-      />
+            {editing && (
+                <DreamForm
+                    open
+                    dreamId={dream.id}
+                    onClose={() => {
+                        setEditing(false);
+                    }}
+                />
+            )}
 
-      <DeleteDreamDialog
-        dream={deleting ? dream : null}
-        onClose={() => {
-          setDeleting(false);
-        }}
-        onDeleted={() => {
-          void navigate('/dreams/list');
-        }}
-      />
-    </section>
-  );
+            <FulfillDialog
+                dream={dream}
+                open={marking}
+                onClose={() => {
+                    setMarking(false);
+                }}
+            />
+
+            <DeleteDreamDialog
+                dream={deleting ? dream : null}
+                onClose={() => {
+                    setDeleting(false);
+                }}
+                onDeleted={() => {
+                    void navigate('/dreams/list');
+                }}
+            />
+        </section>
+    );
 }

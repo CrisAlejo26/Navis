@@ -20,65 +20,70 @@ import { toast } from '@/lib/toast';
  * Como las otras dos, **no borra nada**.
  */
 export function BulkListAction({
-  selected,
-  lists,
-  onDone,
+    selected,
+    lists,
+    onDone,
 }: {
-  selected: readonly string[];
-  lists: readonly ListSummary[];
-  onDone: () => void;
+    selected: readonly string[];
+    lists: readonly ListSummary[];
+    onDone: () => void;
 }) {
-  const { t } = useTranslation();
-  const add = useAddListMembers(api);
-  const [listId, setListId] = useState('');
+    const { t } = useTranslation();
+    const add = useAddListMembers(api);
+    const [listId, setListId] = useState('');
 
-  const activas = lists.filter((one) => one.isActive);
-  if (activas.length === 0) return null;
+    const activas = lists.filter((one) => one.isActive);
+    if (activas.length === 0) return null;
 
-  return (
-    <>
-      <Select
-        size="sm"
-        value={listId}
-        aria-label={t('lists.filterByList')}
-        className="w-44"
-        onChange={(event) => {
-          setListId(event.target.value);
-        }}
-      >
-        <option value="">{t('lists.allLists')}</option>
-        {activas.map((one) => (
-          <option key={one.id} value={one.id}>
-            {one.name}
-          </option>
-        ))}
-      </Select>
+    return (
+        <>
+            <Select
+                size="sm"
+                value={listId}
+                aria-label={t('lists.filterByList')}
+                className="w-44"
+                onChange={(event) => {
+                    setListId(event.target.value);
+                }}
+            >
+                <option value="">{t('lists.allLists')}</option>
+                {activas.map((one) => (
+                    <option key={one.id} value={one.id}>
+                        {one.name}
+                    </option>
+                ))}
+            </Select>
 
-      <Button
-        size="sm"
-        disabled={!listId}
-        isLoading={add.isPending}
-        onClick={() => {
-          const lista = activas.find((one) => one.id === listId);
-          if (!lista) return;
+            <Button
+                size="sm"
+                disabled={!listId}
+                isLoading={add.isPending}
+                onClick={() => {
+                    const lista = activas.find((one) => one.id === listId);
+                    if (!lista) return;
 
-          add.mutate(
-            { listId, believerIds: [...selected] },
-            {
-              onSuccess: () => {
-                toast.success(t('lists.addedToList', { count: selected.length, name: lista.name }));
-                onDone();
-              },
-              onError: () => {
-                toast.error(t('errors.generic'));
-              },
-            },
-          );
-        }}
-      >
-        <ClipboardList size={14} aria-hidden />
-        {t('lists.addToList')}
-      </Button>
-    </>
-  );
+                    add.mutate(
+                        { listId, believerIds: [...selected] },
+                        {
+                            onSuccess: () => {
+                                toast.success(
+                                    t('lists.addedToList', {
+                                        count: selected.length,
+                                        name: lista.name,
+                                    }),
+                                );
+                                onDone();
+                            },
+                            onError: () => {
+                                toast.error(t('errors.generic'));
+                            },
+                        },
+                    );
+                }}
+            >
+                <ClipboardList size={14} aria-hidden />
+                {t('lists.addToList')}
+            </Button>
+        </>
+    );
 }

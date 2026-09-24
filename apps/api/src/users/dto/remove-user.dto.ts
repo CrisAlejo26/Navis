@@ -10,18 +10,18 @@ import { ArrayMinSize, IsArray, IsIn, IsOptional, IsUUID, ValidateNested } from 
  * quien conoce el alcance de quien pregunta.
  */
 export class ChurchDecisionDto implements ChurchDecision {
-  @ApiProperty()
-  @IsUUID()
-  churchId: string;
+    @ApiProperty()
+    @IsUUID()
+    churchId: string;
 
-  @ApiProperty({ enum: ['delete', 'transfer'] })
-  @IsIn(['delete', 'transfer'])
-  action: 'delete' | 'transfer';
+    @ApiProperty({ enum: ['delete', 'transfer'] })
+    @IsIn(['delete', 'transfer'])
+    action: 'delete' | 'transfer';
 
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsUUID()
-  targetChurchId?: string;
+    @ApiPropertyOptional()
+    @IsOptional()
+    @IsUUID()
+    targetChurchId?: string;
 }
 
 /**
@@ -30,11 +30,11 @@ export class ChurchDecisionDto implements ChurchDecision {
  * responde con un 409 en vez de borrar nada (D2).
  */
 export class RemoveUserDto {
-  @ApiPropertyOptional({ type: [ChurchDecisionDto] })
-  @IsOptional()
-  @IsArray()
-  @ArrayMinSize(1)
-  @ValidateNested({ each: true })
-  @Type(() => ChurchDecisionDto)
-  churchDecisions?: ChurchDecisionDto[];
+    @ApiPropertyOptional({ type: [ChurchDecisionDto] })
+    @IsOptional()
+    @IsArray()
+    @ArrayMinSize(1)
+    @ValidateNested({ each: true })
+    @Type(() => ChurchDecisionDto)
+    churchDecisions?: ChurchDecisionDto[];
 }

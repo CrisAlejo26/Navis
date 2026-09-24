@@ -15,7 +15,7 @@ import { MessagesService } from './messages.service';
 
 /** Lo que llega de multer, reducido a lo que de verdad se usa (Regla 10). */
 export interface UploadedAttachment extends UploadedDocument {
-  originalname: string;
+    originalname: string;
 }
 
 /**
@@ -25,7 +25,7 @@ export interface UploadedAttachment extends UploadedDocument {
  * la tabla que no toca. Se reinterpretan una vez, aquí, antes de guardarlos.
  */
 function fixFilenameEncoding(name: string): string {
-  return Buffer.from(name, 'latin1').toString('utf8');
+    return Buffer.from(name, 'latin1').toString('utf8');
 }
 
 /**
@@ -38,79 +38,79 @@ function fixFilenameEncoding(name: string): string {
  */
 @Injectable()
 export class AttachmentsService {
-  constructor(
-    @InjectRepository(Message) private readonly messages: Repository<Message>,
-    @InjectRepository(MessageAttachment)
-    private readonly attachments: Repository<MessageAttachment>,
-    private readonly access: ChannelAccessService,
-    private readonly images: ImageStorageService,
-    private readonly documents: DocumentStorageService,
-    private readonly messagesService: MessagesService,
-    @Inject(CHAT_BROADCASTER) private readonly broadcaster: ChatBroadcaster,
-  ) {}
+    constructor(
+        @InjectRepository(Message) private readonly messages: Repository<Message>,
+        @InjectRepository(MessageAttachment)
+        private readonly attachments: Repository<MessageAttachment>,
+        private readonly access: ChannelAccessService,
+        private readonly images: ImageStorageService,
+        private readonly documents: DocumentStorageService,
+        private readonly messagesService: MessagesService,
+        @Inject(CHAT_BROADCASTER) private readonly broadcaster: ChatBroadcaster,
+    ) {}
 
-  async upload(
-    churchId: string,
-    userId: string,
-    channelId: string,
-    file: UploadedAttachment,
-    caption: { body?: string; replyToId?: string },
-  ): Promise<MessageView> {
-    const access = await this.access.requireMembership(churchId, userId, channelId);
-    this.access.requireWriteAccess(access);
+    async upload(
+        churchId: string,
+        userId: string,
+        channelId: string,
+        file: UploadedAttachment,
+        caption: { body?: string; replyToId?: string },
+    ): Promise<MessageView> {
+        const access = await this.access.requireMembership(churchId, userId, channelId);
+        this.access.requireWriteAccess(access);
 
-    if (caption.replyToId) {
-      const exists = await this.messages.exists({
-        where: { channelId, id: caption.replyToId },
-        withDeleted: true,
-      });
-      if (!exists) throw new NotFoundException('Ese mensaje no existe en esta conversación');
+        if (caption.replyToId) {
+            const exists = await this.messages.exists({
+                where: { channelId, id: caption.replyToId },
+                withDeleted: true,
+            });
+            if (!exists) throw new NotFoundException('Ese mensaje no existe en esta conversación');
+        }
+
+        const isImage = isImageMimeType(file.mimetype);
+        const stored = isImage
+            ? await this.images.save(churchScope(churchId), file)
+            : await this.documents.save(churchScope(churchId), file);
+
+        const message = await this.messages.save(
+            this.messages.create({
+                channelId,
+                authorId: userId,
+                body: caption.body ?? null,
+                replyToId: caption.replyToId ?? null,
+            }),
+        );
+
+        await this.attachments.save(
+            this.attachments.create({
+                messageId: message.id,
+                kind: isImage ? 'imagen' : 'archivo',
+                storageKey: stored.storageKey,
+                originalName: fixFilenameEncoding(file.originalname),
+                mimeType: stored.mimeType,
+                sizeBytes: file.size,
+            }),
+        );
+
+        const view = await this.messagesService.getView(message.id);
+        this.broadcaster.messageCreated(view);
+        return view;
     }
 
-    const isImage = isImageMimeType(file.mimetype);
-    const stored = isImage
-      ? await this.images.save(churchScope(churchId), file)
-      : await this.documents.save(churchScope(churchId), file);
+    /** El fichero para descargarlo, comprobando antes que es de esta iglesia. */
+    async stream(
+        churchId: string,
+        id: string,
+    ): Promise<{ attachment: MessageAttachment; file: ReadStream }> {
+        const attachment = await this.attachments.findOne({
+            where: { id },
+            relations: { message: { channel: true } },
+        });
+        if (!attachment || attachment.message.channel.churchId !== churchId) {
+            throw new NotFoundException('Ese adjunto no existe en esta iglesia');
+        }
 
-    const message = await this.messages.save(
-      this.messages.create({
-        channelId,
-        authorId: userId,
-        body: caption.body ?? null,
-        replyToId: caption.replyToId ?? null,
-      }),
-    );
-
-    await this.attachments.save(
-      this.attachments.create({
-        messageId: message.id,
-        kind: isImage ? 'imagen' : 'archivo',
-        storageKey: stored.storageKey,
-        originalName: fixFilenameEncoding(file.originalname),
-        mimeType: stored.mimeType,
-        sizeBytes: file.size,
-      }),
-    );
-
-    const view = await this.messagesService.getView(message.id);
-    this.broadcaster.messageCreated(view);
-    return view;
-  }
-
-  /** El fichero para descargarlo, comprobando antes que es de esta iglesia. */
-  async stream(
-    churchId: string,
-    id: string,
-  ): Promise<{ attachment: MessageAttachment; file: ReadStream }> {
-    const attachment = await this.attachments.findOne({
-      where: { id },
-      relations: { message: { channel: true } },
-    });
-    if (!attachment || attachment.message.channel.churchId !== churchId) {
-      throw new NotFoundException('Ese adjunto no existe en esta iglesia');
+        const storage = attachment.kind === 'imagen' ? this.images : this.documents;
+        return { attachment, file: storage.read(attachment.storageKey) };
     }
-
-    const storage = attachment.kind === 'imagen' ? this.images : this.documents;
-    return { attachment, file: storage.read(attachment.storageKey) };
-  }
 }

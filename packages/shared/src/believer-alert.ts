@@ -8,12 +8,12 @@ import { daysBetween, type IsoDate } from './dates';
  * y los tests no tienen que fabricar una ficha completa (Regla 1 §3).
  */
 export interface AlertState {
-  /** Instante del alta, tal y como viaja: ISO 8601. */
-  createdAt: string;
-  /** Día de la última nota. `null` si todavía no hay ninguna. */
-  lastNoteAt: IsoDate | null;
-  /** Días de margen. `null` es el aviso apagado (RFC 0003 D3). */
-  alertAfterDays: number | null;
+    /** Instante del alta, tal y como viaja: ISO 8601. */
+    createdAt: string;
+    /** Día de la última nota. `null` si todavía no hay ninguna. */
+    lastNoteAt: IsoDate | null;
+    /** Días de margen. `null` es el aviso apagado (RFC 0003 D3). */
+    alertAfterDays: number | null;
 }
 
 /**
@@ -23,18 +23,18 @@ export interface AlertState {
  * escribir nada en dos meses es exactamente el caso que hay que ver.
  */
 export function alertSince(believer: AlertState): IsoDate {
-  return believer.lastNoteAt ?? believer.createdAt.slice(0, 10);
+    return believer.lastNoteAt ?? believer.createdAt.slice(0, 10);
 }
 
 /** Días transcurridos desde entonces. Nunca negativo: hoy es cero, no −1. */
 export function daysWithoutNote(believer: AlertState, today: IsoDate): number {
-  return Math.max(0, daysBetween(alertSince(believer), today));
+    return Math.max(0, daysBetween(alertSince(believer), today));
 }
 
 /** Ha agotado su margen: «pide atención». */
 export function needsAttention(believer: AlertState, today: IsoDate): boolean {
-  const margin = believer.alertAfterDays;
-  return margin !== null && daysWithoutNote(believer, today) > margin;
+    const margin = believer.alertAfterDays;
+    return margin !== null && daysWithoutNote(believer, today) > margin;
 }
 
 /**
@@ -45,7 +45,7 @@ export function needsAttention(believer: AlertState, today: IsoDate): boolean {
  * pinte pista: el aviso apagado se nota por ausencia, no por un gris más.
  */
 export function alertRatio(believer: AlertState, today: IsoDate): number | null {
-  const margin = believer.alertAfterDays;
-  if (margin === null || margin <= 0) return null;
-  return daysWithoutNote(believer, today) / margin;
+    const margin = believer.alertAfterDays;
+    if (margin === null || margin <= 0) return null;
+    return daysWithoutNote(believer, today) / margin;
 }

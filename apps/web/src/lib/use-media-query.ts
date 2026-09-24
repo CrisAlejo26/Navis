@@ -13,26 +13,26 @@ import { useCallback, useSyncExternalStore } from 'react';
  * esconder uno, que en una pantalla pequeña es trabajo tirado.
  */
 export function useMediaQuery(query: string): boolean {
-  const subscribe = useCallback(
-    (onChange: () => void) => {
-      const media = globalThis.matchMedia?.(query);
-      if (!media) return () => undefined;
+    const subscribe = useCallback(
+        (onChange: () => void) => {
+            const media = globalThis.matchMedia?.(query);
+            if (!media) return () => undefined;
 
-      media.addEventListener('change', onChange);
-      return () => {
-        media.removeEventListener('change', onChange);
-      };
-    },
-    [query],
-  );
+            media.addEventListener('change', onChange);
+            return () => {
+                media.removeEventListener('change', onChange);
+            };
+        },
+        [query],
+    );
 
-  return useSyncExternalStore(
-    subscribe,
-    () => globalThis.matchMedia?.(query).matches ?? false,
-    // En el servidor no hay ventana: se supone escritorio, que es el caso en
-    // el que la aplicación pinta más cosas.
-    () => false,
-  );
+    return useSyncExternalStore(
+        subscribe,
+        () => globalThis.matchMedia?.(query).matches ?? false,
+        // En el servidor no hay ventana: se supone escritorio, que es el caso en
+        // el que la aplicación pinta más cosas.
+        () => false,
+    );
 }
 
 /** Por debajo de `md`, que es el corte que manda en esta aplicación (Regla 5). */

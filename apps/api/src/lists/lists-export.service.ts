@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import {
-  believerName,
-  EXPORT_MAX_ROWS,
-  type ExportResponse,
-  type ListExportRow,
+    believerName,
+    EXPORT_MAX_ROWS,
+    type ExportResponse,
+    type ListExportRow,
 } from '@navis/shared';
 
 import { ListRowsService } from './list-rows.service';
@@ -17,25 +17,25 @@ import { ListRowsService } from './list-rows.service';
  */
 @Injectable()
 export class ListsExportService {
-  constructor(private readonly rows: ListRowsService) {}
+    constructor(private readonly rows: ListRowsService) {}
 
-  async export(listId: string): Promise<ExportResponse<ListExportRow>> {
-    const members = await this.rows.view(listId);
-    const rows = members.slice(0, EXPORT_MAX_ROWS).map((member) => ({
-      position: member.position + 1,
-      name: believerName(member),
-      congregation: member.congregationName,
-      congregationAccent: member.congregationAccent,
-      ministries: member.ministries,
-      note: member.note,
-      hasAccess: member.hasAccess,
-    }));
+    async export(listId: string): Promise<ExportResponse<ListExportRow>> {
+        const members = await this.rows.view(listId);
+        const rows = members.slice(0, EXPORT_MAX_ROWS).map((member) => ({
+            position: member.position + 1,
+            name: believerName(member),
+            congregation: member.congregationName,
+            congregationAccent: member.congregationAccent,
+            ministries: member.ministries,
+            note: member.note,
+            hasAccess: member.hasAccess,
+        }));
 
-    return {
-      rows,
-      total: members.length,
-      returned: rows.length,
-      truncated: members.length > rows.length,
-    };
-  }
+        return {
+            rows,
+            total: members.length,
+            returned: rows.length,
+            truncated: members.length > rows.length,
+        };
+    }
 }

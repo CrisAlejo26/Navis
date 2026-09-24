@@ -18,43 +18,43 @@ export type ListDialog = 'members' | 'edit' | 'export' | 'delete' | null;
  * despublica, se cortan las sesiones y los accesos pierden esta lista.
  */
 export function ListDialogs({
-  list,
-  churchName,
-  open,
-  onClose,
+    list,
+    churchName,
+    open,
+    onClose,
 }: {
-  list: ListDetail;
-  churchName: string;
-  open: ListDialog;
-  onClose: () => void;
+    list: ListDetail;
+    churchName: string;
+    open: ListDialog;
+    onClose: () => void;
 }) {
-  const navigate = useNavigate();
+    const navigate = useNavigate();
 
-  return (
-    <>
-      <AddMembersDialog
-        open={open === 'members'}
-        onClose={onClose}
-        listId={list.id}
-        already={new Set(list.members.map((one) => one.believerId))}
-      />
+    return (
+        <>
+            <AddMembersDialog
+                open={open === 'members'}
+                onClose={onClose}
+                listId={list.id}
+                already={new Set(list.members.map((one) => one.believerId))}
+            />
 
-      <ListForm open={open === 'edit'} onClose={onClose} list={list} />
+            <ListForm open={open === 'edit'} onClose={onClose} list={list} />
 
-      <ListExportDialog
-        open={open === 'export'}
-        onClose={onClose}
-        list={list}
-        churchName={churchName}
-      />
+            <ListExportDialog
+                open={open === 'export'}
+                onClose={onClose}
+                list={list}
+                churchName={churchName}
+            />
 
-      <DeleteListDialog
-        list={open === 'delete' ? list : null}
-        onClose={onClose}
-        onDeleted={() => {
-          void navigate('/lists');
-        }}
-      />
-    </>
-  );
+            <DeleteListDialog
+                list={open === 'delete' ? list : null}
+                onClose={onClose}
+                onDeleted={() => {
+                    void navigate('/lists');
+                }}
+            />
+        </>
+    );
 }

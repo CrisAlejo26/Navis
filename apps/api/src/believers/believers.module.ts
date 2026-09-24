@@ -48,59 +48,59 @@ import { NotesViewService } from './notes-view.service';
  * turno no puede obligar a abrir la ficha pastoral de nadie).
  */
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([
-      Believer,
-      BelieverMinistry,
-      Gift,
-      BelieverGift,
-      BelieverTag,
-      BelieverTagLink,
-      BelieverNote,
-      NoteAudio,
-      Ministry,
-    ]),
-    ChurchesModule,
-    UsersModule,
-    MediaModule,
-  ],
-  controllers: [
-    BelieversController,
-    BelieverNotesController,
-    NoteAudiosController,
-    GiftsController,
-    MinistriesController,
-    BelieverTagsController,
-    BelieverPhotosController,
-  ],
-  providers: [
-    BelieversService,
-    BelieversRosterService,
-    BelieverRowsService,
-    BelieversPageService,
-    BelieversExportService,
-    BelieversSummaryService,
-    BelieverLinksService,
-    BelieverNotesService,
-    BelieverHistoryService,
-    NotesViewService,
-    NoteAudiosService,
-    GiftsService,
-    MinistriesService,
-    BelieverTagsService,
-    BelieverPhotosService,
-  ],
-  // `BelieverPhotosService` sale porque la página pública de una lista sirve la
-  // foto por su propia puerta, con sus cinco cierres (RFC 0010 D17).
-  // `BelieversPageService` y `BelieversSummaryService` salen para el panel de
-  // inicio (RFC 0001): la vista previa de «quién pide atención» es la misma
-  // consulta que el listado, y no hay motivo para volver a escribirla.
-  exports: [
-    BelieversService,
-    BelieversRosterService,
-    BelieverPhotosService,
-    BelieversPageService,
-    BelieversSummaryService,
-  ],
+    imports: [
+        TypeOrmModule.forFeature([
+            Believer,
+            BelieverMinistry,
+            Gift,
+            BelieverGift,
+            BelieverTag,
+            BelieverTagLink,
+            BelieverNote,
+            NoteAudio,
+            Ministry,
+        ]),
+        ChurchesModule,
+        UsersModule,
+        MediaModule,
+    ],
+    controllers: [
+        BelieversController,
+        BelieverNotesController,
+        NoteAudiosController,
+        GiftsController,
+        MinistriesController,
+        BelieverTagsController,
+        BelieverPhotosController,
+    ],
+    providers: [
+        BelieversService,
+        BelieversRosterService,
+        BelieverRowsService,
+        BelieversPageService,
+        BelieversExportService,
+        BelieversSummaryService,
+        BelieverLinksService,
+        BelieverNotesService,
+        BelieverHistoryService,
+        NotesViewService,
+        NoteAudiosService,
+        GiftsService,
+        MinistriesService,
+        BelieverTagsService,
+        BelieverPhotosService,
+    ],
+    // `BelieverPhotosService` sale porque la página pública de una lista sirve la
+    // foto por su propia puerta, con sus cinco cierres (RFC 0010 D17).
+    // `BelieversPageService` y `BelieversSummaryService` salen para el panel de
+    // inicio (RFC 0001): la vista previa de «quién pide atención» es la misma
+    // consulta que el listado, y no hay motivo para volver a escribirla.
+    exports: [
+        BelieversService,
+        BelieversRosterService,
+        BelieverPhotosService,
+        BelieversPageService,
+        BelieversSummaryService,
+    ],
 })
 export class BelieversModule {}

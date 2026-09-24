@@ -11,16 +11,21 @@ import { TableColumn, type MigrationInterface, type QueryRunner } from 'typeorm'
  * siguiente, que es la que siembra los roles de serie.
  */
 export class AddRolePermissions1785888000000 implements MigrationInterface {
-  name = 'AddRolePermissions1785888000000';
+    name = 'AddRolePermissions1785888000000';
 
-  async up(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.addColumn(
-      'roles',
-      new TableColumn({ name: 'permissions', type: 'text', isNullable: false, default: "'[]'" }),
-    );
-  }
+    async up(queryRunner: QueryRunner): Promise<void> {
+        await queryRunner.addColumn(
+            'roles',
+            new TableColumn({
+                name: 'permissions',
+                type: 'text',
+                isNullable: false,
+                default: "'[]'",
+            }),
+        );
+    }
 
-  async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropColumn('roles', 'permissions');
-  }
+    async down(queryRunner: QueryRunner): Promise<void> {
+        await queryRunner.dropColumn('roles', 'permissions');
+    }
 }

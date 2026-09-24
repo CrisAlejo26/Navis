@@ -5,8 +5,8 @@ import { SetupController } from './setup.controller';
 import { SetupService } from './setup.service';
 
 @Module({
-  imports: [UsersModule],
-  controllers: [SetupController],
-  providers: [SetupService],
+    imports: [UsersModule],
+    controllers: [SetupController],
+    providers: [SetupService],
 })
 export class SetupModule {}

@@ -5,9 +5,9 @@ import type { ApiClient } from './client';
 import { queryKeys } from './query-keys';
 
 function toGeocodeSearch(query: { q: string; country?: string }): string {
-  const params = new URLSearchParams({ q: query.q });
-  if (query.country) params.set('country', query.country);
-  return params.toString();
+    const params = new URLSearchParams({ q: query.q });
+    if (query.country) params.set('country', query.country);
+    return params.toString();
 }
 
 /**
@@ -18,13 +18,13 @@ function toGeocodeSearch(query: { q: string; country?: string }): string {
  * disparar la búsqueda con una letra sola—.
  */
 export function useCityGeocode(
-  api: ApiClient,
-  query: { q: string; country?: string },
-  enabled: boolean,
+    api: ApiClient,
+    query: { q: string; country?: string },
+    enabled: boolean,
 ): UseQueryResult<GeocodedCities> {
-  return useQuery({
-    queryKey: queryKeys.geocode.cities(query),
-    queryFn: () => api.get<GeocodedCities>(`/geocode/cities?${toGeocodeSearch(query)}`),
-    enabled: enabled && query.q.trim().length >= 2,
-  });
+    return useQuery({
+        queryKey: queryKeys.geocode.cities(query),
+        queryFn: () => api.get<GeocodedCities>(`/geocode/cities?${toGeocodeSearch(query)}`),
+        enabled: enabled && query.q.trim().length >= 2,
+    });
 }

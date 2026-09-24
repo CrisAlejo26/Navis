@@ -22,68 +22,68 @@ import { api } from '@/lib/api';
  * no una pestaña (D9).
  */
 export function PropheciesPage() {
-  const { t } = useTranslation();
-  const { data: stats, isLoading } = usePropheciesStats(api);
-  const [creating, setCreating] = useState(false);
+    const { t } = useTranslation();
+    const { data: stats, isLoading } = usePropheciesStats(api);
+    const [creating, setCreating] = useState(false);
 
-  if (isLoading || !stats) return <PageSkeleton />;
+    if (isLoading || !stats) return <PageSkeleton />;
 
-  return (
-    <section className="gap-6 animate-page-in flex flex-col">
-      <PropheciesHeader
-        stats={stats}
-        onAdd={() => {
-          setCreating(true);
-        }}
-      />
+    return (
+        <section className="gap-6 animate-page-in flex flex-col">
+            <PropheciesHeader
+                stats={stats}
+                onAdd={() => {
+                    setCreating(true);
+                }}
+            />
 
-      {/* Con cero profecías no se enseñan seis tarjetas a cero: se enseña una
+            {/* Con cero profecías no se enseñan seis tarjetas a cero: se enseña una
           invitación. Una pantalla vacía invita a hacer algo (Regla 9 §6). */}
-      {stats.total === 0 ? (
-        <EmptyState
-          icon={Sparkles}
-          title={t('prophecies.emptyTitle')}
-          // `children` es el texto —`EmptyState` ya lo envuelve en su `<p>`— y
-          // `action` es el botón. Meter aquí otro `<p>` anida párrafos, que es
-          // HTML inválido y React lo canta en consola.
-          action={
-            <Button
-              size="lg"
-              onClick={() => {
-                setCreating(true);
-              }}
-            >
-              {t('prophecies.add')}
-            </Button>
-          }
-        >
-          {t('prophecies.emptyBody')}
-        </EmptyState>
-      ) : (
-        <>
-          <StatGrid stats={stats} />
+            {stats.total === 0 ? (
+                <EmptyState
+                    icon={Sparkles}
+                    title={t('prophecies.emptyTitle')}
+                    // `children` es el texto —`EmptyState` ya lo envuelve en su `<p>`— y
+                    // `action` es el botón. Meter aquí otro `<p>` anida párrafos, que es
+                    // HTML inválido y React lo canta en consola.
+                    action={
+                        <Button
+                            size="lg"
+                            onClick={() => {
+                                setCreating(true);
+                            }}
+                        >
+                            {t('prophecies.add')}
+                        </Button>
+                    }
+                >
+                    {t('prophecies.emptyBody')}
+                </EmptyState>
+            ) : (
+                <>
+                    <StatGrid stats={stats} />
 
-          {/* Entra después de las tarjetas, cerrando la cascada. */}
-          <section
-            style={{ animationDelay: '380ms' }}
-            className="gap-3 p-4 sm:p-5 animate-rise-in flex flex-col rounded-xl border bg-card"
-          >
-            <h2 className="text-sm font-medium">{t('prophecies.stats.monthly')}</h2>
-            <Suspense fallback={<Skeleton className="h-56 w-full" />}>
-              <MonthlyChart months={stats.monthly} />
-            </Suspense>
-          </section>
-        </>
-      )}
+                    {/* Entra después de las tarjetas, cerrando la cascada. */}
+                    <section
+                        style={{ animationDelay: '380ms' }}
+                        className="gap-3 p-4 sm:p-5 animate-rise-in flex flex-col rounded-xl border bg-card"
+                    >
+                        <h2 className="text-sm font-medium">{t('prophecies.stats.monthly')}</h2>
+                        <Suspense fallback={<Skeleton className="h-56 w-full" />}>
+                            <MonthlyChart months={stats.monthly} />
+                        </Suspense>
+                    </section>
+                </>
+            )}
 
-      {creating && (
-        <ProphecyForm
-          open
-          onClose={() => {
-            setCreating(false);
-          }}
-        />
-      )}
-    </section>
-  );
+            {creating && (
+                <ProphecyForm
+                    open
+                    onClose={() => {
+                        setCreating(false);
+                    }}
+                />
+            )}
+        </section>
+    );
 }

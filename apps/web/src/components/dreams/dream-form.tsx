@@ -17,30 +17,30 @@ import { api } from '@/lib/api';
  * estado nace correcto y no hace falta sincronizarlo con un efecto.
  */
 export function DreamForm({
-  open,
-  onClose,
-  dreamId,
+    open,
+    onClose,
+    dreamId,
 }: {
-  open: boolean;
-  onClose: () => void;
-  /** Si viene, se edita; si no, se apunta uno nuevo. */
-  dreamId?: string;
+    open: boolean;
+    onClose: () => void;
+    /** Si viene, se edita; si no, se apunta uno nuevo. */
+    dreamId?: string;
 }) {
-  const { t } = useTranslation();
-  const { data: dream } = useDream(api, dreamId ?? '', open && Boolean(dreamId));
+    const { t } = useTranslation();
+    const { data: dream } = useDream(api, dreamId ?? '', open && Boolean(dreamId));
 
-  return (
-    <Dialog
-      open={open}
-      onClose={onClose}
-      width="min(42rem, calc(100vw - 2rem))"
-      title={dreamId ? t('dreams.edit') : t('dreams.add')}
-    >
-      {dreamId && !dream ? (
-        <FormSkeleton />
-      ) : (
-        <DreamFormBody key={dream?.id ?? 'nuevo'} dream={dream} onSaved={onClose} />
-      )}
-    </Dialog>
-  );
+    return (
+        <Dialog
+            open={open}
+            onClose={onClose}
+            width="min(42rem, calc(100vw - 2rem))"
+            title={dreamId ? t('dreams.edit') : t('dreams.add')}
+        >
+            {dreamId && !dream ? (
+                <FormSkeleton />
+            ) : (
+                <DreamFormBody key={dream?.id ?? 'nuevo'} dream={dream} onSaved={onClose} />
+            )}
+        </Dialog>
+    );
 }

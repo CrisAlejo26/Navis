@@ -1,9 +1,9 @@
 import { toSlug, type ColumnOption } from '@navis/shared';
 
 interface OptionInput {
-  value?: string;
-  label: string;
-  color?: string;
+    value?: string;
+    label: string;
+    color?: string;
 }
 
 /**
@@ -15,29 +15,29 @@ interface OptionInput {
  * así que renombrar una opción no rompe los datos ya escritos.
  */
 export function freeOptionValues(options: readonly OptionInput[]): ColumnOption[] {
-  const usados = new Set(
-    options.map((one) => one.value).filter((value): value is string => Boolean(value)),
-  );
-  const resultado: ColumnOption[] = [];
+    const usados = new Set(
+        options.map((one) => one.value).filter((value): value is string => Boolean(value)),
+    );
+    const resultado: ColumnOption[] = [];
 
-  for (const option of options) {
-    const value = option.value ?? freeValue(option.label, usados);
-    usados.add(value);
-    resultado.push({
-      value,
-      label: option.label,
-      ...(option.color ? { color: option.color } : {}),
-    });
-  }
+    for (const option of options) {
+        const value = option.value ?? freeValue(option.label, usados);
+        usados.add(value);
+        resultado.push({
+            value,
+            label: option.label,
+            ...(option.color ? { color: option.color } : {}),
+        });
+    }
 
-  return resultado;
+    return resultado;
 }
 
 function freeValue(label: string, usados: ReadonlySet<string>): string {
-  const base = toSlug(label, 60) || 'opcion';
+    const base = toSlug(label, 60) || 'opcion';
 
-  for (let intento = 1; ; intento += 1) {
-    const value = intento === 1 ? base : `${base}-${String(intento)}`;
-    if (!usados.has(value)) return value;
-  }
+    for (let intento = 1; ; intento += 1) {
+        const value = intento === 1 ? base : `${base}-${String(intento)}`;
+        if (!usados.has(value)) return value;
+    }
 }

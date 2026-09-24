@@ -24,109 +24,109 @@ import { useIsNarrow } from '@/lib/use-media-query';
  * (Regla 6).
  */
 export function CalendarPage() {
-  const { t } = useTranslation();
-  const { can } = usePermissions();
-  const narrow = useIsNarrow();
-  const { slug } = useParams();
-  const { calendar: active, isLoading } = useActiveCalendar();
-  const screen = useCalendarScreen(active?.id ?? '');
-  const { data: churches } = useMyChurches(api);
+    const { t } = useTranslation();
+    const { can } = usePermissions();
+    const narrow = useIsNarrow();
+    const { slug } = useParams();
+    const { calendar: active, isLoading } = useActiveCalendar();
+    const screen = useCalendarScreen(active?.id ?? '');
+    const { data: churches } = useMyChurches(api);
 
-  const canManage = can('calendar.manage');
-  const { params, congregations, calendar } = screen;
-  const range = calendar.data;
+    const canManage = can('calendar.manage');
+    const { params, congregations, calendar } = screen;
+    const range = calendar.data;
 
-  /*
-   * Con **una sola sede** su nombre no se escribe en la cinta (D12): repetir
-   * «Iglesia Central» en cada reunión no distingue nada y roba el sitio de lo
-   * que sí importa, que es quién ocupa cada fase.
-   */
-  const nameOf = (id: string) =>
-    congregations.length > 1 ? congregations.find((one) => one.id === id)?.name : undefined;
-  const churchName =
-    churches?.items.find((one) => one.id === churches.activeId)?.name ?? t('common.appName');
+    /*
+     * Con **una sola sede** su nombre no se escribe en la cinta (D12): repetir
+     * «Iglesia Central» en cada reunión no distingue nada y roba el sitio de lo
+     * que sí importa, que es quién ocupa cada fase.
+     */
+    const nameOf = (id: string) =>
+        congregations.length > 1 ? congregations.find((one) => one.id === id)?.name : undefined;
+    const churchName =
+        churches?.items.find((one) => one.id === churches.activeId)?.name ?? t('common.appName');
 
-  /*
-   * De `md` para arriba el calendario ocupa el alto entero y es la rejilla la
-   * que se desplaza. Por debajo no: ahí manda la agenda, que es una lista, y
-   * encerrarla en un alto fijo dejaría un panel diminuto entre la barra y el
-   * borde de la pantalla (Regla 5).
-   */
-  // Sin `slug` en la URL —o con uno que ya no existe— se va al primero: la
-  // entrada «Calendario» de la barra tiene que llevar a algún sitio.
-  if (!isLoading && active && active.slug !== slug) {
-    return <Navigate to={`/calendar/${active.slug}`} replace />;
-  }
+    /*
+     * De `md` para arriba el calendario ocupa el alto entero y es la rejilla la
+     * que se desplaza. Por debajo no: ahí manda la agenda, que es una lista, y
+     * encerrarla en un alto fijo dejaría un panel diminuto entre la barra y el
+     * borde de la pantalla (Regla 5).
+     */
+    // Sin `slug` en la URL —o con uno que ya no existe— se va al primero: la
+    // entrada «Calendario» de la barra tiene que llevar a algún sitio.
+    if (!isLoading && active && active.slug !== slug) {
+        return <Navigate to={`/calendar/${active.slug}`} replace />;
+    }
 
-  return (
-    <section className="gap-4 md:h-[calc(100dvh-4rem)] flex flex-col">
-      <CalendarToolbar
-        params={params}
-        canManage={canManage}
-        calendarName={active?.name ?? t('calendar.title')}
-        calendarSlug={active?.slug ?? ''}
-        onShare={() => {
-          screen.setShareOpen(true);
-        }}
-      />
+    return (
+        <section className="gap-4 md:h-[calc(100dvh-4rem)] flex flex-col">
+            <CalendarToolbar
+                params={params}
+                canManage={canManage}
+                calendarName={active?.name ?? t('calendar.title')}
+                calendarSlug={active?.slug ?? ''}
+                onShare={() => {
+                    screen.setShareOpen(true);
+                }}
+            />
 
-      {/* `items-start`: `CalendarFilters` envuelve sus propias sedes en dos o
+            {/* `items-start`: `CalendarFilters` envuelve sus propias sedes en dos o
           tres líneas en un móvil, y `items-center` dejaba «Reparto» flotando
           a media altura de ese bloque en vez de junto a la primera fila. */}
-      <div className="gap-2 flex flex-wrap items-start justify-between">
-        <CalendarFilters
-          params={params}
-          congregations={congregations}
-          onAddCongregation={
-            canManage
-              ? () => {
-                  screen.setAddCongregation(true);
-                }
-              : undefined
-          }
-        />
+            <div className="gap-2 flex flex-wrap items-start justify-between">
+                <CalendarFilters
+                    params={params}
+                    congregations={congregations}
+                    onAddCongregation={
+                        canManage
+                            ? () => {
+                                  screen.setAddCongregation(true);
+                              }
+                            : undefined
+                    }
+                />
 
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => {
-            screen.setBalanceOpen(true);
-          }}
-        >
-          <Scale size={15} aria-hidden />
-          {t('calendar.balance')}
-        </Button>
-      </div>
+                <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                        screen.setBalanceOpen(true);
+                    }}
+                >
+                    <Scale size={15} aria-hidden />
+                    {t('calendar.balance')}
+                </Button>
+            </div>
 
-      {!range && <PageSkeleton />}
+            {!range && <PageSkeleton />}
 
-      {range && (
-        <CalendarViews
-          view={params.view}
-          range={range}
-          anchor={params.anchor}
-          narrow={narrow}
-          selectedDate={screen.openDay}
-          filters={params.filters}
-          congregationName={nameOf}
-          onOpenDay={screen.setOpenDay}
-          onPick={canManage ? screen.pick : undefined}
-          onPickPerson={(personId) => {
-            params.setFilters({ personId });
-          }}
-        />
-      )}
+            {range && (
+                <CalendarViews
+                    view={params.view}
+                    range={range}
+                    anchor={params.anchor}
+                    narrow={narrow}
+                    selectedDate={screen.openDay}
+                    filters={params.filters}
+                    congregationName={nameOf}
+                    onOpenDay={screen.setOpenDay}
+                    onPick={canManage ? screen.pick : undefined}
+                    onPickPerson={(personId) => {
+                        params.setFilters({ personId });
+                    }}
+                />
+            )}
 
-      <CalendarOverlays
-        screen={screen}
-        congregations={congregations}
-        churchName={churchName}
-        canManage={canManage}
-        congregationName={nameOf}
-        calendarId={active?.id ?? ''}
-        calendarName={active?.name ?? ''}
-        ministry={active?.ministry ?? null}
-      />
-    </section>
-  );
+            <CalendarOverlays
+                screen={screen}
+                congregations={congregations}
+                churchName={churchName}
+                canManage={canManage}
+                congregationName={nameOf}
+                calendarId={active?.id ?? ''}
+                calendarName={active?.name ?? ''}
+                ministry={active?.ministry ?? null}
+            />
+        </section>
+    );
 }

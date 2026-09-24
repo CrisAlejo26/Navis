@@ -14,23 +14,23 @@ vi.mock('./auth-client', () => ({ signOut: vi.fn().mockResolvedValue(undefined) 
  * anterior — ninguna clave de `queryKeys` lleva el id de usuario.
  */
 describe('useSignOut', () => {
-  it('vacía la caché de TanStack Query al cerrar sesión', async () => {
-    const queryClient = new QueryClient();
-    queryClient.setQueryData(['churches'], { items: [{ id: 'iglesia-ajena' }] });
+    it('vacía la caché de TanStack Query al cerrar sesión', async () => {
+        const queryClient = new QueryClient();
+        queryClient.setQueryData(['churches'], { items: [{ id: 'iglesia-ajena' }] });
 
-    const wrapper = ({ children }: { children: ReactNode }) => (
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter>{children}</MemoryRouter>
-      </QueryClientProvider>
-    );
+        const wrapper = ({ children }: { children: ReactNode }) => (
+            <QueryClientProvider client={queryClient}>
+                <MemoryRouter>{children}</MemoryRouter>
+            </QueryClientProvider>
+        );
 
-    const { result } = renderHook(() => useSignOut(), { wrapper });
-    await act(async () => {
-      await result.current();
+        const { result } = renderHook(() => useSignOut(), { wrapper });
+        await act(async () => {
+            await result.current();
+        });
+
+        await waitFor(() => {
+            expect(queryClient.getQueryData(['churches'])).toBeUndefined();
+        });
     });
-
-    await waitFor(() => {
-      expect(queryClient.getQueryData(['churches'])).toBeUndefined();
-    });
-  });
 });

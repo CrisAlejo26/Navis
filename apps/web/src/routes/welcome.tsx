@@ -19,27 +19,27 @@ import { toast } from '@/lib/toast';
  * aplicación, antes de tener sitio donde trabajar (Regla 1).
  */
 export function WelcomePage() {
-  const { t } = useTranslation();
-  const navigate = useNavigate();
-  const { items, isLoading } = useChurches();
+    const { t } = useTranslation();
+    const navigate = useNavigate();
+    const { items, isLoading } = useChurches();
 
-  if (isLoading) return <PageSkeleton className="max-w-5xl p-6 md:p-8 mx-auto" />;
-  // Quien ya tiene iglesia no pinta nada aquí.
-  if (items.length > 0) return <Navigate to="/" replace />;
+    if (isLoading) return <PageSkeleton className="max-w-5xl p-6 md:p-8 mx-auto" />;
+    // Quien ya tiene iglesia no pinta nada aquí.
+    if (items.length > 0) return <Navigate to="/" replace />;
 
-  return (
-    <AuthLayout
-      eyebrow={t('church.welcomeEyebrow')}
-      title={t('church.welcomeTitle')}
-      subtitle={t('church.welcomeSubtitle')}
-    >
-      <ChurchForm
-        submitLabel={t('church.create')}
-        onCreated={(name) => {
-          toast.success(t('church.created', { name }));
-          void navigate('/', { replace: true });
-        }}
-      />
-    </AuthLayout>
-  );
+    return (
+        <AuthLayout
+            eyebrow={t('church.welcomeEyebrow')}
+            title={t('church.welcomeTitle')}
+            subtitle={t('church.welcomeSubtitle')}
+        >
+            <ChurchForm
+                submitLabel={t('church.create')}
+                onCreated={(name) => {
+                    toast.success(t('church.created', { name }));
+                    void navigate('/', { replace: true });
+                }}
+            />
+        </AuthLayout>
+    );
 }

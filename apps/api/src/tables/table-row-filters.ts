@@ -17,88 +17,88 @@ const NUMERIC = new Set(['number', 'currency']);
  * que no le corresponde a su tipo, se rechaza con 400 en vez de ignorarse.
  */
 export function applyRowFilter(
-  qb: SelectQueryBuilder<CustomTableRow>,
-  columns: readonly ColumnLike[],
-  filter: RowFilter,
-  index: number,
+    qb: SelectQueryBuilder<CustomTableRow>,
+    columns: readonly ColumnLike[],
+    filter: RowFilter,
+    index: number,
 ): void {
-  const column = columns.find((one) => one.key === filter.columnKey);
-  if (!column) throw new BadRequestException(`La columna «${filter.columnKey}» no existe`);
-  if (column.type === 'password') {
-    throw new BadRequestException('La contraseña no se puede filtrar (D29)');
-  }
-
-  const p = `f${String(index)}`;
-  const field = jsonFieldExpr('row.data', column.key);
-
-  if (filter.operator === 'contains' && TEXT_LIKE.has(column.type)) {
-    qb.andWhere(`LOWER(${field}) LIKE LOWER(:${p})`, { [p]: `%${String(filter.value)}%` });
-    return;
-  }
-
-  if (filter.operator === 'between' && NUMERIC.has(column.type)) {
-    const { min, max } = asNumericRange(filter.value);
-    const numeric = jsonFieldNumericExpr('row.data', column.key);
-    if (min !== undefined) qb.andWhere(`${numeric} >= :${p}min`, { [`${p}min`]: min });
-    if (max !== undefined) qb.andWhere(`${numeric} <= :${p}max`, { [`${p}max`]: max });
-    return;
-  }
-
-  if (filter.operator === 'between' && column.type === 'date') {
-    const { from, to } = asDateRange(filter.value);
-    if (from) qb.andWhere(`${field} >= :${p}from`, { [`${p}from`]: from });
-    if (to) qb.andWhere(`${field} <= :${p}to`, { [`${p}to`]: to });
-    return;
-  }
-
-  if (filter.operator === 'equals' && column.type === 'checkbox') {
-    // Una fila donde nunca se tocó la casilla no tiene la clave en el JSON
-    // —no se guardó nunca `false`—, y eso también es «No»: la celda ya se
-    // pinta así (`RowValueCell`). Sin el `OR ... IS NULL`, «No» no
-    // encontraba las filas que nunca se marcaron.
-    //
-    // `json_extract` de SQLite devuelve `1`/`0` para un booleano del JSON y
-    // `data::jsonb ->>` de Postgres devuelve `'true'`/`'false'`: se compara
-    // con los dos para que la casilla filtre igual en los dos motores.
-    if (filter.value) {
-      qb.andWhere(`(${field} = :${p}text OR ${field} = :${p}num)`, {
-        [`${p}text`]: 'true',
-        [`${p}num`]: 1,
-      });
-    } else {
-      qb.andWhere(`(${field} = :${p}text OR ${field} = :${p}num OR ${field} IS NULL)`, {
-        [`${p}text`]: 'false',
-        [`${p}num`]: 0,
-      });
+    const column = columns.find((one) => one.key === filter.columnKey);
+    if (!column) throw new BadRequestException(`La columna «${filter.columnKey}» no existe`);
+    if (column.type === 'password') {
+        throw new BadRequestException('La contraseña no se puede filtrar (D29)');
     }
-    return;
-  }
 
-  if (filter.operator === 'in' && column.type === 'single_select') {
-    const values = asStringArray(filter.value);
-    if (values.length > 0) qb.andWhere(`${field} IN (:...${p})`, { [p]: values });
-    return;
-  }
+    const p = `f${String(index)}`;
+    const field = jsonFieldExpr('row.data', column.key);
 
-  if (filter.operator === 'in' && column.type === 'multi_select') {
-    const values = asStringArray(filter.value);
-    if (values.length === 0) return;
-    // El array de una selección múltiple sigue siendo el JSON entero de esa
-    // celda: «contiene alguna de las opciones elegidas» se comprueba como
-    // subcadena de su texto, sin un JOIN por valor.
-    qb.andWhere(
-      new Brackets((sub) => {
-        values.forEach((value, i) => {
-          sub.orWhere(`${field} LIKE :${p}v${String(i)}`, {
-            [`${p}v${String(i)}`]: `%"${value}"%`,
-          });
-        });
-      }),
+    if (filter.operator === 'contains' && TEXT_LIKE.has(column.type)) {
+        qb.andWhere(`LOWER(${field}) LIKE LOWER(:${p})`, { [p]: `%${String(filter.value)}%` });
+        return;
+    }
+
+    if (filter.operator === 'between' && NUMERIC.has(column.type)) {
+        const { min, max } = asNumericRange(filter.value);
+        const numeric = jsonFieldNumericExpr('row.data', column.key);
+        if (min !== undefined) qb.andWhere(`${numeric} >= :${p}min`, { [`${p}min`]: min });
+        if (max !== undefined) qb.andWhere(`${numeric} <= :${p}max`, { [`${p}max`]: max });
+        return;
+    }
+
+    if (filter.operator === 'between' && column.type === 'date') {
+        const { from, to } = asDateRange(filter.value);
+        if (from) qb.andWhere(`${field} >= :${p}from`, { [`${p}from`]: from });
+        if (to) qb.andWhere(`${field} <= :${p}to`, { [`${p}to`]: to });
+        return;
+    }
+
+    if (filter.operator === 'equals' && column.type === 'checkbox') {
+        // Una fila donde nunca se tocó la casilla no tiene la clave en el JSON
+        // —no se guardó nunca `false`—, y eso también es «No»: la celda ya se
+        // pinta así (`RowValueCell`). Sin el `OR ... IS NULL`, «No» no
+        // encontraba las filas que nunca se marcaron.
+        //
+        // `json_extract` de SQLite devuelve `1`/`0` para un booleano del JSON y
+        // `data::jsonb ->>` de Postgres devuelve `'true'`/`'false'`: se compara
+        // con los dos para que la casilla filtre igual en los dos motores.
+        if (filter.value) {
+            qb.andWhere(`(${field} = :${p}text OR ${field} = :${p}num)`, {
+                [`${p}text`]: 'true',
+                [`${p}num`]: 1,
+            });
+        } else {
+            qb.andWhere(`(${field} = :${p}text OR ${field} = :${p}num OR ${field} IS NULL)`, {
+                [`${p}text`]: 'false',
+                [`${p}num`]: 0,
+            });
+        }
+        return;
+    }
+
+    if (filter.operator === 'in' && column.type === 'single_select') {
+        const values = asStringArray(filter.value);
+        if (values.length > 0) qb.andWhere(`${field} IN (:...${p})`, { [p]: values });
+        return;
+    }
+
+    if (filter.operator === 'in' && column.type === 'multi_select') {
+        const values = asStringArray(filter.value);
+        if (values.length === 0) return;
+        // El array de una selección múltiple sigue siendo el JSON entero de esa
+        // celda: «contiene alguna de las opciones elegidas» se comprueba como
+        // subcadena de su texto, sin un JOIN por valor.
+        qb.andWhere(
+            new Brackets((sub) => {
+                values.forEach((value, i) => {
+                    sub.orWhere(`${field} LIKE :${p}v${String(i)}`, {
+                        [`${p}v${String(i)}`]: `%"${value}"%`,
+                    });
+                });
+            }),
+        );
+        return;
+    }
+
+    throw new BadRequestException(
+        `El operador «${filter.operator}» no corresponde al tipo de «${filter.columnKey}»`,
     );
-    return;
-  }
-
-  throw new BadRequestException(
-    `El operador «${filter.operator}» no corresponde al tipo de «${filter.columnKey}»`,
-  );
 }

@@ -8,48 +8,48 @@ import type { TFunction } from 'i18next';
  * acaba mostrando la clave sin traducir.
  */
 export const CALENDAR_TEMPLATE_SLUGS = [
-  'pulpito',
-  'recepcion',
-  'sonido',
-  'biblias',
-  'vigilancia',
-  'ofrenda',
-  'enviar-programacion',
+    'pulpito',
+    'recepcion',
+    'sonido',
+    'biblias',
+    'vigilancia',
+    'ofrenda',
+    'enviar-programacion',
 ] as const;
 
 export type CalendarTemplateSlug = (typeof CALENDAR_TEMPLATE_SLUGS)[number];
 
 export interface CalendarTemplate {
-  slug: CalendarTemplateSlug | null;
-  name: string;
+    slug: CalendarTemplateSlug | null;
+    name: string;
 }
 
 /** Claves literales, una por cada plantilla (Regla 2 §3). */
 function nameFor(t: TFunction, slug: CalendarTemplateSlug): string {
-  switch (slug) {
-    case 'pulpito':
-      return t('calendar.templates.pulpito');
-    case 'recepcion':
-      return t('calendar.templates.recepcion');
-    case 'sonido':
-      return t('calendar.templates.sonido');
-    case 'biblias':
-      return t('calendar.templates.biblias');
-    case 'vigilancia':
-      return t('calendar.templates.vigilancia');
-    case 'ofrenda':
-      return t('calendar.templates.ofrenda');
-    case 'enviar-programacion':
-      return t('calendar.templates.enviarProgramacion');
-  }
+    switch (slug) {
+        case 'pulpito':
+            return t('calendar.templates.pulpito');
+        case 'recepcion':
+            return t('calendar.templates.recepcion');
+        case 'sonido':
+            return t('calendar.templates.sonido');
+        case 'biblias':
+            return t('calendar.templates.biblias');
+        case 'vigilancia':
+            return t('calendar.templates.vigilancia');
+        case 'ofrenda':
+            return t('calendar.templates.ofrenda');
+        case 'enviar-programacion':
+            return t('calendar.templates.enviarProgramacion');
+    }
 }
 
 export function useCalendarTemplates(t: TFunction): CalendarTemplate[] {
-  return [
-    { slug: null, name: t('calendar.templateCustom') },
-    ...CALENDAR_TEMPLATE_SLUGS.map((slug) => ({
-      slug,
-      name: nameFor(t, slug),
-    })),
-  ];
+    return [
+        { slug: null, name: t('calendar.templateCustom') },
+        ...CALENDAR_TEMPLATE_SLUGS.map((slug) => ({
+            slug,
+            name: nameFor(t, slug),
+        })),
+    ];
 }

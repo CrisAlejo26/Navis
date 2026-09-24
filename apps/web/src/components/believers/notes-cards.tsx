@@ -18,86 +18,86 @@ import { formatDay } from '@/lib/format';
  * detalle abre la nota.
  */
 export function NotesCards({
-  notes,
-  today,
-  canManage,
-  onEdit,
-  onToggleDone,
+    notes,
+    today,
+    canManage,
+    onEdit,
+    onToggleDone,
 }: Pick<NoteHandlers, 'canManage'> & {
-  notes: readonly BelieverNote[];
-  today: IsoDate;
-  onEdit: (note: BelieverNote) => void;
-  onToggleDone: (note: BelieverNote) => void;
+    notes: readonly BelieverNote[];
+    today: IsoDate;
+    onEdit: (note: BelieverNote) => void;
+    onToggleDone: (note: BelieverNote) => void;
 }) {
-  const { t } = useTranslation();
+    const { t } = useTranslation();
 
-  return (
-    <ul className="gap-3 sm:grid-cols-2 xl:grid-cols-3 grid">
-      {notes.map((note, index) => {
-        const { Icon, accent, labelKey } = NOTE_STYLES[note.kind];
+    return (
+        <ul className="gap-3 sm:grid-cols-2 xl:grid-cols-3 grid">
+            {notes.map((note, index) => {
+                const { Icon, accent, labelKey } = NOTE_STYLES[note.kind];
 
-        return (
-          <li
-            key={note.id}
-            style={{
-              ...accentVars(accent),
-              animationDelay: `${String(Math.min(index, 12) * 40)}ms`,
-            }}
-            className="animate-page-in"
-          >
-            <article className="gap-2 p-4 flex h-full flex-col rounded-xl border border-l-2 border-l-[var(--acento)] bg-card">
-              <p className="gap-2 flex flex-wrap items-center">
-                <span className="gap-1.5 font-semibold inline-flex items-center text-[11px] tracking-[0.1em] text-[var(--acento)] uppercase">
-                  <Icon size={12} aria-hidden />
-                  {t(labelKey)}
-                </span>
-                <span className="text-[11px] text-muted-foreground tabular-nums">
-                  {formatDay(note.occurredAt)}
-                </span>
-                {note.audios.length > 0 && (
-                  <Mic
-                    size={12}
-                    aria-label={t('common.audio.title')}
-                    className="text-muted-foreground"
-                  />
-                )}
-              </p>
+                return (
+                    <li
+                        key={note.id}
+                        style={{
+                            ...accentVars(accent),
+                            animationDelay: `${String(Math.min(index, 12) * 40)}ms`,
+                        }}
+                        className="animate-page-in"
+                    >
+                        <article className="gap-2 p-4 flex h-full flex-col rounded-xl border border-l-2 border-l-[var(--acento)] bg-card">
+                            <p className="gap-2 flex flex-wrap items-center">
+                                <span className="gap-1.5 font-semibold inline-flex items-center text-[11px] tracking-[0.1em] text-[var(--acento)] uppercase">
+                                    <Icon size={12} aria-hidden />
+                                    {t(labelKey)}
+                                </span>
+                                <span className="text-[11px] text-muted-foreground tabular-nums">
+                                    {formatDay(note.occurredAt)}
+                                </span>
+                                {note.audios.length > 0 && (
+                                    <Mic
+                                        size={12}
+                                        aria-label={t('common.audio.title')}
+                                        className="text-muted-foreground"
+                                    />
+                                )}
+                            </p>
 
-              <p className="text-sm leading-relaxed line-clamp-4 whitespace-pre-line">
-                {note.told}
-              </p>
+                            <p className="text-sm leading-relaxed line-clamp-4 whitespace-pre-line">
+                                {note.told}
+                            </p>
 
-              {note.advice && (
-                <p className="pl-2.5 text-xs leading-relaxed line-clamp-2 border-l-2 border-border text-muted-foreground">
-                  {note.advice}
-                </p>
-              )}
+                            {note.advice && (
+                                <p className="pl-2.5 text-xs leading-relaxed line-clamp-2 border-l-2 border-border text-muted-foreground">
+                                    {note.advice}
+                                </p>
+                            )}
 
-              <NoteReminder
-                note={note}
-                canManage={canManage}
-                onToggleDone={() => {
-                  onToggleDone(note);
-                }}
-              />
+                            <NoteReminder
+                                note={note}
+                                canManage={canManage}
+                                onToggleDone={() => {
+                                    onToggleDone(note);
+                                }}
+                            />
 
-              {canManage && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="-ml-2 mt-auto self-start"
-                  onClick={() => {
-                    onEdit(note);
-                  }}
-                >
-                  <Pencil size={13} aria-hidden />
-                  {t('common.edit')}
-                </Button>
-              )}
-            </article>
-          </li>
-        );
-      })}
-    </ul>
-  );
+                            {canManage && (
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="-ml-2 mt-auto self-start"
+                                    onClick={() => {
+                                        onEdit(note);
+                                    }}
+                                >
+                                    <Pencil size={13} aria-hidden />
+                                    {t('common.edit')}
+                                </Button>
+                            )}
+                        </article>
+                    </li>
+                );
+            })}
+        </ul>
+    );
 }

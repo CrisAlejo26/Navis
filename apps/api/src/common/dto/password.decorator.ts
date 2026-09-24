@@ -10,10 +10,10 @@ import { IsString, Length, Matches } from 'class-validator';
  * si cambia la política, se cambia en este sitio y en `shared`.
  */
 export const IsStrongPassword = (): PropertyDecorator =>
-  applyDecorators(
-    IsString(),
-    Length(10, 128, { message: 'La contraseña debe tener al menos 10 caracteres' }),
-    Matches(/[a-z]/, { message: 'Debe incluir una minúscula' }),
-    Matches(/[A-Z]/, { message: 'Debe incluir una mayúscula' }),
-    Matches(/\d/, { message: 'Debe incluir un número' }),
-  );
+    applyDecorators(
+        IsString(),
+        Length(10, 128, { message: 'La contraseña debe tener al menos 10 caracteres' }),
+        Matches(/[a-z]/, { message: 'Debe incluir una minúscula' }),
+        Matches(/[A-Z]/, { message: 'Debe incluir una mayúscula' }),
+        Matches(/\d/, { message: 'Debe incluir un número' }),
+    );

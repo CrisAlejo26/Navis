@@ -12,13 +12,13 @@ import { queryKeys } from './query-keys';
  * consulta que usa la sección de calendario.
  */
 export function useDashboardSummary(
-  api: ApiClient,
-  enabled = true,
+    api: ApiClient,
+    enabled = true,
 ): UseQueryResult<DashboardSummary> {
-  return useQuery({
-    queryKey: queryKeys.dashboard.summary,
-    queryFn: () => api.get<DashboardSummary>('/dashboard/summary'),
-    enabled,
-    staleTime: 30_000,
-  });
+    return useQuery({
+        queryKey: queryKeys.dashboard.summary,
+        queryFn: () => api.get<DashboardSummary>('/dashboard/summary'),
+        enabled,
+        staleTime: 30_000,
+    });
 }

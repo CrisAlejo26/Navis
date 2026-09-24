@@ -12,18 +12,18 @@ import { PythonServiceProvider } from './providers/python-service.provider';
  * la idea es que las features de IA lleguen después sin tocar la arquitectura.
  */
 @Module({
-  controllers: [AiController],
-  providers: [
-    AnthropicProvider,
-    PythonServiceProvider,
-    {
-      provide: AI_PROVIDER,
-      inject: [AnthropicProvider, PythonServiceProvider],
-      useFactory: (anthropic: AnthropicProvider, python: PythonServiceProvider) =>
-        env.AI_PROVIDER === 'python-service' ? python : anthropic,
-    },
-    AiService,
-  ],
-  exports: [AiService],
+    controllers: [AiController],
+    providers: [
+        AnthropicProvider,
+        PythonServiceProvider,
+        {
+            provide: AI_PROVIDER,
+            inject: [AnthropicProvider, PythonServiceProvider],
+            useFactory: (anthropic: AnthropicProvider, python: PythonServiceProvider) =>
+                env.AI_PROVIDER === 'python-service' ? python : anthropic,
+        },
+        AiService,
+    ],
+    exports: [AiService],
 })
 export class AiModule {}

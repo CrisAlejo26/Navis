@@ -15,20 +15,20 @@ import { ChurchesService } from '../../churches/churches.service';
  */
 @Injectable()
 export class ActiveChurchGuard implements CanActivate {
-  constructor(private readonly churches: ChurchesService) {}
+    constructor(private readonly churches: ChurchesService) {}
 
-  async canActivate(context: ExecutionContext): Promise<boolean> {
-    const request = context.switchToHttp().getRequest<Request>();
-    const user = request.user;
-    if (!user) return false;
+    async canActivate(context: ExecutionContext): Promise<boolean> {
+        const request = context.switchToHttp().getRequest<Request>();
+        const user = request.user;
+        if (!user) return false;
 
-    const churchId = await this.churches.activeIdFor({
-      id: user.id,
-      role: user.role ?? DEFAULT_ROLE,
-    });
-    if (!churchId) throw new NotFoundException('Todavía no tienes ninguna iglesia');
+        const churchId = await this.churches.activeIdFor({
+            id: user.id,
+            role: user.role ?? DEFAULT_ROLE,
+        });
+        if (!churchId) throw new NotFoundException('Todavía no tienes ninguna iglesia');
 
-    request.churchId = churchId;
-    return true;
-  }
+        request.churchId = churchId;
+        return true;
+    }
 }

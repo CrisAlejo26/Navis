@@ -78,25 +78,25 @@ Entra:
   selección de filas puesta, manda la selección, y el diálogo lo dice con
   palabras: «12 seleccionados» frente a «47 de 213 con los filtros puestos».
 
-  El corolario importante: **no hay un botón de "exportar todo"**. Quitar los
-  filtros y volver a exportar es un gesto, y es el que deja claro qué se lleva.
+    El corolario importante: **no hay un botón de "exportar todo"**. Quitar los
+    filtros y volver a exportar es un gesto, y es el que deja claro qué se lleva.
 
 - **D2 — El fichero lo escribe el navegador, no el servidor.** Cuatro razones,
   y ninguna es la comodidad:
 
-  1. **El idioma.** Los seis idiomas viven en `packages/i18n` y los consume la
-     interfaz. Un Excel generado en la API saldría en español o habría que
-     duplicar las traducciones en el servidor (Regla 2).
-  2. **El color.** Los acentos de sedes, dones, labores y emociones son datos
-     de la iglesia y de la persona, y ya están en el cliente pintándose.
-  3. **La imagen y el PDF necesitan un navegador.** El rasterizado por
-     `<foreignObject>` de `lib/calendar/rasterize.ts` no tiene equivalente en
-     Node sin meter un Chrome headless en el contenedor de la API.
-  4. **El VPS.** Generar ficheros es trabajo de CPU y memoria; hacerlo en el
-     aparato de quien pulsa el botón no le cuesta nada al servidor.
+    1. **El idioma.** Los seis idiomas viven en `packages/i18n` y los consume la
+       interfaz. Un Excel generado en la API saldría en español o habría que
+       duplicar las traducciones en el servidor (Regla 2).
+    2. **El color.** Los acentos de sedes, dones, labores y emociones son datos
+       de la iglesia y de la persona, y ya están en el cliente pintándose.
+    3. **La imagen y el PDF necesitan un navegador.** El rasterizado por
+       `<foreignObject>` de `lib/calendar/rasterize.ts` no tiene equivalente en
+       Node sin meter un Chrome headless en el contenedor de la API.
+    4. **El VPS.** Generar ficheros es trabajo de CPU y memoria; hacerlo en el
+       aparato de quien pulsa el botón no le cuesta nada al servidor.
 
-  Lo que sí pone el servidor son **las filas**, que es lo único que no puede
-  saber el cliente porque el listado va paginado (D3).
+    Lo que sí pone el servidor son **las filas**, que es lo único que no puede
+    saber el cliente porque el listado va paginado (D3).
 
 - **D3 — Un endpoint `/export` por módulo, con tope y aviso.** No vale
   `?limit=2000` sobre el listado: `isPageSize` valida el tamaño de página
@@ -106,91 +106,91 @@ Entra:
   cumplirse—. Son dos formas distintas del mismo dato, así que son dos
   endpoints.
 
-  **Creyentes es la excepción y conviene decirlo**: una persona no tiene ningún
-  campo largo que la fila trunque, así que su fila de exportación resultó ser
-  la misma del listado y `BelieverExportRow` es un alias de `BelieverListItem`.
-  El endpoint se queda igualmente: el día que la ficha crezca con algo que el
-  listado no lleve, el sitio donde ponerlo ya existe.
+    **Creyentes es la excepción y conviene decirlo**: una persona no tiene ningún
+    campo largo que la fila trunque, así que su fila de exportación resultó ser
+    la misma del listado y `BelieverExportRow` es un alias de `BelieverListItem`.
+    El endpoint se queda igualmente: el día que la ficha crezca con algo que el
+    listado no lleve, el sitio donde ponerlo ya existe.
 
-  El tope es `EXPORT_MAX_ROWS = 2000`, en `packages/shared`. Al pasarse, la
-  respuesta trae `truncated: true` y la interfaz lo dice antes de descargar
-  nada: «Se exportan las primeras 2000. Afina los filtros para llevártelas
-  todas.» **Un truncado silencioso es peor que un error**: el fichero parece
-  completo y nadie vuelve a mirar.
+    El tope es `EXPORT_MAX_ROWS = 2000`, en `packages/shared`. Al pasarse, la
+    respuesta trae `truncated: true` y la interfaz lo dice antes de descargar
+    nada: «Se exportan las primeras 2000. Afina los filtros para llevártelas
+    todas.» **Un truncado silencioso es peor que un error**: el fichero parece
+    completo y nadie vuelve a mirar.
 
 - **D4 — Cinco formatos, y cada uno tiene un para qué.** Si no se puede
   escribir en una línea para qué sirve, sobra:
 
-  | Formato      | Para qué                                             |
-  | ------------ | ---------------------------------------------------- |
-  | **Excel**    | Abrirlo y seguir trabajando: ordenar, sumar, marcar  |
-  | **PDF**      | Mandarlo por WhatsApp o imprimirlo, sin que se toque |
-  | **Imagen**   | Pegarlo en un chat de un tirón                       |
-  | **Markdown** | Meterlo en un acta, un documento o un correo         |
-  | **CSV**      | Metérselo a otro sistema                             |
+    | Formato      | Para qué                                             |
+    | ------------ | ---------------------------------------------------- |
+    | **Excel**    | Abrirlo y seguir trabajando: ordenar, sumar, marcar  |
+    | **PDF**      | Mandarlo por WhatsApp o imprimirlo, sin que se toque |
+    | **Imagen**   | Pegarlo en un chat de un tirón                       |
+    | **Markdown** | Meterlo en un acta, un documento o un correo         |
+    | **CSV**      | Metérselo a otro sistema                             |
 
-  El CSV no estaba pedido y entra porque **sale gratis**: con el extractor de
-  filas de D7 escrito, son quince líneas, y es el único que traga cualquier
-  otra herramienta. El resto no: `.ods`, `.docx` y `.json` no tienen un para
-  qué que no cubra ya uno de estos cinco.
+    El CSV no estaba pedido y entra porque **sale gratis**: con el extractor de
+    filas de D7 escrito, son quince líneas, y es el único que traga cualquier
+    otra herramienta. El resto no: `.ods`, `.docx` y `.json` no tienen un para
+    qué que no cubra ya uno de estos cinco.
 
 - **D5 — El `.xlsx` se escribe a mano, sin librería.** Un `.xlsx` es un ZIP con
   seis ficheros XML dentro. Con el método `store` —sin comprimir, que Excel
   acepta— hace falta un escritor de ZIP con su CRC32: unas noventa líneas.
 
-  La alternativa era `exceljs` o `xlsx`: entre 400 kB y 1 MB en el paquete, con
-  dependencias de Node que hay que apuntalar para que corran en el navegador, y
-  para usar un diez por ciento de lo que traen. Este repositorio ya tomó
-  exactamente esta decisión con el PDF de la lámina (`lib/calendar/pdf.ts`,
-  «cinco objetos y una tabla de posiciones al final») y salió bien.
+    La alternativa era `exceljs` o `xlsx`: entre 400 kB y 1 MB en el paquete, con
+    dependencias de Node que hay que apuntalar para que corran en el navegador, y
+    para usar un diez por ciento de lo que traen. Este repositorio ya tomó
+    exactamente esta decisión con el PDF de la lámina (`lib/calendar/pdf.ts`,
+    «cinco objetos y una tabla de posiciones al final») y salió bien.
 
-  El riesgo real no es escribirlo, es **que Excel lo abra**: el formato es
-  quisquilloso con el orden de los elementos y con las relaciones. Por eso hay
-  un test que descomprime lo generado y comprueba las seis partes, y un
-  criterio de aceptación que dice «se abre en Excel y en LibreOffice», que es
-  la única prueba que vale de verdad.
+    El riesgo real no es escribirlo, es **que Excel lo abra**: el formato es
+    quisquilloso con el orden de los elementos y con las relaciones. Por eso hay
+    un test que descomprime lo generado y comprueba las seis partes, y un
+    criterio de aceptación que dice «se abre en Excel y en LibreOffice», que es
+    la única prueba que vale de verdad.
 
 - **D6 — El PDF es multipágina, y cada página es la lámina rasterizada.** Un
   PDF de texto de verdad —fuentes incrustadas, saltos de línea, tabla
   paginada— es otro proyecto, y con `WinAnsiEncoding` se rompería en el primer
   nombre que no quepa en Latin-1.
 
-  Así que se hace lo que ya funciona: la tabla se pinta en trozos de N filas en
-  un nodo oculto, cada trozo se rasteriza a JPEG con `nodeToJpeg` y cada JPEG es
-  **una página** del PDF. `buildPdf` pasa de una página a varias, que es
-  añadirle un bucle y una tabla de posiciones más larga.
+    Así que se hace lo que ya funciona: la tabla se pinta en trozos de N filas en
+    un nodo oculto, cada trozo se rasteriza a JPEG con `nodeToJpeg` y cada JPEG es
+    **una página** del PDF. `buildPdf` pasa de una página a varias, que es
+    añadirle un bucle y una tabla de posiciones más larga.
 
-  Lo que se pierde: el texto no se puede seleccionar ni buscar dentro del PDF.
-  Lo que se gana: cualquier alfabeto, el diseño exacto de la aplicación, los
-  colores del dato y ochenta líneas en lugar de trescientas cincuenta. Para un
-  listado que se manda o se imprime, el cambio compensa. Si algún día hace
-  falta buscar dentro, el camino es el CSV o el Excel, que ya están.
+    Lo que se pierde: el texto no se puede seleccionar ni buscar dentro del PDF.
+    Lo que se gana: cualquier alfabeto, el diseño exacto de la aplicación, los
+    colores del dato y ochenta líneas en lugar de trescientas cincuenta. Para un
+    listado que se manda o se imprime, el cambio compensa. Si algún día hace
+    falta buscar dentro, el camino es el CSV o el Excel, que ya están.
 
 - **D7 — Las columnas se declaran una vez por módulo.** En
   `apps/web/src/lib/export/columns.ts` vive el tipo, y cada módulo pone el suyo
   en `lib/<modulo>/export-columns.ts`:
 
-  ```ts
-  interface ExportColumn<TRow> {
-    key: string;
-    /** Traducida: el fichero sale en el idioma de quien exporta. */
-    header: (t: TFunction) => string;
-    value: (row: TRow, t: TFunction) => ExportCell;
-    width?: number;
-    align?: 'left' | 'right';
-  }
+    ```ts
+    interface ExportColumn<TRow> {
+        key: string;
+        /** Traducida: el fichero sale en el idioma de quien exporta. */
+        header: (t: TFunction) => string;
+        value: (row: TRow, t: TFunction) => ExportCell;
+        width?: number;
+        align?: 'left' | 'right';
+    }
 
-  type ExportCell =
-    | { kind: 'text'; text: string }
-    | { kind: 'number'; value: number }
-    | { kind: 'day'; iso: string } // AAAA-MM-DD, ver D11
-    | { kind: 'tag'; text: string; accent: string }; // el color viene del dato
-  ```
+    type ExportCell =
+        | { kind: 'text'; text: string }
+        | { kind: 'number'; value: number }
+        | { kind: 'day'; iso: string } // AAAA-MM-DD, ver D11
+        | { kind: 'tag'; text: string; accent: string }; // el color viene del dato
+    ```
 
-  Los cinco escritores leen **esta** descripción y ninguno sabe qué es un
-  creyente. Es lo que hace que el RFC 0010 exporte listas sin escribir un
-  escritor más, y lo que evita cinco veces la misma columna en cinco sitios
-  (Regla 1).
+    Los cinco escritores leen **esta** descripción y ninguno sabe qué es un
+    creyente. Es lo que hace que el RFC 0010 exporte listas sin escribir un
+    escritor más, y lo que evita cinco veces la misma columna en cinco sitios
+    (Regla 1).
 
 - **D8 — El Excel lleva dos hojas: los datos y el resumen.** La segunda cuenta
   lo que hay en la primera —por estado, por sede, por don, por labor, por
@@ -198,10 +198,10 @@ Entra:
   condicional) en el color del dato. Se lee de un vistazo y es lo que convierte
   un volcado en un informe.
 
-  Y se cuenta **sobre las filas exportadas, en el cliente**, no pidiéndole al
-  servidor su resumen: si el resumen viniera de otra consulta, tarde o temprano
-  diría 213 en una hoja donde hay 47 filas. El fichero tiene que ser coherente
-  consigo mismo por construcción, no por suerte.
+    Y se cuenta **sobre las filas exportadas, en el cliente**, no pidiéndole al
+    servidor su resumen: si el resumen viniera de otra consulta, tarde o temprano
+    diría 213 en una hoja donde hay 47 filas. El fichero tiene que ser coherente
+    consigo mismo por construcción, no por suerte.
 
 - **D9 — En el Excel los colores van en hexadecimal, y es la única excepción.**
   Excel no sabe de tokens, ni de tema claro y oscuro, ni de `oklch`. La banda
@@ -209,10 +209,10 @@ Entra:
   en blanco; los tonos de las etiquetas se calculan mezclando el acento del
   dato con blanco al 15 %, en JS, y no los elige nadie a ojo.
 
-  Un fichero de Excel es siempre claro: no hay tema que seguir. Por eso esto no
-  incumple la Regla 3 —no hay dos temas que atender—, pero **sí sale de
-  `themeColorsHex` y de `ACCENT_PALETTE`**, que es de donde ya salen los
-  colores de la lámina.
+    Un fichero de Excel es siempre claro: no hay tema que seguir. Por eso esto no
+    incumple la Regla 3 —no hay dos temas que atender—, pero **sí sale de
+    `themeColorsHex` y de `ACCENT_PALETTE`**, que es de donde ya salen los
+    colores de la lámina.
 
 - **D10 — Las fechas van con el formato corto del sistema (`numFmtId` 14).**
   Escribir `dd/mm/yyyy` a mano deja el fichero en español para siempre: quien
@@ -221,9 +221,9 @@ Entra:
   el fichero. Y el valor es un número de serie de Excel, no una cadena: así se
   ordena, se filtra por rango y se le puede restar otra fecha.
 
-  Cuidado con el número de serie: cuenta desde el 1899-12-30 y **Excel se cree
-  que 1900 fue bisiesto**. La conversión va en un solo sitio, con su test, como
-  `iso-day.ts` en la API.
+    Cuidado con el número de serie: cuenta desde el 1899-12-30 y **Excel se cree
+    que 1900 fue bisiesto**. La conversión va en un solo sitio, con su test, como
+    `iso-day.ts` en la API.
 
 - **D11 — Un día de calendario no se convierte con `new Date(iso)`.** Es la
   trampa que ya está escrita en `CLAUDE.md` por partida doble —`iso-day.ts` en
@@ -240,9 +240,9 @@ Entra:
   que un permiso aparte para exportarlo no protege nada y sí da la falsa
   sensación de que sí.
 
-  Lo que **no** sale nunca es lo que no está en la pantalla de origen: los
-  audios, las fotos y el identificador interno. Un `uuid` en una columna es
-  ruido para quien lo lee y un dato de más para quien no debería tenerlo.
+    Lo que **no** sale nunca es lo que no está en la pantalla de origen: los
+    audios, las fotos y el identificador interno. Un `uuid` en una columna es
+    ruido para quien lo lee y un dato de más para quien no debería tenerlo.
 
 - **D13 — Elemento firma: la hoja que cambia de piel** (§7.3). Un solo objeto
   en el diálogo —una hoja de papel a escala— que se transforma al elegir

@@ -9,28 +9,28 @@ import { useThemeStore } from '@/lib/theme';
 import { renderWithI18n as render } from '@/test/render';
 
 describe('ThemeToggle', () => {
-  it('cambia el modo y añade la clase dark al documento', async () => {
-    const user = userEvent.setup();
-    render(<ThemeToggle />);
+    it('cambia el modo y añade la clase dark al documento', async () => {
+        const user = userEvent.setup();
+        render(<ThemeToggle />);
 
-    await user.click(
-      screen.getByRole('radio', { name: /oscuro|dark|sombre|escuro|dunkel|scuro/i }),
-    );
+        await user.click(
+            screen.getByRole('radio', { name: /oscuro|dark|sombre|escuro|dunkel|scuro/i }),
+        );
 
-    expect(useThemeStore.getState().mode).toBe('dark');
-    expect(document.documentElement.classList.contains('dark')).toBe(true);
+        expect(useThemeStore.getState().mode).toBe('dark');
+        expect(document.documentElement.classList.contains('dark')).toBe(true);
 
-    await user.click(screen.getByRole('radio', { name: /claro|light|clair|hell|chiaro/i }));
+        await user.click(screen.getByRole('radio', { name: /claro|light|clair|hell|chiaro/i }));
 
-    expect(useThemeStore.getState().resolvedTheme).toBe('light');
-    expect(document.documentElement.classList.contains('dark')).toBe(false);
-  });
+        expect(useThemeStore.getState().resolvedTheme).toBe('light');
+        expect(document.documentElement.classList.contains('dark')).toBe(false);
+    });
 
-  it('marca como seleccionada la opción activa', () => {
-    useThemeStore.getState().setMode('system');
-    render(<ThemeToggle />);
+    it('marca como seleccionada la opción activa', () => {
+        useThemeStore.getState().setMode('system');
+        render(<ThemeToggle />);
 
-    const systemOption = screen.getByRole('radio', { name: /sistema|system|système/i });
-    expect(systemOption).toHaveAttribute('aria-checked', 'true');
-  });
+        const systemOption = screen.getByRole('radio', { name: /sistema|system|système/i });
+        expect(systemOption).toHaveAttribute('aria-checked', 'true');
+    });
 });

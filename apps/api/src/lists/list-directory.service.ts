@@ -16,34 +16,34 @@ import { toListViewerView } from './list-viewers.mapper';
  */
 @Injectable()
 export class ListDirectoryService {
-  constructor(
-    private readonly viewers: ListViewersService,
-    private readonly grants: ListGrantsService,
-  ) {}
+    constructor(
+        private readonly viewers: ListViewersService,
+        private readonly grants: ListGrantsService,
+    ) {}
 
-  async of(churchId: string): Promise<ListViewerView[]> {
-    return this.compose(await this.viewers.list(churchId));
-  }
+    async of(churchId: string): Promise<ListViewerView[]> {
+        return this.compose(await this.viewers.list(churchId));
+    }
 
-  async one(viewer: ListViewer): Promise<ListViewerView> {
-    const [view] = await this.compose([viewer]);
-    return view ?? toListViewerView(viewer, []);
-  }
+    async one(viewer: ListViewer): Promise<ListViewerView> {
+        const [view] = await this.compose([viewer]);
+        return view ?? toListViewerView(viewer, []);
+    }
 
-  private async compose(viewers: ListViewer[]): Promise<ListViewerView[]> {
-    if (viewers.length === 0) return [];
+    private async compose(viewers: ListViewer[]): Promise<ListViewerView[]> {
+        if (viewers.length === 0) return [];
 
-    const [people, listas] = await Promise.all([
-      this.viewers.believersOf(viewers),
-      this.grants.listsOf(viewers.map((one) => one.id)),
-    ]);
+        const [people, listas] = await Promise.all([
+            this.viewers.believersOf(viewers),
+            this.grants.listsOf(viewers.map((one) => one.id)),
+        ]);
 
-    return viewers.map((viewer) =>
-      toListViewerView(
-        viewer,
-        listas.get(viewer.id) ?? [],
-        viewer.believerId ? people.get(viewer.believerId) : undefined,
-      ),
-    );
-  }
+        return viewers.map((viewer) =>
+            toListViewerView(
+                viewer,
+                listas.get(viewer.id) ?? [],
+                viewer.believerId ? people.get(viewer.believerId) : undefined,
+            ),
+        );
+    }
 }

@@ -1,8 +1,8 @@
 import type {
-  CreateMeetingInput,
-  Meeting,
-  SetMeetingSlotsInput,
-  UpdateMeetingInput,
+    CreateMeetingInput,
+    Meeting,
+    SetMeetingSlotsInput,
+    UpdateMeetingInput,
 } from '@navis/shared';
 import { useMutation, useQueryClient, type QueryClient } from '@tanstack/react-query';
 
@@ -12,73 +12,73 @@ import { queryKeys } from './query-keys';
 
 /** Todo lo del calendario cuelga de la misma raíz: se invalida de una vez. */
 const refresh = (client: QueryClient) =>
-  client.invalidateQueries({ queryKey: queryKeys.calendar.all });
+    client.invalidateQueries({ queryKey: queryKeys.calendar.all });
 
 /**
  * Poner a alguien en una fase. Es la acción que más se repite, así que se
  * pinta al instante y se corrige si la API dice que no (§8.6).
  */
 export function useAssignSlot(api: ApiClient, calendarId: string) {
-  const client = useQueryClient();
+    const client = useQueryClient();
 
-  return useMutation({
-    mutationFn: ({ believerName: _name, ...input }: AssignVariables) =>
-      api.put<Meeting>(`/calendars/${calendarId}/slots`, { ...input }),
+    return useMutation({
+        mutationFn: ({ believerName: _name, ...input }: AssignVariables) =>
+            api.put<Meeting>(`/calendars/${calendarId}/slots`, { ...input }),
 
-    onMutate: async (input: AssignVariables) => {
-      await client.cancelQueries({ queryKey: queryKeys.calendar.all });
-      const previous = client.getQueriesData({ queryKey: queryKeys.calendar.all });
+        onMutate: async (input: AssignVariables) => {
+            await client.cancelQueries({ queryKey: queryKeys.calendar.all });
+            const previous = client.getQueriesData({ queryKey: queryKeys.calendar.all });
 
-      client.setQueriesData({ queryKey: queryKeys.calendar.all }, (data: unknown) =>
-        isCalendarRange(data) ? withAssignment(data, input) : data,
-      );
+            client.setQueriesData({ queryKey: queryKeys.calendar.all }, (data: unknown) =>
+                isCalendarRange(data) ? withAssignment(data, input) : data,
+            );
 
-      return { previous };
-    },
+            return { previous };
+        },
 
-    onError: (_error, _input, context) => {
-      for (const [key, data] of context?.previous ?? []) client.setQueryData(key, data);
-    },
+        onError: (_error, _input, context) => {
+            for (const [key, data] of context?.previous ?? []) client.setQueryData(key, data);
+        },
 
-    onSettled: () => refresh(client),
-  });
+        onSettled: () => refresh(client),
+    });
 }
 
 export function useCreateMeeting(api: ApiClient, calendarId: string) {
-  const client = useQueryClient();
+    const client = useQueryClient();
 
-  return useMutation({
-    mutationFn: (input: CreateMeetingInput) =>
-      api.post<Meeting>(`/calendars/${calendarId}/meetings`, { ...input }),
-    onSuccess: () => refresh(client),
-  });
+    return useMutation({
+        mutationFn: (input: CreateMeetingInput) =>
+            api.post<Meeting>(`/calendars/${calendarId}/meetings`, { ...input }),
+        onSuccess: () => refresh(client),
+    });
 }
 
 export function useUpdateMeeting(api: ApiClient, calendarId: string) {
-  const client = useQueryClient();
+    const client = useQueryClient();
 
-  return useMutation({
-    mutationFn: ({ id, ...input }: UpdateMeetingInput & { id: string }) =>
-      api.patch<Meeting>(`/calendars/${calendarId}/meetings/${id}`, { ...input }),
-    onSuccess: () => refresh(client),
-  });
+    return useMutation({
+        mutationFn: ({ id, ...input }: UpdateMeetingInput & { id: string }) =>
+            api.patch<Meeting>(`/calendars/${calendarId}/meetings/${id}`, { ...input }),
+        onSuccess: () => refresh(client),
+    });
 }
 
 export function useSetMeetingSlots(api: ApiClient, calendarId: string) {
-  const client = useQueryClient();
+    const client = useQueryClient();
 
-  return useMutation({
-    mutationFn: ({ id, ...input }: SetMeetingSlotsInput & { id: string }) =>
-      api.put<Meeting>(`/calendars/${calendarId}/meetings/${id}/slots`, { ...input }),
-    onSuccess: () => refresh(client),
-  });
+    return useMutation({
+        mutationFn: ({ id, ...input }: SetMeetingSlotsInput & { id: string }) =>
+            api.put<Meeting>(`/calendars/${calendarId}/meetings/${id}/slots`, { ...input }),
+        onSuccess: () => refresh(client),
+    });
 }
 
 export function useDeleteMeeting(api: ApiClient, calendarId: string) {
-  const client = useQueryClient();
+    const client = useQueryClient();
 
-  return useMutation({
-    mutationFn: (id: string) => api.delete<void>(`/calendars/${calendarId}/meetings/${id}`),
-    onSuccess: () => refresh(client),
-  });
+    return useMutation({
+        mutationFn: (id: string) => api.delete<void>(`/calendars/${calendarId}/meetings/${id}`),
+        onSuccess: () => refresh(client),
+    });
 }

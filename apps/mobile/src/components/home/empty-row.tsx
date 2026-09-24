@@ -8,18 +8,18 @@ import type { IoniconName } from '@/lib/nav-mobile';
  * dice qué falta, no un espacio en blanco (Regla 9 §6). Lo usan tres tarjetas
  * de inicio (eventos, notas, tareas), así que se extrae (Regla 1 §5). */
 export function EmptyRow({
-  icon,
-  label,
-  palette,
+    icon,
+    label,
+    palette,
 }: {
-  icon: IoniconName;
-  label: string;
-  palette: ThemeColors;
+    icon: IoniconName;
+    label: string;
+    palette: ThemeColors;
 }) {
-  return (
-    <View className="gap-1.5 py-3 items-center">
-      <Ionicons name={icon} size={22} color={palette.mutedForeground} />
-      <Text className="text-sm text-muted-foreground">{label}</Text>
-    </View>
-  );
+    return (
+        <View className="gap-1.5 py-3 items-center">
+            <Ionicons name={icon} size={22} color={palette.mutedForeground} />
+            <Text className="text-sm text-muted-foreground">{label}</Text>
+        </View>
+    );
 }

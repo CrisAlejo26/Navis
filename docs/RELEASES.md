@@ -33,11 +33,11 @@ pnpm release:dry minor
 1. Vuelve a pasar el CI completo. Si falla, no se compila nada.
 2. Crea el release **en borrador**.
 3. Compila en paralelo:
-   - **Escritorio**: `.msi`/`.exe` (Windows), `.dmg` para Apple Silicon e Intel,
-     `.AppImage`/`.deb` (Linux).
-   - **Android**: un `.apk` instalable. **No se genera `.aab`**: ese formato
-     solo sirve para subirlo a Play Store y aquí la distribución es directa.
-   - **Web**: un `.zip` con el sitio ya construido, para autoalojarlo sin Docker.
+    - **Escritorio**: `.msi`/`.exe` (Windows), `.dmg` para Apple Silicon e Intel,
+      `.AppImage`/`.deb` (Linux).
+    - **Android**: un `.apk` instalable. **No se genera `.aab`**: ese formato
+      solo sirve para subirlo a Play Store y aquí la distribución es directa.
+    - **Web**: un `.zip` con el sitio ya construido, para autoalojarlo sin Docker.
 4. Deja el release en borrador. Lo revisas y le das a **Publish release**.
 
 Tarda unos 20 minutos, casi todo en compilar Rust para cuatro sistemas.

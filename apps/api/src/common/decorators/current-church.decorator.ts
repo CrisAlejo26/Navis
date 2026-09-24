@@ -11,6 +11,6 @@ import type { Request } from 'express';
  *   listar(@CurrentChurch() churchId: string) { … }
  */
 export const CurrentChurch = createParamDecorator((_data: unknown, context: ExecutionContext) => {
-  const request = context.switchToHttp().getRequest<Request>();
-  return request.churchId;
+    const request = context.switchToHttp().getRequest<Request>();
+    return request.churchId;
 });

@@ -25,109 +25,120 @@ const ALTO = 72;
  * compositor sabe animar (Regla 9 §5).
  */
 export function Wake({ days, accent }: { days: readonly ListDay[]; accent: string }) {
-  const { t } = useTranslation();
-  const [abierta, setAbierta] = useState(false);
-  const tablaId = useId();
+    const { t } = useTranslation();
+    const [abierta, setAbierta] = useState(false);
+    const tablaId = useId();
 
-  const shape = wakeShape(
-    days.map((one) => one.views),
-    ANCHO,
-    ALTO,
-  );
-  const total = days.reduce((suma, one) => suma + one.views, 0);
-
-  if (!shape.enough) {
-    return (
-      <div className="p-5 rounded-xl border bg-card">
-        <p className="text-2xl font-semibold tabular-nums">{formatNumber(total)}</p>
-        <p className="mt-1 text-sm text-muted-foreground">{t('lists.wakeTooFew')}</p>
-      </div>
+    const shape = wakeShape(
+        days.map((one) => one.views),
+        ANCHO,
+        ALTO,
     );
-  }
+    const total = days.reduce((suma, one) => suma + one.views, 0);
 
-  const cumbre = days[shape.peak];
+    if (!shape.enough) {
+        return (
+            <div className="p-5 rounded-xl border bg-card">
+                <p className="text-2xl font-semibold tabular-nums">{formatNumber(total)}</p>
+                <p className="mt-1 text-sm text-muted-foreground">{t('lists.wakeTooFew')}</p>
+            </div>
+        );
+    }
 
-  return (
-    <div className="p-5 gap-3 flex flex-col rounded-xl border bg-card" style={accentVars(accent)}>
-      <div className="gap-2 flex flex-wrap items-baseline justify-between">
-        <h3 className="text-sm font-semibold">{t('lists.wake')}</h3>
-        {cumbre && (
-          <p className="text-xs text-muted-foreground">
-            {t('lists.wakePeak', { day: formatDay(cumbre.day, 'short'), views: cumbre.views })}
-          </p>
-        )}
-      </div>
+    const cumbre = days[shape.peak];
 
-      <svg
-        viewBox={`0 0 ${String(ANCHO)} ${String(ALTO)}`}
-        preserveAspectRatio="none"
-        role="img"
-        aria-label={t('lists.wakeLabel', { days: days.length, views: total })}
-        // `animate-track-in` es el `scaleX` desde el origen izquierdo que ya usa
-        // la travesía de profecías: la estela se dibuja igual y no hace falta
-        // otra animación (Regla 1 §5).
-        className="animate-track-in h-[72px] w-full origin-left"
-      >
-        <path d={shape.area} fill="var(--acento)" fillOpacity={0.75} />
-        {/* La línea central sostiene la figura cuando un día viene a cero: sin
+    return (
+        <div
+            className="p-5 gap-3 flex flex-col rounded-xl border bg-card"
+            style={accentVars(accent)}
+        >
+            <div className="gap-2 flex flex-wrap items-baseline justify-between">
+                <h3 className="text-sm font-semibold">{t('lists.wake')}</h3>
+                {cumbre && (
+                    <p className="text-xs text-muted-foreground">
+                        {t('lists.wakePeak', {
+                            day: formatDay(cumbre.day, 'short'),
+                            views: cumbre.views,
+                        })}
+                    </p>
+                )}
+            </div>
+
+            <svg
+                viewBox={`0 0 ${String(ANCHO)} ${String(ALTO)}`}
+                preserveAspectRatio="none"
+                role="img"
+                aria-label={t('lists.wakeLabel', { days: days.length, views: total })}
+                // `animate-track-in` es el `scaleX` desde el origen izquierdo que ya usa
+                // la travesía de profecías: la estela se dibuja igual y no hace falta
+                // otra animación (Regla 1 §5).
+                className="animate-track-in h-[72px] w-full origin-left"
+            >
+                <path d={shape.area} fill="var(--acento)" fillOpacity={0.75} />
+                {/* La línea central sostiene la figura cuando un día viene a cero: sin
             ella, la estela se parte en islas y deja de leerse como un rastro. */}
-        <line
-          x1={0}
-          y1={ALTO / 2}
-          x2={ANCHO}
-          y2={ALTO / 2}
-          stroke="var(--acento)"
-          strokeWidth={1.5}
-          strokeOpacity={0.5}
-        />
-        {shape.peak >= 0 && (
-          <circle cx={shape.points[shape.peak]?.x ?? 0} cy={ALTO / 2} r={3} fill="var(--acento)" />
-        )}
-      </svg>
+                <line
+                    x1={0}
+                    y1={ALTO / 2}
+                    x2={ANCHO}
+                    y2={ALTO / 2}
+                    stroke="var(--acento)"
+                    strokeWidth={1.5}
+                    strokeOpacity={0.5}
+                />
+                {shape.peak >= 0 && (
+                    <circle
+                        cx={shape.points[shape.peak]?.x ?? 0}
+                        cy={ALTO / 2}
+                        r={3}
+                        fill="var(--acento)"
+                    />
+                )}
+            </svg>
 
-      {/*
+            {/*
         Cada día, su objetivo y su etiqueta completa. Van encima del dibujo y no
         dentro del SVG para que el foco del teclado se vea de verdad, y son
         **botones** porque de verdad hacen algo: abren la tabla con los treinta
         datos. Un objetivo que solo recibe el foco y no lleva a ninguna parte es
         una parada de teclado que estorba.
       */}
-      <ul className="flex gap-px">
-        {days.map((day) => (
-          <li key={day.day} className="flex-1">
-            <button
-              type="button"
-              aria-label={t('lists.wakeDay', {
-                day: formatDay(day.day),
-                views: day.views,
-                visitors: day.visitors,
-              })}
-              aria-controls={tablaId}
-              onClick={() => {
-                setAbierta(true);
-              }}
-              className="h-2 block w-full cursor-pointer rounded-full bg-[var(--acento)]/25 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-              style={{ opacity: day.views > 0 ? 1 : 0.35 }}
-            />
-          </li>
-        ))}
-      </ul>
+            <ul className="flex gap-px">
+                {days.map((day) => (
+                    <li key={day.day} className="flex-1">
+                        <button
+                            type="button"
+                            aria-label={t('lists.wakeDay', {
+                                day: formatDay(day.day),
+                                views: day.views,
+                                visitors: day.visitors,
+                            })}
+                            aria-controls={tablaId}
+                            onClick={() => {
+                                setAbierta(true);
+                            }}
+                            className="h-2 block w-full cursor-pointer rounded-full bg-[var(--acento)]/25 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                            style={{ opacity: day.views > 0 ? 1 : 0.35 }}
+                        />
+                    </li>
+                ))}
+            </ul>
 
-      <div>
-        <button
-          type="button"
-          aria-expanded={abierta}
-          aria-controls={tablaId}
-          onClick={() => {
-            setAbierta((one) => !one);
-          }}
-          className="text-xs font-medium cursor-pointer text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
-        >
-          {t('lists.seeData')}
-        </button>
+            <div>
+                <button
+                    type="button"
+                    aria-expanded={abierta}
+                    aria-controls={tablaId}
+                    onClick={() => {
+                        setAbierta((one) => !one);
+                    }}
+                    className="text-xs font-medium cursor-pointer text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+                >
+                    {t('lists.seeData')}
+                </button>
 
-        {abierta && <WakeTable id={tablaId} days={days} />}
-      </div>
-    </div>
-  );
+                {abierta && <WakeTable id={tablaId} days={days} />}
+            </div>
+        </div>
+    );
 }

@@ -13,48 +13,48 @@ import { toast } from '@/lib/toast';
  * se lo imagine al revés.
  */
 export function DeletePatternDialog({
-  pattern,
-  calendarId,
-  onClose,
+    pattern,
+    calendarId,
+    onClose,
 }: {
-  pattern: MeetingPattern | null;
-  calendarId: string;
-  onClose: () => void;
+    pattern: MeetingPattern | null;
+    calendarId: string;
+    onClose: () => void;
 }) {
-  const { t } = useTranslation();
-  const remove = useDeletePattern(api, calendarId);
-  const [error, setError] = useState<string | null>(null);
+    const { t } = useTranslation();
+    const remove = useDeletePattern(api, calendarId);
+    const [error, setError] = useState<string | null>(null);
 
-  const close = () => {
-    setError(null);
-    onClose();
-  };
+    const close = () => {
+        setError(null);
+        onClose();
+    };
 
-  const confirm = () => {
-    if (!pattern) return;
+    const confirm = () => {
+        if (!pattern) return;
 
-    remove.mutate(pattern.id, {
-      onSuccess: () => {
-        close();
-        toast.success(t('calendar.patternDeleted', { name: pattern.name }));
-      },
-      onError: () => {
-        setError(t('errors.generic'));
-      },
-    });
-  };
+        remove.mutate(pattern.id, {
+            onSuccess: () => {
+                close();
+                toast.success(t('calendar.patternDeleted', { name: pattern.name }));
+            },
+            onError: () => {
+                setError(t('errors.generic'));
+            },
+        });
+    };
 
-  return (
-    <ConfirmDialog
-      open={pattern !== null}
-      onClose={close}
-      onConfirm={confirm}
-      title={t('calendar.deleteTitle', { name: pattern?.name ?? '' })}
-      description={t('calendar.deletePatternBody')}
-      confirmLabel={t('common.delete')}
-      destructive
-      isPending={remove.isPending}
-      error={error}
-    />
-  );
+    return (
+        <ConfirmDialog
+            open={pattern !== null}
+            onClose={close}
+            onConfirm={confirm}
+            title={t('calendar.deleteTitle', { name: pattern?.name ?? '' })}
+            description={t('calendar.deletePatternBody')}
+            confirmLabel={t('common.delete')}
+            destructive
+            isPending={remove.isPending}
+            error={error}
+        />
+    );
 }

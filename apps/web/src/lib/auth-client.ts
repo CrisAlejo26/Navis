@@ -11,28 +11,28 @@ import { env } from './env';
  * añadió a la tabla `user` (role, locale) para que vengan tipados.
  */
 export const authClient = createAuthClient({
-  baseURL: env.VITE_AUTH_URL,
-  plugins: [
-    inferAdditionalFields({
-      user: {
-        // `input: false` igual que en el servidor: son campos de solo lectura,
-        // el cliente no los envía al registrarse.
-        role: { type: 'string', input: false },
-        locale: { type: 'string', input: false },
-      },
-    }),
-  ],
+    baseURL: env.VITE_AUTH_URL,
+    plugins: [
+        inferAdditionalFields({
+            user: {
+                // `input: false` igual que en el servidor: son campos de solo lectura,
+                // el cliente no los envía al registrarse.
+                role: { type: 'string', input: false },
+                locale: { type: 'string', input: false },
+            },
+        }),
+    ],
 });
 
 export const {
-  signIn,
-  signUp,
-  signOut,
-  useSession,
-  getSession,
-  // RFC 0023: métodos del proxy dinámico de Better Auth — `/request-password-reset`
-  // y `/reset-password` ya existen en el servidor en cuanto `emailAndPassword`
-  // lleva `sendResetPassword`, sin plugin de cliente adicional.
-  requestPasswordReset,
-  resetPassword,
+    signIn,
+    signUp,
+    signOut,
+    useSession,
+    getSession,
+    // RFC 0023: métodos del proxy dinámico de Better Auth — `/request-password-reset`
+    // y `/reset-password` ya existen en el servidor en cuanto `emailAndPassword`
+    // lleva `sendResetPassword`, sin plugin de cliente adicional.
+    requestPasswordReset,
+    resetPassword,
 } = authClient;

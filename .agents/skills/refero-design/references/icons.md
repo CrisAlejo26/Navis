@@ -138,11 +138,11 @@ Best when icons must match text weight dynamically.
 ```css
 /* Include from Google Fonts, then: */
 .icon {
-  font-family: 'Material Symbols Outlined';
-  font-variation-settings:
-    'FILL' 0,
-    /* 0 = outline, 1 = solid */ 'wght' 500,
-    /* match your text weight */ 'opsz' 24; /* optical size: 20, 24, 40, 48 */
+    font-family: 'Material Symbols Outlined';
+    font-variation-settings:
+        'FILL' 0,
+        /* 0 = outline, 1 = solid */ 'wght' 500,
+        /* match your text weight */ 'opsz' 24; /* optical size: 20, 24, 40, 48 */
 }
 ```
 

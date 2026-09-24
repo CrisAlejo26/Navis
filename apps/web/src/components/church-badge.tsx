@@ -7,12 +7,12 @@ import { cn } from '@/lib/cn';
  * la encontraría — se quedaría sin generar y el fondo saldría transparente.
  */
 const TINTES: Record<number, string> = {
-  1: 'bg-church-1 text-church-1-foreground',
-  2: 'bg-church-2 text-church-2-foreground',
-  3: 'bg-church-3 text-church-3-foreground',
-  4: 'bg-church-4 text-church-4-foreground',
-  5: 'bg-church-5 text-church-5-foreground',
-  6: 'bg-church-6 text-church-6-foreground',
+    1: 'bg-church-1 text-church-1-foreground',
+    2: 'bg-church-2 text-church-2-foreground',
+    3: 'bg-church-3 text-church-3-foreground',
+    4: 'bg-church-4 text-church-4-foreground',
+    5: 'bg-church-5 text-church-5-foreground',
+    6: 'bg-church-6 text-church-6-foreground',
 };
 
 /**
@@ -25,31 +25,31 @@ const TINTES: Record<number, string> = {
  * varias apagadas, se distingan igual por el dibujo del icono.
  */
 export function ChurchBadge({
-  id,
-  name,
-  muted = false,
-  className,
+    id,
+    name,
+    muted = false,
+    className,
 }: {
-  id: string;
-  /** Solo para la etiqueta accesible: el icono ya no depende del nombre. */
-  name: string;
-  /** Apagada, para las que no son la activa. */
-  muted?: boolean;
-  className?: string;
+    id: string;
+    /** Solo para la etiqueta accesible: el icono ya no depende del nombre. */
+    name: string;
+    /** Apagada, para las que no son la activa. */
+    muted?: boolean;
+    className?: string;
 }) {
-  const { Icon, tinte } = churchIcon(id);
+    const { Icon, tinte } = churchIcon(id);
 
-  return (
-    <span
-      role="img"
-      aria-label={name}
-      className={cn(
-        'h-6 w-6 flex shrink-0 items-center justify-center rounded-md',
-        muted ? 'bg-muted text-muted-foreground' : (TINTES[tinte] ?? TINTES[1]),
-        className,
-      )}
-    >
-      <Icon size={14} aria-hidden />
-    </span>
-  );
+    return (
+        <span
+            role="img"
+            aria-label={name}
+            className={cn(
+                'h-6 w-6 flex shrink-0 items-center justify-center rounded-md',
+                muted ? 'bg-muted text-muted-foreground' : (TINTES[tinte] ?? TINTES[1]),
+                className,
+            )}
+        >
+            <Icon size={14} aria-hidden />
+        </span>
+    );
 }

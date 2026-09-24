@@ -10,37 +10,37 @@ import { useCallback, type KeyboardEvent, type RefObject } from 'react';
  * fuentes de verdad que se desincronicen.
  */
 export function useArrowKeys(
-  container: RefObject<HTMLElement | null>,
-  columns: number,
+    container: RefObject<HTMLElement | null>,
+    columns: number,
 ): (event: KeyboardEvent<HTMLElement>) => void {
-  return useCallback(
-    (event: KeyboardEvent<HTMLElement>) => {
-      const steps: Record<string, number> = {
-        ArrowLeft: -1,
-        ArrowRight: 1,
-        ArrowUp: -columns,
-        ArrowDown: columns,
-      };
+    return useCallback(
+        (event: KeyboardEvent<HTMLElement>) => {
+            const steps: Record<string, number> = {
+                ArrowLeft: -1,
+                ArrowRight: 1,
+                ArrowUp: -columns,
+                ArrowDown: columns,
+            };
 
-      const step = steps[event.key];
-      const isEdge = event.key === 'Home' || event.key === 'End';
-      if (step === undefined && !isEdge) return;
+            const step = steps[event.key];
+            const isEdge = event.key === 'Home' || event.key === 'End';
+            if (step === undefined && !isEdge) return;
 
-      const days = [
-        ...(container.current?.querySelectorAll<HTMLElement>('[data-day-button]') ?? []),
-      ];
-      const current = days.indexOf(document.activeElement as HTMLElement);
-      if (current < 0) return;
+            const days = [
+                ...(container.current?.querySelectorAll<HTMLElement>('[data-day-button]') ?? []),
+            ];
+            const current = days.indexOf(document.activeElement as HTMLElement);
+            if (current < 0) return;
 
-      event.preventDefault();
-      const target = isEdge
-        ? event.key === 'Home'
-          ? 0
-          : days.length - 1
-        : Math.min(Math.max(current + (step ?? 0), 0), days.length - 1);
+            event.preventDefault();
+            const target = isEdge
+                ? event.key === 'Home'
+                    ? 0
+                    : days.length - 1
+                : Math.min(Math.max(current + (step ?? 0), 0), days.length - 1);
 
-      days[target]?.focus();
-    },
-    [columns, container],
-  );
+            days[target]?.focus();
+        },
+        [columns, container],
+    );
 }

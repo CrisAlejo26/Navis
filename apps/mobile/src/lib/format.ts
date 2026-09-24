@@ -10,7 +10,7 @@ import { getLocale, i18n } from './i18n';
 
 /** «lunes, 3 de agosto de 2026». Para la cabecera del panel. */
 export function formatLongDate(value: Date): string {
-  return new Intl.DateTimeFormat(getLocale(), { dateStyle: 'full' }).format(value);
+    return new Intl.DateTimeFormat(getLocale(), { dateStyle: 'full' }).format(value);
 }
 
 /**
@@ -19,24 +19,24 @@ export function formatLongDate(value: Date): string {
  * misma trampa que `database/iso-day.ts` en la API (CLAUDE.md).
  */
 export function formatDay(iso: string, style: 'short' | 'medium' = 'medium'): string {
-  const date = new Date(`${iso.slice(0, 10)}T00:00:00Z`);
-  if (Number.isNaN(date.getTime())) return '—';
+    const date = new Date(`${iso.slice(0, 10)}T00:00:00Z`);
+    if (Number.isNaN(date.getTime())) return '—';
 
-  return new Intl.DateTimeFormat(getLocale(), {
-    timeZone: 'UTC',
-    ...(style === 'short'
-      ? { day: '2-digit' as const, month: '2-digit' as const, year: 'numeric' as const }
-      : { dateStyle: 'medium' as const }),
-  }).format(date);
+    return new Intl.DateTimeFormat(getLocale(), {
+        timeZone: 'UTC',
+        ...(style === 'short'
+            ? { day: '2-digit' as const, month: '2-digit' as const, year: 'numeric' as const }
+            : { dateStyle: 'medium' as const }),
+    }).format(date);
 }
 
 /** «10 sept.» para la pastilla de la fecha en el hero del panel. */
 export function formatShortDate(value: Date): string {
-  return new Intl.DateTimeFormat(getLocale(), { day: 'numeric', month: 'short' }).format(value);
+    return new Intl.DateTimeFormat(getLocale(), { day: 'numeric', month: 'short' }).format(value);
 }
 
 export function formatNumber(value: number): string {
-  return new Intl.NumberFormat(getLocale()).format(value);
+    return new Intl.NumberFormat(getLocale()).format(value);
 }
 
 /**
@@ -50,9 +50,9 @@ export function formatNumber(value: number): string {
  * son para cuando la categoría cambia la palabra, y aquí no pasa).
  */
 export function formatAgo(days: number): string {
-  if (days === 0) return i18n.t('common.today');
-  if (days < 7) return i18n.t('common.daysAgo', { count: days });
-  if (days < 31) return i18n.t('common.weeksAgo', { count: Math.round(days / 7) });
-  if (days < 365) return i18n.t('common.monthsAgo', { count: Math.round(days / 30) });
-  return i18n.t('common.yearsAgo', { count: Math.round(days / 365) });
+    if (days === 0) return i18n.t('common.today');
+    if (days < 7) return i18n.t('common.daysAgo', { count: days });
+    if (days < 31) return i18n.t('common.weeksAgo', { count: Math.round(days / 7) });
+    if (days < 365) return i18n.t('common.monthsAgo', { count: Math.round(days / 30) });
+    return i18n.t('common.yearsAgo', { count: Math.round(days / 365) });
 }

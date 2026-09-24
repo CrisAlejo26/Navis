@@ -16,57 +16,57 @@ import { TablesService } from './tables.service';
 @Controller('tables')
 @UseGuards(ActiveChurchGuard)
 export class TablesController {
-  constructor(
-    private readonly tables: TablesService,
-    private readonly columns: TableColumnsService,
-  ) {}
+    constructor(
+        private readonly tables: TablesService,
+        private readonly columns: TableColumnsService,
+    ) {}
 
-  @Get()
-  @RequirePermissions('tables.view')
-  @ApiOperation({ summary: 'Las tablas de la iglesia' })
-  async list(@CurrentChurch() churchId: string): Promise<CustomTableView[]> {
-    return (await this.tables.list(churchId)).map(toCustomTableView);
-  }
+    @Get()
+    @RequirePermissions('tables.view')
+    @ApiOperation({ summary: 'Las tablas de la iglesia' })
+    async list(@CurrentChurch() churchId: string): Promise<CustomTableView[]> {
+        return (await this.tables.list(churchId)).map(toCustomTableView);
+    }
 
-  @Post()
-  @RequirePermissions('tables.manage')
-  @ApiOperation({ summary: 'Crea una tabla, vacía' })
-  async create(
-    @CurrentChurch() churchId: string,
-    @CurrentUser('id') userId: string,
-    @Body() dto: CreateCustomTableDto,
-  ): Promise<CustomTableView> {
-    return toCustomTableView(await this.tables.create(churchId, dto, userId));
-  }
+    @Post()
+    @RequirePermissions('tables.manage')
+    @ApiOperation({ summary: 'Crea una tabla, vacía' })
+    async create(
+        @CurrentChurch() churchId: string,
+        @CurrentUser('id') userId: string,
+        @Body() dto: CreateCustomTableDto,
+    ): Promise<CustomTableView> {
+        return toCustomTableView(await this.tables.create(churchId, dto, userId));
+    }
 
-  @Get(':id')
-  @RequirePermissions('tables.view')
-  @ApiOperation({ summary: 'La ficha, con sus columnas activas' })
-  async get(
-    @CurrentChurch() churchId: string,
-    @Param('id') id: string,
-  ): Promise<CustomTableWithColumns> {
-    const table = await this.tables.require(churchId, id);
-    const columns = await this.columns.listActive(id);
+    @Get(':id')
+    @RequirePermissions('tables.view')
+    @ApiOperation({ summary: 'La ficha, con sus columnas activas' })
+    async get(
+        @CurrentChurch() churchId: string,
+        @Param('id') id: string,
+    ): Promise<CustomTableWithColumns> {
+        const table = await this.tables.require(churchId, id);
+        const columns = await this.columns.listActive(id);
 
-    return { ...toCustomTableView(table), columns: columns.map(toColumnView) };
-  }
+        return { ...toCustomTableView(table), columns: columns.map(toColumnView) };
+    }
 
-  @Patch(':id')
-  @RequirePermissions('tables.manage')
-  @ApiOperation({ summary: 'Nombre, icono, color o estado' })
-  async update(
-    @CurrentChurch() churchId: string,
-    @Param('id') id: string,
-    @Body() dto: UpdateCustomTableDto,
-  ): Promise<CustomTableView> {
-    return toCustomTableView(await this.tables.update(churchId, id, dto));
-  }
+    @Patch(':id')
+    @RequirePermissions('tables.manage')
+    @ApiOperation({ summary: 'Nombre, icono, color o estado' })
+    async update(
+        @CurrentChurch() churchId: string,
+        @Param('id') id: string,
+        @Body() dto: UpdateCustomTableDto,
+    ): Promise<CustomTableView> {
+        return toCustomTableView(await this.tables.update(churchId, id, dto));
+    }
 
-  @Delete(':id')
-  @RequirePermissions('tables.manage')
-  @ApiOperation({ summary: 'Borrado lógico' })
-  remove(@CurrentChurch() churchId: string, @Param('id') id: string): Promise<void> {
-    return this.tables.remove(churchId, id);
-  }
+    @Delete(':id')
+    @RequirePermissions('tables.manage')
+    @ApiOperation({ summary: 'Borrado lógico' })
+    remove(@CurrentChurch() churchId: string, @Param('id') id: string): Promise<void> {
+        return this.tables.remove(churchId, id);
+    }
 }

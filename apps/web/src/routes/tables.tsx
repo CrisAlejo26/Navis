@@ -21,56 +21,56 @@ const CASCADA_MAX = 400;
  * blanco con pocos datos.
  */
 export function TablesPage() {
-  const { t } = useTranslation();
-  const { can } = usePermissions();
-  const { data: tables, isLoading } = useTables(api);
-  const [creando, setCreando] = useState(false);
+    const { t } = useTranslation();
+    const { can } = usePermissions();
+    const { data: tables, isLoading } = useTables(api);
+    const [creando, setCreando] = useState(false);
 
-  if (isLoading || !tables) return <PageSkeleton />;
+    if (isLoading || !tables) return <PageSkeleton />;
 
-  const activas = tables.filter((one) => one.isActive);
-  const onAdd = can('tables.manage')
-    ? () => {
-        setCreando(true);
-      }
-    : undefined;
-
-  return (
-    <section className="gap-6 animate-page-in flex flex-col">
-      <TablesHeader onAdd={onAdd} />
-
-      {activas.length === 0 ? (
-        <EmptyState
-          icon={Table2}
-          title={t('tables.emptyTitle')}
-          action={
-            onAdd && (
-              <Button size="lg" onClick={onAdd}>
-                {t('tables.newTable')}
-              </Button>
-            )
+    const activas = tables.filter((one) => one.isActive);
+    const onAdd = can('tables.manage')
+        ? () => {
+              setCreando(true);
           }
-        >
-          {t('tables.emptyBody')}
-        </EmptyState>
-      ) : (
-        <div className="gap-4 sm:grid-cols-2 xl:grid-cols-3 grid">
-          {activas.map((table, index) => (
-            <TablePanel
-              key={table.id}
-              table={table}
-              delay={Math.min(index * CASCADA_MS, CASCADA_MAX)}
-            />
-          ))}
-        </div>
-      )}
+        : undefined;
 
-      <TableForm
-        open={creando}
-        onClose={() => {
-          setCreando(false);
-        }}
-      />
-    </section>
-  );
+    return (
+        <section className="gap-6 animate-page-in flex flex-col">
+            <TablesHeader onAdd={onAdd} />
+
+            {activas.length === 0 ? (
+                <EmptyState
+                    icon={Table2}
+                    title={t('tables.emptyTitle')}
+                    action={
+                        onAdd && (
+                            <Button size="lg" onClick={onAdd}>
+                                {t('tables.newTable')}
+                            </Button>
+                        )
+                    }
+                >
+                    {t('tables.emptyBody')}
+                </EmptyState>
+            ) : (
+                <div className="gap-4 sm:grid-cols-2 xl:grid-cols-3 grid">
+                    {activas.map((table, index) => (
+                        <TablePanel
+                            key={table.id}
+                            table={table}
+                            delay={Math.min(index * CASCADA_MS, CASCADA_MAX)}
+                        />
+                    ))}
+                </div>
+            )}
+
+            <TableForm
+                open={creando}
+                onClose={() => {
+                    setCreando(false);
+                }}
+            />
+        </section>
+    );
 }

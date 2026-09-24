@@ -18,52 +18,52 @@ import { toast } from '@/lib/toast';
  * dirección— se ajusta después, cuando ya hay algo dentro.
  */
 export function ChurchForm({
-  submitLabel,
-  onCreated,
+    submitLabel,
+    onCreated,
 }: {
-  submitLabel: string;
-  onCreated: (name: string) => void;
+    submitLabel: string;
+    onCreated: (name: string) => void;
 }) {
-  const { t } = useTranslation();
-  const createChurch = useCreateChurch(api);
-  const [error, setError] = useState<string | null>(null);
+    const { t } = useTranslation();
+    const createChurch = useCreateChurch(api);
+    const [error, setError] = useState<string | null>(null);
 
-  const submit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const form = new FormData(event.currentTarget);
+    const submit = (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        const form = new FormData(event.currentTarget);
 
-    const parsed = createChurchSchema.safeParse({
-      name: formText(form.get('name')),
-      city: formText(form.get('city')),
-    });
+        const parsed = createChurchSchema.safeParse({
+            name: formText(form.get('name')),
+            city: formText(form.get('city')),
+        });
 
-    if (!parsed.success) {
-      setError(parsed.error.issues[0]?.message ?? t('errors.validation'));
-      return;
-    }
+        if (!parsed.success) {
+            setError(parsed.error.issues[0]?.message ?? t('errors.validation'));
+            return;
+        }
 
-    setError(null);
-    createChurch.mutate(parsed.data, {
-      onSuccess: (church) => {
-        onCreated(church.name);
-      },
-      onError: () => {
-        setError(t('errors.generic'));
-        toast.error(t('errors.generic'));
-      },
-    });
-  };
+        setError(null);
+        createChurch.mutate(parsed.data, {
+            onSuccess: (church) => {
+                onCreated(church.name);
+            },
+            onError: () => {
+                setError(t('errors.generic'));
+                toast.error(t('errors.generic'));
+            },
+        });
+    };
 
-  return (
-    <form onSubmit={submit} className="gap-4 flex flex-col" noValidate>
-      <Input name="name" label={t('church.name')} autoComplete="organization" required />
-      <Input name="city" label={t('church.city')} autoComplete="address-level2" required />
+    return (
+        <form onSubmit={submit} className="gap-4 flex flex-col" noValidate>
+            <Input name="name" label={t('church.name')} autoComplete="organization" required />
+            <Input name="city" label={t('church.city')} autoComplete="address-level2" required />
 
-      <FormError message={error} />
+            <FormError message={error} />
 
-      <Button type="submit" size="lg" className="w-full" isLoading={createChurch.isPending}>
-        {submitLabel}
-      </Button>
-    </form>
-  );
+            <Button type="submit" size="lg" className="w-full" isLoading={createChurch.isPending}>
+                {submitLabel}
+            </Button>
+        </form>
+    );
 }

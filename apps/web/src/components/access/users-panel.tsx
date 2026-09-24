@@ -23,138 +23,138 @@ import { NO_DIALOG, type UserDialogsState } from '@/lib/user-dialogs-state';
 
 /** La pestaña de usuarios: tabla, filtros, alta y acciones sobre cada cuenta. */
 export function UsersPanel() {
-  const { t } = useTranslation();
-  const { data: session } = useSession();
-  const [params, setParams] = useSearchParams();
+    const { t } = useTranslation();
+    const { data: session } = useSession();
+    const [params, setParams] = useSearchParams();
 
-  const query = useTableQuery({ fields: USER_SORT_FIELDS, sort: 'createdAt', order: 'desc' });
-  const catalog = useRoleCatalog();
-  const role = params.get('role') ?? undefined;
-  // Las iglesias no van en la URL como el resto de filtros: se recuerdan entre
-  // visitas, porque quien administra varias trabaja días sobre las mismas.
-  const churchIds = useUsersFilterStore((state) => state.churchIds);
-  const toggleChurch = useUsersFilterStore((state) => state.toggleChurch);
-  const clearChurches = useUsersFilterStore((state) => state.clearChurches);
+    const query = useTableQuery({ fields: USER_SORT_FIELDS, sort: 'createdAt', order: 'desc' });
+    const catalog = useRoleCatalog();
+    const role = params.get('role') ?? undefined;
+    // Las iglesias no van en la URL como el resto de filtros: se recuerdan entre
+    // visitas, porque quien administra varias trabaja días sobre las mismas.
+    const churchIds = useUsersFilterStore((state) => state.churchIds);
+    const toggleChurch = useUsersFilterStore((state) => state.toggleChurch);
+    const clearChurches = useUsersFilterStore((state) => state.clearChurches);
 
-  const { data, isFetching, isError, refetch } = useManagedUsers(api, {
-    page: query.page,
-    limit: query.limit,
-    search: query.search || undefined,
-    role,
-    churchIds,
-    sort: query.sort,
-    order: query.order,
-  });
+    const { data, isFetching, isError, refetch } = useManagedUsers(api, {
+        page: query.page,
+        limit: query.limit,
+        search: query.search || undefined,
+        role,
+        churchIds,
+        sort: query.sort,
+        order: query.order,
+    });
 
-  const [dialog, setDialog] = useState<UserDialogsState>(NO_DIALOG);
+    const [dialog, setDialog] = useState<UserDialogsState>(NO_DIALOG);
 
-  const setRole = (next: RoleSlug | undefined) => {
-    setParams(
-      (previous) => {
-        const search = new URLSearchParams(previous);
-        if (next) search.set('role', next);
-        else search.delete('role');
-        search.delete('page');
-        return search;
-      },
-      { replace: true },
+    const setRole = (next: RoleSlug | undefined) => {
+        setParams(
+            (previous) => {
+                const search = new URLSearchParams(previous);
+                if (next) search.set('role', next);
+                else search.delete('role');
+                search.delete('page');
+                return search;
+            },
+            { replace: true },
+        );
+    };
+
+    /** Lo mismo alimenta la fila de la tabla y la ficha de móvil. */
+    const cells = (user: ManagedUser) => ({
+        user,
+        isSelf: user.id === session?.user.id,
+        catalog,
+        onEdit: () => {
+            setDialog({ ...NO_DIALOG, editing: user });
+        },
+        onChangePassword: () => {
+            setDialog({ ...NO_DIALOG, changingPassword: user });
+        },
+        onDelete: () => {
+            setDialog({ ...NO_DIALOG, deleting: user });
+        },
+    });
+
+    const columns = [
+        { field: 'name', label: t('roles.columnName') },
+        { field: 'email', label: t('roles.columnEmail') },
+        { field: 'role', label: t('roles.columnRole') },
+        { field: 'createdAt', label: t('roles.columnCreated') },
+    ] as const;
+
+    return (
+        <>
+            <DataTable
+                items={data?.items}
+                isLoading={isFetching && !data}
+                isError={isError}
+                onRetry={() => void refetch()}
+                columnCount={columns.length + 1}
+                getKey={(user) => user.id}
+                emptyIcon={UserSearch}
+                emptyTitle={t('roles.noUsers')}
+                // El filete lleva el color del rol de esa cuenta (`roleAccent`): la
+                // misma jerarquía que se ve en la pestaña de roles, así que el color
+                // se reconoce igual en las dos pestañas de esta pantalla (Regla 9 §3).
+                rowClassName={() => 'border-l-[var(--acento)]'}
+                rowStyle={(user) => accentVars(roleAccent(catalog.get(user.role)?.level ?? 0))}
+                toolbar={
+                    <UsersToolbar
+                        search={query.search}
+                        onSearchChange={query.setSearch}
+                        role={role}
+                        onRoleChange={setRole}
+                        churchIds={churchIds}
+                        onToggleChurch={(id) => {
+                            toggleChurch(id);
+                            query.setPage(1);
+                        }}
+                        onClearChurches={() => {
+                            clearChurches();
+                            query.setPage(1);
+                        }}
+                        onCreate={() => {
+                            setDialog({ ...NO_DIALOG, creating: true });
+                        }}
+                    />
+                }
+                columns={
+                    <>
+                        <SortableColumns
+                            columns={columns}
+                            sort={query.sort}
+                            order={query.order}
+                            onToggle={query.toggleSort}
+                        />
+                        <TableHeader className="text-right">
+                            <span className="sr-only">{t('common.actions')}</span>
+                        </TableHeader>
+                    </>
+                }
+                renderRow={(user) => <UserRow {...cells(user)} />}
+                renderCard={(user) => <UserCard {...cells(user)} />}
+                footer={
+                    data && (
+                        <Pagination
+                            page={data.page}
+                            limit={data.limit}
+                            total={data.total}
+                            totalPages={data.totalPages}
+                            onPageChange={query.setPage}
+                            onLimitChange={query.setLimit}
+                        />
+                    )
+                }
+            />
+
+            <UserDialogs
+                state={dialog}
+                onClose={() => {
+                    setDialog(NO_DIALOG);
+                }}
+            />
+        </>
     );
-  };
-
-  /** Lo mismo alimenta la fila de la tabla y la ficha de móvil. */
-  const cells = (user: ManagedUser) => ({
-    user,
-    isSelf: user.id === session?.user.id,
-    catalog,
-    onEdit: () => {
-      setDialog({ ...NO_DIALOG, editing: user });
-    },
-    onChangePassword: () => {
-      setDialog({ ...NO_DIALOG, changingPassword: user });
-    },
-    onDelete: () => {
-      setDialog({ ...NO_DIALOG, deleting: user });
-    },
-  });
-
-  const columns = [
-    { field: 'name', label: t('roles.columnName') },
-    { field: 'email', label: t('roles.columnEmail') },
-    { field: 'role', label: t('roles.columnRole') },
-    { field: 'createdAt', label: t('roles.columnCreated') },
-  ] as const;
-
-  return (
-    <>
-      <DataTable
-        items={data?.items}
-        isLoading={isFetching && !data}
-        isError={isError}
-        onRetry={() => void refetch()}
-        columnCount={columns.length + 1}
-        getKey={(user) => user.id}
-        emptyIcon={UserSearch}
-        emptyTitle={t('roles.noUsers')}
-        // El filete lleva el color del rol de esa cuenta (`roleAccent`): la
-        // misma jerarquía que se ve en la pestaña de roles, así que el color
-        // se reconoce igual en las dos pestañas de esta pantalla (Regla 9 §3).
-        rowClassName={() => 'border-l-[var(--acento)]'}
-        rowStyle={(user) => accentVars(roleAccent(catalog.get(user.role)?.level ?? 0))}
-        toolbar={
-          <UsersToolbar
-            search={query.search}
-            onSearchChange={query.setSearch}
-            role={role}
-            onRoleChange={setRole}
-            churchIds={churchIds}
-            onToggleChurch={(id) => {
-              toggleChurch(id);
-              query.setPage(1);
-            }}
-            onClearChurches={() => {
-              clearChurches();
-              query.setPage(1);
-            }}
-            onCreate={() => {
-              setDialog({ ...NO_DIALOG, creating: true });
-            }}
-          />
-        }
-        columns={
-          <>
-            <SortableColumns
-              columns={columns}
-              sort={query.sort}
-              order={query.order}
-              onToggle={query.toggleSort}
-            />
-            <TableHeader className="text-right">
-              <span className="sr-only">{t('common.actions')}</span>
-            </TableHeader>
-          </>
-        }
-        renderRow={(user) => <UserRow {...cells(user)} />}
-        renderCard={(user) => <UserCard {...cells(user)} />}
-        footer={
-          data && (
-            <Pagination
-              page={data.page}
-              limit={data.limit}
-              total={data.total}
-              totalPages={data.totalPages}
-              onPageChange={query.setPage}
-              onLimitChange={query.setLimit}
-            />
-          )
-        }
-      />
-
-      <UserDialogs
-        state={dialog}
-        onClose={() => {
-          setDialog(NO_DIALOG);
-        }}
-      />
-    </>
-  );
 }

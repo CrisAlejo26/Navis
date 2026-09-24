@@ -4,7 +4,7 @@ import { cn } from '@/lib/cn';
 import { typeStyle } from '@/lib/ui/type-style';
 
 interface SubtitleProps extends TextProps {
-  className?: string;
+    className?: string;
 }
 
 /**
@@ -14,13 +14,13 @@ interface SubtitleProps extends TextProps {
  * como en Open o MasterClass).
  */
 export function Subtitle({ className, children, style, ...props }: SubtitleProps) {
-  return (
-    <Text
-      className={cn('text-muted-foreground', className)}
-      style={[typeStyle('h3'), style]}
-      {...props}
-    >
-      {children}
-    </Text>
-  );
+    return (
+        <Text
+            className={cn('text-muted-foreground', className)}
+            style={[typeStyle('h3'), style]}
+            {...props}
+        >
+            {children}
+        </Text>
+    );
 }

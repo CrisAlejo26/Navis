@@ -1,16 +1,16 @@
 import {
-  BadRequestException,
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Post,
-  Res,
-  StreamableFile,
-  UploadedFile,
-  UseGuards,
-  UseInterceptors,
+    BadRequestException,
+    Body,
+    Controller,
+    Delete,
+    Get,
+    Param,
+    Post,
+    Res,
+    StreamableFile,
+    UploadedFile,
+    UseGuards,
+    UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -39,71 +39,71 @@ import { toAudioView } from './notes.mapper';
 @Controller()
 @UseGuards(ActiveChurchGuard)
 export class NoteAudiosController {
-  constructor(
-    private readonly audios: NoteAudiosService,
-    private readonly notes: BelieverNotesService,
-    private readonly believers: BelieversService,
-  ) {}
+    constructor(
+        private readonly audios: NoteAudiosService,
+        private readonly notes: BelieverNotesService,
+        private readonly believers: BelieversService,
+    ) {}
 
-  @Post('believers/:id/notes/:noteId/audios')
-  @RequirePermissions('believers.manage')
-  @ApiConsumes('multipart/form-data')
-  @ApiOperation({ summary: 'Adjunta o sube un audio grabado' })
-  @UseInterceptors(FileInterceptor('file', { limits: { fileSize: MAX_AUDIO_BYTES, files: 1 } }))
-  async upload(
-    @CurrentChurch() churchId: string,
-    @Param('id') believerId: string,
-    @Param('noteId') noteId: string,
-    @Body() dto: UploadAudioDto,
-    @UploadedFile() file: UploadedAudio | undefined,
-  ): Promise<AudioView> {
-    if (!file) throw new BadRequestException('No ha llegado ningún fichero');
+    @Post('believers/:id/notes/:noteId/audios')
+    @RequirePermissions('believers.manage')
+    @ApiConsumes('multipart/form-data')
+    @ApiOperation({ summary: 'Adjunta o sube un audio grabado' })
+    @UseInterceptors(FileInterceptor('file', { limits: { fileSize: MAX_AUDIO_BYTES, files: 1 } }))
+    async upload(
+        @CurrentChurch() churchId: string,
+        @Param('id') believerId: string,
+        @Param('noteId') noteId: string,
+        @Body() dto: UploadAudioDto,
+        @UploadedFile() file: UploadedAudio | undefined,
+    ): Promise<AudioView> {
+        if (!file) throw new BadRequestException('No ha llegado ningún fichero');
 
-    await this.believers.require(churchId, believerId);
-    await this.notes.require(believerId, noteId);
+        await this.believers.require(churchId, believerId);
+        await this.notes.require(believerId, noteId);
 
-    const audio = await this.audios.add(churchId, noteId, file, {
-      recorded: dto.recorded ?? false,
-      durationSeconds: dto.durationSeconds ?? null,
-    });
+        const audio = await this.audios.add(churchId, noteId, file, {
+            recorded: dto.recorded ?? false,
+            durationSeconds: dto.durationSeconds ?? null,
+        });
 
-    return toAudioView(audio);
-  }
+        return toAudioView(audio);
+    }
 
-  /**
-   * Se devuelve un `StreamableFile` y **no** se hace `pipe` sobre la respuesta:
-   * con `passthrough` Nest cierra la respuesta al volver del handler, y el
-   * stream se queda a medias («Error: aborted»). `Res` queda solo para la
-   * cabecera de caché.
-   */
-  @Get('audios/:id')
-  @RequirePermissions('believers.view')
-  @ApiOperation({ summary: 'Descarga el audio, si es de esta iglesia' })
-  async download(
-    @CurrentChurch() churchId: string,
-    @Param('id') id: string,
-    @Res({ passthrough: true }) response: Response,
-  ): Promise<StreamableFile> {
-    const { audio, file } = await this.audios.stream(churchId, id);
+    /**
+     * Se devuelve un `StreamableFile` y **no** se hace `pipe` sobre la respuesta:
+     * con `passthrough` Nest cierra la respuesta al volver del handler, y el
+     * stream se queda a medias («Error: aborted»). `Res` queda solo para la
+     * cabecera de caché.
+     */
+    @Get('audios/:id')
+    @RequirePermissions('believers.view')
+    @ApiOperation({ summary: 'Descarga el audio, si es de esta iglesia' })
+    async download(
+        @CurrentChurch() churchId: string,
+        @Param('id') id: string,
+        @Res({ passthrough: true }) response: Response,
+    ): Promise<StreamableFile> {
+        const { audio, file } = await this.audios.stream(churchId, id);
 
-    // Un año: el contenido de un audio no cambia nunca, y `private` deja claro
-    // que no lo puede guardar un proxy compartido.
-    response.setHeader('Cache-Control', 'private, max-age=31536000, immutable');
+        // Un año: el contenido de un audio no cambia nunca, y `private` deja claro
+        // que no lo puede guardar un proxy compartido.
+        response.setHeader('Cache-Control', 'private, max-age=31536000, immutable');
 
-    return new StreamableFile(file, { type: audio.mimeType, length: audio.sizeBytes });
-  }
+        return new StreamableFile(file, { type: audio.mimeType, length: audio.sizeBytes });
+    }
 
-  @Delete('believers/:id/notes/:noteId/audios/:audioId')
-  @RequirePermissions('believers.manage')
-  @ApiOperation({ summary: 'Quita el audio y borra su fichero del disco' })
-  async remove(
-    @CurrentChurch() churchId: string,
-    @Param('id') believerId: string,
-    @Param('noteId') noteId: string,
-    @Param('audioId') audioId: string,
-  ): Promise<void> {
-    await this.believers.require(churchId, believerId);
-    await this.notes.require(believerId, noteId);
-    await this.audios.remove(churchId, audioId);
-  }
+    @Delete('believers/:id/notes/:noteId/audios/:audioId')
+    @RequirePermissions('believers.manage')
+    @ApiOperation({ summary: 'Quita el audio y borra su fichero del disco' })
+    async remove(
+        @CurrentChurch() churchId: string,
+        @Param('id') believerId: string,
+        @Param('noteId') noteId: string,
+        @Param('audioId') audioId: string,
+    ): Promise<void> {
+        await this.believers.require(churchId, believerId);
+        await this.notes.require(believerId, noteId);
+        await this.audios.remove(churchId, audioId);
+    }
 }

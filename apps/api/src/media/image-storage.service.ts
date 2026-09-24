@@ -13,37 +13,37 @@ import { FileStorageService, type FileScope } from './file-storage.service';
  */
 /** Lo que llega de multer, reducido a lo que de verdad se usa (Regla 10). */
 export interface UploadedImage {
-  buffer: Buffer;
-  mimetype: string;
-  size: number;
+    buffer: Buffer;
+    mimetype: string;
+    size: number;
 }
 
 @Injectable()
 export class ImageStorageService {
-  constructor(private readonly files: FileStorageService) {}
+    constructor(private readonly files: FileStorageService) {}
 
-  async save(
-    scope: FileScope,
-    file: UploadedImage,
-  ): Promise<{ storageKey: string; mimeType: string }> {
-    if (!isImageMimeType(file.mimetype)) {
-      throw new BadRequestException('Ese fichero no es una imagen');
+    async save(
+        scope: FileScope,
+        file: UploadedImage,
+    ): Promise<{ storageKey: string; mimeType: string }> {
+        if (!isImageMimeType(file.mimetype)) {
+            throw new BadRequestException('Ese fichero no es una imagen');
+        }
+        if (file.size > MAX_IMAGE_BYTES) {
+            throw new BadRequestException('La imagen es demasiado grande');
+        }
+
+        const mimeType = file.mimetype.split(';')[0]?.trim().toLowerCase() ?? '';
+        const extension = isImageMimeType(mimeType) ? IMAGE_EXTENSIONS[mimeType] : 'bin';
+
+        return { storageKey: await this.files.write(scope, file.buffer, extension), mimeType };
     }
-    if (file.size > MAX_IMAGE_BYTES) {
-      throw new BadRequestException('La imagen es demasiado grande');
+
+    read(storageKey: string): ReadStream {
+        return this.files.read(storageKey);
     }
 
-    const mimeType = file.mimetype.split(';')[0]?.trim().toLowerCase() ?? '';
-    const extension = isImageMimeType(mimeType) ? IMAGE_EXTENSIONS[mimeType] : 'bin';
-
-    return { storageKey: await this.files.write(scope, file.buffer, extension), mimeType };
-  }
-
-  read(storageKey: string): ReadStream {
-    return this.files.read(storageKey);
-  }
-
-  async remove(storageKey: string): Promise<void> {
-    await this.files.remove(storageKey);
-  }
+    async remove(storageKey: string): Promise<void> {
+        await this.files.remove(storageKey);
+    }
 }

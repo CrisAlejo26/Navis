@@ -1,19 +1,19 @@
 import {
-  BadRequestException,
-  ConflictException,
-  ForbiddenException,
-  Injectable,
-  NotFoundException,
+    BadRequestException,
+    ConflictException,
+    ForbiddenException,
+    Injectable,
+    NotFoundException,
 } from '@nestjs/common';
 import {
-  canAssignRoleLevel,
-  hasPermission,
-  SUPERADMIN_ROLE,
-  type ChurchDecision,
-  type CreateManagedUserInput,
-  type ManagedUser,
-  type RoleSlug,
-  type UpdateManagedUserInput,
+    canAssignRoleLevel,
+    hasPermission,
+    SUPERADMIN_ROLE,
+    type ChurchDecision,
+    type CreateManagedUserInput,
+    type ManagedUser,
+    type RoleSlug,
+    type UpdateManagedUserInput,
 } from '@navis/shared';
 
 import { auth } from '../auth/auth';
@@ -36,241 +36,243 @@ import { UsersService } from './users.service';
  */
 @Injectable()
 export class UserAdminService {
-  constructor(
-    private readonly users: UsersService,
-    private readonly roles: RolesService,
-    private readonly churches: ChurchesService,
-    private readonly transfers: ChurchTransferService,
-  ) {}
+    constructor(
+        private readonly users: UsersService,
+        private readonly roles: RolesService,
+        private readonly churches: ChurchesService,
+        private readonly transfers: ChurchTransferService,
+    ) {}
 
-  /**
-   * La cuenta sobre la que se va a actuar, si se puede actuar sobre ella.
-   * Nadie edita la suya desde aquí: para eso está su perfil.
-   */
-  private async target(id: string, asker: Asker): Promise<ManagedUser> {
-    if (id === asker.id) throw new ForbiddenException('Tu propia cuenta se edita desde tu perfil');
+    /**
+     * La cuenta sobre la que se va a actuar, si se puede actuar sobre ella.
+     * Nadie edita la suya desde aquí: para eso está su perfil.
+     */
+    private async target(id: string, asker: Asker): Promise<ManagedUser> {
+        if (id === asker.id)
+            throw new ForbiddenException('Tu propia cuenta se edita desde tu perfil');
 
-    const user = await this.users.findById(id);
-    if (!user) throw new NotFoundException('Ese usuario no existe');
+        const user = await this.users.findById(id);
+        if (!user) throw new NotFoundException('Ese usuario no existe');
 
-    if (!(await this.churches.sharesChurchWith(asker, id))) {
-      throw new ForbiddenException('Esa cuenta no es de ninguna de tus iglesias');
+        if (!(await this.churches.sharesChurchWith(asker, id))) {
+            throw new ForbiddenException('Esa cuenta no es de ninguna de tus iglesias');
+        }
+
+        return user;
     }
 
-    return user;
-  }
+    /**
+     * Nadie asigna un rol igual o por encima del suyo; el superadministrador,
+     * que es quien reparte los roles altos, no pasa por esta comprobación
+     * (RFC 0014 D1-D2). El nivel sale de la tabla `roles` y no de
+     * `ROLE_HIERARCHY`: esa constante no cubre un rol propio de la instalación.
+     */
+    private async ensureAssignable(role: RoleSlug, asker: Asker): Promise<void> {
+        if (asker.role === SUPERADMIN_ROLE) return;
 
-  /**
-   * Nadie asigna un rol igual o por encima del suyo; el superadministrador,
-   * que es quien reparte los roles altos, no pasa por esta comprobación
-   * (RFC 0014 D1-D2). El nivel sale de la tabla `roles` y no de
-   * `ROLE_HIERARCHY`: esa constante no cubre un rol propio de la instalación.
-   */
-  private async ensureAssignable(role: RoleSlug, asker: Asker): Promise<void> {
-    if (asker.role === SUPERADMIN_ROLE) return;
+        const [askerLevel, targetLevel] = await Promise.all([
+            this.roles.levelOf(asker.role),
+            this.roles.levelOf(role),
+        ]);
 
-    const [askerLevel, targetLevel] = await Promise.all([
-      this.roles.levelOf(asker.role),
-      this.roles.levelOf(role),
-    ]);
-
-    if (
-      askerLevel === null ||
-      targetLevel === null ||
-      !canAssignRoleLevel(askerLevel, targetLevel)
-    ) {
-      throw new ForbiddenException('No puedes asignar un rol igual o superior al tuyo');
-    }
-  }
-
-  /**
-   * Si un rol se autoprovisiona su propio espacio: tiene `churches.manage`
-   * (RFC 0014 D4). La regla no mira el slug (`pastor`, `superadmin`), sino el
-   * permiso. Ese rol nace sin iglesia y pasa por `/welcome`, así que ni entra
-   * en la de quien lo da de alta (`entraEnLaActiva`) ni se queda arrastrando
-   * la de una ajena si ya estaba dentro cuando lo recibe (`update`).
-   */
-  private async autoprovisiona(role: RoleSlug): Promise<boolean> {
-    const permissions = await this.roles.permissionsOf(role);
-    return hasPermission(permissions ?? [], 'churches.manage');
-  }
-
-  /** Si una cuenta con ese rol debe entrar en la iglesia de quien la crea. */
-  private async entraEnLaActiva(role: RoleSlug): Promise<boolean> {
-    return !(await this.autoprovisiona(role));
-  }
-
-  /**
-   * Alta hecha desde la administración. La cuenta se crea por la vía normal de
-   * Better Auth —misma validación y mismo cifrado de la contraseña que en un
-   * registro—, se le pone el rol y, si ese rol no se autoprovisiona su propio
-   * espacio (§ `entraEnLaActiva`), **entra en la iglesia activa de quien la
-   * crea**: sin eso, quien la ha dado de alta dejaría de verla al instante.
-   */
-  async create(input: CreateManagedUserInput, asker: Asker): Promise<ManagedUser> {
-    await this.roles.ensureExists(input.role);
-    await this.ensureAssignable(input.role, asker);
-
-    const ctx = await auth.$context;
-    if (await ctx.internalAdapter.findUserByEmail(input.email)) {
-      throw new ConflictException('Ya hay una cuenta con ese correo');
+        if (
+            askerLevel === null ||
+            targetLevel === null ||
+            !canAssignRoleLevel(askerLevel, targetLevel)
+        ) {
+            throw new ForbiddenException('No puedes asignar un rol igual o superior al tuyo');
+        }
     }
 
-    const created = await auth.api.signUpEmail({
-      body: { name: input.name, email: input.email, password: input.password },
-    });
-
-    await this.forceRole(created.user.id, input.role);
-    if (await this.entraEnLaActiva(input.role)) {
-      await this.churches.addToActive(asker, created.user.id);
+    /**
+     * Si un rol se autoprovisiona su propio espacio: tiene `churches.manage`
+     * (RFC 0014 D4). La regla no mira el slug (`pastor`, `superadmin`), sino el
+     * permiso. Ese rol nace sin iglesia y pasa por `/welcome`, así que ni entra
+     * en la de quien lo da de alta (`entraEnLaActiva`) ni se queda arrastrando
+     * la de una ajena si ya estaba dentro cuando lo recibe (`update`).
+     */
+    private async autoprovisiona(role: RoleSlug): Promise<boolean> {
+        const permissions = await this.roles.permissionsOf(role);
+        return hasPermission(permissions ?? [], 'churches.manage');
     }
 
-    const user = await this.users.findById(created.user.id);
-    if (!user) throw new NotFoundException('La cuenta se creó pero no se pudo leer');
-    return user;
-  }
-
-  async update(id: string, input: UpdateManagedUserInput, asker: Asker): Promise<ManagedUser> {
-    const user = await this.target(id, asker);
-    if (input.role) {
-      await this.roles.ensureExists(input.role);
-      await this.ensureAssignable(input.role, asker);
+    /** Si una cuenta con ese rol debe entrar en la iglesia de quien la crea. */
+    private async entraEnLaActiva(role: RoleSlug): Promise<boolean> {
+        return !(await this.autoprovisiona(role));
     }
 
-    if (input.email && input.email !== user.email) {
-      const ctx = await auth.$context;
-      const taken = await ctx.internalAdapter.findUserByEmail(input.email);
-      if (taken) throw new ConflictException('Ya hay una cuenta con ese correo');
+    /**
+     * Alta hecha desde la administración. La cuenta se crea por la vía normal de
+     * Better Auth —misma validación y mismo cifrado de la contraseña que en un
+     * registro—, se le pone el rol y, si ese rol no se autoprovisiona su propio
+     * espacio (§ `entraEnLaActiva`), **entra en la iglesia activa de quien la
+     * crea**: sin eso, quien la ha dado de alta dejaría de verla al instante.
+     */
+    async create(input: CreateManagedUserInput, asker: Asker): Promise<ManagedUser> {
+        await this.roles.ensureExists(input.role);
+        await this.ensureAssignable(input.role, asker);
+
+        const ctx = await auth.$context;
+        if (await ctx.internalAdapter.findUserByEmail(input.email)) {
+            throw new ConflictException('Ya hay una cuenta con ese correo');
+        }
+
+        const created = await auth.api.signUpEmail({
+            body: { name: input.name, email: input.email, password: input.password },
+        });
+
+        await this.forceRole(created.user.id, input.role);
+        if (await this.entraEnLaActiva(input.role)) {
+            await this.churches.addToActive(asker, created.user.id);
+        }
+
+        const user = await this.users.findById(created.user.id);
+        if (!user) throw new NotFoundException('La cuenta se creó pero no se pudo leer');
+        return user;
     }
 
-    const ctx = await auth.$context;
-    await ctx.internalAdapter.updateUser(id, input);
+    async update(id: string, input: UpdateManagedUserInput, asker: Asker): Promise<ManagedUser> {
+        const user = await this.target(id, asker);
+        if (input.role) {
+            await this.roles.ensureExists(input.role);
+            await this.ensureAssignable(input.role, asker);
+        }
 
-    // Si el rol nuevo se autoprovisiona su propio espacio, no se queda
-    // arrastrando la membresía de una iglesia a la que entró con el rol
-    // anterior (RFC 0014 D4): la suya, si ya la tiene, no se toca.
-    if (input.role && (await this.autoprovisiona(input.role))) {
-      await this.churches.leaveNonOwnedChurches(id);
+        if (input.email && input.email !== user.email) {
+            const ctx = await auth.$context;
+            const taken = await ctx.internalAdapter.findUserByEmail(input.email);
+            if (taken) throw new ConflictException('Ya hay una cuenta con ese correo');
+        }
+
+        const ctx = await auth.$context;
+        await ctx.internalAdapter.updateUser(id, input);
+
+        // Si el rol nuevo se autoprovisiona su propio espacio, no se queda
+        // arrastrando la membresía de una iglesia a la que entró con el rol
+        // anterior (RFC 0014 D4): la suya, si ya la tiene, no se toca.
+        if (input.role && (await this.autoprovisiona(input.role))) {
+            await this.churches.leaveNonOwnedChurches(id);
+        }
+
+        const updated = await this.users.findById(id);
+        if (!updated) throw new NotFoundException('Ese usuario no existe');
+        return updated;
     }
 
-    const updated = await this.users.findById(id);
-    if (!updated) throw new NotFoundException('Ese usuario no existe');
-    return updated;
-  }
-
-  /** Atajo para el cambio de rol, que es la acción más habitual. */
-  setRole(id: string, role: RoleSlug, asker: Asker): Promise<ManagedUser> {
-    return this.update(id, { role }, asker);
-  }
-
-  /** Asigna un rol sin comprobar quién lo pide. Solo para el primer arranque. */
-  async forceRole(id: string, role: RoleSlug): Promise<void> {
-    const ctx = await auth.$context;
-    await ctx.internalAdapter.updateUser(id, { role });
-  }
-
-  async setPassword(id: string, password: string, asker: Asker): Promise<void> {
-    await this.target(id, asker);
-
-    const ctx = await auth.$context;
-    const hash = await ctx.password.hash(password);
-    await ctx.internalAdapter.updatePassword(id, hash);
-    // Las sesiones abiertas dejan de valer: la contraseña ya no es la suya.
-    await ctx.internalAdapter.deleteUserSessions(id);
-  }
-
-  /**
-   * Baja de la cuenta con todo lo suyo. No se puede borrar el último
-   * superadministrador: la instalación se quedaría sin quien reparta accesos.
-   *
-   * Si además es dueña de una o más iglesias (RFC 0015), la baja se detiene
-   * hasta tener una decisión —eliminar o trasladar— por cada una (D2).
-   */
-  async remove(id: string, asker: Asker, decisions: ChurchDecision[] = []): Promise<void> {
-    const user = await this.target(id, asker);
-
-    if (user.role === SUPERADMIN_ROLE) {
-      const superadmins = await this.users.findPage({
-        page: 1,
-        limit: 2,
-        role: SUPERADMIN_ROLE,
-        sort: 'createdAt',
-        order: 'asc',
-      });
-      if (superadmins.total <= 1) {
-        throw new BadRequestException('Tiene que quedar al menos un superadministrador');
-      }
+    /** Atajo para el cambio de rol, que es la acción más habitual. */
+    setRole(id: string, role: RoleSlug, asker: Asker): Promise<ManagedUser> {
+        return this.update(id, { role }, asker);
     }
 
-    await this.resolveOwnedChurches(id, decisions, asker);
-    // D6: no solo la dueña, cualquier iglesia de la que sea miembro. Es el
-    // mismo agujero de `update` cuando un rol pasa a autoprovisionarse.
-    await this.churches.leaveNonOwnedChurches(id);
-
-    const ctx = await auth.$context;
-    await ctx.internalAdapter.deleteUser(id);
-  }
-
-  /**
-   * Resuelve cada iglesia propia según lo decidido. Si falta alguna decisión,
-   * 409 con el impacto de todas —no solo de la que falta— para que el paso 2
-   * de la interfaz se pinte entero de una vez (D2). Todo se valida **antes**
-   * de tocar nada: una decisión inválida a mitad de la lista no puede dejar
-   * la mitad de las iglesias ya trasladadas.
-   */
-  private async resolveOwnedChurches(
-    userId: string,
-    decisions: ChurchDecision[],
-    asker: Asker,
-  ): Promise<void> {
-    const owned = await this.churches.ownedBy(userId);
-    if (owned.length === 0) return;
-
-    const byId = new Map(decisions.map((decision) => [decision.churchId, decision]));
-    const missing = owned.filter((church) => !byId.has(church.id));
-    if (missing.length > 0) {
-      const ownedChurches = await Promise.all(
-        owned.map((church) => this.transfers.impactOf(church.id)),
-      );
-      throw new ConflictException({
-        message: 'Antes de dar de baja esta cuenta, decide qué pasa con cada iglesia que dirige',
-        data: { ownedChurches },
-      });
+    /** Asigna un rol sin comprobar quién lo pide. Solo para el primer arranque. */
+    async forceRole(id: string, role: RoleSlug): Promise<void> {
+        const ctx = await auth.$context;
+        await ctx.internalAdapter.updateUser(id, { role });
     }
 
-    const deletingIds = new Set(
-      decisions
-        .filter((decision) => decision.action === 'delete')
-        .map((decision) => decision.churchId),
-    );
-    const { items: alcanzables } = await this.churches.listFor(asker);
-    const alcanzablesIds = new Set(alcanzables.map((church) => church.id));
+    async setPassword(id: string, password: string, asker: Asker): Promise<void> {
+        await this.target(id, asker);
 
-    for (const church of owned) {
-      const decision = byId.get(church.id);
-      if (decision?.action !== 'transfer') continue;
+        const ctx = await auth.$context;
+        const hash = await ctx.password.hash(password);
+        await ctx.internalAdapter.updatePassword(id, hash);
+        // Las sesiones abiertas dejan de valer: la contraseña ya no es la suya.
+        await ctx.internalAdapter.deleteUserSessions(id);
+    }
 
-      const targetId = decision.targetChurchId;
-      if (!targetId) throw new BadRequestException('Elige a qué iglesia trasladar');
-      if (targetId === church.id) {
-        throw new BadRequestException('No puedes trasladarla a sí misma');
-      }
-      if (deletingIds.has(targetId)) {
-        throw new BadRequestException(
-          'El destino no puede ser una iglesia que también vas a eliminar',
+    /**
+     * Baja de la cuenta con todo lo suyo. No se puede borrar el último
+     * superadministrador: la instalación se quedaría sin quien reparta accesos.
+     *
+     * Si además es dueña de una o más iglesias (RFC 0015), la baja se detiene
+     * hasta tener una decisión —eliminar o trasladar— por cada una (D2).
+     */
+    async remove(id: string, asker: Asker, decisions: ChurchDecision[] = []): Promise<void> {
+        const user = await this.target(id, asker);
+
+        if (user.role === SUPERADMIN_ROLE) {
+            const superadmins = await this.users.findPage({
+                page: 1,
+                limit: 2,
+                role: SUPERADMIN_ROLE,
+                sort: 'createdAt',
+                order: 'asc',
+            });
+            if (superadmins.total <= 1) {
+                throw new BadRequestException('Tiene que quedar al menos un superadministrador');
+            }
+        }
+
+        await this.resolveOwnedChurches(id, decisions, asker);
+        // D6: no solo la dueña, cualquier iglesia de la que sea miembro. Es el
+        // mismo agujero de `update` cuando un rol pasa a autoprovisionarse.
+        await this.churches.leaveNonOwnedChurches(id);
+
+        const ctx = await auth.$context;
+        await ctx.internalAdapter.deleteUser(id);
+    }
+
+    /**
+     * Resuelve cada iglesia propia según lo decidido. Si falta alguna decisión,
+     * 409 con el impacto de todas —no solo de la que falta— para que el paso 2
+     * de la interfaz se pinte entero de una vez (D2). Todo se valida **antes**
+     * de tocar nada: una decisión inválida a mitad de la lista no puede dejar
+     * la mitad de las iglesias ya trasladadas.
+     */
+    private async resolveOwnedChurches(
+        userId: string,
+        decisions: ChurchDecision[],
+        asker: Asker,
+    ): Promise<void> {
+        const owned = await this.churches.ownedBy(userId);
+        if (owned.length === 0) return;
+
+        const byId = new Map(decisions.map((decision) => [decision.churchId, decision]));
+        const missing = owned.filter((church) => !byId.has(church.id));
+        if (missing.length > 0) {
+            const ownedChurches = await Promise.all(
+                owned.map((church) => this.transfers.impactOf(church.id)),
+            );
+            throw new ConflictException({
+                message:
+                    'Antes de dar de baja esta cuenta, decide qué pasa con cada iglesia que dirige',
+                data: { ownedChurches },
+            });
+        }
+
+        const deletingIds = new Set(
+            decisions
+                .filter((decision) => decision.action === 'delete')
+                .map((decision) => decision.churchId),
         );
-      }
-      if (!alcanzablesIds.has(targetId)) {
-        throw new BadRequestException('No llegas a esa iglesia');
-      }
-    }
+        const { items: alcanzables } = await this.churches.listFor(asker);
+        const alcanzablesIds = new Set(alcanzables.map((church) => church.id));
 
-    for (const church of owned) {
-      const decision = byId.get(church.id);
-      if (!decision) continue;
+        for (const church of owned) {
+            const decision = byId.get(church.id);
+            if (decision?.action !== 'transfer') continue;
 
-      if (decision.action === 'delete') await this.transfers.deleteAll(church.id);
-      else await this.transfers.transferAll(church.id, decision.targetChurchId as string);
+            const targetId = decision.targetChurchId;
+            if (!targetId) throw new BadRequestException('Elige a qué iglesia trasladar');
+            if (targetId === church.id) {
+                throw new BadRequestException('No puedes trasladarla a sí misma');
+            }
+            if (deletingIds.has(targetId)) {
+                throw new BadRequestException(
+                    'El destino no puede ser una iglesia que también vas a eliminar',
+                );
+            }
+            if (!alcanzablesIds.has(targetId)) {
+                throw new BadRequestException('No llegas a esa iglesia');
+            }
+        }
+
+        for (const church of owned) {
+            const decision = byId.get(church.id);
+            if (!decision) continue;
+
+            if (decision.action === 'delete') await this.transfers.deleteAll(church.id);
+            else await this.transfers.transferAll(church.id, decision.targetChurchId as string);
+        }
     }
-  }
 }

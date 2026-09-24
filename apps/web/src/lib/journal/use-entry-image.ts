@@ -12,28 +12,28 @@ import { toast } from '@/lib/toast';
  * y no un cartel que alguien vaya a imprimir.
  */
 export function useEntryImageExport(node: RefObject<HTMLElement | null>) {
-  const { t } = useTranslation();
-  const [busy, setBusy] = useState(false);
+    const { t } = useTranslation();
+    const [busy, setBusy] = useState(false);
 
-  const share = async (fileName: string, title: string) => {
-    const el = node.current;
-    if (!el) return;
+    const share = async (fileName: string, title: string) => {
+        const el = node.current;
+        if (!el) return;
 
-    setBusy(true);
-    try {
-      // Un respiro para que el navegador termine de maquetar la lámina y de
-      // decodificar el logo antes de fotografiarla (mismo motivo que `usePosterImage`).
-      await new Promise((resolve) => setTimeout(resolve, 120));
-      const png = await nodeToPng(el, 2);
+        setBusy(true);
+        try {
+            // Un respiro para que el navegador termine de maquetar la lámina y de
+            // decodificar el logo antes de fotografiarla (mismo motivo que `usePosterImage`).
+            await new Promise((resolve) => setTimeout(resolve, 120));
+            const png = await nodeToPng(el, 2);
 
-      if (canShareFiles(png, fileName)) await shareFile(png, fileName, title);
-      else downloadFile(png, fileName);
-    } catch {
-      toast.error(t('errors.generic'));
-    } finally {
-      setBusy(false);
-    }
-  };
+            if (canShareFiles(png, fileName)) await shareFile(png, fileName, title);
+            else downloadFile(png, fileName);
+        } catch {
+            toast.error(t('errors.generic'));
+        } finally {
+            setBusy(false);
+        }
+    };
 
-  return { busy, share };
+    return { busy, share };
 }

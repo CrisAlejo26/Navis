@@ -10,24 +10,27 @@ import { cn } from '@/lib/cn';
  * Android da su sombra griseada sin el valor web.
  */
 export const PANEL_SHADOW: ViewStyle = {
-  shadowColor: '#081231',
-  shadowOpacity: 0.08,
-  shadowRadius: 16,
-  shadowOffset: { width: 0, height: 8 },
-  elevation: 3,
+    shadowColor: '#081231',
+    shadowOpacity: 0.08,
+    shadowRadius: 16,
+    shadowOffset: { width: 0, height: 8 },
+    elevation: 3,
 };
 
 interface PanelProps {
-  children: React.ReactNode;
-  className?: string;
-  style?: ViewStyle;
+    children: React.ReactNode;
+    className?: string;
+    style?: ViewStyle;
 }
 
 /** La tarjeta del panel: redondeo grueso, sin borde, sombra suave. */
 export function Panel({ children, className, style }: PanelProps) {
-  return (
-    <View className={cn('gap-3 p-4 rounded-3xl bg-card', className)} style={[PANEL_SHADOW, style]}>
-      {children}
-    </View>
-  );
+    return (
+        <View
+            className={cn('gap-3 p-4 rounded-3xl bg-card', className)}
+            style={[PANEL_SHADOW, style]}
+        >
+            {children}
+        </View>
+    );
 }

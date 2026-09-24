@@ -14,55 +14,70 @@ import { NUMERIC_TYPES, TEXT_TYPES } from '@/lib/tables/column-types';
  * texto que solo repite lo que ya se ve).
  */
 export function ColumnFilterControl({
-  column,
-  filter,
-  label,
-  onChange,
+    column,
+    filter,
+    label,
+    onChange,
 }: {
-  column: CustomTableColumn;
-  filter: RowFilter | undefined;
-  label: string;
-  onChange: (filter: RowFilter | null) => void;
+    column: CustomTableColumn;
+    filter: RowFilter | undefined;
+    label: string;
+    onChange: (filter: RowFilter | null) => void;
 }) {
-  if (TEXT_TYPES.has(column.type)) {
-    return (
-      <TextFilterControl columnKey={column.key} label={label} filter={filter} onChange={onChange} />
-    );
-  }
+    if (TEXT_TYPES.has(column.type)) {
+        return (
+            <TextFilterControl
+                columnKey={column.key}
+                label={label}
+                filter={filter}
+                onChange={onChange}
+            />
+        );
+    }
 
-  if (NUMERIC_TYPES.has(column.type)) {
-    return (
-      <NumericFilterControl
-        columnKey={column.key}
-        label={label}
-        filter={filter}
-        onChange={onChange}
-      />
-    );
-  }
+    if (NUMERIC_TYPES.has(column.type)) {
+        return (
+            <NumericFilterControl
+                columnKey={column.key}
+                label={label}
+                filter={filter}
+                onChange={onChange}
+            />
+        );
+    }
 
-  if (column.type === 'date') {
-    return (
-      <DateFilterControl columnKey={column.key} label={label} filter={filter} onChange={onChange} />
-    );
-  }
+    if (column.type === 'date') {
+        return (
+            <DateFilterControl
+                columnKey={column.key}
+                label={label}
+                filter={filter}
+                onChange={onChange}
+            />
+        );
+    }
 
-  if (column.type === 'checkbox') {
-    return (
-      <CheckboxFilterControl
-        columnKey={column.key}
-        label={label}
-        filter={filter}
-        onChange={onChange}
-      />
-    );
-  }
+    if (column.type === 'checkbox') {
+        return (
+            <CheckboxFilterControl
+                columnKey={column.key}
+                label={label}
+                filter={filter}
+                onChange={onChange}
+            />
+        );
+    }
 
-  if (column.type === 'single_select' || column.type === 'multi_select') {
-    return (
-      <SelectFilterControl column={column} label={label} filter={filter} onChange={onChange} />
-    );
-  }
+    if (column.type === 'single_select' || column.type === 'multi_select') {
+        return (
+            <SelectFilterControl
+                column={column}
+                label={label}
+                filter={filter}
+                onChange={onChange}
+            />
+        );
+    }
 
-  return null;
+    return null;
 }

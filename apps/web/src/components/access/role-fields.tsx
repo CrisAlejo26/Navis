@@ -18,59 +18,59 @@ const LEVELS = Array.from({ length: MAX_CUSTOM_ROLE_LEVEL + 1 }, (_, level) => l
  * instalación sin nadie que pudiera devolvérselo (la API también lo impide).
  */
 export function RoleFields({ role }: { role: RoleRow | null }) {
-  const { t } = useTranslation();
-  const label = useRoleLabel();
-  const locked = role?.slug === SUPERADMIN_ROLE;
+    const { t } = useTranslation();
+    const label = useRoleLabel();
+    const locked = role?.slug === SUPERADMIN_ROLE;
 
-  return (
-    <>
-      {role?.isSystem ? (
-        <Note icon={Lock} title={label(role)}>
-          {t('roles.systemRoleLocked')}
-        </Note>
-      ) : (
+    return (
         <>
-          <Input
-            name="name"
-            label={t('roles.roleName')}
-            defaultValue={role?.name ?? ''}
-            autoComplete="off"
-            required
-          />
-          <div>
-            <Select
-              name="level"
-              label={t('roles.roleLevel')}
-              defaultValue={String(role?.level ?? 0)}
-              required
-            >
-              {LEVELS.map((level) => (
-                <option key={level} value={level}>
-                  {level}
-                </option>
-              ))}
-            </Select>
-            <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
-              {t('roles.roleLevelHint')}
-            </p>
-          </div>
+            {role?.isSystem ? (
+                <Note icon={Lock} title={label(role)}>
+                    {t('roles.systemRoleLocked')}
+                </Note>
+            ) : (
+                <>
+                    <Input
+                        name="name"
+                        label={t('roles.roleName')}
+                        defaultValue={role?.name ?? ''}
+                        autoComplete="off"
+                        required
+                    />
+                    <div>
+                        <Select
+                            name="level"
+                            label={t('roles.roleLevel')}
+                            defaultValue={String(role?.level ?? 0)}
+                            required
+                        >
+                            {LEVELS.map((level) => (
+                                <option key={level} value={level}>
+                                    {level}
+                                </option>
+                            ))}
+                        </Select>
+                        <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
+                            {t('roles.roleLevelHint')}
+                        </p>
+                    </div>
+                </>
+            )}
+
+            <Input
+                name="description"
+                label={t('roles.roleDescription')}
+                defaultValue={role?.description ?? ''}
+                autoComplete="off"
+            />
+
+            {locked ? (
+                <Note icon={Lock} title={t('permissions.title')}>
+                    {t('permissions.superadminLocked')}
+                </Note>
+            ) : (
+                <PermissionPicker granted={role?.permissions ?? []} />
+            )}
         </>
-      )}
-
-      <Input
-        name="description"
-        label={t('roles.roleDescription')}
-        defaultValue={role?.description ?? ''}
-        autoComplete="off"
-      />
-
-      {locked ? (
-        <Note icon={Lock} title={t('permissions.title')}>
-          {t('permissions.superadminLocked')}
-        </Note>
-      ) : (
-        <PermissionPicker granted={role?.permissions ?? []} />
-      )}
-    </>
-  );
+    );
 }

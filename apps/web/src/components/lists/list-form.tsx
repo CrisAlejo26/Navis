@@ -23,92 +23,92 @@ import { toast } from '@/lib/toast';
  * escondido.
  */
 export function ListForm({
-  open,
-  onClose,
-  list,
+    open,
+    onClose,
+    list,
 }: {
-  open: boolean;
-  onClose: () => void;
-  /** Si viene, se edita; si no, se crea. */
-  list?: List;
+    open: boolean;
+    onClose: () => void;
+    /** Si viene, se edita; si no, se crea. */
+    list?: List;
 }) {
-  const { t } = useTranslation();
-  const navigate = useNavigate();
-  const createList = useCreateList(api);
-  const updateList = useUpdateList(api);
-  const [error, setError] = useState<string | null>(null);
-  const [accent, setAccent] = useState(list?.accent ?? ACCENT_PALETTE[0]);
+    const { t } = useTranslation();
+    const navigate = useNavigate();
+    const createList = useCreateList(api);
+    const updateList = useUpdateList(api);
+    const [error, setError] = useState<string | null>(null);
+    const [accent, setAccent] = useState(list?.accent ?? ACCENT_PALETTE[0]);
 
-  const submit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const form = new FormData(event.currentTarget);
+    const submit = (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        const form = new FormData(event.currentTarget);
 
-    const parsed = createListSchema.safeParse({
-      name: formText(form.get('name')),
-      description: formText(form.get('description')),
-      accent,
-    });
+        const parsed = createListSchema.safeParse({
+            name: formText(form.get('name')),
+            description: formText(form.get('description')),
+            accent,
+        });
 
-    if (!parsed.success) {
-      setError(parsed.error.issues[0]?.message ?? t('errors.validation'));
-      return;
-    }
+        if (!parsed.success) {
+            setError(parsed.error.issues[0]?.message ?? t('errors.validation'));
+            return;
+        }
 
-    setError(null);
-    const onError = () => {
-      setError(t('lists.saveFailed'));
+        setError(null);
+        const onError = () => {
+            setError(t('lists.saveFailed'));
+        };
+
+        if (list) {
+            updateList.mutate(
+                { id: list.id, ...parsed.data },
+                {
+                    onSuccess: (guardada) => {
+                        toast.success(t('lists.saved', { name: guardada.name }));
+                        onClose();
+                    },
+                    onError,
+                },
+            );
+            return;
+        }
+
+        createList.mutate(parsed.data, {
+            onSuccess: (creada) => {
+                toast.success(t('lists.created', { name: creada.name }));
+                onClose();
+                void navigate(`/lists/${creada.slug}`);
+            },
+            onError,
+        });
     };
 
-    if (list) {
-      updateList.mutate(
-        { id: list.id, ...parsed.data },
-        {
-          onSuccess: (guardada) => {
-            toast.success(t('lists.saved', { name: guardada.name }));
-            onClose();
-          },
-          onError,
-        },
-      );
-      return;
-    }
+    return (
+        <Dialog open={open} onClose={onClose} title={list ? t('lists.edit') : t('lists.add')}>
+            <form onSubmit={submit} className="gap-4 flex flex-col" noValidate>
+                <Input name="name" label={t('lists.name')} defaultValue={list?.name} required />
 
-    createList.mutate(parsed.data, {
-      onSuccess: (creada) => {
-        toast.success(t('lists.created', { name: creada.name }));
-        onClose();
-        void navigate(`/lists/${creada.slug}`);
-      },
-      onError,
-    });
-  };
+                <Textarea
+                    name="description"
+                    rows={2}
+                    label={t('lists.description')}
+                    hint={t('lists.descriptionHint')}
+                    defaultValue={list?.description ?? ''}
+                />
 
-  return (
-    <Dialog open={open} onClose={onClose} title={list ? t('lists.edit') : t('lists.add')}>
-      <form onSubmit={submit} className="gap-4 flex flex-col" noValidate>
-        <Input name="name" label={t('lists.name')} defaultValue={list?.name} required />
+                <ColorPicker value={accent} onChange={setAccent} label={t('lists.color')} />
 
-        <Textarea
-          name="description"
-          rows={2}
-          label={t('lists.description')}
-          hint={t('lists.descriptionHint')}
-          defaultValue={list?.description ?? ''}
-        />
+                <FormError message={error} />
 
-        <ColorPicker value={accent} onChange={setAccent} label={t('lists.color')} />
-
-        <FormError message={error} />
-
-        <Button
-          type="submit"
-          size="lg"
-          className="w-full"
-          isLoading={createList.isPending || updateList.isPending}
-        >
-          {list ? t('common.save') : t('lists.add')}
-        </Button>
-      </form>
-    </Dialog>
-  );
+                <Button
+                    type="submit"
+                    size="lg"
+                    className="w-full"
+                    isLoading={createList.isPending || updateList.isPending}
+                >
+                    {list ? t('common.save') : t('lists.add')}
+                </Button>
+            </form>
+        </Dialog>
+    );
 }

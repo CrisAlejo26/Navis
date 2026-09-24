@@ -16,13 +16,13 @@ significa si falla.
 
 1. La base de datos migrada:
 
-   ```bash
-   pnpm db:migrate
-   ```
+    ```bash
+    pnpm db:migrate
+    ```
 
-   Sin esto, `GET /api/v1/prophecies/stats` devuelve **500** y la portada se
-   queda en blanco: las tablas `prophecies` y `prophecy_fulfillments` no
-   existen.
+    Sin esto, `GET /api/v1/prophecies/stats` devuelve **500** y la portada se
+    queda en blanco: las tablas `prophecies` y `prophecy_fulfillments` no
+    existen.
 
 2. La API y la web levantadas (`pnpm dev`), y **dos cuentas distintas** —hacen
    falta para la prueba 8, que es la más importante de todas—.

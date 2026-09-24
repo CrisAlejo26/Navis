@@ -10,18 +10,18 @@ import { useLocalSession } from '@/stores/local-session';
  * el servidor (Fase 3) cambia aquí, no en la pantalla.
  */
 export function useDashboardSummary() {
-  const session = useLocalSession((state) => state.session);
+    const session = useLocalSession((state) => state.session);
 
-  return useQuery({
-    queryKey: ['dashboard', session?.churchId, session?.userId],
-    queryFn: () => {
-      if (!session?.churchId || !session.userId) {
-        throw new Error('Sin sesión local no hay panel que calcular');
-      }
-      return localDashboardRepository.summary(session.churchId, session.userId);
-    },
-    enabled: Boolean(session?.churchId && session.userId),
-  });
+    return useQuery({
+        queryKey: ['dashboard', session?.churchId, session?.userId],
+        queryFn: () => {
+            if (!session?.churchId || !session.userId) {
+                throw new Error('Sin sesión local no hay panel que calcular');
+            }
+            return localDashboardRepository.summary(session.churchId, session.userId);
+        },
+        enabled: Boolean(session?.churchId && session.userId),
+    });
 }
 
 /**
@@ -31,8 +31,8 @@ export function useDashboardSummary() {
  * API y con la web.
  */
 export function useRegisteredBelievers() {
-  return useQuery({
-    queryKey: ['dashboard', 'registered-believers'],
-    queryFn: () => registeredBelievers(),
-  });
+    return useQuery({
+        queryKey: ['dashboard', 'registered-believers'],
+        queryFn: () => registeredBelievers(),
+    });
 }

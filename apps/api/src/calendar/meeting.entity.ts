@@ -24,46 +24,46 @@ import { MeetingSlot } from './meeting-slot.entity';
 @Index('IDX_meetings_church_date', ['churchId', 'date'])
 @Index('IDX_meetings_congregation_date', ['congregationId', 'date'])
 export class Meeting extends BaseEntity {
-  @ApiProperty()
-  @Column({ name: 'church_id', type: UUID })
-  churchId: string;
+    @ApiProperty()
+    @Column({ name: 'church_id', type: UUID })
+    churchId: string;
 
-  @ApiProperty({ description: 'De qué calendario es (D15)' })
-  @Column({ name: 'calendar_id', type: UUID })
-  calendarId: string;
+    @ApiProperty({ description: 'De qué calendario es (D15)' })
+    @Column({ name: 'calendar_id', type: UUID })
+    calendarId: string;
 
-  @ApiProperty()
-  @Column({ name: 'congregation_id', type: UUID })
-  congregationId: string;
+    @ApiProperty()
+    @Column({ name: 'congregation_id', type: UUID })
+    congregationId: string;
 
-  @ApiPropertyOptional({ description: 'De qué patrón nació. Nulo si es puntual' })
-  @Column({ name: 'pattern_id', type: UUID, nullable: true })
-  patternId: string | null;
+    @ApiPropertyOptional({ description: 'De qué patrón nació. Nulo si es puntual' })
+    @Column({ name: 'pattern_id', type: UUID, nullable: true })
+    patternId: string | null;
 
-  @ApiProperty({ description: 'Día local', example: '2026-08-15' })
-  @Column({ type: 'date' })
-  date: string;
+    @ApiProperty({ description: 'Día local', example: '2026-08-15' })
+    @Column({ type: 'date' })
+    date: string;
 
-  @ApiProperty({ example: '20:00' })
-  @Column({ name: 'start_time', type: 'time' })
-  startTime: string;
+    @ApiProperty({ example: '20:00' })
+    @Column({ name: 'start_time', type: 'time' })
+    startTime: string;
 
-  @ApiProperty({ example: 'Culto' })
-  @Column({ type: 'text' })
-  name: string;
+    @ApiProperty({ example: 'Culto' })
+    @Column({ type: 'text' })
+    name: string;
 
-  @ApiProperty()
-  @Column({ type: 'text' })
-  accent: string;
+    @ApiProperty()
+    @Column({ type: 'text' })
+    accent: string;
 
-  @ApiProperty({ enum: ['programada', 'cancelada'] })
-  @Column({ type: 'text', default: 'programada' })
-  status: MeetingStatus;
+    @ApiProperty({ enum: ['programada', 'cancelada'] })
+    @Column({ type: 'text', default: 'programada' })
+    status: MeetingStatus;
 
-  @ApiPropertyOptional()
-  @Column({ type: 'text', nullable: true })
-  notes: string | null;
+    @ApiPropertyOptional()
+    @Column({ type: 'text', nullable: true })
+    notes: string | null;
 
-  @OneToMany(() => MeetingSlot, (slot) => slot.meeting, { cascade: true })
-  slots: MeetingSlot[];
+    @OneToMany(() => MeetingSlot, (slot) => slot.meeting, { cascade: true })
+    slots: MeetingSlot[];
 }

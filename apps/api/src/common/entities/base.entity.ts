@@ -1,8 +1,8 @@
 import {
-  CreateDateColumn,
-  DeleteDateColumn,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
+    CreateDateColumn,
+    DeleteDateColumn,
+    PrimaryGeneratedColumn,
+    UpdateDateColumn,
 } from 'typeorm';
 
 import { TIMESTAMP } from '../../database/column-types';
@@ -13,16 +13,16 @@ import { TIMESTAMP } from '../../database/column-types';
  * de aquí: las gestiona Better Auth con su propio esquema.
  */
 export abstract class BaseEntity {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+    @PrimaryGeneratedColumn('uuid')
+    id: string;
 
-  @CreateDateColumn({ name: 'created_at', type: TIMESTAMP })
-  createdAt: Date;
+    @CreateDateColumn({ name: 'created_at', type: TIMESTAMP })
+    createdAt: Date;
 
-  @UpdateDateColumn({ name: 'updated_at', type: TIMESTAMP })
-  updatedAt: Date;
+    @UpdateDateColumn({ name: 'updated_at', type: TIMESTAMP })
+    updatedAt: Date;
 
-  /** Borrado lógico: `softRemove()` lo rellena en vez de borrar la fila. */
-  @DeleteDateColumn({ name: 'deleted_at', type: TIMESTAMP, nullable: true })
-  deletedAt: Date | null;
+    /** Borrado lógico: `softRemove()` lo rellena en vez de borrar la fila. */
+    @DeleteDateColumn({ name: 'deleted_at', type: TIMESTAMP, nullable: true })
+    deletedAt: Date | null;
 }

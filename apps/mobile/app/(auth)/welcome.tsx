@@ -24,75 +24,83 @@ import { useThemeStore } from '@/lib/theme';
  * doce hermanos con notas en un toque, para ver la interfaz llena (Regla 11).
  */
 export default function WelcomeScreen() {
-  const { t } = useTranslation();
-  const palette = themeColorsHex[useThemeStore((state) => state.resolvedTheme)];
-  const setSession = useLocalSession((state) => state.setSession);
-  const [demoLoading, setDemoLoading] = useState(false);
+    const { t } = useTranslation();
+    const palette = themeColorsHex[useThemeStore((state) => state.resolvedTheme)];
+    const setSession = useLocalSession((state) => state.setSession);
+    const [demoLoading, setDemoLoading] = useState(false);
 
-  async function enterDemo(): Promise<void> {
-    setDemoLoading(true);
-    try {
-      const session = await prepareDemoSession();
-      setSession(session);
-      router.replace('/(tabs)');
-    } catch {
-      // Silencio: es la demo. Si la siembra tropezó, el botón simplemente
-      // vuelve a estar disponible y el segundo intento encuentra todo ya
-      // hecho (la promesa compartida de `prepareDemoSession` se lo trae).
-    } finally {
-      setDemoLoading(false);
+    async function enterDemo(): Promise<void> {
+        setDemoLoading(true);
+        try {
+            const session = await prepareDemoSession();
+            setSession(session);
+            router.replace('/(tabs)');
+        } catch {
+            // Silencio: es la demo. Si la siembra tropezó, el botón simplemente
+            // vuelve a estar disponible y el segundo intento encuentra todo ya
+            // hecho (la promesa compartida de `prepareDemoSession` se lo trae).
+        } finally {
+            setDemoLoading(false);
+        }
     }
-  }
 
-  return (
-    <View className="flex-1 bg-background">
-      <BrandHeader />
+    return (
+        <View className="flex-1 bg-background">
+            <BrandHeader />
 
-      <Animated.View
-        entering={FadeInDown.delay(80).duration(420).springify().damping(18)}
-        className="gap-8 rounded-t-3xl p-6 pt-10 grow bg-background"
-        style={{ marginTop: -20 }}
-      >
-        <View className="gap-2">
-          <Text className="text-2xl font-semibold text-foreground">{t('auth.welcomeTitle')}</Text>
-          <Text className="text-sm text-muted-foreground">{t('auth.welcomeSubtitle')}</Text>
+            <Animated.View
+                entering={FadeInDown.delay(80).duration(420).springify().damping(18)}
+                className="gap-8 rounded-t-3xl p-6 pt-10 grow bg-background"
+                style={{ marginTop: -20 }}
+            >
+                <View className="gap-2">
+                    <Text className="text-2xl font-semibold text-foreground">
+                        {t('auth.welcomeTitle')}
+                    </Text>
+                    <Text className="text-sm text-muted-foreground">
+                        {t('auth.welcomeSubtitle')}
+                    </Text>
+                </View>
+
+                <View className="gap-3">
+                    <Link href="/(auth)/register" asChild>
+                        <Button title={t('auth.signUp')} size="lg" />
+                    </Link>
+                    <Link href="/(auth)/login" asChild>
+                        <Button title={t('auth.haveAccountCta')} variant="secondary" size="lg" />
+                    </Link>
+                    <Button
+                        title={t('auth.demoEntry')}
+                        variant="outline"
+                        size="lg"
+                        leadingIcon="flask-outline"
+                        loading={demoLoading}
+                        onPress={() => {
+                            void enterDemo();
+                        }}
+                    />
+                </View>
+
+                <View className="gap-2 items-center">
+                    <Ionicons
+                        name="phone-portrait-outline"
+                        size={20}
+                        color={palette.mutedForeground}
+                    />
+                    <Text className="text-xs max-w-xs text-center text-muted-foreground">
+                        {t('auth.localModeNote')}
+                    </Text>
+                </View>
+
+                <View className="gap-3 items-center">
+                    <View className="flex-row justify-center">
+                        <ThemeToggle />
+                    </View>
+                    <View className="mt-5 self-stretch">
+                        <LanguageSelect />
+                    </View>
+                </View>
+            </Animated.View>
         </View>
-
-        <View className="gap-3">
-          <Link href="/(auth)/register" asChild>
-            <Button title={t('auth.signUp')} size="lg" />
-          </Link>
-          <Link href="/(auth)/login" asChild>
-            <Button title={t('auth.haveAccountCta')} variant="secondary" size="lg" />
-          </Link>
-          <Button
-            title={t('auth.demoEntry')}
-            variant="outline"
-            size="lg"
-            leadingIcon="flask-outline"
-            loading={demoLoading}
-            onPress={() => {
-              void enterDemo();
-            }}
-          />
-        </View>
-
-        <View className="gap-2 items-center">
-          <Ionicons name="phone-portrait-outline" size={20} color={palette.mutedForeground} />
-          <Text className="text-xs max-w-xs text-center text-muted-foreground">
-            {t('auth.localModeNote')}
-          </Text>
-        </View>
-
-        <View className="gap-3 items-center">
-          <View className="flex-row justify-center">
-            <ThemeToggle />
-          </View>
-          <View className="mt-5 self-stretch">
-            <LanguageSelect />
-          </View>
-        </View>
-      </Animated.View>
-    </View>
-  );
+    );
 }

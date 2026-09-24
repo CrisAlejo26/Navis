@@ -14,20 +14,20 @@ import { ENTRY_KIND_STYLES } from '@/lib/journal/entry-kind';
  * informa** (Regla 3 §7).
  */
 export function EntryKindBadge({ kind, className }: { kind: EntryKind; className?: string }) {
-  const { t } = useTranslation();
-  const { Icon, accent, labelKey } = ENTRY_KIND_STYLES[kind];
+    const { t } = useTranslation();
+    const { Icon, accent, labelKey } = ENTRY_KIND_STYLES[kind];
 
-  return (
-    <span
-      style={accentVars(accent)}
-      className={cn(
-        'gap-1.5 px-2 py-0.5 font-medium inline-flex items-center rounded-full border text-[11px]',
-        'border-[var(--acento)]/35 bg-[var(--acento)]/10 text-[var(--acento)]',
-        className,
-      )}
-    >
-      <Icon size={11} aria-hidden />
-      {t(labelKey)}
-    </span>
-  );
+    return (
+        <span
+            style={accentVars(accent)}
+            className={cn(
+                'gap-1.5 px-2 py-0.5 font-medium inline-flex items-center rounded-full border text-[11px]',
+                'border-[var(--acento)]/35 bg-[var(--acento)]/10 text-[var(--acento)]',
+                className,
+            )}
+        >
+            <Icon size={11} aria-hidden />
+            {t(labelKey)}
+        </span>
+    );
 }

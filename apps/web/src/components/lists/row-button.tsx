@@ -9,26 +9,26 @@ import type { ReactNode } from 'react';
  * dentro: «Subir a Juan Pérez» dice qué va a pasar, «Subir» no.
  */
 export function RowButton({
-  label,
-  disabled,
-  onClick,
-  children,
+    label,
+    disabled,
+    onClick,
+    children,
 }: {
-  label: string;
-  disabled?: boolean;
-  onClick: () => void;
-  children: ReactNode;
+    label: string;
+    disabled?: boolean;
+    onClick: () => void;
+    children: ReactNode;
 }) {
-  return (
-    <button
-      type="button"
-      aria-label={label}
-      title={label}
-      disabled={disabled}
-      onClick={onClick}
-      className="size-9 inline-flex cursor-pointer items-center justify-center rounded-md text-muted-foreground transition-colors duration-200 hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none disabled:pointer-events-none disabled:opacity-30"
-    >
-      {children}
-    </button>
-  );
+    return (
+        <button
+            type="button"
+            aria-label={label}
+            title={label}
+            disabled={disabled}
+            onClick={onClick}
+            className="size-9 inline-flex cursor-pointer items-center justify-center rounded-md text-muted-foreground transition-colors duration-200 hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none disabled:pointer-events-none disabled:opacity-30"
+        >
+            {children}
+        </button>
+    );
 }

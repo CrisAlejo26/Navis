@@ -4,20 +4,22 @@ import { Text, View } from 'react-native';
 import { cn } from '@/lib/cn';
 
 interface CardProps {
-  title?: string;
-  description?: string;
-  children?: ReactNode;
-  className?: string;
+    title?: string;
+    description?: string;
+    children?: ReactNode;
+    className?: string;
 }
 
 export function Card({ title, description, children, className }: CardProps) {
-  return (
-    <View className={cn('gap-2 p-4 rounded-xl border border-border bg-card', className)}>
-      {title ? <Text className="text-base font-sans-semibold text-foreground">{title}</Text> : null}
-      {description ? (
-        <Text className="text-sm font-sans text-muted-foreground">{description}</Text>
-      ) : null}
-      {children}
-    </View>
-  );
+    return (
+        <View className={cn('gap-2 p-4 rounded-xl border border-border bg-card', className)}>
+            {title ? (
+                <Text className="text-base font-sans-semibold text-foreground">{title}</Text>
+            ) : null}
+            {description ? (
+                <Text className="text-sm font-sans text-muted-foreground">{description}</Text>
+            ) : null}
+            {children}
+        </View>
+    );
 }

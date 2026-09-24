@@ -9,14 +9,14 @@ import { cn } from '@/lib/cn';
  * subrayado permanente en mitad de una frase la parte.
  */
 export function TextLink({ className, ...props }: ComponentProps<typeof Link>) {
-  return (
-    <Link
-      className={cn(
-        'font-medium text-primary underline-offset-4 transition-colors duration-200',
-        'hover:underline focus-visible:underline',
-        className,
-      )}
-      {...props}
-    />
-  );
+    return (
+        <Link
+            className={cn(
+                'font-medium text-primary underline-offset-4 transition-colors duration-200',
+                'hover:underline focus-visible:underline',
+                className,
+            )}
+            {...props}
+        />
+    );
 }

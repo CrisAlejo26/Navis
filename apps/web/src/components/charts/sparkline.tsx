@@ -12,32 +12,32 @@ import { useChartTheme } from '@/components/charts/chart-theme';
  * `useChartTheme` para pedir una línea (Regla 3 §5).
  */
 export function Sparkline({
-  values,
-  tone = 'success',
+    values,
+    tone = 'success',
 }: {
-  values: number[];
-  tone?: 'primary' | 'success';
+    values: number[];
+    tone?: 'primary' | 'success';
 }) {
-  const theme = useChartTheme();
-  if (values.length < 2) return null;
+    const theme = useChartTheme();
+    if (values.length < 2) return null;
 
-  const max = Math.max(...values, 1);
-  const step = 100 / (values.length - 1);
-  const points = values
-    .map((value, index) => `${String(index * step)},${String(24 - (value / max) * 22)}`)
-    .join(' ');
+    const max = Math.max(...values, 1);
+    const step = 100 / (values.length - 1);
+    const points = values
+        .map((value, index) => `${String(index * step)},${String(24 - (value / max) * 22)}`)
+        .join(' ');
 
-  return (
-    <svg aria-hidden viewBox="0 0 100 24" preserveAspectRatio="none" className="h-6 w-full">
-      <polyline
-        points={points}
-        fill="none"
-        stroke={theme[tone]}
-        strokeWidth={1.5}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        vectorEffect="non-scaling-stroke"
-      />
-    </svg>
-  );
+    return (
+        <svg aria-hidden viewBox="0 0 100 24" preserveAspectRatio="none" className="h-6 w-full">
+            <polyline
+                points={points}
+                fill="none"
+                stroke={theme[tone]}
+                strokeWidth={1.5}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                vectorEffect="non-scaling-stroke"
+            />
+        </svg>
+    );
 }

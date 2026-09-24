@@ -8,9 +8,9 @@ import { useLocalSession } from '@/stores/local-session';
  * `church-setup`, que es el paso bloqueante del alta (RFC 0024, Fase 1).
  */
 export default function AuthLayout() {
-  const session = useLocalSession((state) => state.session);
+    const session = useLocalSession((state) => state.session);
 
-  if (session?.churchId) return <Redirect href="/(tabs)" />;
+    if (session?.churchId) return <Redirect href="/(tabs)" />;
 
-  return <Stack screenOptions={{ headerShown: false }} />;
+    return <Stack screenOptions={{ headerShown: false }} />;
 }

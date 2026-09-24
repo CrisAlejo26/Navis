@@ -14,37 +14,37 @@ import { PropheciesRepository } from './prophecies.repository';
  */
 @Injectable()
 export class ProphecyStatsService {
-  constructor(private readonly prophecies: PropheciesRepository) {}
+    constructor(private readonly prophecies: PropheciesRepository) {}
 
-  async stats(ownerId: string): Promise<PropheciesStats> {
-    const rows = await this.prophecies
-      .scoped(ownerId)
-      .select([
-        'prophecy.id',
-        'prophecy.title',
-        'prophecy.receivedAt',
-        'prophecy.fulfilledAt',
-        'prophecy.lastFulfillmentAt',
-      ])
-      .getMany();
+    async stats(ownerId: string): Promise<PropheciesStats> {
+        const rows = await this.prophecies
+            .scoped(ownerId)
+            .select([
+                'prophecy.id',
+                'prophecy.title',
+                'prophecy.receivedAt',
+                'prophecy.fulfilledAt',
+                'prophecy.lastFulfillmentAt',
+            ])
+            .getMany();
 
-    return summarize(rows.map(toStatsRow), toIsoDay(new Date()));
-  }
+        return summarize(rows.map(toStatsRow), toIsoDay(new Date()));
+    }
 }
 
 /** Las fechas, como día de calendario: desde Postgres pueden venir como `Date`. */
 function toStatsRow(row: {
-  id: string;
-  title: string;
-  receivedAt: string;
-  fulfilledAt: string | null;
-  lastFulfillmentAt: string | null;
+    id: string;
+    title: string;
+    receivedAt: string;
+    fulfilledAt: string | null;
+    lastFulfillmentAt: string | null;
 }): StatsRow {
-  return {
-    id: row.id,
-    title: row.title,
-    receivedAt: toIsoDay(row.receivedAt),
-    fulfilledAt: row.fulfilledAt ? toIsoDay(row.fulfilledAt) : null,
-    lastFulfillmentAt: row.lastFulfillmentAt ? toIsoDay(row.lastFulfillmentAt) : null,
-  };
+    return {
+        id: row.id,
+        title: row.title,
+        receivedAt: toIsoDay(row.receivedAt),
+        fulfilledAt: row.fulfilledAt ? toIsoDay(row.fulfilledAt) : null,
+        lastFulfillmentAt: row.lastFulfillmentAt ? toIsoDay(row.lastFulfillmentAt) : null,
+    };
 }

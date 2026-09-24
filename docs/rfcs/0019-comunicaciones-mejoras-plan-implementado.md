@@ -193,34 +193,34 @@ WhatsApp exporta igual, sin resolver el formato.
   (Regla 9 §5): nada que añadir.
 - Textos nuevos, sección `communications.*` (valor en español):
 
-  | Clave                                | es                                  |
-  | ------------------------------------ | ----------------------------------- |
-  | `communications.exportChat`          | Exportar conversación               |
-  | `communications.exportAttachment`    | Adjunto: {{name}}                   |
-  | `communications.selectConversation`  | Seleccionar {{name}}                |
-  | `communications.selectChats`         | Seleccionar                         |
-  | `communications.cancelSelection`     | Cancelar selección                  |
-  | `communications.emojiPicker`         | Emoji                               |
-  | `communications.searchEmoji`         | Buscar un emoji                     |
-  | `communications.recentEmoji`         | Usados recientemente                |
-  | `communications.noEmojiResults`      | Ningún emoji con ese nombre         |
-  | `communications.emojiCategories.*`   | 9 claves, una por categoría Unicode |
-  | `communications.formatBold`          | Negrita                             |
-  | `communications.formatItalic`        | Cursiva                             |
-  | `communications.formatStrikethrough` | Tachado                             |
-  | `communications.formatCode`          | Monoespaciado                       |
-  | `communications.formatColor`         | Color del texto                     |
-  | `communications.formatting`          | Formato                             |
-  | `communications.colorNames.*`        | 5 claves, una por token de color    |
+    | Clave                                | es                                  |
+    | ------------------------------------ | ----------------------------------- |
+    | `communications.exportChat`          | Exportar conversación               |
+    | `communications.exportAttachment`    | Adjunto: {{name}}                   |
+    | `communications.selectConversation`  | Seleccionar {{name}}                |
+    | `communications.selectChats`         | Seleccionar                         |
+    | `communications.cancelSelection`     | Cancelar selección                  |
+    | `communications.emojiPicker`         | Emoji                               |
+    | `communications.searchEmoji`         | Buscar un emoji                     |
+    | `communications.recentEmoji`         | Usados recientemente                |
+    | `communications.noEmojiResults`      | Ningún emoji con ese nombre         |
+    | `communications.emojiCategories.*`   | 9 claves, una por categoría Unicode |
+    | `communications.formatBold`          | Negrita                             |
+    | `communications.formatItalic`        | Cursiva                             |
+    | `communications.formatStrikethrough` | Tachado                             |
+    | `communications.formatCode`          | Monoespaciado                       |
+    | `communications.formatColor`         | Color del texto                     |
+    | `communications.formatting`          | Formato                             |
+    | `communications.colorNames.*`        | 5 claves, una por token de color    |
 
-  «Exportar (n)» y «n seleccionados» de la barra de selección **no** son
-  claves nuevas: reutilizan `export.selected`/`export.selectedAction`, que ya
-  existían para el mismo patrón en el cuaderno (RFC 0017) — el mismo criterio
-  de reutilización del punto 2. `SelectionBar` subió de `components/journal/`
-  a `components/ui/` en el mismo cambio, y `useSelection` de
-  `lib/journal/` a `lib/`, por la misma razón.
+    «Exportar (n)» y «n seleccionados» de la barra de selección **no** son
+    claves nuevas: reutilizan `export.selected`/`export.selectedAction`, que ya
+    existían para el mismo patrón en el cuaderno (RFC 0017) — el mismo criterio
+    de reutilización del punto 2. `SelectionBar` subió de `components/journal/`
+    a `components/ui/` en el mismo cambio, y `useSelection` de
+    `lib/journal/` a `lib/`, por la misma razón.
 
-  Escritas primero en `es.ts`, traducidas de verdad en los otros cinco.
+    Escritas primero en `es.ts`, traducidas de verdad en los otros cinco.
 
 ## 7. Consideraciones
 

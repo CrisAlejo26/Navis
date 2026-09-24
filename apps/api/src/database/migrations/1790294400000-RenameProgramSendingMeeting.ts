@@ -15,26 +15,26 @@ import { type MigrationInterface, type QueryRunner } from 'typeorm';
  * `defaultWeekFor` dejaría de estar congelada (ver `CreateRoles` en CLAUDE.md).
  */
 export class RenameProgramSendingMeeting1790294400000 implements MigrationInterface {
-  name = 'RenameProgramSendingMeeting1790294400000';
+    name = 'RenameProgramSendingMeeting1790294400000';
 
-  async up(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(
-      `UPDATE "meeting_patterns" SET "name" = 'Programación'
+    async up(queryRunner: QueryRunner): Promise<void> {
+        await queryRunner.query(
+            `UPDATE "meeting_patterns" SET "name" = 'Programación'
        WHERE "name" = 'Enviar programación'
          AND "calendar_id" IN
            (SELECT "id" FROM "calendars" WHERE "ministry" = 'enviar-programacion' AND "deleted_at" IS NULL)`,
-    );
+        );
 
-    await queryRunner.query(
-      `UPDATE "meetings" SET "name" = 'Programación'
+        await queryRunner.query(
+            `UPDATE "meetings" SET "name" = 'Programación'
        WHERE "name" = 'Enviar programación'
          AND "calendar_id" IN
            (SELECT "id" FROM "calendars" WHERE "ministry" = 'enviar-programacion' AND "deleted_at" IS NULL)`,
-    );
-  }
+        );
+    }
 
-  /** Sin vuelta atrás: los nombres ya pueden estar editados a mano. */
-  async down(): Promise<void> {
-    /* Nada que deshacer. */
-  }
+    /** Sin vuelta atrás: los nombres ya pueden estar editados a mano. */
+    async down(): Promise<void> {
+        /* Nada que deshacer. */
+    }
 }

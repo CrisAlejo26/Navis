@@ -9,20 +9,20 @@ import { cn } from '@/lib/cn';
  * aparezca en su sitio en vez de empujar la tarjeta al llegar.
  */
 export function FormSkeleton({ fields = 3, className }: { fields?: number; className?: string }) {
-  const { t } = useTranslation();
+    const { t } = useTranslation();
 
-  return (
-    <div role="status" aria-busy className={cn('gap-4 flex flex-col', className)}>
-      <span className="sr-only">{t('common.loading')}</span>
+    return (
+        <div role="status" aria-busy className={cn('gap-4 flex flex-col', className)}>
+            <span className="sr-only">{t('common.loading')}</span>
 
-      {Array.from({ length: fields }, (_, index) => (
-        <div key={index} className="gap-2 flex flex-col">
-          <Skeleton className="h-3.5 w-24" />
-          <Skeleton className="h-10 rounded-lg" />
+            {Array.from({ length: fields }, (_, index) => (
+                <div key={index} className="gap-2 flex flex-col">
+                    <Skeleton className="h-3.5 w-24" />
+                    <Skeleton className="h-10 rounded-lg" />
+                </div>
+            ))}
+
+            <Skeleton className="h-10 w-32 rounded-lg" />
         </div>
-      ))}
-
-      <Skeleton className="h-10 w-32 rounded-lg" />
-    </div>
-  );
+    );
 }

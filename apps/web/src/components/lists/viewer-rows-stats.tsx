@@ -13,39 +13,44 @@ import { formatDateTime } from '@/lib/format';
  * pregunta del principio, y llega sin guardar una sola dirección IP entera.
  */
 export function ViewerRowsStats({ viewers }: { viewers: ListStats['audience']['byViewer'] }) {
-  const { t } = useTranslation();
+    const { t } = useTranslation();
 
-  if (viewers.length === 0) {
-    return (
-      <div className="p-5 rounded-xl border bg-card">
-        <h3 className="text-sm font-semibold">{t('lists.whoEntered')}</h3>
-        <p className="mt-1 text-sm text-muted-foreground">{t('lists.viewsEmpty')}</p>
-      </div>
-    );
-  }
-
-  return (
-    <div className="p-5 gap-3 flex flex-col rounded-xl border bg-card">
-      <h3 className="text-sm font-semibold">{t('lists.whoEntered')}</h3>
-
-      <ul className="gap-2 flex flex-col">
-        {viewers.map((viewer) => (
-          <li key={viewer.viewerId} className="gap-3 flex items-center">
-            {viewer.believerId && (
-              <BelieverPhoto
-                believer={{ id: viewer.believerId, hasPhoto: viewer.believerHasPhoto }}
-              />
-            )}
-            <div className="min-w-0 flex-1">
-              <p className="text-sm font-medium truncate">{viewer.label}</p>
-              <p className="text-xs text-muted-foreground">{formatDateTime(viewer.lastAt)}</p>
+    if (viewers.length === 0) {
+        return (
+            <div className="p-5 rounded-xl border bg-card">
+                <h3 className="text-sm font-semibold">{t('lists.whoEntered')}</h3>
+                <p className="mt-1 text-sm text-muted-foreground">{t('lists.viewsEmpty')}</p>
             </div>
-            <span className="text-sm font-semibold tabular-nums">
-              {t('lists.entries', { count: viewer.views })}
-            </span>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
+        );
+    }
+
+    return (
+        <div className="p-5 gap-3 flex flex-col rounded-xl border bg-card">
+            <h3 className="text-sm font-semibold">{t('lists.whoEntered')}</h3>
+
+            <ul className="gap-2 flex flex-col">
+                {viewers.map((viewer) => (
+                    <li key={viewer.viewerId} className="gap-3 flex items-center">
+                        {viewer.believerId && (
+                            <BelieverPhoto
+                                believer={{
+                                    id: viewer.believerId,
+                                    hasPhoto: viewer.believerHasPhoto,
+                                }}
+                            />
+                        )}
+                        <div className="min-w-0 flex-1">
+                            <p className="text-sm font-medium truncate">{viewer.label}</p>
+                            <p className="text-xs text-muted-foreground">
+                                {formatDateTime(viewer.lastAt)}
+                            </p>
+                        </div>
+                        <span className="text-sm font-semibold tabular-nums">
+                            {t('lists.entries', { count: viewer.views })}
+                        </span>
+                    </li>
+                ))}
+            </ul>
+        </div>
+    );
 }

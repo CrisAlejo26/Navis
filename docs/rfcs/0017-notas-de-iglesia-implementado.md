@@ -105,32 +105,32 @@ permisos se llaman `journal.*` para no chocar con `notes.*`, que ya existe.
   —observación, testimonio, sueño, bien hecho, cosas mal hechas— y dos más a
   elegir. Se añaden:
 
-  | Tipo         | Icono           | Para qué                                               |
-  | ------------ | --------------- | ------------------------------------------------------ |
-  | Observación  | `Eye`           | Lo que se ve y conviene dejar escrito                  |
-  | Testimonio   | `Quote`         | Lo que alguien cuenta                                  |
-  | Sueño        | `Moon`          | Un sueño compartido con el equipo                      |
-  | Bien hecho   | `Star`          | Un acierto que merece repetirse                        |
-  | Corrección   | `TriangleAlert` | Algo que se hizo mal y hubo que hablar                 |
-  | **Oración**  | `HandHeart`     | Lo que se sostiene en oración, respondida o no todavía |
-  | **Decisión** | `Compass`       | Un rumbo que se toma para la congregación              |
+    | Tipo         | Icono           | Para qué                                               |
+    | ------------ | --------------- | ------------------------------------------------------ |
+    | Observación  | `Eye`           | Lo que se ve y conviene dejar escrito                  |
+    | Testimonio   | `Quote`         | Lo que alguien cuenta                                  |
+    | Sueño        | `Moon`          | Un sueño compartido con el equipo                      |
+    | Bien hecho   | `Star`          | Un acierto que merece repetirse                        |
+    | Corrección   | `TriangleAlert` | Algo que se hizo mal y hubo que hablar                 |
+    | **Oración**  | `HandHeart`     | Lo que se sostiene en oración, respondida o no todavía |
+    | **Decisión** | `Compass`       | Un rumbo que se toma para la congregación              |
 
-  Las dos añadidas no son relleno: **oración** es tan pastoral como un
-  testimonio y hoy no tiene dónde vivir, y **decisión** cierra el círculo de
-  «bien hecho / mal hecho» con el paso que de verdad los conecta — qué se
-  decidió hacer a partir de ahí. Y «decisión» conecta con el propio vocabulario
-  náutico del proyecto: un rumbo es una decisión (RFC 0004 usa `Waves` y
-  `Anchor`; aquí, la brújula).
+    Las dos añadidas no son relleno: **oración** es tan pastoral como un
+    testimonio y hoy no tiene dónde vivir, y **decisión** cierra el círculo de
+    «bien hecho / mal hecho» con el paso que de verdad los conecta — qué se
+    decidió hacer a partir de ahí. Y «decisión» conecta con el propio vocabulario
+    náutico del proyecto: un rumbo es una decisión (RFC 0004 usa `Waves` y
+    `Anchor`; aquí, la brújula).
 
-  Es texto validado contra una constante de `shared`
-  (`ENTRY_KINDS`), como los tipos de nota de creyentes (RFC 0003 D7): un tipo
-  que dejara de proponerse no rompe lo ya escrito.
+    Es texto validado contra una constante de `shared`
+    (`ENTRY_KINDS`), como los tipos de nota de creyentes (RFC 0003 D7): un tipo
+    que dejara de proponerse no rompe lo ya escrito.
 
-  **El color es dato, no decoración** (D14): cada tipo lleva un tono fijo de
-  la paleta ampliada (`ACCENT_PALETTE`), elegido para separarse bien de los
-  otros seis y sostenerse en claro y en oscuro. Se usa siempre igual: en el
-  icono, en la pastilla, en el filete de la ficha y en la barra del gráfico
-  «por tipo» — nunca un color que cambie de sitio a sitio.
+    **El color es dato, no decoración** (D14): cada tipo lleva un tono fijo de
+    la paleta ampliada (`ACCENT_PALETTE`), elegido para separarse bien de los
+    otros seis y sostenerse en claro y en oscuro. Se usa siempre igual: en el
+    icono, en la pastilla, en el filete de la ficha y en la barra del gráfico
+    «por tipo» — nunca un color que cambie de sitio a sitio.
 
 - **D3 — La entrada lleva título, y no se trunca en el listado.** Al revés que
   la bitácora de un creyente (RFC 0003 D15, sin título porque el tipo y la
@@ -285,13 +285,13 @@ tipos vive en `shared`.
 ```ts
 // packages/shared/src/schemas/journal.ts
 export const ENTRY_KINDS = [
-  'observacion',
-  'testimonio',
-  'sueno',
-  'bienHecho',
-  'correccion',
-  'oracion',
-  'decision',
+    'observacion',
+    'testimonio',
+    'sueno',
+    'bienHecho',
+    'correccion',
+    'oracion',
+    'decision',
 ] as const;
 
 export type EntryKind = (typeof ENTRY_KINDS)[number];
@@ -301,38 +301,42 @@ export function isEntryKind(value: string): value is EntryKind;
 export const entryKindSchema = z.enum(ENTRY_KINDS);
 
 export const journalEntrySchema = z.object({
-  id: z.uuid(),
-  churchId: z.uuid(),
-  title: z.string(),
-  kind: entryKindSchema,
-  occurredAt: isoDateSchema,
-  annotation: z.string(),
-  learned: z.string().nullable(),
-  remindAt: z.string().nullable(),
-  remindText: z.string().nullable(),
-  remindDoneAt: z.string().nullable(),
-  audios: z.array(journalEntryAudioSchema),
-  authorId: z.string().nullable(),
-  authorName: z.string().nullable(),
-  createdAt: z.string(),
+    id: z.uuid(),
+    churchId: z.uuid(),
+    title: z.string(),
+    kind: entryKindSchema,
+    occurredAt: isoDateSchema,
+    annotation: z.string(),
+    learned: z.string().nullable(),
+    remindAt: z.string().nullable(),
+    remindText: z.string().nullable(),
+    remindDoneAt: z.string().nullable(),
+    audios: z.array(journalEntryAudioSchema),
+    authorId: z.string().nullable(),
+    authorName: z.string().nullable(),
+    createdAt: z.string(),
 });
 
 /** `giftId` no existe aquí: es el único punto donde este esquema se aparta
     del de creyentes, porque no hay nada equivalente que enlazar (D2). */
 export const createEntrySchema = z
-  .object({
-    title: z.string().trim().min(1, 'Ponle un título a la entrada').max(200),
-    kind: entryKindSchema,
-    occurredAt: isoDateSchema,
-    annotation: z.string().trim().min(1, 'Escribe la anotación').max(8000),
-    learned: z.string().trim().max(8000).optional(),
-    remindAt: reminderAtSchema.optional(),
-    remindText: z.string().trim().max(500).optional(),
-  })
-  .refine((entry) => !entry.remindText || Boolean(entry.remindAt), {
-    message: 'El recordatorio necesita día y hora',
-    path: ['remindAt'],
-  });
+    .object({
+        title: z
+            .string()
+            .trim()
+            .min(1, 'Ponle un título a la entrada')
+            .max(200),
+        kind: entryKindSchema,
+        occurredAt: isoDateSchema,
+        annotation: z.string().trim().min(1, 'Escribe la anotación').max(8000),
+        learned: z.string().trim().max(8000).optional(),
+        remindAt: reminderAtSchema.optional(),
+        remindText: z.string().trim().max(500).optional(),
+    })
+    .refine((entry) => !entry.remindText || Boolean(entry.remindAt), {
+        message: 'El recordatorio necesita día y hora',
+        path: ['remindAt'],
+    });
 ```
 
 `reminderAtSchema` se reutiliza tal cual de `schemas/believer-notes.ts` (Regla
@@ -386,16 +390,16 @@ Elemento del listado, con lo que la fila necesita ya resuelto:
 
 ```ts
 interface JournalEntryListItem {
-  id: string;
-  title: string;
-  kind: EntryKind;
-  occurredAt: string; // AAAA-MM-DD
-  excerpt: string; // primeras ~160 letras de la anotación, cortadas en palabra
-  hasLearned: boolean;
-  hasAudio: boolean;
-  remindAt: string | null;
-  remindDoneAt: string | null;
-  authorName: string | null;
+    id: string;
+    title: string;
+    kind: EntryKind;
+    occurredAt: string; // AAAA-MM-DD
+    excerpt: string; // primeras ~160 letras de la anotación, cortadas en palabra
+    hasLearned: boolean;
+    hasAudio: boolean;
+    remindAt: string | null;
+    remindDoneAt: string | null;
+    authorName: string | null;
 }
 ```
 
@@ -403,22 +407,22 @@ interface JournalEntryListItem {
 
 ```json
 {
-  "total": 63,
-  "byKind": {
-    "observacion": 14,
-    "testimonio": 11,
-    "sueno": 6,
-    "bienHecho": 9,
-    "correccion": 4,
-    "oracion": 15,
-    "decision": 4
-  },
-  "pendingReminders": 3,
-  "thisMonth": 7,
-  "monthly": [
-    { "month": "2026-01", "total": 4 },
-    { "month": "2026-02", "total": 6 }
-  ]
+    "total": 63,
+    "byKind": {
+        "observacion": 14,
+        "testimonio": 11,
+        "sueno": 6,
+        "bienHecho": 9,
+        "correccion": 4,
+        "oracion": 15,
+        "decision": 4
+    },
+    "pendingReminders": 3,
+    "thisMonth": 7,
+    "monthly": [
+        { "month": "2026-01", "total": 4 },
+        { "month": "2026-02", "total": 6 }
+    ]
 }
 ```
 

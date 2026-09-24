@@ -13,27 +13,27 @@ import { ministrySchema } from './ministries';
  * Lo que **sí** comparten todos: la iglesia, sus sedes y sus personas.
  */
 export const calendarSchema = z.object({
-  id: z.uuid(),
-  churchId: z.uuid(),
-  name: z.string(),
-  /** Derivado del nombre. Es lo que va en la URL: `/calendar/pulpito`. */
-  slug: z.string(),
-  /** La **labor** a la que propone: el slug de un rol. Nulo es «a cualquiera». */
-  ministry: z.string().nullable(),
-  position: z.number().int(),
+    id: z.uuid(),
+    churchId: z.uuid(),
+    name: z.string(),
+    /** Derivado del nombre. Es lo que va en la URL: `/calendar/pulpito`. */
+    slug: z.string(),
+    /** La **labor** a la que propone: el slug de un rol. Nulo es «a cualquiera». */
+    ministry: z.string().nullable(),
+    position: z.number().int(),
 });
 
 export type Calendar = z.infer<typeof calendarSchema>;
 
 export const createCalendarSchema = z.object({
-  name: z.string().trim().min(2, 'El calendario necesita un nombre').max(60),
-  ministry: ministrySchema.nullable().optional(),
+    name: z.string().trim().min(2, 'El calendario necesita un nombre').max(60),
+    ministry: ministrySchema.nullable().optional(),
 });
 
 export type CreateCalendarInput = z.infer<typeof createCalendarSchema>;
 
 export const updateCalendarSchema = createCalendarSchema.partial().extend({
-  position: z.number().int().min(0).optional(),
+    position: z.number().int().min(0).optional(),
 });
 
 export type UpdateCalendarInput = z.infer<typeof updateCalendarSchema>;
@@ -43,8 +43,8 @@ export type UpdateCalendarInput = z.infer<typeof updateCalendarSchema>;
  * datos de cada iglesia y se pueden renombrar (Regla 2 §6).
  */
 export const SEEDED_CALENDARS = [
-  { name: 'Púlpito', slug: 'pulpito', ministry: 'pulpito' },
-  { name: 'Recepción', slug: 'recepcion', ministry: 'recepcion' },
-  { name: 'Sonido', slug: 'sonido', ministry: 'sonido' },
-  { name: 'Biblias', slug: 'biblias', ministry: 'biblias' },
+    { name: 'Púlpito', slug: 'pulpito', ministry: 'pulpito' },
+    { name: 'Recepción', slug: 'recepcion', ministry: 'recepcion' },
+    { name: 'Sonido', slug: 'sonido', ministry: 'sonido' },
+    { name: 'Biblias', slug: 'biblias', ministry: 'biblias' },
 ] as const;

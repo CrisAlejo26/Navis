@@ -9,17 +9,17 @@ export type NavKey = 'nav.calendar' | 'nav.believers' | 'nav.prophecies' | 'nav.
  * Cada una se sustituirá al implementar su documento de docs/rfcs.
  */
 export function PlaceholderPage({ titleKey, rfc }: { titleKey: NavKey; rfc: string }) {
-  const { t } = useTranslation();
+    const { t } = useTranslation();
 
-  return (
-    <section className="gap-4 flex flex-col">
-      <h1 className="text-2xl font-semibold">{t(titleKey)}</h1>
-      <Card>
-        <CardTitle className="text-base">{t('common.comingSoon')}</CardTitle>
-        <CardDescription>
-          Especificación: <code>docs/rfcs/{rfc}</code>
-        </CardDescription>
-      </Card>
-    </section>
-  );
+    return (
+        <section className="gap-4 flex flex-col">
+            <h1 className="text-2xl font-semibold">{t(titleKey)}</h1>
+            <Card>
+                <CardTitle className="text-base">{t('common.comingSoon')}</CardTitle>
+                <CardDescription>
+                    Especificación: <code>docs/rfcs/{rfc}</code>
+                </CardDescription>
+            </Card>
+        </section>
+    );
 }

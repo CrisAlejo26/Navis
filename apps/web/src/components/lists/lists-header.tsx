@@ -17,46 +17,49 @@ import { formatNumber } from '@/lib/format';
  * lleva a ninguna parte es un adorno (D36).
  */
 export function ListsHeader({
-  lists,
-  overloaded,
-  onAdd,
+    lists,
+    overloaded,
+    onAdd,
 }: {
-  lists: readonly ListSummary[];
-  /** Cuánta gente está en cuatro listas o más. `null` si no se puede saber. */
-  overloaded: number | null;
-  onAdd?: () => void;
+    lists: readonly ListSummary[];
+    /** Cuánta gente está en cuatro listas o más. `null` si no se puede saber. */
+    overloaded: number | null;
+    onAdd?: () => void;
 }) {
-  const { t } = useTranslation();
-  const total = lists.reduce((suma, one) => suma + one.memberCount, 0);
+    const { t } = useTranslation();
+    const total = lists.reduce((suma, one) => suma + one.memberCount, 0);
 
-  return (
-    <header className="gap-4 flex flex-wrap items-end justify-between">
-      <div className="min-w-0">
-        <h1 className="text-2xl font-semibold tracking-[-0.02em]">{t('lists.title')}</h1>
+    return (
+        <header className="gap-4 flex flex-wrap items-end justify-between">
+            <div className="min-w-0">
+                <h1 className="text-2xl font-semibold tracking-[-0.02em]">{t('lists.title')}</h1>
 
-        <p className="mt-1.5 text-sm text-muted-foreground">
-          {t('lists.countLists', { count: lists.length })} · {formatNumber(total)}{' '}
-          {t('lists.countPeople', { count: total })}
-          {overloaded !== null && overloaded > 0 && (
-            <>
-              {' · '}
-              <Link
-                to={`/believers?inLists=${String(LIST_OVERLAP_THRESHOLD)}`}
-                className="font-medium text-foreground underline-offset-4 hover:underline"
-              >
-                {t('lists.overloaded', { count: overloaded, lists: LIST_OVERLAP_THRESHOLD })}
-              </Link>
-            </>
-          )}
-        </p>
-      </div>
+                <p className="mt-1.5 text-sm text-muted-foreground">
+                    {t('lists.countLists', { count: lists.length })} · {formatNumber(total)}{' '}
+                    {t('lists.countPeople', { count: total })}
+                    {overloaded !== null && overloaded > 0 && (
+                        <>
+                            {' · '}
+                            <Link
+                                to={`/believers?inLists=${String(LIST_OVERLAP_THRESHOLD)}`}
+                                className="font-medium text-foreground underline-offset-4 hover:underline"
+                            >
+                                {t('lists.overloaded', {
+                                    count: overloaded,
+                                    lists: LIST_OVERLAP_THRESHOLD,
+                                })}
+                            </Link>
+                        </>
+                    )}
+                </p>
+            </div>
 
-      {onAdd && (
-        <Button size="lg" onClick={onAdd}>
-          <Plus size={16} aria-hidden />
-          {t('lists.add')}
-        </Button>
-      )}
-    </header>
-  );
+            {onAdd && (
+                <Button size="lg" onClick={onAdd}>
+                    <Plus size={16} aria-hidden />
+                    {t('lists.add')}
+                </Button>
+            )}
+        </header>
+    );
 }

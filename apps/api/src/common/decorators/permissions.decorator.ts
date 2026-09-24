@@ -12,4 +12,4 @@ export const PERMISSIONS_KEY = 'permissions';
  * escribe.
  */
 export const RequirePermissions = (...permissions: Permission[]) =>
-  SetMetadata(PERMISSIONS_KEY, permissions);
+    SetMetadata(PERMISSIONS_KEY, permissions);

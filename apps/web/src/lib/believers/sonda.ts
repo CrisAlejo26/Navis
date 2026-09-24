@@ -10,12 +10,12 @@ import { alertRatio, daysWithoutNote, type AlertState, type IsoDate } from '@nav
 export type SondaTone = 'ok' | 'near' | 'overdue' | 'never' | 'off';
 
 export interface Sounding {
-  tone: SondaTone;
-  /** Días transcurridos desde la última nota, o desde el alta si no hay ninguna. */
-  days: number;
-  /** Cuánto se pinta de la pista, de 0 a 1. `null` no pinta pista. */
-  fill: number | null;
-  margin: number | null;
+    tone: SondaTone;
+    /** Días transcurridos desde la última nota, o desde el alta si no hay ninguna. */
+    days: number;
+    /** Cuánto se pinta de la pista, de 0 a 1. `null` no pinta pista. */
+    fill: number | null;
+    margin: number | null;
 }
 
 /** El umbral a partir del cual la sonda avisa antes de desbordarse. */
@@ -30,20 +30,20 @@ const CERCA = 0.7;
  * ha dejado fuera.
  */
 export function sound(believer: AlertState, today: IsoDate): Sounding {
-  const days = daysWithoutNote(believer, today);
-  const ratio = alertRatio(believer, today);
-  const margin = believer.alertAfterDays;
+    const days = daysWithoutNote(believer, today);
+    const ratio = alertRatio(believer, today);
+    const margin = believer.alertAfterDays;
 
-  if (ratio === null) return { tone: 'off', days, fill: null, margin: null };
-  if (believer.lastNoteAt === null) {
-    // Sin ninguna nota la pista va vacía, pero el tono sí escala: alguien a
-    // quien nadie ha escrito en tres meses no es un aviso suave.
-    return { tone: ratio > 1 ? 'overdue' : 'never', days, fill: 0, margin };
-  }
+    if (ratio === null) return { tone: 'off', days, fill: null, margin: null };
+    if (believer.lastNoteAt === null) {
+        // Sin ninguna nota la pista va vacía, pero el tono sí escala: alguien a
+        // quien nadie ha escrito en tres meses no es un aviso suave.
+        return { tone: ratio > 1 ? 'overdue' : 'never', days, fill: 0, margin };
+    }
 
-  const fill = Math.min(1, ratio);
-  if (ratio > 1) return { tone: 'overdue', days, fill, margin };
-  if (ratio > CERCA) return { tone: 'near', days, fill, margin };
+    const fill = Math.min(1, ratio);
+    if (ratio > 1) return { tone: 'overdue', days, fill, margin };
+    if (ratio > CERCA) return { tone: 'near', days, fill, margin };
 
-  return { tone: 'ok', days, fill, margin };
+    return { tone: 'ok', days, fill, margin };
 }

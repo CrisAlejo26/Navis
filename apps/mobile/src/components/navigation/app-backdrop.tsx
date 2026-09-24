@@ -11,15 +11,15 @@ import { useThemeStore } from '@/lib/theme';
  * en vez del blanco por defecto de la ventana nativa.
  */
 export function AppBackdrop() {
-  const resolvedTheme = useThemeStore((state) => state.resolvedTheme);
+    const resolvedTheme = useThemeStore((state) => state.resolvedTheme);
 
-  return (
-    <View
-      style={[
-        StyleSheet.absoluteFill,
-        { backgroundColor: themeColorsHex[resolvedTheme].background },
-      ]}
-      pointerEvents="none"
-    />
-  );
+    return (
+        <View
+            style={[
+                StyleSheet.absoluteFill,
+                { backgroundColor: themeColorsHex[resolvedTheme].background },
+            ]}
+            pointerEvents="none"
+        />
+    );
 }

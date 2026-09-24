@@ -32,39 +32,39 @@ import { WeekSeederService } from './week-seeder.service';
  * reuniones y quién ocupa cada fase.
  */
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([
-      Calendar,
-      Congregation,
-      MeetingPattern,
-      PatternPhase,
-      Meeting,
-      MeetingSlot,
-      Church,
-      Believer,
-      BelieverMinistry,
-    ]),
-    ChurchesModule,
-    BelieversModule,
-    HolidaysModule,
-  ],
-  controllers: [
-    ScheduleController,
-    CalendarsController,
-    CongregationsController,
-    PatternsController,
-  ],
-  providers: [
-    CalendarsService,
-    CongregationsService,
-    PatternsService,
-    ScheduleService,
-    MeetingsService,
-    AssignmentsService,
-    PreachersService,
-    SummaryService,
-    WeekSeederService,
-  ],
-  exports: [CalendarsService, CongregationsService, ScheduleService, WeekSeederService],
+    imports: [
+        TypeOrmModule.forFeature([
+            Calendar,
+            Congregation,
+            MeetingPattern,
+            PatternPhase,
+            Meeting,
+            MeetingSlot,
+            Church,
+            Believer,
+            BelieverMinistry,
+        ]),
+        ChurchesModule,
+        BelieversModule,
+        HolidaysModule,
+    ],
+    controllers: [
+        ScheduleController,
+        CalendarsController,
+        CongregationsController,
+        PatternsController,
+    ],
+    providers: [
+        CalendarsService,
+        CongregationsService,
+        PatternsService,
+        ScheduleService,
+        MeetingsService,
+        AssignmentsService,
+        PreachersService,
+        SummaryService,
+        WeekSeederService,
+    ],
+    exports: [CalendarsService, CongregationsService, ScheduleService, WeekSeederService],
 })
 export class CalendarModule {}

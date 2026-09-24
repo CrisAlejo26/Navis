@@ -4,8 +4,8 @@ import { Input } from '@/components/ui/input';
 import { dayToMonth, monthToDay } from '@/lib/believers/month';
 
 export interface MonthRow {
-  key: string;
-  label: string;
+    key: string;
+    label: string;
 }
 
 /**
@@ -19,38 +19,38 @@ export interface MonthRow {
  * sola: sin nada elegido no hay ninguna fecha que pedir.
  */
 export function MonthRows({
-  rows,
-  values,
-  legend,
-  onChange,
+    rows,
+    values,
+    legend,
+    onChange,
 }: {
-  rows: readonly MonthRow[];
-  values: Readonly<Record<string, string | null>>;
-  legend: string;
-  onChange: (key: string, date: string | null) => void;
+    rows: readonly MonthRow[];
+    values: Readonly<Record<string, string | null>>;
+    legend: string;
+    onChange: (key: string, date: string | null) => void;
 }) {
-  const { t } = useTranslation();
-  if (rows.length === 0) return null;
+    const { t } = useTranslation();
+    if (rows.length === 0) return null;
 
-  return (
-    <fieldset className="gap-2 flex flex-col">
-      <legend className="mb-1 text-sm font-medium">{legend}</legend>
-      <p className="mb-1 text-xs text-muted-foreground">{t('believers.journey.monthHint')}</p>
+    return (
+        <fieldset className="gap-2 flex flex-col">
+            <legend className="mb-1 text-sm font-medium">{legend}</legend>
+            <p className="mb-1 text-xs text-muted-foreground">{t('believers.journey.monthHint')}</p>
 
-      <div className="gap-2 sm:grid-cols-2 grid">
-        {rows.map((row) => (
-          <Input
-            key={row.key}
-            type="month"
-            name={`month-${row.key}`}
-            label={row.label}
-            value={dayToMonth(values[row.key])}
-            onChange={(event) => {
-              onChange(row.key, monthToDay(event.target.value));
-            }}
-          />
-        ))}
-      </div>
-    </fieldset>
-  );
+            <div className="gap-2 sm:grid-cols-2 grid">
+                {rows.map((row) => (
+                    <Input
+                        key={row.key}
+                        type="month"
+                        name={`month-${row.key}`}
+                        label={row.label}
+                        value={dayToMonth(values[row.key])}
+                        onChange={(event) => {
+                            onChange(row.key, monthToDay(event.target.value));
+                        }}
+                    />
+                ))}
+            </div>
+        </fieldset>
+    );
 }

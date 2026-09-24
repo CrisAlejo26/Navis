@@ -1,12 +1,12 @@
 import {
-  Controller,
-  Get,
-  NotFoundException,
-  Param,
-  Req,
-  Res,
-  StreamableFile,
-  VERSION_NEUTRAL,
+    Controller,
+    Get,
+    NotFoundException,
+    Param,
+    Req,
+    Res,
+    StreamableFile,
+    VERSION_NEUTRAL,
 } from '@nestjs/common';
 import { ApiExcludeController } from '@nestjs/swagger';
 import type { Request, Response } from 'express';
@@ -36,112 +36,117 @@ import { redirectScript, renderSharePage } from './share-page';
 @Public()
 @Controller({ path: 'l', version: VERSION_NEUTRAL })
 export class PublicShareController {
-  constructor(
-    private readonly lists: PublicListsService,
-    private readonly access: ListAccessService,
-    private readonly photos: BelieverPhotosService,
-    private readonly images: ImageStorageService,
-  ) {}
+    constructor(
+        private readonly lists: PublicListsService,
+        private readonly access: ListAccessService,
+        private readonly photos: BelieverPhotosService,
+        private readonly images: ImageStorageService,
+    ) {}
 
-  /** El documento con las `og:`. No cuenta como visita: el JSON sí (D31). */
-  @Get(':token')
-  async page(
-    @Param('token') token: string,
-    @Req() request: Request,
-    @Res({ passthrough: true }) response: Response,
-  ): Promise<string> {
-    const { list, churchName } = await this.lists.byToken(token);
+    /** El documento con las `og:`. No cuenta como visita: el JSON sí (D31). */
+    @Get(':token')
+    async page(
+        @Param('token') token: string,
+        @Req() request: Request,
+        @Res({ passthrough: true }) response: Response,
+    ): Promise<string> {
+        const { list, churchName } = await this.lists.byToken(token);
 
-    response.setHeader('content-type', 'text/html; charset=utf-8');
-    response.setHeader('cache-control', 'no-store');
-    response.setHeader('x-robots-tag', 'noindex, nofollow');
-    // Antes de escribir el cuerpo: el script de redirección necesita su hash
-    // en el CSP, o el navegador lo bloquea (share-page-csp.ts).
-    applySharePageCsp(request, response, redirectScript(listPublicPath(token)));
+        response.setHeader('content-type', 'text/html; charset=utf-8');
+        response.setHeader('cache-control', 'no-store');
+        response.setHeader('x-robots-tag', 'noindex, nofollow');
+        // Antes de escribir el cuerpo: el script de redirección necesita su hash
+        // en el CSP, o el navegador lo bloquea (share-page-csp.ts).
+        applySharePageCsp(request, response, redirectScript(listPublicPath(token)));
 
-    return renderSharePage({
-      origin: originOf(request),
-      token,
-      churchName,
-      name: list.name,
-      description: list.description,
-      hasCover: Boolean(list.coverKey),
-      // En restringida, la vista previa no lleva ni un nombre (D18).
-      list:
-        list.visibility === 'restricted' ? null : await this.lists.payload(list, churchName, null),
-    });
-  }
-
-  /**
-   * El manifest de aplicación de esta lista, con su propio `start_url`
-   * («PWA por lista»): instalada desde aquí, el icono abre la lista
-   * directamente y no el inicio de sesión general, porque `/lists/s/:token`
-   * no pasa por `ProtectedRoute`.
-   */
-  @Get(':token/manifest.webmanifest')
-  async manifest(
-    @Param('token') token: string,
-    @Req() request: Request,
-    @Res({ passthrough: true }) response: Response,
-  ): Promise<object> {
-    const { list, churchName } = await this.lists.byToken(token);
-
-    response.setHeader('content-type', 'application/manifest+json');
-    response.setHeader('cache-control', 'public, max-age=300');
-    response.setHeader('x-robots-tag', 'noindex, nofollow');
-
-    return renderListManifest({
-      origin: originOf(request),
-      token,
-      listName: list.name,
-      churchName,
-    });
-  }
-
-  @Get(':token/card.png')
-  async card(
-    @Param('token') token: string,
-    @Res({ passthrough: true }) response: Response,
-  ): Promise<StreamableFile> {
-    const { list } = await this.lists.byToken(token);
-    if (!list.coverKey) throw new NotFoundException('Esta lista no tiene portada');
-
-    response.setHeader('cache-control', 'public, max-age=300');
-
-    return new StreamableFile(this.images.read(list.coverKey), { type: 'image/png' });
-  }
-
-  /**
-   * La foto de un miembro, con **sus cinco cierres** (D17): que el token vale,
-   * que la lista está publicada y no caducada, que en modo restringido hay
-   * cookie con concesión, que la foto está activada, y que ese creyente **está
-   * en esta lista**. La última es la que impide usar el token de una lista para
-   * sacar la foto de cualquiera.
-   */
-  @Get(':token/photos/:believerId')
-  async photo(
-    @Param('token') token: string,
-    @Param('believerId') believerId: string,
-    @Req() request: Request,
-    @Res({ passthrough: true }) response: Response,
-  ): Promise<StreamableFile> {
-    const { list } = await this.lists.byToken(token);
-
-    if (list.visibility === 'restricted') {
-      const viewer = await this.access.sessionFor(list, listCookieFrom(request.headers.cookie));
-      if (!viewer) throw new NotFoundException('Esta lista ya no está disponible');
+        return renderSharePage({
+            origin: originOf(request),
+            token,
+            churchName,
+            name: list.name,
+            description: list.description,
+            hasCover: Boolean(list.coverKey),
+            // En restringida, la vista previa no lleva ni un nombre (D18).
+            list:
+                list.visibility === 'restricted'
+                    ? null
+                    : await this.lists.payload(list, churchName, null),
+        });
     }
 
-    if (!parsePublicFields(list.publicFields).photo) {
-      throw new NotFoundException('Esta lista no publica fotografías');
-    }
-    if (!(await this.lists.hasMember(list.id, believerId))) {
-      throw new NotFoundException('Esa persona no está en esta lista');
+    /**
+     * El manifest de aplicación de esta lista, con su propio `start_url`
+     * («PWA por lista»): instalada desde aquí, el icono abre la lista
+     * directamente y no el inicio de sesión general, porque `/lists/s/:token`
+     * no pasa por `ProtectedRoute`.
+     */
+    @Get(':token/manifest.webmanifest')
+    async manifest(
+        @Param('token') token: string,
+        @Req() request: Request,
+        @Res({ passthrough: true }) response: Response,
+    ): Promise<object> {
+        const { list, churchName } = await this.lists.byToken(token);
+
+        response.setHeader('content-type', 'application/manifest+json');
+        response.setHeader('cache-control', 'public, max-age=300');
+        response.setHeader('x-robots-tag', 'noindex, nofollow');
+
+        return renderListManifest({
+            origin: originOf(request),
+            token,
+            listName: list.name,
+            churchName,
+        });
     }
 
-    const { file, mimeType } = await this.photos.stream(list.churchId, believerId);
-    response.setHeader('cache-control', 'private, max-age=60');
+    @Get(':token/card.png')
+    async card(
+        @Param('token') token: string,
+        @Res({ passthrough: true }) response: Response,
+    ): Promise<StreamableFile> {
+        const { list } = await this.lists.byToken(token);
+        if (!list.coverKey) throw new NotFoundException('Esta lista no tiene portada');
 
-    return new StreamableFile(file, { type: mimeType });
-  }
+        response.setHeader('cache-control', 'public, max-age=300');
+
+        return new StreamableFile(this.images.read(list.coverKey), { type: 'image/png' });
+    }
+
+    /**
+     * La foto de un miembro, con **sus cinco cierres** (D17): que el token vale,
+     * que la lista está publicada y no caducada, que en modo restringido hay
+     * cookie con concesión, que la foto está activada, y que ese creyente **está
+     * en esta lista**. La última es la que impide usar el token de una lista para
+     * sacar la foto de cualquiera.
+     */
+    @Get(':token/photos/:believerId')
+    async photo(
+        @Param('token') token: string,
+        @Param('believerId') believerId: string,
+        @Req() request: Request,
+        @Res({ passthrough: true }) response: Response,
+    ): Promise<StreamableFile> {
+        const { list } = await this.lists.byToken(token);
+
+        if (list.visibility === 'restricted') {
+            const viewer = await this.access.sessionFor(
+                list,
+                listCookieFrom(request.headers.cookie),
+            );
+            if (!viewer) throw new NotFoundException('Esta lista ya no está disponible');
+        }
+
+        if (!parsePublicFields(list.publicFields).photo) {
+            throw new NotFoundException('Esta lista no publica fotografías');
+        }
+        if (!(await this.lists.hasMember(list.id, believerId))) {
+            throw new NotFoundException('Esa persona no está en esta lista');
+        }
+
+        const { file, mimeType } = await this.photos.stream(list.churchId, believerId);
+        response.setHeader('cache-control', 'private, max-age=60');
+
+        return new StreamableFile(file, { type: mimeType });
+    }
 }

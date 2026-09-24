@@ -13,15 +13,15 @@ import { IsListPassword } from './list-password.decorator';
  * con guiones o sin ellos (D25).
  */
 export class PublicListAccessDto {
-  @ApiProperty({ example: 'juan.perez' })
-  @IsString()
-  @Transform(({ value }: { value: unknown }): unknown =>
-    typeof value === 'string' ? value.trim().toLowerCase() : value,
-  )
-  @Matches(LIST_USERNAME_PATTERN, { message: 'Usuario o contraseña incorrectos' })
-  username: string;
+    @ApiProperty({ example: 'juan.perez' })
+    @IsString()
+    @Transform(({ value }: { value: unknown }): unknown =>
+        typeof value === 'string' ? value.trim().toLowerCase() : value,
+    )
+    @Matches(LIST_USERNAME_PATTERN, { message: 'Usuario o contraseña incorrectos' })
+    username: string;
 
-  @ApiProperty({ example: 'k7fr-m3np-t9wx' })
-  @IsListPassword()
-  password: string;
+    @ApiProperty({ example: 'k7fr-m3np-t9wx' })
+    @IsListPassword()
+    password: string;
 }

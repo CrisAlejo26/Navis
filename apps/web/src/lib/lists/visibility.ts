@@ -10,21 +10,21 @@ import { EyeOff, Globe, KeyRound, type LucideIcon } from 'lucide-react';
  * (`react-refresh/only-export-components`, CLAUDE.md).
  */
 export const VISIBILITY_ICON: Record<ListVisibility, LucideIcon> = {
-  private: EyeOff,
-  link: Globe,
-  restricted: KeyRound,
+    private: EyeOff,
+    link: Globe,
+    restricted: KeyRound,
 };
 
 export const VISIBILITY_LABEL_KEY: Record<ListVisibility, string> = {
-  private: 'lists.visibilityPrivate',
-  link: 'lists.visibilityLink',
-  restricted: 'lists.visibilityLocked',
+    private: 'lists.visibilityPrivate',
+    link: 'lists.visibilityLink',
+    restricted: 'lists.visibilityLocked',
 };
 
 export const VISIBILITY_HINT_KEY: Record<ListVisibility, string> = {
-  private: 'lists.visibilityPrivateHint',
-  link: 'lists.visibilityLinkHint',
-  restricted: 'lists.visibilityLockedHint',
+    private: 'lists.visibilityPrivateHint',
+    link: 'lists.visibilityLinkHint',
+    restricted: 'lists.visibilityLockedHint',
 };
 
 /** El orden en que se leen al decidir: de menos a más abierto, y la puerta al final. */

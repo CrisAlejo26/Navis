@@ -18,60 +18,66 @@ import { ACCENT_TONE } from '@/lib/stat-tones';
  * mirar en esta pantalla (D19).
  */
 export function TodayTasksCard({
-  tasks,
-  streak,
-  className,
+    tasks,
+    streak,
+    className,
 }: {
-  tasks: readonly DashboardTask[];
-  streak: number;
-  className?: string;
+    tasks: readonly DashboardTask[];
+    streak: number;
+    className?: string;
 }) {
-  const { t } = useTranslation();
+    const { t } = useTranslation();
 
-  return (
-    <Card
-      className={cn('p-0 gap-0 flex flex-col overflow-hidden', ACCENT_TONE.warning.edge, className)}
-    >
-      <div className="p-5 pb-3 flex items-center justify-between">
-        <TileHeader icon={CheckCircle2} label={t('tasks.today')} tone="warning" />
-        {streak > 0 && (
-          <span className="gap-1 px-2 py-1 text-xs font-semibold flex items-center rounded-full bg-warning/12 text-warning">
-            <Flame size={12} aria-hidden />
-            {t('tasks.streakDays', { count: streak })}
-          </span>
-        )}
-      </div>
-
-      {tasks.length === 0 ? (
-        <EmptyState icon={CheckCircle2} title={t('tasks.emptyToday')} />
-      ) : (
-        <ul className="divide-y">
-          {tasks.map((task) => (
-            <li
-              key={task.taskId}
-              style={accentVars(task.accent)}
-              className="px-5 py-2.5 pl-4 border-l-[3px] border-l-[var(--acento)]"
-            >
-              <p
-                className={cn(
-                  'text-sm font-medium',
-                  task.completed && 'text-muted-foreground line-through',
+    return (
+        <Card
+            className={cn(
+                'p-0 gap-0 flex flex-col overflow-hidden',
+                ACCENT_TONE.warning.edge,
+                className,
+            )}
+        >
+            <div className="p-5 pb-3 flex items-center justify-between">
+                <TileHeader icon={CheckCircle2} label={t('tasks.today')} tone="warning" />
+                {streak > 0 && (
+                    <span className="gap-1 px-2 py-1 text-xs font-semibold flex items-center rounded-full bg-warning/12 text-warning">
+                        <Flame size={12} aria-hidden />
+                        {t('tasks.streakDays', { count: streak })}
+                    </span>
                 )}
-              >
-                {task.title}
-              </p>
-              {task.time && <p className="text-xs text-muted-foreground">{task.time}</p>}
-            </li>
-          ))}
-        </ul>
-      )}
+            </div>
 
-      <Link
-        to="/tasks"
-        className="p-5 pt-3 text-xs font-medium mt-auto text-primary underline-offset-4 hover:underline"
-      >
-        {t('tasks.title')} →
-      </Link>
-    </Card>
-  );
+            {tasks.length === 0 ? (
+                <EmptyState icon={CheckCircle2} title={t('tasks.emptyToday')} />
+            ) : (
+                <ul className="divide-y">
+                    {tasks.map((task) => (
+                        <li
+                            key={task.taskId}
+                            style={accentVars(task.accent)}
+                            className="px-5 py-2.5 pl-4 border-l-[3px] border-l-[var(--acento)]"
+                        >
+                            <p
+                                className={cn(
+                                    'text-sm font-medium',
+                                    task.completed && 'text-muted-foreground line-through',
+                                )}
+                            >
+                                {task.title}
+                            </p>
+                            {task.time && (
+                                <p className="text-xs text-muted-foreground">{task.time}</p>
+                            )}
+                        </li>
+                    ))}
+                </ul>
+            )}
+
+            <Link
+                to="/tasks"
+                className="p-5 pt-3 text-xs font-medium mt-auto text-primary underline-offset-4 hover:underline"
+            >
+                {t('tasks.title')} →
+            </Link>
+        </Card>
+    );
 }

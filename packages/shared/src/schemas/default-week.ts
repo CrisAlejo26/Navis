@@ -14,26 +14,26 @@
  * empiezan antes, y sonido cubre el encuentro entero con dos puestos.
  */
 export interface WeeklyMeeting {
-  /** Domingo es 0, como en `Date.getDay()`. */
-  weekday: number;
-  name: string;
-  startTime: string;
-  phases: readonly string[];
+    /** Domingo es 0, como en `Date.getDay()`. */
+    weekday: number;
+    name: string;
+    startTime: string;
+    phases: readonly string[];
 }
 
 /** Los encuentros de la semana: el mismo esqueleto para todos los ministerios. */
 const ENCUENTROS = [
-  { weekday: 1, name: 'Alabanza', startTime: '19:00' },
-  { weekday: 2, name: 'Estudio bíblico', startTime: '19:00' },
-  { weekday: 3, name: 'Enseñanza', startTime: '19:00' },
-  { weekday: 4, name: 'Alabanza', startTime: '19:00' },
-  { weekday: 5, name: 'Alabanza', startTime: '19:00' },
-  { weekday: 6, name: 'Estudio bíblico', startTime: '18:00' },
-  { weekday: 0, name: 'Enseñanza', startTime: '10:00' },
+    { weekday: 1, name: 'Alabanza', startTime: '19:00' },
+    { weekday: 2, name: 'Estudio bíblico', startTime: '19:00' },
+    { weekday: 3, name: 'Enseñanza', startTime: '19:00' },
+    { weekday: 4, name: 'Alabanza', startTime: '19:00' },
+    { weekday: 5, name: 'Alabanza', startTime: '19:00' },
+    { weekday: 6, name: 'Estudio bíblico', startTime: '18:00' },
+    { weekday: 0, name: 'Enseñanza', startTime: '10:00' },
 ] as const;
 
 const conFases = (phases: (nombre: string) => readonly string[]): WeeklyMeeting[] =>
-  ENCUENTROS.map((encuentro) => ({ ...encuentro, phases: phases(encuentro.name) }));
+    ENCUENTROS.map((encuentro) => ({ ...encuentro, phases: phases(encuentro.name) }));
 
 /**
  * Púlpito: los tramos de la reunión más los dos puestos que hay **todos los
@@ -45,9 +45,9 @@ const conFases = (phases: (nombre: string) => readonly string[]): WeeklyMeeting[
 const FIJOS = ['Encargado', 'Abre iglesia'] as const;
 
 export const DEFAULT_WEEK: readonly WeeklyMeeting[] = conFases((nombre) =>
-  nombre === 'Enseñanza'
-    ? ['Introducción', 'Predicación', 'Testimonios', ...FIJOS]
-    : ['Introducción', 'Final', ...FIJOS],
+    nombre === 'Enseñanza'
+        ? ['Introducción', 'Predicación', 'Testimonios', ...FIJOS]
+        : ['Introducción', 'Final', ...FIJOS],
 );
 
 /**
@@ -59,16 +59,16 @@ export const DEFAULT_WEEK: readonly WeeklyMeeting[] = conFases((nombre) =>
  * «¿quién está de seis y media a siete y media?».
  */
 const TURNOS: Record<number, { startTime: string; phases: readonly string[] }> = {
-  6: { startTime: '17:30', phases: ['17:30 – 18:30', '18:30 – 19:30'] },
-  0: { startTime: '09:30', phases: ['09:30 – 10:30', '10:30 – 11:30'] },
+    6: { startTime: '17:30', phases: ['17:30 – 18:30', '18:30 – 19:30'] },
+    0: { startTime: '09:30', phases: ['09:30 – 10:30', '10:30 – 11:30'] },
 };
 
 const ENTRE_SEMANA = { startTime: '18:30', phases: ['18:30 – 19:30', '19:30 – 20:30'] } as const;
 
 export const RECEPTION_WEEK: readonly WeeklyMeeting[] = ENCUENTROS.map((encuentro) => ({
-  weekday: encuentro.weekday,
-  name: 'Recepción',
-  ...(TURNOS[encuentro.weekday] ?? ENTRE_SEMANA),
+    weekday: encuentro.weekday,
+    name: 'Recepción',
+    ...(TURNOS[encuentro.weekday] ?? ENTRE_SEMANA),
 }));
 
 /** Sonido: un solo turno por encuentro, con dos puestos. */
@@ -86,13 +86,13 @@ export const BIBLES_WEEK: readonly WeeklyMeeting[] = conFases(() => ['Biblias'])
 const ENSEÑANZA = ENCUENTROS.filter((encuentro) => encuentro.name === 'Enseñanza');
 
 export const CUSTODY_WEEK: readonly WeeklyMeeting[] = ENSEÑANZA.map((encuentro) => ({
-  ...encuentro,
-  phases: ['Guardia'],
+    ...encuentro,
+    phases: ['Guardia'],
 }));
 
 export const OFFERING_COORDINATION_WEEK: readonly WeeklyMeeting[] = ENSEÑANZA.map((encuentro) => ({
-  ...encuentro,
-  phases: ['Coordinador de ofrenda'],
+    ...encuentro,
+    phases: ['Coordinador de ofrenda'],
 }));
 
 /**
@@ -104,7 +104,7 @@ export const OFFERING_COORDINATION_WEEK: readonly WeeklyMeeting[] = ENSEÑANZA.m
  * lámina y el texto compartido con el título repetido dos veces.
  */
 export const PROGRAM_SENDING_WEEK: readonly WeeklyMeeting[] = [
-  { weekday: 5, name: 'Programación', startTime: '19:00', phases: ['Enviar programación'] },
+    { weekday: 5, name: 'Programación', startTime: '19:00', phases: ['Enviar programación'] },
 ];
 
 /**
@@ -112,11 +112,11 @@ export const PROGRAM_SENDING_WEEK: readonly WeeklyMeeting[] = [
  * con la del púlpito, que es la que describe la semana de la iglesia.
  */
 export function defaultWeekFor(ministry: string | null | undefined): readonly WeeklyMeeting[] {
-  if (ministry === 'recepcion') return RECEPTION_WEEK;
-  if (ministry === 'sonido') return SOUND_WEEK;
-  if (ministry === 'biblias') return BIBLES_WEEK;
-  if (ministry === 'vigilancia') return CUSTODY_WEEK;
-  if (ministry === 'ofrenda') return OFFERING_COORDINATION_WEEK;
-  if (ministry === 'enviar-programacion') return PROGRAM_SENDING_WEEK;
-  return DEFAULT_WEEK;
+    if (ministry === 'recepcion') return RECEPTION_WEEK;
+    if (ministry === 'sonido') return SOUND_WEEK;
+    if (ministry === 'biblias') return BIBLES_WEEK;
+    if (ministry === 'vigilancia') return CUSTODY_WEEK;
+    if (ministry === 'ofrenda') return OFFERING_COORDINATION_WEEK;
+    if (ministry === 'enviar-programacion') return PROGRAM_SENDING_WEEK;
+    return DEFAULT_WEEK;
 }

@@ -15,9 +15,9 @@ import { env } from '../config/env';
  * delante, esa cabecera la escribe cualquiera.
  */
 export function originOf(request: Request): string {
-  const host = request.get('host') ?? `localhost:${String(env.API_PORT)}`;
-  const forwarded = env.TRUST_PROXY ? request.get('x-forwarded-proto') : undefined;
-  const protocol = (forwarded ?? request.protocol).split(',')[0]?.trim() || 'http';
+    const host = request.get('host') ?? `localhost:${String(env.API_PORT)}`;
+    const forwarded = env.TRUST_PROXY ? request.get('x-forwarded-proto') : undefined;
+    const protocol = (forwarded ?? request.protocol).split(',')[0]?.trim() || 'http';
 
-  return `${protocol}://${host}`;
+    return `${protocol}://${host}`;
 }

@@ -19,56 +19,56 @@ import type { ExportDocument } from '@/lib/export/document';
  * es lo que cuelga el navegador de quien pulsa el botón.
  */
 export async function rasterizePages<TResult>(
-  doc: ExportDocument,
-  options: { rowsPerPage: number; fixedHeight: boolean },
-  capture: (node: HTMLElement) => Promise<TResult>,
+    doc: ExportDocument,
+    options: { rowsPerPage: number; fixedHeight: boolean },
+    capture: (node: HTMLElement) => Promise<TResult>,
 ): Promise<TResult[]> {
-  const paginas = chunk(doc.rows, options.rowsPerPage);
-  const host = document.createElement('div');
-  // Fuera de la vista y no `display:none`: lo oculto no tiene tamaño, y sin
-  // tamaño no hay nada que rasterizar.
-  host.setAttribute('aria-hidden', 'true');
-  host.style.cssText = 'position:fixed;left:-99999px;top:0;width:0;height:0;overflow:hidden';
-  document.body.append(host);
+    const paginas = chunk(doc.rows, options.rowsPerPage);
+    const host = document.createElement('div');
+    // Fuera de la vista y no `display:none`: lo oculto no tiene tamaño, y sin
+    // tamaño no hay nada que rasterizar.
+    host.setAttribute('aria-hidden', 'true');
+    host.style.cssText = 'position:fixed;left:-99999px;top:0;width:0;height:0;overflow:hidden';
+    document.body.append(host);
 
-  const root = createRoot(host);
-  const salida: TResult[] = [];
+    const root = createRoot(host);
+    const salida: TResult[] = [];
 
-  try {
-    for (const [indice, filas] of paginas.entries()) {
-      flushSync(() => {
-        root.render(
-          <ExportPage
-            doc={doc}
-            rows={filas}
-            page={indice + 1}
-            pages={paginas.length}
-            fixedHeight={options.fixedHeight}
-          />,
-        );
-      });
+    try {
+        for (const [indice, filas] of paginas.entries()) {
+            flushSync(() => {
+                root.render(
+                    <ExportPage
+                        doc={doc}
+                        rows={filas}
+                        page={indice + 1}
+                        pages={paginas.length}
+                        fixedHeight={options.fixedHeight}
+                    />,
+                );
+            });
 
-      const node = host.firstElementChild;
-      if (!(node instanceof HTMLElement)) throw new Error('La lámina no se ha pintado');
+            const node = host.firstElementChild;
+            if (!(node instanceof HTMLElement)) throw new Error('La lámina no se ha pintado');
 
-      salida.push(await capture(node));
+            salida.push(await capture(node));
+        }
+    } finally {
+        root.unmount();
+        host.remove();
     }
-  } finally {
-    root.unmount();
-    host.remove();
-  }
 
-  return salida;
+    return salida;
 }
 
 /** Las filas en grupos del tamaño pedido. Sin filas, una página vacía. */
 export function chunk(rows: readonly ExportCell[][], size: number): ExportCell[][][] {
-  if (rows.length === 0) return [[]];
+    if (rows.length === 0) return [[]];
 
-  const grupos: ExportCell[][][] = [];
-  for (let inicio = 0; inicio < rows.length; inicio += size) {
-    grupos.push(rows.slice(inicio, inicio + size).map((row) => [...row]));
-  }
+    const grupos: ExportCell[][][] = [];
+    for (let inicio = 0; inicio < rows.length; inicio += size) {
+        grupos.push(rows.slice(inicio, inicio + size).map((row) => [...row]));
+    }
 
-  return grupos;
+    return grupos;
 }

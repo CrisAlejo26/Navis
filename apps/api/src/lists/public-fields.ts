@@ -1,7 +1,7 @@
 import {
-  DEFAULT_PUBLIC_FIELDS,
-  listPublicFieldsSchema,
-  type ListPublicFields,
+    DEFAULT_PUBLIC_FIELDS,
+    listPublicFieldsSchema,
+    type ListPublicFields,
 } from '@navis/shared';
 
 /**
@@ -13,17 +13,17 @@ import {
  * Lo que no case cae al valor por defecto, que es **el más restrictivo**.
  */
 export function parsePublicFields(raw: string): ListPublicFields {
-  let value: unknown;
-  try {
-    value = JSON.parse(raw || '{}');
-  } catch {
-    return { ...DEFAULT_PUBLIC_FIELDS };
-  }
+    let value: unknown;
+    try {
+        value = JSON.parse(raw || '{}');
+    } catch {
+        return { ...DEFAULT_PUBLIC_FIELDS };
+    }
 
-  const parsed = listPublicFieldsSchema.safeParse(value);
-  return parsed.success ? parsed.data : { ...DEFAULT_PUBLIC_FIELDS };
+    const parsed = listPublicFieldsSchema.safeParse(value);
+    return parsed.success ? parsed.data : { ...DEFAULT_PUBLIC_FIELDS };
 }
 
 export function serializePublicFields(fields: ListPublicFields): string {
-  return JSON.stringify(fields);
+    return JSON.stringify(fields);
 }

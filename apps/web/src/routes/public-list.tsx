@@ -26,77 +26,79 @@ import { usePublicFilter } from '@/lib/lists/use-public-filter';
  * El 401 no es un fallo: es la puerta, y viene con lo justo para pintarla.
  */
 export function PublicListPage() {
-  const { t } = useTranslation();
-  const { token = '' } = useParams();
-  const { data: list, error, isLoading } = usePublicList(publicApi, token);
-  // Antes de los `return` de abajo: un hook no puede depender de si la lista
-  // ya ha llegado. Con el array vacío de respaldo, filtra sobre nada mientras
-  // carga y se resuelve solo en cuanto `list` está.
-  const filter = usePublicFilter(list?.members ?? []);
-  const poster = useRef<HTMLDivElement>(null);
+    const { t } = useTranslation();
+    const { token = '' } = useParams();
+    const { data: list, error, isLoading } = usePublicList(publicApi, token);
+    // Antes de los `return` de abajo: un hook no puede depender de si la lista
+    // ya ha llegado. Con el array vacío de respaldo, filtra sobre nada mientras
+    // carga y se resuelve solo en cuanto `list` está.
+    const filter = usePublicFilter(list?.members ?? []);
+    const poster = useRef<HTMLDivElement>(null);
 
-  if (isLoading) return <PageSkeleton />;
+    if (isLoading) return <PageSkeleton />;
 
-  const gate = gateOf(error);
-  if (gate) return <AccessGate gate={gate} token={token} />;
+    const gate = gateOf(error);
+    if (gate) return <AccessGate gate={gate} token={token} />;
 
-  if (!list) {
+    if (!list) {
+        return (
+            <main className="px-6 py-20 max-w-md mx-auto text-center">
+                <p className="text-sm text-muted-foreground">{t('lists.notFound')}</p>
+            </main>
+        );
+    }
+
     return (
-      <main className="px-6 py-20 max-w-md mx-auto text-center">
-        <p className="text-sm text-muted-foreground">{t('lists.notFound')}</p>
-      </main>
-    );
-  }
-
-  return (
-    <div style={accentVars(list.accent)} className="min-h-dvh bg-background text-foreground">
-      <PublicBand churchName={list.churchName} name={list.name} accent={list.accent}>
-        <p>
-          {t('lists.people', { count: list.members.length })} ·{' '}
-          {t('lists.updatedAt', { date: formatDate(list.updatedAt) })}
-        </p>
-        {list.description && <p className="mt-1 max-w-prose">{list.description}</p>}
-      </PublicBand>
-
-      <main className="px-6 py-10 sm:px-10 max-w-3xl mx-auto w-full">
-        {list.members.length === 0 ? (
-          <p className="text-sm text-muted-foreground">{t('lists.emptyList')}</p>
-        ) : (
-          <>
-            <PublicSearchFilters state={filter} />
-
-            {filter.filtered.length === 0 ? (
-              <div className="py-10 text-center">
-                <p className="text-sm text-muted-foreground">{t('lists.noPublicResults')}</p>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  {t('lists.noPublicResultsHint')}
+        <div style={accentVars(list.accent)} className="min-h-dvh bg-background text-foreground">
+            <PublicBand churchName={list.churchName} name={list.name} accent={list.accent}>
+                <p>
+                    {t('lists.people', { count: list.members.length })} ·{' '}
+                    {t('lists.updatedAt', { date: formatDate(list.updatedAt) })}
                 </p>
-              </div>
-            ) : (
-              <RollCall members={filter.filtered} token={token} />
-            )}
-          </>
-        )}
+                {list.description && <p className="mt-1 max-w-prose">{list.description}</p>}
+            </PublicBand>
 
-        <PublicFooter list={list} token={token} poster={poster} />
-      </main>
+            <main className="px-6 py-10 sm:px-10 max-w-3xl mx-auto w-full">
+                {list.members.length === 0 ? (
+                    <p className="text-sm text-muted-foreground">{t('lists.emptyList')}</p>
+                ) : (
+                    <>
+                        <PublicSearchFilters state={filter} />
 
-      {/*
-       * La lámina, fuera de la vista pero **dentro del documento**: el
-       * rasterizador necesita un nodo medido de verdad, y `display: none` no lo
-       * mide. Se saca con posición absoluta, no con `visibility`.
-       */}
-      <div aria-hidden className="top-0 pointer-events-none absolute -left-[9999px]">
-        <ListPoster
-          ref={poster}
-          churchName={list.churchName}
-          name={list.name}
-          accent={list.accent}
-          members={list.members}
-          locked={false}
-          lockedLabel={t('lists.lockedCover')}
-        />
-      </div>
-    </div>
-  );
+                        {filter.filtered.length === 0 ? (
+                            <div className="py-10 text-center">
+                                <p className="text-sm text-muted-foreground">
+                                    {t('lists.noPublicResults')}
+                                </p>
+                                <p className="mt-1 text-xs text-muted-foreground">
+                                    {t('lists.noPublicResultsHint')}
+                                </p>
+                            </div>
+                        ) : (
+                            <RollCall members={filter.filtered} token={token} />
+                        )}
+                    </>
+                )}
+
+                <PublicFooter list={list} token={token} poster={poster} />
+            </main>
+
+            {/*
+             * La lámina, fuera de la vista pero **dentro del documento**: el
+             * rasterizador necesita un nodo medido de verdad, y `display: none` no lo
+             * mide. Se saca con posición absoluta, no con `visibility`.
+             */}
+            <div aria-hidden className="top-0 pointer-events-none absolute -left-[9999px]">
+                <ListPoster
+                    ref={poster}
+                    churchName={list.churchName}
+                    name={list.name}
+                    accent={list.accent}
+                    members={list.members}
+                    locked={false}
+                    lockedLabel={t('lists.lockedCover')}
+                />
+            </div>
+        </div>
+    );
 }

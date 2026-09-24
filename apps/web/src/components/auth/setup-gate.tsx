@@ -18,20 +18,20 @@ import { api } from '@/lib/api';
  * al enviar que una aplicación que no arranca.
  */
 export function SetupGate({
-  expects,
-  children,
+    expects,
+    children,
 }: {
-  expects: 'ready' | 'empty';
-  children: ReactNode;
+    expects: 'ready' | 'empty';
+    children: ReactNode;
 }) {
-  const { data, isPending, isError } = useSetupStatus(api);
+    const { data, isPending, isError } = useSetupStatus(api);
 
-  if (isPending) return null;
+    if (isPending) return null;
 
-  if (!isError && data) {
-    if (expects === 'ready' && data.needsSetup) return <Navigate to="/setup" replace />;
-    if (expects === 'empty' && !data.needsSetup) return <Navigate to="/login" replace />;
-  }
+    if (!isError && data) {
+        if (expects === 'ready' && data.needsSetup) return <Navigate to="/setup" replace />;
+        if (expects === 'empty' && !data.needsSetup) return <Navigate to="/login" replace />;
+    }
 
-  return children;
+    return children;
 }

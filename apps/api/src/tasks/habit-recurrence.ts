@@ -10,16 +10,16 @@ import type { Habit } from './habit.entity';
  * que la tarea (`taskAppliesOn`).
  */
 export function habitAppliesOn(habit: Pick<Habit, 'date' | 'repeatFreq'>, date: IsoDate): boolean {
-  if (date < habit.date) return false;
+    if (date < habit.date) return false;
 
-  switch (habit.repeatFreq) {
-    case 'ninguna':
-      return date === habit.date;
-    case 'diaria':
-      return true;
-    case 'semanal':
-      return daysBetween(habit.date, date) % 7 === 0;
-    case 'mensual':
-      return Number(date.slice(8, 10)) === Number(habit.date.slice(8, 10));
-  }
+    switch (habit.repeatFreq) {
+        case 'ninguna':
+            return date === habit.date;
+        case 'diaria':
+            return true;
+        case 'semanal':
+            return daysBetween(habit.date, date) % 7 === 0;
+        case 'mensual':
+            return Number(date.slice(8, 10)) === Number(habit.date.slice(8, 10));
+    }
 }

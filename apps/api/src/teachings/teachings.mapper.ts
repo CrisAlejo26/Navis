@@ -1,9 +1,9 @@
 import {
-  extractTeachingBodyText,
-  teachingBodySchema,
-  toExcerpt,
-  type Teaching as TeachingView,
-  type TeachingListItem,
+    extractTeachingBodyText,
+    teachingBodySchema,
+    toExcerpt,
+    type Teaching as TeachingView,
+    type TeachingListItem,
 } from '@navis/shared';
 
 import { toIsoDay } from '../database/iso-day';
@@ -16,27 +16,27 @@ import type { Teaching } from './teaching.entity';
  * fallo aquí es un 500 y no un 400 — no hay una entrada de usuario que corregir.
  */
 export function parseTeachingBody(bodyJson: string): TeachingView['body'] {
-  return teachingBodySchema.parse(JSON.parse(bodyJson));
+    return teachingBodySchema.parse(JSON.parse(bodyJson));
 }
 
 export function toTeachingView(teaching: Teaching): TeachingView {
-  return {
-    id: teaching.id,
-    title: teaching.title,
-    body: parseTeachingBody(teaching.bodyJson),
-    receivedAt: toIsoDay(teaching.receivedAt),
-    createdAt: teaching.createdAt.toISOString(),
-  };
+    return {
+        id: teaching.id,
+        title: teaching.title,
+        body: parseTeachingBody(teaching.bodyJson),
+        receivedAt: toIsoDay(teaching.receivedAt),
+        createdAt: teaching.createdAt.toISOString(),
+    };
 }
 
 export function toListItem(teaching: Teaching): TeachingListItem {
-  const { text, checklist } = extractTeachingBodyText(parseTeachingBody(teaching.bodyJson));
+    const { text, checklist } = extractTeachingBodyText(parseTeachingBody(teaching.bodyJson));
 
-  return {
-    id: teaching.id,
-    title: teaching.title,
-    excerpt: toExcerpt(text),
-    receivedAt: toIsoDay(teaching.receivedAt),
-    checklist,
-  };
+    return {
+        id: teaching.id,
+        title: teaching.title,
+        excerpt: toExcerpt(text),
+        receivedAt: toIsoDay(teaching.receivedAt),
+        checklist,
+    };
 }

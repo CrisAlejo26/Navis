@@ -12,6 +12,6 @@ import { getLocale } from '@/lib/i18n';
  * a `/login` a alguien que no tiene cuenta ni la va a tener (D22, D40).
  */
 export const publicApi = createApiClient({
-  baseUrl: env.VITE_API_URL,
-  getLocale,
+    baseUrl: env.VITE_API_URL,
+    getLocale,
 });

@@ -16,18 +16,18 @@ const HEX = /^#[0-9a-fA-F]{6}$/;
  * eso vive en `theme` y no en `shared`: depende de `themeColorsHex`.
  */
 export function accentHex(accent: string, theme: ResolvedTheme = 'light'): string {
-  if (HEX.test(accent)) return accent;
+    if (HEX.test(accent)) return accent;
 
-  const palette = themeColorsHex[theme];
+    const palette = themeColorsHex[theme];
 
-  if (isCongregationAccent(accent)) {
-    if (accent === 'accent') return palette.accent;
-    if (accent === 'success') return palette.success;
-    if (accent === 'warning') return palette.warning;
-    if (accent === 'destructive') return palette.destructive;
-    if (accent === 'brand') return brandColorHex;
+    if (isCongregationAccent(accent)) {
+        if (accent === 'accent') return palette.accent;
+        if (accent === 'success') return palette.success;
+        if (accent === 'warning') return palette.warning;
+        if (accent === 'destructive') return palette.destructive;
+        if (accent === 'brand') return brandColorHex;
+        return palette.primary;
+    }
+
     return palette.primary;
-  }
-
-  return palette.primary;
 }

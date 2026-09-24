@@ -11,26 +11,28 @@ import { Panel } from '@/components/home/panel';
  * un teléfono no tiene.
  */
 export function CompositionSection({
-  composition,
+    composition,
 }: {
-  composition: DashboardSummary['composition'];
+    composition: DashboardSummary['composition'];
 }) {
-  const { t } = useTranslation();
+    const { t } = useTranslation();
 
-  if (
-    composition.byCongregation.length === 0 &&
-    composition.byMinistry.length === 0 &&
-    composition.byGift.length === 0
-  ) {
-    return null;
-  }
+    if (
+        composition.byCongregation.length === 0 &&
+        composition.byMinistry.length === 0 &&
+        composition.byGift.length === 0
+    ) {
+        return null;
+    }
 
-  return (
-    <Panel className="gap-3">
-      <Text className="text-sm font-semibold text-muted-foreground">{t('home.composition')}</Text>
-      <BucketBars title={t('calendar.congregations')} buckets={composition.byCongregation} />
-      <BucketBars title={t('believers.ministries')} buckets={composition.byMinistry} />
-      <BucketBars title={t('believers.gifts')} buckets={composition.byGift} />
-    </Panel>
-  );
+    return (
+        <Panel className="gap-3">
+            <Text className="text-sm font-semibold text-muted-foreground">
+                {t('home.composition')}
+            </Text>
+            <BucketBars title={t('calendar.congregations')} buckets={composition.byCongregation} />
+            <BucketBars title={t('believers.ministries')} buckets={composition.byMinistry} />
+            <BucketBars title={t('believers.gifts')} buckets={composition.byGift} />
+        </Panel>
+    );
 }

@@ -6,11 +6,11 @@ import { api } from './api';
 import { useSession } from './auth-client';
 
 export interface Churches {
-  items: Church[];
-  /** La iglesia sobre la que se está trabajando, ya resuelta por el servidor. */
-  active: Church | null;
-  /** Todavía no se sabe: ni se decide ni se echa a nadie de ninguna pantalla. */
-  isLoading: boolean;
+    items: Church[];
+    /** La iglesia sobre la que se está trabajando, ya resuelta por el servidor. */
+    active: Church | null;
+    /** Todavía no se sabe: ni se decide ni se echa a nadie de ninguna pantalla. */
+    isLoading: boolean;
 }
 
 /**
@@ -21,15 +21,15 @@ export interface Churches {
  * acaba enseñando una iglesia y consultando otra.
  */
 export function useChurches(): Churches {
-  const { data: session } = useSession();
-  const { data, isLoading } = useMyChurches(api, Boolean(session));
+    const { data: session } = useSession();
+    const { data, isLoading } = useMyChurches(api, Boolean(session));
 
-  return useMemo(() => {
-    const items = data?.items ?? [];
-    return {
-      items,
-      active: items.find((church) => church.id === data?.activeId) ?? null,
-      isLoading: Boolean(session) && isLoading,
-    };
-  }, [data, session, isLoading]);
+    return useMemo(() => {
+        const items = data?.items ?? [];
+        return {
+            items,
+            active: items.find((church) => church.id === data?.activeId) ?? null,
+            isLoading: Boolean(session) && isLoading,
+        };
+    }, [data, session, isLoading]);
 }

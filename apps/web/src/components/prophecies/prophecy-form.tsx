@@ -18,30 +18,34 @@ import { api } from '@/lib/api';
  * pisaría lo que se esté escribiendo en cada `refetch`—.
  */
 export function ProphecyForm({
-  open,
-  onClose,
-  prophecyId,
+    open,
+    onClose,
+    prophecyId,
 }: {
-  open: boolean;
-  onClose: () => void;
-  /** Si viene, se edita; si no, se apunta una nueva. */
-  prophecyId?: string;
+    open: boolean;
+    onClose: () => void;
+    /** Si viene, se edita; si no, se apunta una nueva. */
+    prophecyId?: string;
 }) {
-  const { t } = useTranslation();
-  const { data: prophecy } = useProphecy(api, prophecyId ?? '', open && Boolean(prophecyId));
+    const { t } = useTranslation();
+    const { data: prophecy } = useProphecy(api, prophecyId ?? '', open && Boolean(prophecyId));
 
-  return (
-    <Dialog
-      open={open}
-      onClose={onClose}
-      width="min(42rem, calc(100vw - 2rem))"
-      title={prophecyId ? t('prophecies.edit') : t('prophecies.add')}
-    >
-      {prophecyId && !prophecy ? (
-        <FormSkeleton />
-      ) : (
-        <ProphecyFormBody key={prophecy?.id ?? 'nueva'} prophecy={prophecy} onSaved={onClose} />
-      )}
-    </Dialog>
-  );
+    return (
+        <Dialog
+            open={open}
+            onClose={onClose}
+            width="min(42rem, calc(100vw - 2rem))"
+            title={prophecyId ? t('prophecies.edit') : t('prophecies.add')}
+        >
+            {prophecyId && !prophecy ? (
+                <FormSkeleton />
+            ) : (
+                <ProphecyFormBody
+                    key={prophecy?.id ?? 'nueva'}
+                    prophecy={prophecy}
+                    onSaved={onClose}
+                />
+            )}
+        </Dialog>
+    );
 }

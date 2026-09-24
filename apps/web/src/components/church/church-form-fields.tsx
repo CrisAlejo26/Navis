@@ -26,51 +26,51 @@ import { TimezoneSelect } from '@/components/ui/timezone-select';
  * pasa, y solo entonces).
  */
 export function ChurchFormFields({ church }: { church: Church }) {
-  const { t } = useTranslation();
-  const [country, setCountry] = useState(church.country);
-  const [timezoneHint, setTimezoneHint] = useState<string | null>(null);
+    const { t } = useTranslation();
+    const [country, setCountry] = useState(church.country);
+    const [timezoneHint, setTimezoneHint] = useState<string | null>(null);
 
-  return (
-    <>
-      {/* `updateChurchSchema` marca los dos como opcionales porque se puede
+    return (
+        <>
+            {/* `updateChurchSchema` marca los dos como opcionales porque se puede
           editar sin tocarlos, pero una vez que el campo llega no admite una
           cadena vacía (`min(2)`): en la práctica no se pueden dejar en
           blanco, y el asterisco lo dice tal y como se comporta el formulario. */}
-      <Input
-        name="name"
-        label={t('church.name')}
-        defaultValue={church.name}
-        autoComplete="off"
-        required
-      />
+            <Input
+                name="name"
+                label={t('church.name')}
+                defaultValue={church.name}
+                autoComplete="off"
+                required
+            />
 
-      <CountryField
-        defaultValue={church.country}
-        onChange={(next) => {
-          setCountry(next);
-        }}
-      />
+            <CountryField
+                defaultValue={church.country}
+                onChange={(next) => {
+                    setCountry(next);
+                }}
+            />
 
-      <RegionField
-        key={country}
-        country={country}
-        defaultValue={country === church.country ? church.region : null}
-      />
+            <RegionField
+                key={country}
+                country={country}
+                defaultValue={country === church.country ? church.region : null}
+            />
 
-      <CityField
-        country={country}
-        defaultValue={church.city ?? ''}
-        onCitySelected={(timezone) => {
-          setTimezoneHint(timezone);
-        }}
-      />
+            <CityField
+                country={country}
+                defaultValue={church.city ?? ''}
+                onCitySelected={(timezone) => {
+                    setTimezoneHint(timezone);
+                }}
+            />
 
-      <TimezoneSelect
-        key={timezoneHint ?? 'initial'}
-        name="timezone"
-        label={t('profile.timezone')}
-        defaultValue={timezoneHint ?? church.timezone}
-      />
-    </>
-  );
+            <TimezoneSelect
+                key={timezoneHint ?? 'initial'}
+                name="timezone"
+                label={t('profile.timezone')}
+                defaultValue={timezoneHint ?? church.timezone}
+            />
+        </>
+    );
 }

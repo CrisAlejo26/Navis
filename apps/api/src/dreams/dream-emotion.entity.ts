@@ -16,17 +16,17 @@ import type { Dream } from './dream.entity';
 @Entity('dream_emotions')
 @Index('UQ_dream_emotions', ['dreamId', 'emotionId'], { unique: true })
 export class DreamEmotion extends BaseEntity {
-  @ApiProperty()
-  @Column({ name: 'dream_id', type: UUID })
-  dreamId: string;
+    @ApiProperty()
+    @Column({ name: 'dream_id', type: UUID })
+    dreamId: string;
 
-  /* Por nombre y con `Relation<>`: ver `calendar/pattern-phase.entity.ts`. */
-  @ManyToOne('Dream', 'emotions', { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'dream_id' })
-  dream: Relation<Dream>;
+    /* Por nombre y con `Relation<>`: ver `calendar/pattern-phase.entity.ts`. */
+    @ManyToOne('Dream', 'emotions', { onDelete: 'CASCADE' })
+    @JoinColumn({ name: 'dream_id' })
+    dream: Relation<Dream>;
 
-  @ApiProperty()
-  @Index()
-  @Column({ name: 'emotion_id', type: UUID })
-  emotionId: string;
+    @ApiProperty()
+    @Index()
+    @Column({ name: 'emotion_id', type: UUID })
+    emotionId: string;
 }

@@ -5,10 +5,10 @@ import { useParams } from 'react-router';
 import { api } from '@/lib/api';
 
 export interface ActiveCalendar {
-  /** El que dice la URL, o el primero si la URL no trae ninguno válido. */
-  calendar: Calendar | undefined;
-  calendars: readonly Calendar[];
-  isLoading: boolean;
+    /** El que dice la URL, o el primero si la URL no trae ninguno válido. */
+    calendar: Calendar | undefined;
+    calendars: readonly Calendar[];
+    isLoading: boolean;
 }
 
 /**
@@ -20,12 +20,12 @@ export interface ActiveCalendar {
  * queda—.
  */
 export function useActiveCalendar(): ActiveCalendar {
-  const { slug } = useParams();
-  const { data: calendars = [], isLoading } = useCalendars(api);
+    const { slug } = useParams();
+    const { data: calendars = [], isLoading } = useCalendars(api);
 
-  return {
-    calendar: calendars.find((one) => one.slug === slug) ?? calendars[0],
-    calendars,
-    isLoading,
-  };
+    return {
+        calendar: calendars.find((one) => one.slug === slug) ?? calendars[0],
+        calendars,
+        isLoading,
+    };
 }

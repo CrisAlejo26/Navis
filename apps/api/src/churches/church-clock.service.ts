@@ -15,11 +15,11 @@ import { Church } from './church.entity';
  */
 @Injectable()
 export class ChurchClockService {
-  constructor(@InjectRepository(Church) private readonly churches: Repository<Church>) {}
+    constructor(@InjectRepository(Church) private readonly churches: Repository<Church>) {}
 
-  async today(churchId: string, now = new Date()): Promise<IsoDate> {
-    const church = await this.churches.findOne({ where: { id: churchId } });
-    // Sin iglesia no hay huso; el día del servidor es mejor que ninguno.
-    return church ? todayIn(church.timezone, now) : toIsoDate(now);
-  }
+    async today(churchId: string, now = new Date()): Promise<IsoDate> {
+        const church = await this.churches.findOne({ where: { id: churchId } });
+        // Sin iglesia no hay huso; el día del servidor es mejor que ninguno.
+        return church ? todayIn(church.timezone, now) : toIsoDate(now);
+    }
 }

@@ -14,33 +14,33 @@ import { roleAccent, useRoleHint } from '@/lib/roles';
  * la tabla y que ya hace `EntryCard` con el tipo de una anotación.
  */
 export function RoleCard({ role, ...actions }: RoleCellsProps) {
-  const { t } = useTranslation();
-  const hint = useRoleHint()(role);
+    const { t } = useTranslation();
+    const hint = useRoleHint()(role);
 
-  return (
-    <div
-      style={accentVars(roleAccent(role.level))}
-      className="pl-3 gap-3 flex flex-col border-l-[3px] border-l-[var(--acento)]"
-    >
-      <div className="gap-3 flex items-start justify-between">
-        <div className="min-w-0">
-          <RoleBadge slug={role.slug} role={role} className="font-medium" />
-          {hint && <p className="mt-1 text-xs pl-[26px] text-muted-foreground">{hint}</p>}
+    return (
+        <div
+            style={accentVars(roleAccent(role.level))}
+            className="pl-3 gap-3 flex flex-col border-l-[3px] border-l-[var(--acento)]"
+        >
+            <div className="gap-3 flex items-start justify-between">
+                <div className="min-w-0">
+                    <RoleBadge slug={role.slug} role={role} className="font-medium" />
+                    {hint && <p className="mt-1 text-xs pl-[26px] text-muted-foreground">{hint}</p>}
+                </div>
+                <RoleActions role={role} {...actions} />
+            </div>
+
+            <div className="gap-x-4 gap-y-1.5 text-xs flex flex-wrap items-center pl-[26px] text-muted-foreground">
+                <span className="tabular-nums">
+                    {t('roles.columnLevel')}: {role.level}
+                </span>
+                <span className="tabular-nums">
+                    {t('roles.columnAccounts')}: {formatNumber(role.usersCount)}
+                </span>
+                <Badge variant={role.isSystem ? 'muted' : 'outline'}>
+                    {role.isSystem ? t('roles.system') : t('roles.custom')}
+                </Badge>
+            </div>
         </div>
-        <RoleActions role={role} {...actions} />
-      </div>
-
-      <div className="gap-x-4 gap-y-1.5 text-xs flex flex-wrap items-center pl-[26px] text-muted-foreground">
-        <span className="tabular-nums">
-          {t('roles.columnLevel')}: {role.level}
-        </span>
-        <span className="tabular-nums">
-          {t('roles.columnAccounts')}: {formatNumber(role.usersCount)}
-        </span>
-        <Badge variant={role.isSystem ? 'muted' : 'outline'}>
-          {role.isSystem ? t('roles.system') : t('roles.custom')}
-        </Badge>
-      </div>
-    </div>
-  );
+    );
 }

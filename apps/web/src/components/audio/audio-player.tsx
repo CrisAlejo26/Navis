@@ -16,32 +16,32 @@ import { cn } from '@/lib/cn';
  * cookie** y recibe un 401.
  */
 export function AudioPlayer({
-  audio,
-  path,
-  className,
+    audio,
+    path,
+    className,
 }: {
-  audio: SavedAudio;
-  path: AudioPath;
-  className?: string;
+    audio: SavedAudio;
+    path: AudioPath;
+    className?: string;
 }) {
-  const { t } = useTranslation();
+    const { t } = useTranslation();
 
-  return (
-    <span className={cn('gap-2 min-w-0 flex items-center', className)}>
-      <audio
-        controls
-        preload="none"
-        crossOrigin="use-credentials"
-        src={`${api.baseUrl}${path(audio.id)}`}
-        className="h-9 min-w-0 flex-1"
-      >
-        <track kind="captions" />
-      </audio>
+    return (
+        <span className={cn('gap-2 min-w-0 flex items-center', className)}>
+            <audio
+                controls
+                preload="none"
+                crossOrigin="use-credentials"
+                src={`${api.baseUrl}${path(audio.id)}`}
+                className="h-9 min-w-0 flex-1"
+            >
+                <track kind="captions" />
+            </audio>
 
-      <span className="shrink-0 text-[11px] text-muted-foreground tabular-nums">
-        {audio.recorded ? t('common.audio.recorded') : t('common.audio.attached')}
-        {audio.durationSeconds !== null && ` · ${formatSeconds(audio.durationSeconds)}`}
-      </span>
-    </span>
-  );
+            <span className="shrink-0 text-[11px] text-muted-foreground tabular-nums">
+                {audio.recorded ? t('common.audio.recorded') : t('common.audio.attached')}
+                {audio.durationSeconds !== null && ` · ${formatSeconds(audio.durationSeconds)}`}
+            </span>
+        </span>
+    );
 }

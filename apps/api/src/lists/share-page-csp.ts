@@ -18,16 +18,16 @@ const DEFAULT_DIRECTIVES = helmet.contentSecurityPolicy.getDefaultDirectives();
  * que ya hace el resto de la API si un día cambian los valores por defecto.
  */
 export function applySharePageCsp(
-  request: Request,
-  response: Response,
-  scriptContent: string,
+    request: Request,
+    response: Response,
+    scriptContent: string,
 ): void {
-  const hash = createHash('sha256').update(scriptContent, 'utf8').digest('base64');
-  const scriptSrc = [...(DEFAULT_DIRECTIVES['script-src'] ?? []), `'sha256-${hash}'`];
+    const hash = createHash('sha256').update(scriptContent, 'utf8').digest('base64');
+    const scriptSrc = [...(DEFAULT_DIRECTIVES['script-src'] ?? []), `'sha256-${hash}'`];
 
-  helmet.contentSecurityPolicy({
-    directives: { ...DEFAULT_DIRECTIVES, 'script-src': scriptSrc },
-  })(request, response, () => {
-    /* helmet solo escribe la cabecera; aquí no hay más middleware que encadenar. */
-  });
+    helmet.contentSecurityPolicy({
+        directives: { ...DEFAULT_DIRECTIVES, 'script-src': scriptSrc },
+    })(request, response, () => {
+        /* helmet solo escribe la cabecera; aquí no hay más middleware que encadenar. */
+    });
 }

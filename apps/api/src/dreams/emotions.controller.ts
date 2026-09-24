@@ -18,33 +18,36 @@ import { EmotionsService } from './emotions.service';
 @ApiTags('suenos')
 @Controller('dreams/emotions')
 export class EmotionsController {
-  constructor(private readonly emotions: EmotionsService) {}
+    constructor(private readonly emotions: EmotionsService) {}
 
-  @Get()
-  @ApiOperation({ summary: 'Las de serie y las mías, con cuántas veces aparecen' })
-  list(@CurrentUser('id') ownerId: string): Promise<EmotionWithCount[]> {
-    return this.emotions.list(ownerId);
-  }
+    @Get()
+    @ApiOperation({ summary: 'Las de serie y las mías, con cuántas veces aparecen' })
+    list(@CurrentUser('id') ownerId: string): Promise<EmotionWithCount[]> {
+        return this.emotions.list(ownerId);
+    }
 
-  @Post()
-  @ApiOperation({ summary: 'Crea una emoción propia' })
-  create(@CurrentUser('id') ownerId: string, @Body() dto: CreateEmotionDto): Promise<EmotionView> {
-    return this.emotions.create(ownerId, dto);
-  }
+    @Post()
+    @ApiOperation({ summary: 'Crea una emoción propia' })
+    create(
+        @CurrentUser('id') ownerId: string,
+        @Body() dto: CreateEmotionDto,
+    ): Promise<EmotionView> {
+        return this.emotions.create(ownerId, dto);
+    }
 
-  @Patch(':id')
-  @ApiOperation({ summary: 'Renombra o recolorea una propia. 403 si es de serie' })
-  update(
-    @CurrentUser('id') ownerId: string,
-    @Param('id') id: string,
-    @Body() dto: UpdateEmotionDto,
-  ): Promise<EmotionView> {
-    return this.emotions.update(ownerId, id, dto);
-  }
+    @Patch(':id')
+    @ApiOperation({ summary: 'Renombra o recolorea una propia. 403 si es de serie' })
+    update(
+        @CurrentUser('id') ownerId: string,
+        @Param('id') id: string,
+        @Body() dto: UpdateEmotionDto,
+    ): Promise<EmotionView> {
+        return this.emotions.update(ownerId, id, dto);
+    }
 
-  @Delete(':id')
-  @ApiOperation({ summary: 'Borra una propia, sin tocar los sueños. 403 si es de serie' })
-  remove(@CurrentUser('id') ownerId: string, @Param('id') id: string): Promise<void> {
-    return this.emotions.remove(ownerId, id);
-  }
+    @Delete(':id')
+    @ApiOperation({ summary: 'Borra una propia, sin tocar los sueños. 403 si es de serie' })
+    remove(@CurrentUser('id') ownerId: string, @Param('id') id: string): Promise<void> {
+        return this.emotions.remove(ownerId, id);
+    }
 }

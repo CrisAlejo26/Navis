@@ -12,17 +12,17 @@ import { Link } from 'react-router';
  * Va arriba del todo y a la izquierda, que es donde se busca.
  */
 export function BackLink({ to, label }: { to: string; label: string }) {
-  return (
-    <Link
-      to={to}
-      className="gap-1.5 group text-sm inline-flex w-fit items-center rounded-md text-muted-foreground hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-    >
-      <ArrowLeft
-        size={15}
-        aria-hidden
-        className="group-hover:-translate-x-0.5 transition-transform duration-200"
-      />
-      {label}
-    </Link>
-  );
+    return (
+        <Link
+            to={to}
+            className="gap-1.5 group text-sm inline-flex w-fit items-center rounded-md text-muted-foreground hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+        >
+            <ArrowLeft
+                size={15}
+                aria-hidden
+                className="group-hover:-translate-x-0.5 transition-transform duration-200"
+            />
+            {label}
+        </Link>
+    );
 }

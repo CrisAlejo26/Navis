@@ -11,10 +11,10 @@ import type { AuthUser } from '../../auth/auth';
  *   findOne(@CurrentUser('id') userId: string) { … }
  */
 export const CurrentUser = createParamDecorator(
-  (data: keyof AuthUser | undefined, context: ExecutionContext) => {
-    const request = context.switchToHttp().getRequest<Request>();
-    const user = request.user;
-    if (!user) return undefined;
-    return data ? user[data] : user;
-  },
+    (data: keyof AuthUser | undefined, context: ExecutionContext) => {
+        const request = context.switchToHttp().getRequest<Request>();
+        const user = request.user;
+        if (!user) return undefined;
+        return data ? user[data] : user;
+    },
 );

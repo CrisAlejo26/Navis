@@ -25,63 +25,65 @@ const CASCADA_MAX = 400;
  * no una tarjeta blanca con un puntito. Doce listas son doce colores.
  */
 export function ListsPage() {
-  const { t } = useTranslation();
-  const { can } = usePermissions();
-  const { data: lists, isLoading } = useLists(api);
-  // Los puntos de creyentes y esta cuenta salen de la misma llamada cacheada
-  // (§8.7): quien no puede ver creyentes tampoco ve la línea, que lleva allí.
-  const { data: memberships } = useListMemberships(api, can('believers.view'));
-  const [creando, setCreando] = useState(false);
+    const { t } = useTranslation();
+    const { can } = usePermissions();
+    const { data: lists, isLoading } = useLists(api);
+    // Los puntos de creyentes y esta cuenta salen de la misma llamada cacheada
+    // (§8.7): quien no puede ver creyentes tampoco ve la línea, que lleva allí.
+    const { data: memberships } = useListMemberships(api, can('believers.view'));
+    const [creando, setCreando] = useState(false);
 
-  if (isLoading || !lists) return <PageSkeleton />;
+    if (isLoading || !lists) return <PageSkeleton />;
 
-  const activas = lists.filter((one) => one.isActive);
-  const onAdd = can('lists.manage')
-    ? () => {
-        setCreando(true);
-      }
-    : undefined;
-
-  const overloaded = memberships
-    ? Object.values(memberships).filter((ids) => ids.length >= LIST_OVERLAP_THRESHOLD).length
-    : null;
-
-  return (
-    <section className="gap-6 animate-page-in flex flex-col">
-      <ListsHeader lists={activas} overloaded={overloaded} onAdd={onAdd} />
-
-      {activas.length === 0 ? (
-        <EmptyState
-          icon={ClipboardList}
-          title={t('lists.emptyTitle')}
-          action={
-            onAdd && (
-              <Button size="lg" onClick={onAdd}>
-                {t('lists.add')}
-              </Button>
-            )
+    const activas = lists.filter((one) => one.isActive);
+    const onAdd = can('lists.manage')
+        ? () => {
+              setCreando(true);
           }
-        >
-          {t('lists.emptyBody', { names: SEEDED_LISTS.map((one) => one.name).join(', ') })}
-        </EmptyState>
-      ) : (
-        <div className="gap-4 sm:grid-cols-2 xl:grid-cols-3 grid">
-          {activas.map((list, index) => (
-            <ListPanel
-              key={list.id}
-              list={list}
-              delay={Math.min(index * CASCADA_MS, CASCADA_MAX)}
-            />
-          ))}
-        </div>
-      )}
+        : undefined;
 
-      <ListForm
-        open={creando}
-        onClose={() => {
-          setCreando(false);
-        }}
-      />
-    </section>
-  );
+    const overloaded = memberships
+        ? Object.values(memberships).filter((ids) => ids.length >= LIST_OVERLAP_THRESHOLD).length
+        : null;
+
+    return (
+        <section className="gap-6 animate-page-in flex flex-col">
+            <ListsHeader lists={activas} overloaded={overloaded} onAdd={onAdd} />
+
+            {activas.length === 0 ? (
+                <EmptyState
+                    icon={ClipboardList}
+                    title={t('lists.emptyTitle')}
+                    action={
+                        onAdd && (
+                            <Button size="lg" onClick={onAdd}>
+                                {t('lists.add')}
+                            </Button>
+                        )
+                    }
+                >
+                    {t('lists.emptyBody', {
+                        names: SEEDED_LISTS.map((one) => one.name).join(', '),
+                    })}
+                </EmptyState>
+            ) : (
+                <div className="gap-4 sm:grid-cols-2 xl:grid-cols-3 grid">
+                    {activas.map((list, index) => (
+                        <ListPanel
+                            key={list.id}
+                            list={list}
+                            delay={Math.min(index * CASCADA_MS, CASCADA_MAX)}
+                        />
+                    ))}
+                </div>
+            )}
+
+            <ListForm
+                open={creando}
+                onClose={() => {
+                    setCreando(false);
+                }}
+            />
+        </section>
+    );
 }

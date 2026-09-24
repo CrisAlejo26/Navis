@@ -17,32 +17,32 @@ import type { Message } from './message.entity';
 @Entity('message_attachments')
 @Index('IDX_message_attachments_message', ['messageId'])
 export class MessageAttachment extends BaseEntity {
-  @ApiProperty()
-  @Column({ name: 'message_id', type: UUID })
-  messageId: string;
+    @ApiProperty()
+    @Column({ name: 'message_id', type: UUID })
+    messageId: string;
 
-  /* Por nombre y con `Relation<>`: ver `note-audio.entity.ts`. */
-  @ManyToOne('Message', 'attachments', { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'message_id' })
-  message: Relation<Message>;
+    /* Por nombre y con `Relation<>`: ver `note-audio.entity.ts`. */
+    @ManyToOne('Message', 'attachments', { onDelete: 'CASCADE' })
+    @JoinColumn({ name: 'message_id' })
+    message: Relation<Message>;
 
-  @ApiProperty({ example: 'archivo' })
-  @Column({ type: 'text' })
-  kind: MessageAttachmentKind;
+    @ApiProperty({ example: 'archivo' })
+    @Column({ type: 'text' })
+    kind: MessageAttachmentKind;
 
-  @ApiProperty({ description: 'El nombre del fichero en disco, generado aquí' })
-  @Column({ name: 'storage_key', type: 'text' })
-  storageKey: string;
+    @ApiProperty({ description: 'El nombre del fichero en disco, generado aquí' })
+    @Column({ name: 'storage_key', type: 'text' })
+    storageKey: string;
 
-  @ApiProperty({ description: 'El nombre real, para que la descarga lo conserve' })
-  @Column({ name: 'original_name', type: 'text' })
-  originalName: string;
+    @ApiProperty({ description: 'El nombre real, para que la descarga lo conserve' })
+    @Column({ name: 'original_name', type: 'text' })
+    originalName: string;
 
-  @ApiProperty({ example: 'application/pdf' })
-  @Column({ name: 'mime_type', type: 'text' })
-  mimeType: string;
+    @ApiProperty({ example: 'application/pdf' })
+    @Column({ name: 'mime_type', type: 'text' })
+    mimeType: string;
 
-  @ApiProperty()
-  @Column({ name: 'size_bytes', type: 'int' })
-  sizeBytes: number;
+    @ApiProperty()
+    @Column({ name: 'size_bytes', type: 'int' })
+    sizeBytes: number;
 }

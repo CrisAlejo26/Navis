@@ -22,72 +22,72 @@ import type { DreamsScreen } from '@/lib/dreams/use-dreams-screen';
  * al primer sueño.
  */
 export function DreamsToolbar({
-  screen,
-  onExport,
+    screen,
+    onExport,
 }: {
-  screen: DreamsScreen;
-  onExport: () => void;
+    screen: DreamsScreen;
+    onExport: () => void;
 }) {
-  const { t } = useTranslation();
-  const [open, setOpen] = useState(false);
+    const { t } = useTranslation();
+    const [open, setOpen] = useState(false);
 
-  const filters = <DreamsFilters filters={screen.filters} emotions={screen.emotions} />;
+    const filters = <DreamsFilters filters={screen.filters} emotions={screen.emotions} />;
 
-  return (
-    <div className="gap-3 flex flex-col">
-      <div className="gap-2 flex items-center">
-        <SearchField
-          value={screen.query.search}
-          onChange={screen.query.setSearch}
-          label={t('dreams.search')}
-          className="min-w-0 flex-1"
-        />
+    return (
+        <div className="gap-3 flex flex-col">
+            <div className="gap-2 flex items-center">
+                <SearchField
+                    value={screen.query.search}
+                    onChange={screen.query.setSearch}
+                    label={t('dreams.search')}
+                    className="min-w-0 flex-1"
+                />
 
-        <ClearFiltersButton count={screen.filters.count} onClear={screen.filters.clear} />
+                <ClearFiltersButton count={screen.filters.count} onClear={screen.filters.clear} />
 
-        <Button
-          variant="secondary"
-          size="md"
-          className="lg:hidden shrink-0"
-          onClick={() => {
-            setOpen(true);
-          }}
-        >
-          <SlidersHorizontal size={16} aria-hidden />
-          {screen.filters.count > 0
-            ? t('dreams.filtersTotal', { total: screen.filters.count })
-            : t('dreams.filters')}
-        </Button>
+                <Button
+                    variant="secondary"
+                    size="md"
+                    className="lg:hidden shrink-0"
+                    onClick={() => {
+                        setOpen(true);
+                    }}
+                >
+                    <SlidersHorizontal size={16} aria-hidden />
+                    {screen.filters.count > 0
+                        ? t('dreams.filtersTotal', { total: screen.filters.count })
+                        : t('dreams.filters')}
+                </Button>
 
-        {/* Secundario y sin rótulo en estrecho: la acción principal de esta
+                {/* Secundario y sin rótulo en estrecho: la acción principal de esta
             pantalla es apuntar un sueño (RFC 0009 §7.1). */}
-        <Button
-          variant="secondary"
-          size="md"
-          className="shrink-0"
-          aria-label={t('export.title')}
-          onClick={onExport}
-        >
-          <Download size={16} aria-hidden />
-          <span className="sm:inline hidden">{t('export.title')}</span>
-        </Button>
-      </div>
+                <Button
+                    variant="secondary"
+                    size="md"
+                    className="shrink-0"
+                    aria-label={t('export.title')}
+                    onClick={onExport}
+                >
+                    <Download size={16} aria-hidden />
+                    <span className="sm:inline hidden">{t('export.title')}</span>
+                </Button>
+            </div>
 
-      <div className="lg:block hidden">{filters}</div>
+            <div className="lg:block hidden">{filters}</div>
 
-      <Drawer
-        open={open}
-        side="right"
-        width="min(22rem, 90vw)"
-        title={t('dreams.filters')}
-        onClose={() => {
-          setOpen(false);
-        }}
-      >
-        {/* El botón de quitar filtros lo trae ya `DreamsFilters`: tenerlo
+            <Drawer
+                open={open}
+                side="right"
+                width="min(22rem, 90vw)"
+                title={t('dreams.filters')}
+                onClose={() => {
+                    setOpen(false);
+                }}
+            >
+                {/* El botón de quitar filtros lo trae ya `DreamsFilters`: tenerlo
             también aquí eran dos botones que hacen lo mismo. */}
-        <div className="p-4">{filters}</div>
-      </Drawer>
-    </div>
-  );
+                <div className="p-4">{filters}</div>
+            </Drawer>
+        </div>
+    );
 }

@@ -22,17 +22,17 @@ import { cn } from '@/lib/cn';
  * navegación inferior— se deja fuera.
  */
 export function PageTransition({
-  children,
-  className,
+    children,
+    className,
 }: {
-  children: ReactNode;
-  className?: string;
+    children: ReactNode;
+    className?: string;
 }) {
-  const { pathname } = useLocation();
+    const { pathname } = useLocation();
 
-  return (
-    <div key={pathname} className={cn('animate-page-in', className)}>
-      {children}
-    </div>
-  );
+    return (
+        <div key={pathname} className={cn('animate-page-in', className)}>
+            {children}
+        </div>
+    );
 }

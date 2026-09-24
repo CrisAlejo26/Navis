@@ -11,45 +11,45 @@ import { cn } from '@/lib/cn';
  * sede. Lo que sí va en los seis idiomas es el «+2» y el vacío.
  */
 export function GiftTags({
-  gifts,
-  max,
-  className,
+    gifts,
+    max,
+    className,
 }: {
-  gifts: readonly Gift[];
-  /** Cuántos caben antes de resumir en «+2». Sin él, todos. */
-  max?: number;
-  className?: string;
+    gifts: readonly Gift[];
+    /** Cuántos caben antes de resumir en «+2». Sin él, todos. */
+    max?: number;
+    className?: string;
 }) {
-  const { t } = useTranslation();
-  if (gifts.length === 0) return null;
+    const { t } = useTranslation();
+    if (gifts.length === 0) return null;
 
-  const shown = max === undefined ? gifts : gifts.slice(0, max);
-  const rest = gifts.length - shown.length;
+    const shown = max === undefined ? gifts : gifts.slice(0, max);
+    const rest = gifts.length - shown.length;
 
-  return (
-    <span className={cn('gap-1 flex flex-wrap items-center', className)}>
-      {shown.map((gift) => (
-        <span
-          key={gift.id}
-          style={accentVars(gift.accent)}
-          className={cn(
-            'gap-1.5 px-2 py-0.5 inline-flex items-center rounded-full text-[11px]',
-            // El color va en el borde y en el punto, no en el fondo: cinco
-            // etiquetas rellenas seguidas compiten con la sonda, que es lo que
-            // esta pantalla quiere que se lea primero (§7.1).
-            'border border-[color-mix(in_oklab,var(--acento)_45%,transparent)] text-foreground/85',
-          )}
-        >
-          <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-[var(--acento)]" />
-          {gift.name}
+    return (
+        <span className={cn('gap-1 flex flex-wrap items-center', className)}>
+            {shown.map((gift) => (
+                <span
+                    key={gift.id}
+                    style={accentVars(gift.accent)}
+                    className={cn(
+                        'gap-1.5 px-2 py-0.5 inline-flex items-center rounded-full text-[11px]',
+                        // El color va en el borde y en el punto, no en el fondo: cinco
+                        // etiquetas rellenas seguidas compiten con la sonda, que es lo que
+                        // esta pantalla quiere que se lea primero (§7.1).
+                        'border border-[color-mix(in_oklab,var(--acento)_45%,transparent)] text-foreground/85',
+                    )}
+                >
+                    <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-[var(--acento)]" />
+                    {gift.name}
+                </span>
+            ))}
+
+            {rest > 0 && (
+                <span className="px-1.5 py-0.5 rounded-full text-[11px] text-muted-foreground tabular-nums">
+                    {t('believers.moreGifts', { count: rest })}
+                </span>
+            )}
         </span>
-      ))}
-
-      {rest > 0 && (
-        <span className="px-1.5 py-0.5 rounded-full text-[11px] text-muted-foreground tabular-nums">
-          {t('believers.moreGifts', { count: rest })}
-        </span>
-      )}
-    </span>
-  );
+    );
 }

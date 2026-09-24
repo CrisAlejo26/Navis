@@ -21,24 +21,24 @@ import { BaseEntity } from '../common/entities/base.entity';
 @Index('UQ_emotions_slug', ['slug'], { unique: true, where: '"slug" IS NOT NULL' })
 @Index('UQ_emotions_owner_name', ['ownerId', 'name'], { unique: true, where: '"name" IS NOT NULL' })
 export class Emotion extends BaseEntity {
-  @ApiPropertyOptional({ description: 'De quién es. Nulo ⇒ es una de las de serie (D6)' })
-  @Index()
-  @Column({ name: 'owner_id', type: 'text', nullable: true })
-  ownerId: string | null;
+    @ApiPropertyOptional({ description: 'De quién es. Nulo ⇒ es una de las de serie (D6)' })
+    @Index()
+    @Column({ name: 'owner_id', type: 'text', nullable: true })
+    ownerId: string | null;
 
-  @ApiPropertyOptional({ description: 'Solo las de serie. Es lo que traduce la interfaz (D4)' })
-  @Column({ type: 'text', nullable: true })
-  slug: string | null;
+    @ApiPropertyOptional({ description: 'Solo las de serie. Es lo que traduce la interfaz (D4)' })
+    @Column({ type: 'text', nullable: true })
+    slug: string | null;
 
-  @ApiPropertyOptional({ description: 'Solo las propias. El texto de su dueño, tal cual' })
-  @Column({ type: 'text', nullable: true })
-  name: string | null;
+    @ApiPropertyOptional({ description: 'Solo las propias. El texto de su dueño, tal cual' })
+    @Column({ type: 'text', nullable: true })
+    name: string | null;
 
-  @ApiProperty({ description: 'Token de color o hexadecimal de ACCENT_PALETTE (D7)' })
-  @Column({ type: 'text' })
-  accent: string;
+    @ApiProperty({ description: 'Token de color o hexadecimal de ACCENT_PALETTE (D7)' })
+    @Column({ type: 'text' })
+    accent: string;
 
-  @ApiProperty({ description: 'El orden en que se listan las de serie' })
-  @Column({ type: 'int', default: 0 })
-  position: number;
+    @ApiProperty({ description: 'El orden en que se listan las de serie' })
+    @Column({ type: 'int', default: 0 })
+    position: number;
 }

@@ -17,24 +17,28 @@ export type MessageStatusState = 'delivered' | 'read';
  * transición a nivel global (`global.css`).
  */
 export function MessageStatus({ state, time }: { state: MessageStatusState; time: string }) {
-  const { t } = useTranslation();
+    const { t } = useTranslation();
 
-  return (
-    <span className="inline-flex items-center">
-      <span
-        aria-hidden
-        className="w-6 inline-block h-[3px] shrink-0 overflow-hidden rounded-full bg-muted"
-      >
-        <span
-          className={cn(
-            'ease-out block h-full w-full origin-left rounded-full transition-transform duration-300',
-            state === 'read' ? 'scale-x-100 bg-primary' : 'scale-x-50 bg-muted-foreground/60',
-          )}
-        />
-      </span>
-      <span className="sr-only">
-        {state === 'read' ? t('communications.readAt', { time }) : t('communications.deliveredAt')}
-      </span>
-    </span>
-  );
+    return (
+        <span className="inline-flex items-center">
+            <span
+                aria-hidden
+                className="w-6 inline-block h-[3px] shrink-0 overflow-hidden rounded-full bg-muted"
+            >
+                <span
+                    className={cn(
+                        'ease-out block h-full w-full origin-left rounded-full transition-transform duration-300',
+                        state === 'read'
+                            ? 'scale-x-100 bg-primary'
+                            : 'scale-x-50 bg-muted-foreground/60',
+                    )}
+                />
+            </span>
+            <span className="sr-only">
+                {state === 'read'
+                    ? t('communications.readAt', { time })
+                    : t('communications.deliveredAt')}
+            </span>
+        </span>
+    );
 }

@@ -9,12 +9,12 @@ import type { UserDialogsState } from '@/lib/user-dialogs-state';
  * dice cuál abrir y no tiene que saber nada de cada una.
  */
 export function UserDialogs({ state, onClose }: { state: UserDialogsState; onClose: () => void }) {
-  return (
-    <>
-      <CreateUserDialog open={state.creating} onClose={onClose} />
-      <EditUserDialog user={state.editing} onClose={onClose} />
-      <SetPasswordDialog user={state.changingPassword} onClose={onClose} />
-      <DeleteUserDialog user={state.deleting} onClose={onClose} />
-    </>
-  );
+    return (
+        <>
+            <CreateUserDialog open={state.creating} onClose={onClose} />
+            <EditUserDialog user={state.editing} onClose={onClose} />
+            <SetPasswordDialog user={state.changingPassword} onClose={onClose} />
+            <DeleteUserDialog user={state.deleting} onClose={onClose} />
+        </>
+    );
 }

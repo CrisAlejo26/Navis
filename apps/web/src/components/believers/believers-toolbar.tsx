@@ -17,86 +17,86 @@ import type { BelieversScreen } from '@/lib/believers/use-believers-screen';
  * antes de llegar al primer nombre.
  */
 export function BelieversToolbar({
-  screen,
-  onExport,
+    screen,
+    onExport,
 }: {
-  screen: BelieversScreen;
-  onExport: () => void;
+    screen: BelieversScreen;
+    onExport: () => void;
 }) {
-  const { t } = useTranslation();
-  const [open, setOpen] = useState(false);
+    const { t } = useTranslation();
+    const [open, setOpen] = useState(false);
 
-  const filters = (
-    <BelieversFilters
-      filters={screen.filters}
-      summary={screen.summary}
-      congregations={screen.congregations}
-      gifts={screen.gifts}
-      tags={screen.tags}
-      lists={screen.lists}
-    />
-  );
-
-  return (
-    <div className="gap-3 flex flex-col">
-      <div className="gap-2 flex items-center">
-        <SearchField
-          value={screen.query.search}
-          onChange={screen.query.setSearch}
-          label={t('believers.search')}
-          className="min-w-0 flex-1"
+    const filters = (
+        <BelieversFilters
+            filters={screen.filters}
+            summary={screen.summary}
+            congregations={screen.congregations}
+            gifts={screen.gifts}
+            tags={screen.tags}
+            lists={screen.lists}
         />
+    );
 
-        <Button
-          variant="secondary"
-          size="md"
-          className="lg:hidden shrink-0"
-          onClick={() => {
-            setOpen(true);
-          }}
-        >
-          <SlidersHorizontal size={16} aria-hidden />
-          {screen.filters.count > 0
-            ? t('believers.filtersWithCount', { count: screen.filters.count })
-            : t('believers.filters')}
-        </Button>
+    return (
+        <div className="gap-3 flex flex-col">
+            <div className="gap-2 flex items-center">
+                <SearchField
+                    value={screen.query.search}
+                    onChange={screen.query.setSearch}
+                    label={t('believers.search')}
+                    className="min-w-0 flex-1"
+                />
 
-        {/* No es la acción principal de esta pantalla —lo es «Añadir»— así que
+                <Button
+                    variant="secondary"
+                    size="md"
+                    className="lg:hidden shrink-0"
+                    onClick={() => {
+                        setOpen(true);
+                    }}
+                >
+                    <SlidersHorizontal size={16} aria-hidden />
+                    {screen.filters.count > 0
+                        ? t('believers.filtersWithCount', { count: screen.filters.count })
+                        : t('believers.filters')}
+                </Button>
+
+                {/* No es la acción principal de esta pantalla —lo es «Añadir»— así que
             va en secundario y sin rótulo en pantallas estrechas (RFC 0009 §7.1). */}
-        <Button
-          variant="secondary"
-          size="md"
-          className="shrink-0"
-          aria-label={t('export.title')}
-          onClick={onExport}
-        >
-          <Download size={16} aria-hidden />
-          <span className="sm:inline hidden">{t('export.title')}</span>
-        </Button>
+                <Button
+                    variant="secondary"
+                    size="md"
+                    className="shrink-0"
+                    aria-label={t('export.title')}
+                    onClick={onExport}
+                >
+                    <Download size={16} aria-hidden />
+                    <span className="sm:inline hidden">{t('export.title')}</span>
+                </Button>
 
-        <BelieversViewSwitch />
-      </div>
+                <BelieversViewSwitch />
+            </div>
 
-      <div className="lg:block hidden">{filters}</div>
+            <div className="lg:block hidden">{filters}</div>
 
-      <Drawer
-        open={open}
-        side="right"
-        width="min(22rem, 90vw)"
-        title={t('believers.filters')}
-        onClose={() => {
-          setOpen(false);
-        }}
-      >
-        <div className="gap-4 p-4 flex flex-col">
-          {filters}
-          {screen.filters.count > 0 && (
-            <Button variant="ghost" size="md" onClick={screen.filters.clear}>
-              {t('believers.clearFilters')}
-            </Button>
-          )}
+            <Drawer
+                open={open}
+                side="right"
+                width="min(22rem, 90vw)"
+                title={t('believers.filters')}
+                onClose={() => {
+                    setOpen(false);
+                }}
+            >
+                <div className="gap-4 p-4 flex flex-col">
+                    {filters}
+                    {screen.filters.count > 0 && (
+                        <Button variant="ghost" size="md" onClick={screen.filters.clear}>
+                            {t('believers.clearFilters')}
+                        </Button>
+                    )}
+                </div>
+            </Drawer>
         </div>
-      </Drawer>
-    </div>
-  );
+    );
 }

@@ -8,7 +8,10 @@ import { cn } from '@/lib/cn';
  * apaga solo con `prefers-reduced-motion` (Regla 9).
  */
 export function Skeleton({ className }: { className?: string }) {
-  return (
-    <span aria-hidden className={cn('h-4 animate-pulse block rounded-md bg-muted', className)} />
-  );
+    return (
+        <span
+            aria-hidden
+            className={cn('h-4 animate-pulse block rounded-md bg-muted', className)}
+        />
+    );
 }

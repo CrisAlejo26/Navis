@@ -28,21 +28,21 @@ import { DashboardService } from './dashboard.service';
  * módulo solo para una lectura de repaso (Regla 1).
  */
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Believer, BelieverNote, Congregation, Ministry, Gift]),
-    BelieversModule,
-    CalendarModule,
-    ChurchesModule,
-    TasksModule,
-  ],
-  controllers: [DashboardController],
-  providers: [
-    DashboardService,
-    DashboardCompositionService,
-    DashboardActivityService,
-    DashboardEventsService,
-    DashboardNotesService,
-    DashboardTasksService,
-  ],
+    imports: [
+        TypeOrmModule.forFeature([Believer, BelieverNote, Congregation, Ministry, Gift]),
+        BelieversModule,
+        CalendarModule,
+        ChurchesModule,
+        TasksModule,
+    ],
+    controllers: [DashboardController],
+    providers: [
+        DashboardService,
+        DashboardCompositionService,
+        DashboardActivityService,
+        DashboardEventsService,
+        DashboardNotesService,
+        DashboardTasksService,
+    ],
 })
 export class DashboardModule {}

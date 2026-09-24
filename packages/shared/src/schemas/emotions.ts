@@ -14,24 +14,24 @@ import { accentSchema } from './congregations';
  * (D5).
  */
 export const SYSTEM_EMOTION_SLUGS = [
-  'felicidad',
-  'alegria',
-  'tranquilidad',
-  'paz',
-  'esperanza',
-  'libertad',
-  'curiosidad',
-  'confusion',
-  'ansiedad',
-  'tristeza',
-  'miedo',
-  'persecucion',
+    'felicidad',
+    'alegria',
+    'tranquilidad',
+    'paz',
+    'esperanza',
+    'libertad',
+    'curiosidad',
+    'confusion',
+    'ansiedad',
+    'tristeza',
+    'miedo',
+    'persecucion',
 ] as const;
 
 export type SystemEmotionSlug = (typeof SYSTEM_EMOTION_SLUGS)[number];
 
 export function isSystemEmotionSlug(value: string): value is SystemEmotionSlug {
-  return (SYSTEM_EMOTION_SLUGS as readonly string[]).includes(value);
+    return (SYSTEM_EMOTION_SLUGS as readonly string[]).includes(value);
 }
 
 /**
@@ -43,31 +43,31 @@ export function isSystemEmotionSlug(value: string): value is SystemEmotionSlug {
  * tal cual: son suyas y nadie más las va a leer.
  */
 export const emotionSchema = z.object({
-  id: z.uuid(),
-  slug: z.string().nullable(),
-  name: z.string().nullable(),
-  /** Un token o un `#rrggbb` de `ACCENT_PALETTE` (D7). */
-  accent: accentSchema,
-  position: z.number().int(),
+    id: z.uuid(),
+    slug: z.string().nullable(),
+    name: z.string().nullable(),
+    /** Un token o un `#rrggbb` de `ACCENT_PALETTE` (D7). */
+    accent: accentSchema,
+    position: z.number().int(),
 });
 
 export type Emotion = z.infer<typeof emotionSchema>;
 
 /** Si es una de las doce de serie: las que nadie puede editar ni borrar (D6). */
 export function isSystemEmotion(emotion: Pick<Emotion, 'slug'>): boolean {
-  return emotion.slug !== null;
+    return emotion.slug !== null;
 }
 
 /** La misma, con cuántos sueños la llevan. Es lo que devuelve el vocabulario. */
 export const emotionWithCountSchema = emotionSchema.extend({
-  count: z.number().int(),
+    count: z.number().int(),
 });
 
 export type EmotionWithCount = z.infer<typeof emotionWithCountSchema>;
 
 export const createEmotionSchema = z.object({
-  name: z.string().trim().min(1, 'La emoción necesita un nombre').max(40),
-  accent: accentSchema,
+    name: z.string().trim().min(1, 'La emoción necesita un nombre').max(40),
+    accent: accentSchema,
 });
 
 export type CreateEmotionInput = z.infer<typeof createEmotionSchema>;

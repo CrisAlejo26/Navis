@@ -4,8 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 
 export interface DreamActionHandlers {
-  onEdit: () => void;
-  onDelete: () => void;
+    onEdit: () => void;
+    onDelete: () => void;
 }
 
 /**
@@ -16,32 +16,34 @@ export interface DreamActionHandlers {
  * en la ficha, no desde una fila que solo enseña dos líneas (D10).
  */
 export function DreamActions({
-  title,
-  onEdit,
-  onDelete,
+    title,
+    onEdit,
+    onDelete,
 }: DreamActionHandlers & { title?: string }) {
-  const { t } = useTranslation();
+    const { t } = useTranslation();
 
-  const actions = [
-    { icon: Pencil, label: t('dreams.edit'), onClick: onEdit, danger: false },
-    { icon: Trash2, label: t('common.delete'), onClick: onDelete, danger: true },
-  ] as const;
+    const actions = [
+        { icon: Pencil, label: t('dreams.edit'), onClick: onEdit, danger: false },
+        { icon: Trash2, label: t('common.delete'), onClick: onDelete, danger: true },
+    ] as const;
 
-  return (
-    <span className="gap-0.5 flex justify-end">
-      {actions.map(({ icon: Icon, label, onClick, danger }) => (
-        <Button
-          key={label}
-          variant="ghost"
-          size="icon"
-          title={label}
-          aria-label={title ? `${label}: ${title}` : label}
-          onClick={onClick}
-          className={danger ? 'hover:bg-destructive/10 hover:text-destructive' : undefined}
-        >
-          <Icon size={16} aria-hidden />
-        </Button>
-      ))}
-    </span>
-  );
+    return (
+        <span className="gap-0.5 flex justify-end">
+            {actions.map(({ icon: Icon, label, onClick, danger }) => (
+                <Button
+                    key={label}
+                    variant="ghost"
+                    size="icon"
+                    title={label}
+                    aria-label={title ? `${label}: ${title}` : label}
+                    onClick={onClick}
+                    className={
+                        danger ? 'hover:bg-destructive/10 hover:text-destructive' : undefined
+                    }
+                >
+                    <Icon size={16} aria-hidden />
+                </Button>
+            ))}
+        </span>
+    );
 }

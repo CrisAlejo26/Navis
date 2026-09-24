@@ -6,14 +6,14 @@ import { downloadFile, slugify } from '@/lib/share/files';
 
 /** Descargar una enseñanza, sola, en Markdown (RFC 0022 §4.5): un `.md` suelto. */
 export function useTeachingMarkdownDownload() {
-  const { t } = useTranslation();
+    const { t } = useTranslation();
 
-  return (teaching: Teaching): void => {
-    const blob = toTeachingMarkdownBlob(teaching, {
-      frontmatterTitle: t('teachings.titleField'),
-      frontmatterDate: t('teachings.receivedAtField'),
-    });
+    return (teaching: Teaching): void => {
+        const blob = toTeachingMarkdownBlob(teaching, {
+            frontmatterTitle: t('teachings.titleField'),
+            frontmatterDate: t('teachings.receivedAtField'),
+        });
 
-    downloadFile(blob, `${slugify(teaching.title) || 'enseñanza'}.md`);
-  };
+        downloadFile(blob, `${slugify(teaching.title) || 'enseñanza'}.md`);
+    };
 }

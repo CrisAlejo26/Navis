@@ -14,32 +14,32 @@ import { Checkbox } from '@/components/ui/checkbox';
  * Nace apagado, como la foto.
  */
 export function DownloadToggle({
-  value,
-  onChange,
+    value,
+    onChange,
 }: {
-  value: boolean;
-  onChange: (value: boolean) => void;
+    value: boolean;
+    onChange: (value: boolean) => void;
 }) {
-  const { t } = useTranslation();
+    const { t } = useTranslation();
 
-  return (
-    <fieldset className="gap-2 flex flex-col">
-      <legend className="mb-1 gap-1.5 text-sm font-medium inline-flex items-center">
-        <Download size={14} aria-hidden />
-        {t('lists.downloads')}
-      </legend>
+    return (
+        <fieldset className="gap-2 flex flex-col">
+            <legend className="mb-1 gap-1.5 text-sm font-medium inline-flex items-center">
+                <Download size={14} aria-hidden />
+                {t('lists.downloads')}
+            </legend>
 
-      <Checkbox
-        checked={value}
-        label={t('lists.allowDownload')}
-        onChange={(event) => {
-          onChange(event.target.checked);
-        }}
-      />
+            <Checkbox
+                checked={value}
+                label={t('lists.allowDownload')}
+                onChange={(event) => {
+                    onChange(event.target.checked);
+                }}
+            />
 
-      <p className="text-xs text-muted-foreground">
-        {value ? t('lists.allowDownloadOn') : t('lists.allowDownloadOff')}
-      </p>
-    </fieldset>
-  );
+            <p className="text-xs text-muted-foreground">
+                {value ? t('lists.allowDownloadOn') : t('lists.allowDownloadOff')}
+            </p>
+        </fieldset>
+    );
 }

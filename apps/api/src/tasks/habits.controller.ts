@@ -1,14 +1,14 @@
 import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Patch,
-  Post,
-  Put,
-  Query,
-  UseGuards,
+    Body,
+    Controller,
+    Delete,
+    Get,
+    Param,
+    Patch,
+    Post,
+    Put,
+    Query,
+    UseGuards,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import type { Habit as HabitView, HabitOccurrence, HabitStats, Paginated } from '@navis/shared';
@@ -32,89 +32,89 @@ import { HabitsService } from './habits.service';
 @UseGuards(ActiveChurchGuard)
 @RequirePermissions('tasks.view')
 export class HabitsController {
-  constructor(
-    private readonly habits: HabitsService,
-    private readonly listService: HabitsListService,
-    private readonly occurrences: HabitsOccurrenceService,
-    private readonly statsService: HabitsStatsService,
-    private readonly clock: ChurchClockService,
-  ) {}
+    constructor(
+        private readonly habits: HabitsService,
+        private readonly listService: HabitsListService,
+        private readonly occurrences: HabitsOccurrenceService,
+        private readonly statsService: HabitsStatsService,
+        private readonly clock: ChurchClockService,
+    ) {}
 
-  @Get()
-  @ApiOperation({ summary: 'Hábitos del rango, expandidos, filtrados y paginados' })
-  async list(
-    @CurrentChurch() churchId: string,
-    @CurrentUser('id') ownerId: string,
-    @Query() query: HabitsQueryDto,
-  ): Promise<Paginated<HabitOccurrence>> {
-    const today = await this.clock.today(churchId);
-    return this.listService.list(churchId, ownerId, today, query);
-  }
+    @Get()
+    @ApiOperation({ summary: 'Hábitos del rango, expandidos, filtrados y paginados' })
+    async list(
+        @CurrentChurch() churchId: string,
+        @CurrentUser('id') ownerId: string,
+        @Query() query: HabitsQueryDto,
+    ): Promise<Paginated<HabitOccurrence>> {
+        const today = await this.clock.today(churchId);
+        return this.listService.list(churchId, ownerId, today, query);
+    }
 
-  @Get('stats')
-  @ApiOperation({ summary: 'Series de cumplimiento de hábitos (§9.4)' })
-  async stats(
-    @CurrentChurch() churchId: string,
-    @CurrentUser('id') ownerId: string,
-    @Query('from') from: string | undefined,
-    @Query('to') to: string | undefined,
-  ): Promise<HabitStats> {
-    const today = await this.clock.today(churchId);
-    return this.statsService.stats(churchId, ownerId, from ?? today, to ?? today);
-  }
+    @Get('stats')
+    @ApiOperation({ summary: 'Series de cumplimiento de hábitos (§9.4)' })
+    async stats(
+        @CurrentChurch() churchId: string,
+        @CurrentUser('id') ownerId: string,
+        @Query('from') from: string | undefined,
+        @Query('to') to: string | undefined,
+    ): Promise<HabitStats> {
+        const today = await this.clock.today(churchId);
+        return this.statsService.stats(churchId, ownerId, from ?? today, to ?? today);
+    }
 
-  @Post()
-  @ApiOperation({ summary: 'Crea un hábito, con etiquetas y recordatorio anidados' })
-  async create(
-    @CurrentChurch() churchId: string,
-    @CurrentUser('id') ownerId: string,
-    @Body() dto: CreateHabitDto,
-  ): Promise<HabitView> {
-    const habit = await this.habits.create(churchId, ownerId, dto);
-    return this.habits.view(churchId, ownerId, habit.id);
-  }
+    @Post()
+    @ApiOperation({ summary: 'Crea un hábito, con etiquetas y recordatorio anidados' })
+    async create(
+        @CurrentChurch() churchId: string,
+        @CurrentUser('id') ownerId: string,
+        @Body() dto: CreateHabitDto,
+    ): Promise<HabitView> {
+        const habit = await this.habits.create(churchId, ownerId, dto);
+        return this.habits.view(churchId, ownerId, habit.id);
+    }
 
-  @Get(':id')
-  @ApiOperation({ summary: 'La plantilla entera, para el formulario de edición' })
-  view(
-    @CurrentChurch() churchId: string,
-    @CurrentUser('id') ownerId: string,
-    @Param('id') id: string,
-  ): Promise<HabitView> {
-    return this.habits.view(churchId, ownerId, id);
-  }
+    @Get(':id')
+    @ApiOperation({ summary: 'La plantilla entera, para el formulario de edición' })
+    view(
+        @CurrentChurch() churchId: string,
+        @CurrentUser('id') ownerId: string,
+        @Param('id') id: string,
+    ): Promise<HabitView> {
+        return this.habits.view(churchId, ownerId, id);
+    }
 
-  @Patch(':id')
-  @ApiOperation({ summary: 'Edita la plantilla' })
-  async update(
-    @CurrentChurch() churchId: string,
-    @CurrentUser('id') ownerId: string,
-    @Param('id') id: string,
-    @Body() dto: UpdateHabitDto,
-  ): Promise<HabitView> {
-    await this.habits.update(churchId, ownerId, id, dto);
-    return this.habits.view(churchId, ownerId, id);
-  }
+    @Patch(':id')
+    @ApiOperation({ summary: 'Edita la plantilla' })
+    async update(
+        @CurrentChurch() churchId: string,
+        @CurrentUser('id') ownerId: string,
+        @Param('id') id: string,
+        @Body() dto: UpdateHabitDto,
+    ): Promise<HabitView> {
+        await this.habits.update(churchId, ownerId, id, dto);
+        return this.habits.view(churchId, ownerId, id);
+    }
 
-  @Delete(':id')
-  @ApiOperation({ summary: 'Borrado lógico' })
-  async remove(
-    @CurrentChurch() churchId: string,
-    @CurrentUser('id') ownerId: string,
-    @Param('id') id: string,
-  ): Promise<void> {
-    await this.habits.remove(churchId, ownerId, id);
-  }
+    @Delete(':id')
+    @ApiOperation({ summary: 'Borrado lógico' })
+    async remove(
+        @CurrentChurch() churchId: string,
+        @CurrentUser('id') ownerId: string,
+        @Param('id') id: string,
+    ): Promise<void> {
+        await this.habits.remove(churchId, ownerId, id);
+    }
 
-  @Put(':id/occurrences/:date')
-  @ApiOperation({ summary: 'Cambia el estado de ese día; materializa si hace falta' })
-  async setOccurrence(
-    @CurrentChurch() churchId: string,
-    @CurrentUser('id') ownerId: string,
-    @Param('id') id: string,
-    @Param('date') date: string,
-    @Body() dto: SetHabitOccurrenceStatusDto,
-  ): Promise<void> {
-    await this.occurrences.setStatus(churchId, ownerId, id, date, dto.status);
-  }
+    @Put(':id/occurrences/:date')
+    @ApiOperation({ summary: 'Cambia el estado de ese día; materializa si hace falta' })
+    async setOccurrence(
+        @CurrentChurch() churchId: string,
+        @CurrentUser('id') ownerId: string,
+        @Param('id') id: string,
+        @Param('date') date: string,
+        @Body() dto: SetHabitOccurrenceStatusDto,
+    ): Promise<void> {
+        await this.occurrences.setStatus(churchId, ownerId, id, date, dto.status);
+    }
 }

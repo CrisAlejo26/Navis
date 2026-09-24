@@ -7,11 +7,11 @@ import type { BelieverListItem, Gift, IsoDate, MinistryCatalog } from '@navis/sh
  * la frase cambia. Quien pinta esto elige la clave de traducción con él.
  */
 export interface JourneyStep {
-  key: string;
-  kind: 'arrival' | 'gift' | 'ministry';
-  label: string;
-  date: IsoDate;
-  accent: string | null;
+    key: string;
+    kind: 'arrival' | 'gift' | 'ministry';
+    label: string;
+    date: IsoDate;
+    accent: string | null;
 }
 
 /**
@@ -23,49 +23,49 @@ export interface JourneyStep {
  * otra lista de lo mismo.
  */
 export function journeyOf(
-  believer: BelieverListItem,
-  gifts: readonly Gift[],
-  ministries: readonly MinistryCatalog[],
-  arrivalLabel: string,
+    believer: BelieverListItem,
+    gifts: readonly Gift[],
+    ministries: readonly MinistryCatalog[],
+    arrivalLabel: string,
 ): JourneyStep[] {
-  const steps: JourneyStep[] = [];
+    const steps: JourneyStep[] = [];
 
-  if (believer.arrivedAt) {
-    steps.push({
-      key: 'arrival',
-      kind: 'arrival',
-      label: arrivalLabel,
-      date: believer.arrivedAt,
-      accent: null,
-    });
-  }
-
-  for (const gift of gifts) {
-    const date = believer.giftDates[gift.id];
-    if (date) {
-      steps.push({
-        key: `g:${gift.id}`,
-        kind: 'gift',
-        label: gift.name,
-        date,
-        accent: gift.accent,
-      });
+    if (believer.arrivedAt) {
+        steps.push({
+            key: 'arrival',
+            kind: 'arrival',
+            label: arrivalLabel,
+            date: believer.arrivedAt,
+            accent: null,
+        });
     }
-  }
 
-  for (const slug of believer.ministries) {
-    const date = believer.ministryDates[slug];
-    if (!date) continue;
+    for (const gift of gifts) {
+        const date = believer.giftDates[gift.id];
+        if (date) {
+            steps.push({
+                key: `g:${gift.id}`,
+                kind: 'gift',
+                label: gift.name,
+                date,
+                accent: gift.accent,
+            });
+        }
+    }
 
-    const catálogo = ministries.find((one) => one.slug === slug);
-    steps.push({
-      key: `m:${slug}`,
-      kind: 'ministry',
-      label: catálogo?.name ?? slug,
-      date,
-      accent: catálogo?.accent ?? null,
-    });
-  }
+    for (const slug of believer.ministries) {
+        const date = believer.ministryDates[slug];
+        if (!date) continue;
 
-  return steps.sort((a, b) => a.date.localeCompare(b.date));
+        const catálogo = ministries.find((one) => one.slug === slug);
+        steps.push({
+            key: `m:${slug}`,
+            kind: 'ministry',
+            label: catálogo?.name ?? slug,
+            date,
+            accent: catálogo?.accent ?? null,
+        });
+    }
+
+    return steps.sort((a, b) => a.date.localeCompare(b.date));
 }

@@ -16,23 +16,23 @@ import { shareDescription } from './share-description';
  * cuentan como visitas** (D31).
  */
 export interface SharePageInput {
-  origin: string;
-  token: string;
-  churchName: string;
-  name: string;
-  description: string | null;
-  hasCover: boolean;
-  /** Nulo en modo restringido: en la vista previa no sale ni un nombre (D18). */
-  list: PublicList | null;
+    origin: string;
+    token: string;
+    churchName: string;
+    name: string;
+    description: string | null;
+    hasCover: boolean;
+    /** Nulo en modo restringido: en la vista previa no sale ni un nombre (D18). */
+    list: PublicList | null;
 }
 
 export function escapeHtml(value: string): string {
-  return value
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
+    return value
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
 }
 
 /**
@@ -47,20 +47,20 @@ export function escapeHtml(value: string): string {
  * exactamente el problema que esta página existe para resolver (D14).
  */
 export function redirectScript(destino: string): string {
-  return `location.replace(${JSON.stringify(destino)});`;
+    return `location.replace(${JSON.stringify(destino)});`;
 }
 
 export function renderSharePage(input: SharePageInput): string {
-  const origin = input.origin.replace(/\/+$/, '');
-  const url = `${origin}${listSharePath(input.token)}`;
-  const destino = listPublicPath(input.token);
-  const title = `${input.name} · ${input.churchName}`;
+    const origin = input.origin.replace(/\/+$/, '');
+    const url = `${origin}${listSharePath(input.token)}`;
+    const destino = listPublicPath(input.token);
+    const title = `${input.name} · ${input.churchName}`;
 
-  const description = shareDescription({ description: input.description, list: input.list });
+    const description = shareDescription({ description: input.description, list: input.list });
 
-  const image = input.hasCover ? `${url}/card.png` : `${origin}/og-image.png`;
+    const image = input.hasCover ? `${url}/card.png` : `${origin}/og-image.png`;
 
-  return `<meta charset="utf-8">
+    return `<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${escapeHtml(title)}</title>
 <!-- Un enlace público no es un sitio web público: se comparte con quien se
@@ -84,13 +84,15 @@ export function renderSharePage(input: SharePageInput): string {
  * aviso de que hace falta entrar: el formulario, no la lista (D18).
  */
 function noscriptBody(input: SharePageInput, destino: string, title: string): string {
-  const cabecera = `<h1>${escapeHtml(title)}</h1>`;
+    const cabecera = `<h1>${escapeHtml(title)}</h1>`;
 
-  if (!input.list) {
-    return `${cabecera}<p>Hace falta un acceso para ver esta lista.</p><p><a href="${destino}">Entrar</a></p>`;
-  }
+    if (!input.list) {
+        return `${cabecera}<p>Hace falta un acceso para ver esta lista.</p><p><a href="${destino}">Entrar</a></p>`;
+    }
 
-  const filas = input.list.members.map((member) => `<li>${escapeHtml(member.name)}</li>`).join('');
+    const filas = input.list.members
+        .map((member) => `<li>${escapeHtml(member.name)}</li>`)
+        .join('');
 
-  return `${cabecera}${filas ? `<ol>${filas}</ol>` : '<p>Todavía no hay nadie en esta lista.</p>'}<p><a href="${destino}">Verla en Navis</a></p>`;
+    return `${cabecera}${filas ? `<ol>${filas}</ol>` : '<p>Todavía no hay nadie en esta lista.</p>'}<p><a href="${destino}">Verla en Navis</a></p>`;
 }

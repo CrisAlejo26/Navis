@@ -14,22 +14,22 @@ import { formatDate } from '@/lib/format';
  * sí tiene que coincidir son **las ramas**: si allí cambia una, aquí también.
  */
 export function shareCardDescription(list: List, t: TFunction): string {
-  const propia = list.description?.trim();
-  if (propia) return propia;
+    const propia = list.description?.trim();
+    if (propia) return propia;
 
-  // En restringida no se cuenta a nadie: el número también es un dato (D18).
-  if (list.visibility === 'restricted') return t('lists.lockedDescription');
+    // En restringida no se cuenta a nadie: el número también es un dato (D18).
+    if (list.visibility === 'restricted') return t('lists.lockedDescription');
 
-  return `${cuantas(list.memberCount, t)} ${t('lists.previewUpdated', {
-    date: formatDate(list.updatedAt),
-  })}`;
+    return `${cuantas(list.memberCount, t)} ${t('lists.previewUpdated', {
+        date: formatDate(list.updatedAt),
+    })}`;
 }
 
 function cuantas(total: number, t: TFunction): string {
-  if (total === 0) return t('lists.previewEmpty');
-  if (total === 1) return t('lists.previewOne');
+    if (total === 0) return t('lists.previewEmpty');
+    if (total === 1) return t('lists.previewOne');
 
-  // `total` y no `count`: con `count`, i18next buscaría las formas del plural
-  // y las categorías no son las mismas en los seis idiomas (Regla 2 §8).
-  return t('lists.previewMany', { total });
+    // `total` y no `count`: con `count`, i18next buscaría las formas del plural
+    // y las categorías no son las mismas en los seis idiomas (Regla 2 §8).
+    return t('lists.previewMany', { total });
 }

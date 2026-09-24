@@ -9,7 +9,7 @@ import { isPostgres } from './column-types';
  * (Regla 1).
  */
 export function asDay(expression: string): string {
-  return isPostgres ? `CAST(${expression} AS date)` : `date(${expression})`;
+    return isPostgres ? `CAST(${expression} AS date)` : `date(${expression})`;
 }
 
 /**
@@ -23,9 +23,9 @@ export function asDay(expression: string): string {
  * días justo en el cálculo del que depende el aviso (RFC 0003 §5.4).
  */
 export function daysSince(expression: string, today: string): string {
-  return isPostgres
-    ? `(${asDay(today)} - ${asDay(expression)})`
-    : `CAST(julianday(${asDay(today)}) - julianday(${asDay(expression)}) AS INTEGER)`;
+    return isPostgres
+        ? `(${asDay(today)} - ${asDay(expression)})`
+        : `CAST(julianday(${asDay(today)}) - julianday(${asDay(expression)}) AS INTEGER)`;
 }
 
 /**
@@ -36,6 +36,6 @@ export function daysSince(expression: string, today: string): string {
  * existe, así que se pone solo en Postgres —y se prueba en los dos motores—.
  */
 export function nullsFor(order: 'ASC' | 'DESC'): 'NULLS FIRST' | 'NULLS LAST' | undefined {
-  if (!isPostgres) return undefined;
-  return order === 'ASC' ? 'NULLS FIRST' : 'NULLS LAST';
+    if (!isPostgres) return undefined;
+    return order === 'ASC' ? 'NULLS FIRST' : 'NULLS LAST';
 }

@@ -1,18 +1,18 @@
 import type { Meeting, MeetingSlot } from '@navis/shared';
 
 export interface DisplayFilters {
-  personId: string | null;
-  pending: boolean;
-  q: string;
+    personId: string | null;
+    pending: boolean;
+    q: string;
 }
 
 /** Sin acentos y en minúsculas: «jesus» tiene que encontrar a «Jesús». */
 function normalize(text: string): string {
-  return text.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+    return text.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 }
 
 export function hasDisplayFilters(filters: DisplayFilters): boolean {
-  return Boolean(filters.personId) || filters.pending || Boolean(filters.q);
+    return Boolean(filters.personId) || filters.pending || Boolean(filters.q);
 }
 
 /**
@@ -23,19 +23,19 @@ export function hasDisplayFilters(filters: DisplayFilters): boolean {
  * mirando cuando se pregunta «¿quién más va este día?».
  */
 export function slotMatches(slot: MeetingSlot, meeting: Meeting, filters: DisplayFilters): boolean {
-  if (filters.personId && slot.believer?.id !== filters.personId) return false;
-  if (filters.pending && slot.believer) return false;
+    if (filters.personId && slot.believer?.id !== filters.personId) return false;
+    if (filters.pending && slot.believer) return false;
 
-  if (filters.q) {
-    const haystack = normalize(`${meeting.name} ${slot.name} ${slot.believer?.name ?? ''}`);
-    if (!haystack.includes(normalize(filters.q))) return false;
-  }
+    if (filters.q) {
+        const haystack = normalize(`${meeting.name} ${slot.name} ${slot.believer?.name ?? ''}`);
+        if (!haystack.includes(normalize(filters.q))) return false;
+    }
 
-  return true;
+    return true;
 }
 
 /** Una reunión cuenta si alguna de sus fases cuenta. */
 export function meetingMatches(meeting: Meeting, filters: DisplayFilters): boolean {
-  if (!hasDisplayFilters(filters)) return true;
-  return meeting.slots.some((slot) => slotMatches(slot, meeting, filters));
+    if (!hasDisplayFilters(filters)) return true;
+    return meeting.slots.some((slot) => slotMatches(slot, meeting, filters));
 }

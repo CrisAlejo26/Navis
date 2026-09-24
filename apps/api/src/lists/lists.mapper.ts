@@ -11,25 +11,25 @@ import { parsePublicFields } from './public-fields';
  * secreto que se acaba de tirar (D11).
  */
 export function toListView(list: List, memberCount: number): ListView {
-  return {
-    id: list.id,
-    churchId: list.churchId,
-    name: list.name,
-    slug: list.slug,
-    description: list.description,
-    accent: list.accent,
-    position: list.position,
-    isActive: list.isActive,
-    visibility: list.visibility,
-    shareToken: list.visibility === 'private' ? null : list.shareToken,
-    sharedAt: list.sharedAt?.toISOString() ?? null,
-    shareExpiresAt: list.shareExpiresAt?.toISOString() ?? null,
-    publicFields: parsePublicFields(list.publicFields),
-    allowDownload: list.allowDownload,
-    hasCover: Boolean(list.coverKey),
-    memberCount,
-    updatedAt: list.updatedAt.toISOString(),
-  };
+    return {
+        id: list.id,
+        churchId: list.churchId,
+        name: list.name,
+        slug: list.slug,
+        description: list.description,
+        accent: list.accent,
+        position: list.position,
+        isActive: list.isActive,
+        visibility: list.visibility,
+        shareToken: list.visibility === 'private' ? null : list.shareToken,
+        sharedAt: list.sharedAt?.toISOString() ?? null,
+        shareExpiresAt: list.shareExpiresAt?.toISOString() ?? null,
+        publicFields: parsePublicFields(list.publicFields),
+        allowDownload: list.allowDownload,
+        hasCover: Boolean(list.coverKey),
+        memberCount,
+        updatedAt: list.updatedAt.toISOString(),
+    };
 }
 
 /**
@@ -39,8 +39,8 @@ export function toListView(list: List, memberCount: number): ListView {
  * con el mismo cuerpo, porque decir «esto existía» ya es contar algo.
  */
 export function isListShared(list: List, now: Date = new Date()): boolean {
-  if (list.visibility === 'private' || !list.shareToken) return false;
-  if (!list.isActive || list.deletedAt) return false;
+    if (list.visibility === 'private' || !list.shareToken) return false;
+    if (!list.isActive || list.deletedAt) return false;
 
-  return !list.shareExpiresAt || list.shareExpiresAt.getTime() > now.getTime();
+    return !list.shareExpiresAt || list.shareExpiresAt.getTime() > now.getTime();
 }

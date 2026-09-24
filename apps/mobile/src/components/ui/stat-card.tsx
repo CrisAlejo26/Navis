@@ -10,35 +10,35 @@ type ChangeDirection = 'up' | 'down' | 'flat';
 type ChangeTone = 'success' | 'destructive' | 'default';
 
 const ARROW: Record<ChangeDirection, IoniconName> = {
-  up: 'arrow-up',
-  down: 'arrow-down',
-  flat: 'remove',
+    up: 'arrow-up',
+    down: 'arrow-down',
+    flat: 'remove',
 };
 
 const TONE: Record<ChangeDirection, ChangeTone> = {
-  up: 'success',
-  down: 'destructive',
-  flat: 'default',
+    up: 'success',
+    down: 'destructive',
+    flat: 'default',
 };
 
 const TEXT_KEY: Record<ChangeTone, keyof ThemeColors> = {
-  success: 'success',
-  destructive: 'destructive',
-  default: 'mutedForeground',
+    success: 'success',
+    destructive: 'destructive',
+    default: 'mutedForeground',
 };
 
 type StatTone = 'default' | 'primary' | 'success' | 'warning' | 'destructive' | 'accent';
 
 interface StatCardProps {
-  label: string;
-  /** El valor ya formateado (número, unidad…): la tarjeta no sabe de formato. */
-  value: string;
-  icon?: IoniconName;
-  /** El tono del icono: qué significa esta cifra, no solo qué la ilustra. */
-  tone?: StatTone;
-  /** Indicador de cambio: dirección + texto. Nunca solo color (Regla 3 §7). */
-  change?: { direction: ChangeDirection; text: string };
-  className?: string;
+    label: string;
+    /** El valor ya formateado (número, unidad…): la tarjeta no sabe de formato. */
+    value: string;
+    icon?: IoniconName;
+    /** El tono del icono: qué significa esta cifra, no solo qué la ilustra. */
+    tone?: StatTone;
+    /** Indicador de cambio: dirección + texto. Nunca solo color (Regla 3 §7). */
+    change?: { direction: ChangeDirection; text: string };
+    className?: string;
 }
 
 /**
@@ -49,37 +49,39 @@ interface StatCardProps {
  * debajo).
  */
 export function StatCard({
-  label,
-  value,
-  icon,
-  tone = 'default',
-  change,
-  className,
+    label,
+    value,
+    icon,
+    tone = 'default',
+    change,
+    className,
 }: StatCardProps) {
-  const palette = themeColorsHex[useThemeStore((state) => state.resolvedTheme)];
+    const palette = themeColorsHex[useThemeStore((state) => state.resolvedTheme)];
 
-  return (
-    <View className={cn('gap-2 p-4 rounded-xl border border-border bg-card', className)}>
-      <View className="gap-2 flex-row items-center">
-        {icon ? <Icon name={icon} size="sm" tone={tone} background="soft" /> : null}
-        <Text className="text-sm font-sans text-muted-foreground" numberOfLines={1}>
-          {label}
-        </Text>
-      </View>
+    return (
+        <View className={cn('gap-2 p-4 rounded-xl border border-border bg-card', className)}>
+            <View className="gap-2 flex-row items-center">
+                {icon ? <Icon name={icon} size="sm" tone={tone} background="soft" /> : null}
+                <Text className="text-sm font-sans text-muted-foreground" numberOfLines={1}>
+                    {label}
+                </Text>
+            </View>
 
-      <Text className="text-3xl font-sans-semibold text-foreground tabular-nums">{value}</Text>
+            <Text className="text-3xl font-sans-semibold text-foreground tabular-nums">
+                {value}
+            </Text>
 
-      {change ? (
-        <View className="gap-1 flex-row items-center">
-          <Icon name={ARROW[change.direction]} size="sm" tone={TONE[change.direction]} />
-          <Text
-            className="text-xs font-sans-medium"
-            style={{ color: palette[TEXT_KEY[TONE[change.direction]]] }}
-          >
-            {change.text}
-          </Text>
+            {change ? (
+                <View className="gap-1 flex-row items-center">
+                    <Icon name={ARROW[change.direction]} size="sm" tone={TONE[change.direction]} />
+                    <Text
+                        className="text-xs font-sans-medium"
+                        style={{ color: palette[TEXT_KEY[TONE[change.direction]]] }}
+                    >
+                        {change.text}
+                    </Text>
+                </View>
+            ) : null}
         </View>
-      ) : null}
-    </View>
-  );
+    );
 }

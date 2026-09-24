@@ -19,38 +19,38 @@ import { GiftsService } from './gifts.service';
 @Controller('gifts')
 @UseGuards(ActiveChurchGuard)
 export class GiftsController {
-  constructor(private readonly gifts: GiftsService) {}
+    constructor(private readonly gifts: GiftsService) {}
 
-  @Get()
-  @RequirePermissions('believers.view')
-  @ApiOperation({ summary: 'El catálogo, en su orden' })
-  @ApiOkResponse({ description: 'Listado de dones' })
-  async list(@CurrentChurch() churchId: string): Promise<GiftView[]> {
-    return (await this.gifts.ensureFor(churchId)).map(toGiftView);
-  }
+    @Get()
+    @RequirePermissions('believers.view')
+    @ApiOperation({ summary: 'El catálogo, en su orden' })
+    @ApiOkResponse({ description: 'Listado de dones' })
+    async list(@CurrentChurch() churchId: string): Promise<GiftView[]> {
+        return (await this.gifts.ensureFor(churchId)).map(toGiftView);
+    }
 
-  @Post()
-  @RequirePermissions('believers.manage')
-  @ApiOperation({ summary: 'Añade un don al catálogo' })
-  async create(@CurrentChurch() churchId: string, @Body() dto: CreateGiftDto): Promise<GiftView> {
-    return toGiftView(await this.gifts.create(churchId, dto));
-  }
+    @Post()
+    @RequirePermissions('believers.manage')
+    @ApiOperation({ summary: 'Añade un don al catálogo' })
+    async create(@CurrentChurch() churchId: string, @Body() dto: CreateGiftDto): Promise<GiftView> {
+        return toGiftView(await this.gifts.create(churchId, dto));
+    }
 
-  @Patch(':id')
-  @RequirePermissions('believers.manage')
-  @ApiOperation({ summary: 'Renombra, recolorea, activa o desactiva' })
-  async update(
-    @CurrentChurch() churchId: string,
-    @Param('id') id: string,
-    @Body() dto: UpdateGiftDto,
-  ): Promise<GiftView> {
-    return toGiftView(await this.gifts.update(churchId, id, dto));
-  }
+    @Patch(':id')
+    @RequirePermissions('believers.manage')
+    @ApiOperation({ summary: 'Renombra, recolorea, activa o desactiva' })
+    async update(
+        @CurrentChurch() churchId: string,
+        @Param('id') id: string,
+        @Body() dto: UpdateGiftDto,
+    ): Promise<GiftView> {
+        return toGiftView(await this.gifts.update(churchId, id, dto));
+    }
 
-  @Delete(':id')
-  @RequirePermissions('believers.manage')
-  @ApiOperation({ summary: 'Solo los que no son de serie; esos se desactivan' })
-  remove(@CurrentChurch() churchId: string, @Param('id') id: string): Promise<void> {
-    return this.gifts.remove(churchId, id);
-  }
+    @Delete(':id')
+    @RequirePermissions('believers.manage')
+    @ApiOperation({ summary: 'Solo los que no son de serie; esos se desactivan' })
+    remove(@CurrentChurch() churchId: string, @Param('id') id: string): Promise<void> {
+        return this.gifts.remove(churchId, id);
+    }
 }

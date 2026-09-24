@@ -12,65 +12,65 @@ import { Table, TableIndex, type MigrationInterface, type QueryRunner } from 'ty
  * pasó el 14 de julio en cualquier huso.
  */
 export class CreateBelieverNotes1787011200000 implements MigrationInterface {
-  name = 'CreateBelieverNotes1787011200000';
+    name = 'CreateBelieverNotes1787011200000';
 
-  async up(queryRunner: QueryRunner): Promise<void> {
-    const isPostgres = queryRunner.connection.options.type === 'postgres';
-    const uuid = isPostgres ? 'uuid' : 'varchar';
-    const timestamp = isPostgres ? 'timestamptz' : 'datetime';
-    const now = isPostgres ? 'now()' : 'CURRENT_TIMESTAMP';
+    async up(queryRunner: QueryRunner): Promise<void> {
+        const isPostgres = queryRunner.connection.options.type === 'postgres';
+        const uuid = isPostgres ? 'uuid' : 'varchar';
+        const timestamp = isPostgres ? 'timestamptz' : 'datetime';
+        const now = isPostgres ? 'now()' : 'CURRENT_TIMESTAMP';
 
-    await queryRunner.createTable(
-      new Table({
-        name: 'believer_notes',
-        columns: [
-          {
-            name: 'id',
-            type: uuid,
-            isPrimary: true,
-            default: isPostgres ? 'gen_random_uuid()' : undefined,
-          },
-          { name: 'created_at', type: timestamp, isNullable: false, default: now },
-          { name: 'updated_at', type: timestamp, isNullable: false, default: now },
-          { name: 'deleted_at', type: timestamp, isNullable: true },
-          { name: 'church_id', type: uuid, isNullable: false },
-          { name: 'believer_id', type: uuid, isNullable: false },
-          { name: 'kind', type: 'text', isNullable: false, default: "'seguimiento'" },
-          { name: 'occurred_at', type: 'date', isNullable: false },
-          { name: 'title', type: 'text', isNullable: true },
-          { name: 'body', type: 'text', isNullable: false },
-          { name: 'gift_id', type: uuid, isNullable: true },
-          { name: 'author_id', type: 'text', isNullable: true },
-        ],
-        foreignKeys: [
-          {
-            columnNames: ['believer_id'],
-            referencedTableName: 'believers',
-            referencedColumnNames: ['id'],
-            onDelete: 'CASCADE',
-          },
-        ],
-      }),
-      true,
-    );
+        await queryRunner.createTable(
+            new Table({
+                name: 'believer_notes',
+                columns: [
+                    {
+                        name: 'id',
+                        type: uuid,
+                        isPrimary: true,
+                        default: isPostgres ? 'gen_random_uuid()' : undefined,
+                    },
+                    { name: 'created_at', type: timestamp, isNullable: false, default: now },
+                    { name: 'updated_at', type: timestamp, isNullable: false, default: now },
+                    { name: 'deleted_at', type: timestamp, isNullable: true },
+                    { name: 'church_id', type: uuid, isNullable: false },
+                    { name: 'believer_id', type: uuid, isNullable: false },
+                    { name: 'kind', type: 'text', isNullable: false, default: "'seguimiento'" },
+                    { name: 'occurred_at', type: 'date', isNullable: false },
+                    { name: 'title', type: 'text', isNullable: true },
+                    { name: 'body', type: 'text', isNullable: false },
+                    { name: 'gift_id', type: uuid, isNullable: true },
+                    { name: 'author_id', type: 'text', isNullable: true },
+                ],
+                foreignKeys: [
+                    {
+                        columnNames: ['believer_id'],
+                        referencedTableName: 'believers',
+                        referencedColumnNames: ['id'],
+                        onDelete: 'CASCADE',
+                    },
+                ],
+            }),
+            true,
+        );
 
-    await queryRunner.createIndex(
-      'believer_notes',
-      new TableIndex({
-        name: 'IDX_believer_notes_believer',
-        columnNames: ['believer_id', 'occurred_at'],
-      }),
-    );
-    await queryRunner.createIndex(
-      'believer_notes',
-      new TableIndex({
-        name: 'IDX_believer_notes_church',
-        columnNames: ['church_id', 'occurred_at'],
-      }),
-    );
-  }
+        await queryRunner.createIndex(
+            'believer_notes',
+            new TableIndex({
+                name: 'IDX_believer_notes_believer',
+                columnNames: ['believer_id', 'occurred_at'],
+            }),
+        );
+        await queryRunner.createIndex(
+            'believer_notes',
+            new TableIndex({
+                name: 'IDX_believer_notes_church',
+                columnNames: ['church_id', 'occurred_at'],
+            }),
+        );
+    }
 
-  async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropTable('believer_notes', true);
-  }
+    async down(queryRunner: QueryRunner): Promise<void> {
+        await queryRunner.dropTable('believer_notes', true);
+    }
 }

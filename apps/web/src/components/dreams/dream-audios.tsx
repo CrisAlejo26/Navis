@@ -11,23 +11,23 @@ import { AudioPlayer } from '@/components/audio/audio-player';
  * creyentes, con su ruta puesta.
  */
 export function DreamAudios({ audios }: { audios: DreamAudio[] }) {
-  const { t } = useTranslation();
-  if (audios.length === 0) return null;
+    const { t } = useTranslation();
+    if (audios.length === 0) return null;
 
-  return (
-    <section
-      style={{ animationDelay: '240ms' }}
-      className="gap-2 p-4 sm:p-5 animate-rise-in flex flex-col rounded-xl border bg-card"
-    >
-      <h2 className="text-sm font-medium">{t('common.audio.title')}</h2>
+    return (
+        <section
+            style={{ animationDelay: '240ms' }}
+            className="gap-2 p-4 sm:p-5 animate-rise-in flex flex-col rounded-xl border bg-card"
+        >
+            <h2 className="text-sm font-medium">{t('common.audio.title')}</h2>
 
-      <ul className="gap-2 flex flex-col">
-        {audios.map((audio) => (
-          <li key={audio.id}>
-            <AudioPlayer audio={audio} path={dreamAudioPath} />
-          </li>
-        ))}
-      </ul>
-    </section>
-  );
+            <ul className="gap-2 flex flex-col">
+                {audios.map((audio) => (
+                    <li key={audio.id}>
+                        <AudioPlayer audio={audio} path={dreamAudioPath} />
+                    </li>
+                ))}
+            </ul>
+        </section>
+    );
 }

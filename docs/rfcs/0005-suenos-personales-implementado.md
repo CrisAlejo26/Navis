@@ -157,11 +157,11 @@ Los tres últimos son **estados derivados**, no una columna (D8).
   una de las dos fechas y el esquema de `shared` no tendría con qué comparar. Un
   sueño cumplido antes de soñarse rompe cualquier métrica que se calcule después.
 
-  **Lo que no se comprueba es que la fecha no esté en el futuro**, y es
-  deliberado: «hoy» depende de la zona de quien escribe, y el servidor solo sabe
-  la suya. Rechazar por eso convertiría un desfase de husos en un error de
-  validación incomprensible. Profecías tomó la misma decisión (RFC 0004 §7.7):
-  una fecha rara es asunto de quien la escribe.
+    **Lo que no se comprueba es que la fecha no esté en el futuro**, y es
+    deliberado: «hoy» depende de la zona de quien escribe, y el servidor solo sabe
+    la suya. Rechazar por eso convertiría un desfase de husos en un error de
+    validación incomprensible. Profecías tomó la misma decisión (RFC 0004 §7.7):
+    una fecha rara es asunto de quien la escribe.
 
 - **D13 — Los audios se reaprovechan, y para eso hay que generalizar el
   almacén.** `AudioStorageService` guarda hoy en `<uploads>/<churchId>/<id>.ext`
@@ -171,12 +171,12 @@ Los tres últimos son **estados derivados**, no una columna (D8).
   comprobación de que la ruta no se escapa de la carpeta. La tabla es propia
   (`dream_audios`), espejo de `note_audios`.
 
-  Esto se salta la letra de la Regla 1 §5 —«a la segunda se mira, a la tercera
-  se extrae»— y es a conciencia: no son dos cosas que se parecen, es la misma
-  cosa. Duplicarla significa dos listas de tipos MIME aceptados, dos topes de
-  tamaño y dos sitios donde arreglar el día que uno falle. En web pasa lo mismo
-  con `use-recorder.ts` y `audio-field.tsx`: se mueven a un sitio compartido y
-  los usan los dos módulos.
+    Esto se salta la letra de la Regla 1 §5 —«a la segunda se mira, a la tercera
+    se extrae»— y es a conciencia: no son dos cosas que se parecen, es la misma
+    cosa. Duplicarla significa dos listas de tipos MIME aceptados, dos topes de
+    tamaño y dos sitios donde arreglar el día que uno falle. En web pasa lo mismo
+    con `use-recorder.ts` y `audio-field.tsx`: se mueven a un sitio compartido y
+    los usan los dos módulos.
 
 - **D14 — El día de la semana se calcula en JS, no en SQL.** `EXTRACT(DOW)` de
   Postgres y `strftime('%w')` de SQLite no se escriben igual y la API corre
@@ -404,18 +404,18 @@ De arriba abajo:
    principal y se pulsa de pie (Regla 5 §4).
 2. **La franja de noches** (§7.4). A todo el ancho y nada más entrar.
 3. **La rejilla**, `sm:grid-cols-2 xl:grid-cols-3`:
-   - **Total**, rellena en `bg-primary` con su llamada «Ver mis sueños» y la
-     flecha que avanza al pasar por encima. Es el ancla (§7.1.2).
-   - **Este mes**, con la línea de los últimos doce meses debajo.
-   - **Esta semana**, con las siete noches en pequeño.
-   - **Cumplidos**, en acento `success`, y debajo el último que se cumplió.
-   - **El reloj de la semana** (ancha): siete radios, uno por día, largo según
-     cuánto se sueña ese día. Un `RadialBarChart`, no barras: profecías ya tiene
-     barras mensuales y esto tiene que verse distinto de un vistazo (D20).
-   - **El mapa de emociones** (ancha): una sola barra apilada con el color de
-     cada emoción y su nombre debajo, de más a menos. Es donde la pantalla tiene
-     más color, y es color con significado. Cada tramo abre el listado filtrado
-     por esa emoción.
+    - **Total**, rellena en `bg-primary` con su llamada «Ver mis sueños» y la
+      flecha que avanza al pasar por encima. Es el ancla (§7.1.2).
+    - **Este mes**, con la línea de los últimos doce meses debajo.
+    - **Esta semana**, con las siete noches en pequeño.
+    - **Cumplidos**, en acento `success`, y debajo el último que se cumplió.
+    - **El reloj de la semana** (ancha): siete radios, uno por día, largo según
+      cuánto se sueña ese día. Un `RadialBarChart`, no barras: profecías ya tiene
+      barras mensuales y esto tiene que verse distinto de un vistazo (D20).
+    - **El mapa de emociones** (ancha): una sola barra apilada con el color de
+      cada emoción y su nombre debajo, de más a menos. Es donde la pantalla tiene
+      más color, y es color con significado. Cada tramo abre el listado filtrado
+      por esa emoción.
 4. **Con cero sueños no se enseñan seis tarjetas a cero**: se enseña una
    invitación con el botón dentro (Regla 9 §6), como hace la portada de
    profecías.

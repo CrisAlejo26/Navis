@@ -13,13 +13,13 @@ Focus states are for keyboard navigation. Get them wrong and your app feels brok
 ```css
 /* ❌ Shows focus ring on mouse click — annoying */
 .button:focus {
-  outline: 2px solid var(--primary);
+    outline: 2px solid var(--primary);
 }
 
 /* ✅ Shows focus ring only on keyboard navigation */
 .button:focus-visible {
-  outline: 2px solid var(--primary);
-  outline-offset: 2px;
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
 }
 ```
 
@@ -30,15 +30,15 @@ Focus states are for keyboard navigation. Get them wrong and your app feels brok
 ```css
 /* ❌ NEVER — breaks keyboard navigation */
 .button:focus {
-  outline: none;
+    outline: none;
 }
 
 /* ✅ Replace default with custom visible focus */
 .button:focus-visible {
-  outline: none;
-  box-shadow:
-    0 0 0 2px var(--bg),
-    0 0 0 4px var(--primary);
+    outline: none;
+    box-shadow:
+        0 0 0 2px var(--bg),
+        0 0 0 4px var(--primary);
 }
 ```
 
@@ -49,8 +49,8 @@ For groups where focus on any child should highlight the parent:
 ```css
 /* Search input with icon */
 .search-wrapper:focus-within {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px var(--primary-tint);
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-tint);
 }
 ```
 
@@ -116,24 +116,24 @@ Forms are where users struggle most. These details reduce friction.
 
 <!-- ✅ Clickable label (implicit) -->
 <label>
-  Email
-  <input type="email" />
+    Email
+    <input type="email" />
 </label>
 
 <!-- ✅ Checkbox: label + control share single hit target -->
 <label class="checkbox-wrapper">
-  <input type="checkbox" />
-  <span>Accept terms</span>
+    <input type="checkbox" />
+    <span>Accept terms</span>
 </label>
 ```
 
 ```css
 /* No dead zones between checkbox and label */
 .checkbox-wrapper {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
 }
 ```
 
@@ -151,7 +151,7 @@ Forms are where users struggle most. These details reduce friction.
 ```jsx
 /* ✅ Button enabled until request starts, then shows spinner */
 <button type="submit" disabled={isSubmitting}>
-  {isSubmitting ? <Spinner /> : 'Save Changes'}
+    {isSubmitting ? <Spinner /> : 'Save Changes'}
 </button>
 ```
 
@@ -160,16 +160,16 @@ Forms are where users struggle most. These details reduce friction.
 ```jsx
 /* ✅ Errors inline, focus first error on submit */
 <form onSubmit={handleSubmit}>
-  <input
-    ref={emailRef}
-    aria-invalid={errors.email ? 'true' : 'false'}
-    aria-describedby={errors.email ? 'email-error' : undefined}
-  />
-  {errors.email && (
-    <span id="email-error" role="alert">
-      {errors.email}
-    </span>
-  )}
+    <input
+        ref={emailRef}
+        aria-invalid={errors.email ? 'true' : 'false'}
+        aria-describedby={errors.email ? 'email-error' : undefined}
+    />
+    {errors.email && (
+        <span id="email-error" role="alert">
+            {errors.email}
+        </span>
+    )}
 </form>
 ```
 
@@ -178,14 +178,14 @@ Forms are where users struggle most. These details reduce friction.
 ```js
 // Warn before leaving with unsaved changes
 useEffect(() => {
-  const handleBeforeUnload = (e) => {
-    if (hasUnsavedChanges) {
-      e.preventDefault();
-      e.returnValue = '';
-    }
-  };
-  window.addEventListener('beforeunload', handleBeforeUnload);
-  return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+    const handleBeforeUnload = (e) => {
+        if (hasUnsavedChanges) {
+            e.preventDefault();
+            e.returnValue = '';
+        }
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
 }, [hasUnsavedChanges]);
 ```
 
@@ -236,7 +236,7 @@ Details that make mobile feel native.
 ```css
 /* Remove 300ms tap delay on mobile */
 * {
-  touch-action: manipulation;
+    touch-action: manipulation;
 }
 ```
 
@@ -246,7 +246,7 @@ Details that make mobile feel native.
 /* Set intentionally, don't just disable */
 button,
 a {
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
 }
 ```
 
@@ -257,7 +257,7 @@ a {
 .modal,
 .drawer,
 .sheet {
-  overscroll-behavior: contain;
+    overscroll-behavior: contain;
 }
 ```
 
@@ -287,9 +287,9 @@ Lists with 50+ items should be virtualized:
 import { VList } from 'virtua';
 
 <VList style={{ height: 400 }}>
-  {items.map((item) => (
-    <Row key={item.id} data={item} />
-  ))}
+    {items.map((item) => (
+        <Row key={item.id} data={item} />
+    ))}
 </VList>;
 ```
 
@@ -297,8 +297,8 @@ import { VList } from 'virtua';
 
 ```css
 .long-list {
-  content-visibility: auto;
-  contain-intrinsic-size: 0 50px; /* estimated item height */
+    content-visibility: auto;
+    contain-intrinsic-size: 0 50px; /* estimated item height */
 }
 ```
 
@@ -307,21 +307,21 @@ import { VList } from 'virtua';
 ```jsx
 /* ❌ Forces synchronous layout recalculation */
 function Component() {
-  const height = elementRef.current.offsetHeight; // BAD
-  return <div style={{ marginTop: height }} />;
+    const height = elementRef.current.offsetHeight; // BAD
+    return <div style={{ marginTop: height }} />;
 }
 
 /* ✅ Use ResizeObserver or CSS */
 function Component() {
-  const [height, setHeight] = useState(0);
-  useLayoutEffect(() => {
-    const observer = new ResizeObserver(([entry]) => {
-      setHeight(entry.contentRect.height);
-    });
-    observer.observe(elementRef.current);
-    return () => observer.disconnect();
-  }, []);
-  return <div style={{ marginTop: height }} />;
+    const [height, setHeight] = useState(0);
+    useLayoutEffect(() => {
+        const observer = new ResizeObserver(([entry]) => {
+            setHeight(entry.contentRect.height);
+        });
+        observer.observe(elementRef.current);
+        return () => observer.disconnect();
+    }, []);
+    return <div style={{ marginTop: height }} />;
 }
 ```
 
@@ -345,18 +345,18 @@ const handleSubmit = () => {
 
 ```html
 <head>
-  <!-- Preconnect to asset domains -->
-  <link rel="preconnect" href="https://cdn.example.com" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <!-- Preconnect to asset domains -->
+    <link rel="preconnect" href="https://cdn.example.com" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
 
-  <!-- Preload critical fonts -->
-  <link
-    rel="preload"
-    href="/fonts/inter.woff2"
-    as="font"
-    type="font/woff2"
-    crossorigin
-  />
+    <!-- Preload critical fonts -->
+    <link
+        rel="preload"
+        href="/fonts/inter.woff2"
+        as="font"
+        type="font/woff2"
+        crossorigin
+    />
 </head>
 ```
 
@@ -388,17 +388,17 @@ Interactive custom elements need keyboard support:
 
 ```jsx
 <div
-  role="button"
-  tabIndex={0}
-  onClick={handleClick}
-  onKeyDown={(e) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      handleClick();
-    }
-  }}
+    role="button"
+    tabIndex={0}
+    onClick={handleClick}
+    onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            handleClick();
+        }
+    }}
 >
-  Custom button
+    Custom button
 </div>
 ```
 
@@ -422,7 +422,7 @@ Interactive custom elements need keyboard support:
 ```css
 /* Prevents fixed header from covering anchor targets */
 [id] {
-  scroll-margin-top: 80px; /* height of fixed header + buffer */
+    scroll-margin-top: 80px; /* height of fixed header + buffer */
 }
 ```
 
@@ -431,7 +431,7 @@ Interactive custom elements need keyboard support:
 ```jsx
 /* Toast notifications, validation messages */
 <div role="status" aria-live="polite">
-  {message}
+    {message}
 </div>
 ```
 

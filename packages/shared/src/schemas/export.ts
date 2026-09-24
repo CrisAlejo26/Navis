@@ -25,11 +25,11 @@ export const EXPORT_MAX_ROWS = 2000;
  * exportan 2000 de 3140» en vez de enseñar 2000 y callarse.
  */
 export interface ExportResponse<TRow> {
-  rows: TRow[];
-  /** Cuántas cumplen el filtro de verdad, sin el tope. */
-  total: number;
-  returned: number;
-  truncated: boolean;
+    rows: TRow[];
+    /** Cuántas cumplen el filtro de verdad, sin el tope. */
+    total: number;
+    returned: number;
+    truncated: boolean;
 }
 
 /**
@@ -41,5 +41,5 @@ export interface ExportResponse<TRow> {
  * y el diálogo lo dice con palabras antes de descargar.
  */
 export interface ExportSelection {
-  ids?: readonly string[];
+    ids?: readonly string[];
 }

@@ -1,11 +1,11 @@
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
-  SUPERADMIN_ROLE,
-  toSlug,
-  type CreateChurchInput,
-  type MyChurches,
-  type UpdateChurchInput,
+    SUPERADMIN_ROLE,
+    toSlug,
+    type CreateChurchInput,
+    type MyChurches,
+    type UpdateChurchInput,
 } from '@navis/shared';
 import { In, Repository } from 'typeorm';
 
@@ -15,8 +15,8 @@ import { Church } from './church.entity';
 
 /** Quién pregunta: lo mínimo del usuario para decidir a qué llega. */
 export interface Asker {
-  id: string;
-  role: string;
+    id: string;
+    role: string;
 }
 
 /**
@@ -28,210 +28,210 @@ export interface Asker {
  */
 @Injectable()
 export class ChurchesService {
-  constructor(
-    @InjectRepository(Church) private readonly churches: Repository<Church>,
-    @InjectRepository(ChurchMember) private readonly members: Repository<ChurchMember>,
-    private readonly profiles: ProfilesService,
-  ) {}
+    constructor(
+        @InjectRepository(Church) private readonly churches: Repository<Church>,
+        @InjectRepository(ChurchMember) private readonly members: Repository<ChurchMember>,
+        private readonly profiles: ProfilesService,
+    ) {}
 
-  /** Las iglesias a las que llega, con la activa resuelta y corregida si hacía falta. */
-  async listFor(asker: Asker): Promise<MyChurches> {
-    const items = await this.accessible(asker);
-    return { items, activeId: await this.resolveActive(asker.id, items) };
-  }
-
-  /**
-   * Alta. Quien la crea queda como dueño **y** como miembro —el dueño es un
-   * miembro más, con una marca—, y la iglesia nueva pasa a ser la activa: se
-   * acaba de crear para trabajar en ella.
-   */
-  async create(asker: Asker, input: CreateChurchInput): Promise<Church> {
-    const profile = await this.profiles.findOrCreate(asker.id);
-
-    const church = await this.churches.save(
-      this.churches.create({
-        name: input.name,
-        slug: await this.freeSlug(input.name),
-        city: input.city,
-        // La de quien la crea: es quien va a mirar el calendario a diario.
-        timezone: profile.timezone,
-        ownerId: asker.id,
-      }),
-    );
-
-    await this.members.save(this.members.create({ churchId: church.id, userId: asker.id }));
-    await this.profiles.setActiveChurch(asker.id, church.id);
-
-    return church;
-  }
-
-  /**
-   * Edita la ficha. El `slug` **no** cambia con el nombre: es el identificador
-   * estable, y lo que hoy solo sale en registros mañana estará en una URL.
-   */
-  async update(asker: Asker, churchId: string, input: UpdateChurchInput): Promise<Church> {
-    const items = await this.accessible(asker);
-    const church = items.find((row) => row.id === churchId);
-    if (!church) throw new ForbiddenException('No perteneces a esa iglesia');
-
-    if (input.name !== undefined) church.name = input.name;
-    if (input.city !== undefined) church.city = input.city;
-    if (input.timezone !== undefined) church.timezone = input.timezone;
-    if (input.country !== undefined) church.country = input.country;
-    if (input.region !== undefined) church.region = input.region;
-
-    return this.churches.save(church);
-  }
-
-  /** Cambia la iglesia activa, comprobando antes que se llega a ella. */
-  async setActive(asker: Asker, churchId: string): Promise<MyChurches> {
-    const items = await this.accessible(asker);
-    if (!items.some((church) => church.id === churchId)) {
-      throw new ForbiddenException('No perteneces a esa iglesia');
+    /** Las iglesias a las que llega, con la activa resuelta y corregida si hacía falta. */
+    async listFor(asker: Asker): Promise<MyChurches> {
+        const items = await this.accessible(asker);
+        return { items, activeId: await this.resolveActive(asker.id, items) };
     }
 
-    await this.profiles.setActiveChurch(asker.id, churchId);
-    return { items, activeId: churchId };
-  }
+    /**
+     * Alta. Quien la crea queda como dueño **y** como miembro —el dueño es un
+     * miembro más, con una marca—, y la iglesia nueva pasa a ser la activa: se
+     * acaba de crear para trabajar en ella.
+     */
+    async create(asker: Asker, input: CreateChurchInput): Promise<Church> {
+        const profile = await this.profiles.findOrCreate(asker.id);
 
-  /**
-   * La iglesia sobre la que trabaja esta cuenta ahora mismo. Es lo que acotará
-   * las consultas de creyentes, calendario y comunicaciones.
-   */
-  async activeIdFor(asker: Asker): Promise<string> {
-    const { activeId } = await this.listFor(asker);
-    if (!activeId) throw new NotFoundException('Todavía no tienes ninguna iglesia');
-    return activeId;
-  }
+        const church = await this.churches.save(
+            this.churches.create({
+                name: input.name,
+                slug: await this.freeSlug(input.name),
+                city: input.city,
+                // La de quien la crea: es quien va a mirar el calendario a diario.
+                timezone: profile.timezone,
+                ownerId: asker.id,
+            }),
+        );
 
-  /**
-   * El alcance de quien pregunta: los ids de las iglesias cuyas cosas puede
-   * ver. `null` es «todas», y solo lo tiene el superadministrador **sin
-   * restringir** (RFC 0014 D5-D6): con la preferencia activada —el valor de
-   * serie—, un superadministrador pasa por la misma cuenta de iglesias que
-   * cualquier otra cuenta.
-   *
-   * `only` acota todavía más, para el filtro de la interfaz: se queda con las
-   * que además estén en esa lista. Si pide una iglesia a la que no llega, esa
-   * cae —el filtro es una preferencia guardada y puede haber envejecido—, y no
-   * se devuelve un error por ello.
-   */
-  async scopeFor(asker: Asker, only?: readonly string[]): Promise<string[] | null> {
-    const pedidas = only?.length ? only : undefined;
+        await this.members.save(this.members.create({ churchId: church.id, userId: asker.id }));
+        await this.profiles.setActiveChurch(asker.id, church.id);
 
-    if (asker.role === SUPERADMIN_ROLE && !(await this.isRestricted(asker.id))) {
-      return pedidas ? [...pedidas] : null;
+        return church;
     }
 
-    const ids = (await this.accessible(asker)).map((church) => church.id);
-    return pedidas ? ids.filter((id) => pedidas.includes(id)) : ids;
-  }
+    /**
+     * Edita la ficha. El `slug` **no** cambia con el nombre: es el identificador
+     * estable, y lo que hoy solo sale en registros mañana estará en una URL.
+     */
+    async update(asker: Asker, churchId: string, input: UpdateChurchInput): Promise<Church> {
+        const items = await this.accessible(asker);
+        const church = items.find((row) => row.id === churchId);
+        if (!church) throw new ForbiddenException('No perteneces a esa iglesia');
 
-  /** Si esa cuenta está en alguna de las iglesias de quien pregunta. */
-  async sharesChurchWith(asker: Asker, userId: string): Promise<boolean> {
-    const scope = await this.scopeFor(asker);
-    if (scope === null) return true;
-    if (scope.length === 0) return false;
+        if (input.name !== undefined) church.name = input.name;
+        if (input.city !== undefined) church.city = input.city;
+        if (input.timezone !== undefined) church.timezone = input.timezone;
+        if (input.country !== undefined) church.country = input.country;
+        if (input.region !== undefined) church.region = input.region;
 
-    return this.members.exists({ where: { churchId: In(scope), userId } });
-  }
-
-  /** Mete una cuenta recién creada en la iglesia en la que trabaja quien la crea. */
-  async addToActive(asker: Asker, userId: string): Promise<void> {
-    const { activeId } = await this.listFor(asker);
-    if (!activeId) return;
-
-    const yaEsta = await this.members.exists({ where: { churchId: activeId, userId } });
-    if (!yaEsta) {
-      await this.members.save(this.members.create({ churchId: activeId, userId }));
-    }
-  }
-
-  /**
-   * Saca a esta cuenta de las iglesias de las que no es dueña. Se llama
-   * cuando un rol pasa a tener `churches.manage` (`UserAdminService.update`):
-   * a partir de ahí se autoprovisiona su propio espacio, y no debe seguir
-   * arrastrando la membresía de una iglesia a la que entró con un rol más
-   * bajo. La suya propia, si la tiene, no se toca — `ownerId` también trae su
-   * fila de miembro (ver `ChurchMember`).
-   */
-  async leaveNonOwnedChurches(userId: string): Promise<void> {
-    const memberships = await this.members.find({ where: { userId } });
-    if (memberships.length === 0) return;
-
-    const churches = await this.churches.find({
-      where: { id: In(memberships.map((member) => member.churchId)) },
-    });
-    const ownedIds = new Set(
-      churches.filter((church) => church.ownerId === userId).map((church) => church.id),
-    );
-
-    const ajenas = memberships.filter((member) => !ownedIds.has(member.churchId));
-    if (ajenas.length > 0) await this.members.remove(ajenas);
-  }
-
-  /**
-   * Las iglesias de las que esta cuenta es dueña (`ownerId`), sin resolver
-   * (RFC 0015): es lo que decide si dar de baja la cuenta exige antes elegir
-   * qué pasa con cada una.
-   */
-  async ownedBy(userId: string): Promise<Church[]> {
-    return this.churches.find({ where: { ownerId: userId }, order: { name: 'ASC' } });
-  }
-
-  /**
-   * Las iglesias a las que llega, sin resolver todavía cuál es la activa.
-   *
-   * Un superadministrador **sin restringir** llega a todas; uno restringido
-   * —el valor de serie— pasa por la misma rama que el resto: por pertenencia
-   * (RFC 0014 D8).
-   */
-  private async accessible(asker: Asker): Promise<Church[]> {
-    const order = { name: 'ASC' } as const;
-
-    if (asker.role === SUPERADMIN_ROLE && !(await this.isRestricted(asker.id))) {
-      return this.churches.find({ order });
+        return this.churches.save(church);
     }
 
-    const memberships = await this.members.find({ where: { userId: asker.id } });
-    if (memberships.length === 0) return [];
+    /** Cambia la iglesia activa, comprobando antes que se llega a ella. */
+    async setActive(asker: Asker, churchId: string): Promise<MyChurches> {
+        const items = await this.accessible(asker);
+        if (!items.some((church) => church.id === churchId)) {
+            throw new ForbiddenException('No perteneces a esa iglesia');
+        }
 
-    return this.churches.find({
-      where: { id: In(memberships.map((member) => member.churchId)) },
-      order,
-    });
-  }
-
-  /** Si esta cuenta prefiere ver solo lo suyo. Sin efecto fuera del superadministrador. */
-  private async isRestricted(userId: string): Promise<boolean> {
-    const profile = await this.profiles.findOrCreate(userId);
-    return profile.restrictOwnScope;
-  }
-
-  /**
-   * La guardada, si sigue valiendo; si no, la primera a la que llega —y se
-   * corrige, porque una preferencia que apunta a una iglesia que ya no está
-   * volvería a fallar en cada petición—.
-   */
-  private async resolveActive(userId: string, items: Church[]): Promise<string | null> {
-    if (items.length === 0) return null;
-
-    const profile = await this.profiles.findOrCreate(userId);
-    const saved = profile.activeChurchId;
-    if (saved && items.some((church) => church.id === saved)) return saved;
-
-    const first = items[0]?.id ?? null;
-    if (first) await this.profiles.setActiveChurch(userId, first);
-    return first;
-  }
-
-  /** `Iglesia Central`, `iglesia-central-2`… Dos congregaciones pueden llamarse igual. */
-  private async freeSlug(name: string): Promise<string> {
-    const base = toSlug(name) || 'iglesia';
-
-    for (let intento = 1; ; intento += 1) {
-      const slug = intento === 1 ? base : `${base}-${String(intento)}`;
-      if (!(await this.churches.exists({ where: { slug } }))) return slug;
+        await this.profiles.setActiveChurch(asker.id, churchId);
+        return { items, activeId: churchId };
     }
-  }
+
+    /**
+     * La iglesia sobre la que trabaja esta cuenta ahora mismo. Es lo que acotará
+     * las consultas de creyentes, calendario y comunicaciones.
+     */
+    async activeIdFor(asker: Asker): Promise<string> {
+        const { activeId } = await this.listFor(asker);
+        if (!activeId) throw new NotFoundException('Todavía no tienes ninguna iglesia');
+        return activeId;
+    }
+
+    /**
+     * El alcance de quien pregunta: los ids de las iglesias cuyas cosas puede
+     * ver. `null` es «todas», y solo lo tiene el superadministrador **sin
+     * restringir** (RFC 0014 D5-D6): con la preferencia activada —el valor de
+     * serie—, un superadministrador pasa por la misma cuenta de iglesias que
+     * cualquier otra cuenta.
+     *
+     * `only` acota todavía más, para el filtro de la interfaz: se queda con las
+     * que además estén en esa lista. Si pide una iglesia a la que no llega, esa
+     * cae —el filtro es una preferencia guardada y puede haber envejecido—, y no
+     * se devuelve un error por ello.
+     */
+    async scopeFor(asker: Asker, only?: readonly string[]): Promise<string[] | null> {
+        const pedidas = only?.length ? only : undefined;
+
+        if (asker.role === SUPERADMIN_ROLE && !(await this.isRestricted(asker.id))) {
+            return pedidas ? [...pedidas] : null;
+        }
+
+        const ids = (await this.accessible(asker)).map((church) => church.id);
+        return pedidas ? ids.filter((id) => pedidas.includes(id)) : ids;
+    }
+
+    /** Si esa cuenta está en alguna de las iglesias de quien pregunta. */
+    async sharesChurchWith(asker: Asker, userId: string): Promise<boolean> {
+        const scope = await this.scopeFor(asker);
+        if (scope === null) return true;
+        if (scope.length === 0) return false;
+
+        return this.members.exists({ where: { churchId: In(scope), userId } });
+    }
+
+    /** Mete una cuenta recién creada en la iglesia en la que trabaja quien la crea. */
+    async addToActive(asker: Asker, userId: string): Promise<void> {
+        const { activeId } = await this.listFor(asker);
+        if (!activeId) return;
+
+        const yaEsta = await this.members.exists({ where: { churchId: activeId, userId } });
+        if (!yaEsta) {
+            await this.members.save(this.members.create({ churchId: activeId, userId }));
+        }
+    }
+
+    /**
+     * Saca a esta cuenta de las iglesias de las que no es dueña. Se llama
+     * cuando un rol pasa a tener `churches.manage` (`UserAdminService.update`):
+     * a partir de ahí se autoprovisiona su propio espacio, y no debe seguir
+     * arrastrando la membresía de una iglesia a la que entró con un rol más
+     * bajo. La suya propia, si la tiene, no se toca — `ownerId` también trae su
+     * fila de miembro (ver `ChurchMember`).
+     */
+    async leaveNonOwnedChurches(userId: string): Promise<void> {
+        const memberships = await this.members.find({ where: { userId } });
+        if (memberships.length === 0) return;
+
+        const churches = await this.churches.find({
+            where: { id: In(memberships.map((member) => member.churchId)) },
+        });
+        const ownedIds = new Set(
+            churches.filter((church) => church.ownerId === userId).map((church) => church.id),
+        );
+
+        const ajenas = memberships.filter((member) => !ownedIds.has(member.churchId));
+        if (ajenas.length > 0) await this.members.remove(ajenas);
+    }
+
+    /**
+     * Las iglesias de las que esta cuenta es dueña (`ownerId`), sin resolver
+     * (RFC 0015): es lo que decide si dar de baja la cuenta exige antes elegir
+     * qué pasa con cada una.
+     */
+    async ownedBy(userId: string): Promise<Church[]> {
+        return this.churches.find({ where: { ownerId: userId }, order: { name: 'ASC' } });
+    }
+
+    /**
+     * Las iglesias a las que llega, sin resolver todavía cuál es la activa.
+     *
+     * Un superadministrador **sin restringir** llega a todas; uno restringido
+     * —el valor de serie— pasa por la misma rama que el resto: por pertenencia
+     * (RFC 0014 D8).
+     */
+    private async accessible(asker: Asker): Promise<Church[]> {
+        const order = { name: 'ASC' } as const;
+
+        if (asker.role === SUPERADMIN_ROLE && !(await this.isRestricted(asker.id))) {
+            return this.churches.find({ order });
+        }
+
+        const memberships = await this.members.find({ where: { userId: asker.id } });
+        if (memberships.length === 0) return [];
+
+        return this.churches.find({
+            where: { id: In(memberships.map((member) => member.churchId)) },
+            order,
+        });
+    }
+
+    /** Si esta cuenta prefiere ver solo lo suyo. Sin efecto fuera del superadministrador. */
+    private async isRestricted(userId: string): Promise<boolean> {
+        const profile = await this.profiles.findOrCreate(userId);
+        return profile.restrictOwnScope;
+    }
+
+    /**
+     * La guardada, si sigue valiendo; si no, la primera a la que llega —y se
+     * corrige, porque una preferencia que apunta a una iglesia que ya no está
+     * volvería a fallar en cada petición—.
+     */
+    private async resolveActive(userId: string, items: Church[]): Promise<string | null> {
+        if (items.length === 0) return null;
+
+        const profile = await this.profiles.findOrCreate(userId);
+        const saved = profile.activeChurchId;
+        if (saved && items.some((church) => church.id === saved)) return saved;
+
+        const first = items[0]?.id ?? null;
+        if (first) await this.profiles.setActiveChurch(userId, first);
+        return first;
+    }
+
+    /** `Iglesia Central`, `iglesia-central-2`… Dos congregaciones pueden llamarse igual. */
+    private async freeSlug(name: string): Promise<string> {
+        const base = toSlug(name) || 'iglesia';
+
+        for (let intento = 1; ; intento += 1) {
+            const slug = intento === 1 ? base : `${base}-${String(intento)}`;
+            if (!(await this.churches.exists({ where: { slug } }))) return slug;
+        }
+    }
 }

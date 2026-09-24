@@ -1,14 +1,14 @@
 import type {
-  BelieverExportRow,
-  BelieversQuery,
-  DreamExportRow,
-  DreamsQuery,
-  ExportResponse,
-  ExportSelection,
-  JournalExportRow,
-  JournalQuery,
-  PropheciesQuery,
-  ProphecyExportRow,
+    BelieverExportRow,
+    BelieversQuery,
+    DreamExportRow,
+    DreamsQuery,
+    ExportResponse,
+    ExportSelection,
+    JournalExportRow,
+    JournalQuery,
+    PropheciesQuery,
+    ProphecyExportRow,
 } from '@navis/shared';
 import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 
@@ -30,63 +30,63 @@ import { queryKeys } from './query-keys';
  * filas con el cuerpo entero, y eso no viaja «por si acaso».
  */
 export function useBelieversExport(
-  api: ApiClient,
-  query: BelieversQuery & ExportSelection,
-  enabled = true,
+    api: ApiClient,
+    query: BelieversQuery & ExportSelection,
+    enabled = true,
 ): UseQueryResult<ExportResponse<BelieverExportRow>> {
-  const search = withIds(toBelieverSearch(query), query.ids);
+    const search = withIds(toBelieverSearch(query), query.ids);
 
-  return useQuery({
-    queryKey: [...queryKeys.believers.all, 'export', search],
-    queryFn: () => api.get<ExportResponse<BelieverExportRow>>(`/believers/export?${search}`),
-    enabled,
-    staleTime: 30_000,
-  });
+    return useQuery({
+        queryKey: [...queryKeys.believers.all, 'export', search],
+        queryFn: () => api.get<ExportResponse<BelieverExportRow>>(`/believers/export?${search}`),
+        enabled,
+        staleTime: 30_000,
+    });
 }
 
 export function usePropheciesExport(
-  api: ApiClient,
-  query: PropheciesQuery & ExportSelection,
-  enabled = true,
+    api: ApiClient,
+    query: PropheciesQuery & ExportSelection,
+    enabled = true,
 ): UseQueryResult<ExportResponse<ProphecyExportRow>> {
-  const search = withIds(toProphecySearch(query), query.ids);
+    const search = withIds(toProphecySearch(query), query.ids);
 
-  return useQuery({
-    queryKey: [...queryKeys.prophecies.all, 'export', search],
-    queryFn: () => api.get<ExportResponse<ProphecyExportRow>>(`/prophecies/export?${search}`),
-    enabled,
-    staleTime: 30_000,
-  });
+    return useQuery({
+        queryKey: [...queryKeys.prophecies.all, 'export', search],
+        queryFn: () => api.get<ExportResponse<ProphecyExportRow>>(`/prophecies/export?${search}`),
+        enabled,
+        staleTime: 30_000,
+    });
 }
 
 export function useDreamsExport(
-  api: ApiClient,
-  query: DreamsQuery & ExportSelection,
-  enabled = true,
+    api: ApiClient,
+    query: DreamsQuery & ExportSelection,
+    enabled = true,
 ): UseQueryResult<ExportResponse<DreamExportRow>> {
-  const search = withIds(toDreamSearch(query), query.ids);
+    const search = withIds(toDreamSearch(query), query.ids);
 
-  return useQuery({
-    queryKey: [...queryKeys.dreams.all, 'export', search],
-    queryFn: () => api.get<ExportResponse<DreamExportRow>>(`/dreams/export?${search}`),
-    enabled,
-    staleTime: 30_000,
-  });
+    return useQuery({
+        queryKey: [...queryKeys.dreams.all, 'export', search],
+        queryFn: () => api.get<ExportResponse<DreamExportRow>>(`/dreams/export?${search}`),
+        enabled,
+        staleTime: 30_000,
+    });
 }
 
 export function useJournalExport(
-  api: ApiClient,
-  query: JournalQuery & ExportSelection,
-  enabled = true,
+    api: ApiClient,
+    query: JournalQuery & ExportSelection,
+    enabled = true,
 ): UseQueryResult<ExportResponse<JournalExportRow>> {
-  const search = withIds(toJournalSearch(query), query.ids);
+    const search = withIds(toJournalSearch(query), query.ids);
 
-  return useQuery({
-    queryKey: [...queryKeys.journal.all, 'export', search],
-    queryFn: () => api.get<ExportResponse<JournalExportRow>>(`/journal/export?${search}`),
-    enabled,
-    staleTime: 30_000,
-  });
+    return useQuery({
+        queryKey: [...queryKeys.journal.all, 'export', search],
+        queryFn: () => api.get<ExportResponse<JournalExportRow>>(`/journal/export?${search}`),
+        enabled,
+        staleTime: 30_000,
+    });
 }
 
 /**
@@ -98,10 +98,10 @@ export function useJournalExport(
  * vacía devuelve cero filas—, por si algún día llega por otro camino.
  */
 function withIds(search: string, ids: readonly string[] | undefined): string {
-  if (!ids?.length) return search;
+    if (!ids?.length) return search;
 
-  const params = new URLSearchParams(search);
-  for (const id of ids) params.append('ids', id);
+    const params = new URLSearchParams(search);
+    for (const id of ids) params.append('ids', id);
 
-  return params.toString();
+    return params.toString();
 }

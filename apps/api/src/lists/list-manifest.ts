@@ -18,35 +18,35 @@ import { listPublicPath } from '@navis/shared';
  * esto (Regla 1 §4).
  */
 export interface ListManifestInput {
-  origin: string;
-  token: string;
-  listName: string;
-  churchName: string;
+    origin: string;
+    token: string;
+    listName: string;
+    churchName: string;
 }
 
 export function renderListManifest(input: ListManifestInput): object {
-  const origin = input.origin.replace(/\/+$/, '');
-  const startUrl = `${origin}${listPublicPath(input.token)}`;
+    const origin = input.origin.replace(/\/+$/, '');
+    const startUrl = `${origin}${listPublicPath(input.token)}`;
 
-  return {
-    id: startUrl,
-    name: `${input.listName} · ${input.churchName}`,
-    short_name: input.listName.slice(0, 30),
-    start_url: startUrl,
-    scope: startUrl,
-    display: 'standalone',
-    orientation: 'portrait',
-    background_color: '#fcfcfa',
-    theme_color: '#fcfcfa',
-    icons: [
-      { src: `${origin}/pwa-192x192.png`, sizes: '192x192', type: 'image/png' },
-      { src: `${origin}/pwa-512x512.png`, sizes: '512x512', type: 'image/png' },
-      {
-        src: `${origin}/pwa-maskable-512x512.png`,
-        sizes: '512x512',
-        type: 'image/png',
-        purpose: 'maskable',
-      },
-    ],
-  };
+    return {
+        id: startUrl,
+        name: `${input.listName} · ${input.churchName}`,
+        short_name: input.listName.slice(0, 30),
+        start_url: startUrl,
+        scope: startUrl,
+        display: 'standalone',
+        orientation: 'portrait',
+        background_color: '#fcfcfa',
+        theme_color: '#fcfcfa',
+        icons: [
+            { src: `${origin}/pwa-192x192.png`, sizes: '192x192', type: 'image/png' },
+            { src: `${origin}/pwa-512x512.png`, sizes: '512x512', type: 'image/png' },
+            {
+                src: `${origin}/pwa-maskable-512x512.png`,
+                sizes: '512x512',
+                type: 'image/png',
+                purpose: 'maskable',
+            },
+        ],
+    };
 }

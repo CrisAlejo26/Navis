@@ -15,6 +15,6 @@ import { BelieversQueryDto } from './believers-query.dto';
  * nada: la exportación no pagina, corta en `EXPORT_MAX_ROWS` y lo dice.
  */
 export class BelieversExportQueryDto extends IntersectionType(
-  BelieversQueryDto,
-  ExportSelectionDto,
+    BelieversQueryDto,
+    ExportSelectionDto,
 ) {}

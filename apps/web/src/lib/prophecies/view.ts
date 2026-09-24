@@ -14,8 +14,8 @@ export const PROPHECY_VIEWS = ['travesia', 'table', 'cards', 'year'] as const;
 export type PropheciesView = (typeof PROPHECY_VIEWS)[number];
 
 interface ViewState {
-  view: PropheciesView;
-  setView: (view: PropheciesView) => void;
+    view: PropheciesView;
+    setView: (view: PropheciesView) => void;
 }
 
 /**
@@ -24,16 +24,16 @@ interface ViewState {
  * espera» está compartiendo eso, no su gusto por las tablas.
  */
 export const usePropheciesViewStore = create<ViewState>()(
-  persist(
-    (set) => ({
-      view: 'travesia',
-      setView: (view) => {
-        set({ view });
-      },
-    }),
-    {
-      name: PROPHECIES_VIEW_STORAGE_KEY,
-      storage: createJSONStorage(() => globalThis.localStorage),
-    },
-  ),
+    persist(
+        (set) => ({
+            view: 'travesia',
+            setView: (view) => {
+                set({ view });
+            },
+        }),
+        {
+            name: PROPHECIES_VIEW_STORAGE_KEY,
+            storage: createJSONStorage(() => globalThis.localStorage),
+        },
+    ),
 );

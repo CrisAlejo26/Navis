@@ -13,27 +13,30 @@ import { baseConfig } from './index.js';
  * @param {{ tsconfigRootDir: string }} options
  */
 export function reactConfig({ tsconfigRootDir }) {
-  return tseslint.config(
-    ...baseConfig({ tsconfigRootDir }),
-    {
-      files: ['**/*.{ts,tsx}'],
-      languageOptions: {
-        globals: { ...globals.browser },
-      },
-      // `configs.flat.*`, no `configs['recommended-latest']`: en
-      // eslint-plugin-react-hooks 7 esa entrada sigue siendo del formato viejo
-      // (eslintrc) y ESLint 10 la rechaza.
-      extends: [reactHooks.configs.flat['recommended-latest'], jsxA11y.flatConfigs.recommended],
-      plugins: { 'react-refresh': reactRefresh },
-      rules: {
-        'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
-      },
-    },
-    {
-      files: ['e2e/**/*.{ts,tsx}'],
-      extends: [playwright.configs['flat/recommended']],
-    },
-  );
+    return tseslint.config(
+        ...baseConfig({ tsconfigRootDir }),
+        {
+            files: ['**/*.{ts,tsx}'],
+            languageOptions: {
+                globals: { ...globals.browser },
+            },
+            // `configs.flat.*`, no `configs['recommended-latest']`: en
+            // eslint-plugin-react-hooks 7 esa entrada sigue siendo del formato viejo
+            // (eslintrc) y ESLint 10 la rechaza.
+            extends: [
+                reactHooks.configs.flat['recommended-latest'],
+                jsxA11y.flatConfigs.recommended,
+            ],
+            plugins: { 'react-refresh': reactRefresh },
+            rules: {
+                'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
+            },
+        },
+        {
+            files: ['e2e/**/*.{ts,tsx}'],
+            extends: [playwright.configs['flat/recommended']],
+        },
+    );
 }
 
 export default reactConfig;

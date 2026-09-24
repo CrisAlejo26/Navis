@@ -19,48 +19,48 @@ import { Prophecy } from './prophecy.entity';
  */
 @Injectable()
 export class PropheciesRepository {
-  constructor(@InjectRepository(Prophecy) private readonly prophecies: Repository<Prophecy>) {}
+    constructor(@InjectRepository(Prophecy) private readonly prophecies: Repository<Prophecy>) {}
 
-  /** Un constructor de consultas ya acotado al dueño. Es el único punto de entrada. */
-  scoped(ownerId: string): SelectQueryBuilder<Prophecy> {
-    return this.prophecies
-      .createQueryBuilder('prophecy')
-      .where('prophecy.ownerId = :ownerId', { ownerId });
-  }
+    /** Un constructor de consultas ya acotado al dueño. Es el único punto de entrada. */
+    scoped(ownerId: string): SelectQueryBuilder<Prophecy> {
+        return this.prophecies
+            .createQueryBuilder('prophecy')
+            .where('prophecy.ownerId = :ownerId', { ownerId });
+    }
 
-  /**
-   * La profecía, comprobando que es suya.
-   *
-   * **404 y no 403**: un 403 confirmaría que existe, y quien pregunta por el
-   * identificador de otro no tiene por qué enterarse de que acertó.
-   */
-  async require(ownerId: string, id: string): Promise<Prophecy> {
-    const prophecy = await this.prophecies.findOne({ where: { id, ownerId } });
-    if (!prophecy) throw new NotFoundException('Esa profecía no existe');
-    return prophecy;
-  }
+    /**
+     * La profecía, comprobando que es suya.
+     *
+     * **404 y no 403**: un 403 confirmaría que existe, y quien pregunta por el
+     * identificador de otro no tiene por qué enterarse de que acertó.
+     */
+    async require(ownerId: string, id: string): Promise<Prophecy> {
+        const prophecy = await this.prophecies.findOne({ where: { id, ownerId } });
+        if (!prophecy) throw new NotFoundException('Esa profecía no existe');
+        return prophecy;
+    }
 
-  /** Con sus cumplimientos, ordenados hacia atrás. Para la ficha. */
-  async requireWithFulfillments(ownerId: string, id: string): Promise<Prophecy> {
-    const prophecy = await this.prophecies.findOne({
-      where: { id, ownerId },
-      relations: { fulfillments: true },
-      // Una relación sin ORDER BY no vuelve ordenada en Postgres (CLAUDE.md).
-      order: { fulfillments: { occurredAt: 'DESC', createdAt: 'DESC' } },
-    });
-    if (!prophecy) throw new NotFoundException('Esa profecía no existe');
-    return prophecy;
-  }
+    /** Con sus cumplimientos, ordenados hacia atrás. Para la ficha. */
+    async requireWithFulfillments(ownerId: string, id: string): Promise<Prophecy> {
+        const prophecy = await this.prophecies.findOne({
+            where: { id, ownerId },
+            relations: { fulfillments: true },
+            // Una relación sin ORDER BY no vuelve ordenada en Postgres (CLAUDE.md).
+            order: { fulfillments: { occurredAt: 'DESC', createdAt: 'DESC' } },
+        });
+        if (!prophecy) throw new NotFoundException('Esa profecía no existe');
+        return prophecy;
+    }
 
-  create(ownerId: string, data: Partial<Prophecy>): Prophecy {
-    return this.prophecies.create({ ...data, ownerId });
-  }
+    create(ownerId: string, data: Partial<Prophecy>): Prophecy {
+        return this.prophecies.create({ ...data, ownerId });
+    }
 
-  save(prophecy: Prophecy): Promise<Prophecy> {
-    return this.prophecies.save(prophecy);
-  }
+    save(prophecy: Prophecy): Promise<Prophecy> {
+        return this.prophecies.save(prophecy);
+    }
 
-  async softRemove(prophecy: Prophecy): Promise<void> {
-    await this.prophecies.softRemove(prophecy);
-  }
+    async softRemove(prophecy: Prophecy): Promise<void> {
+        await this.prophecies.softRemove(prophecy);
+    }
 }

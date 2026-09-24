@@ -17,55 +17,55 @@ import { api } from '@/lib/api';
  * falta ponerla dos veces.
  */
 export function CityField({
-  country,
-  defaultValue,
-  onCitySelected,
+    country,
+    defaultValue,
+    onCitySelected,
 }: {
-  country: string;
-  defaultValue: string;
-  onCitySelected: (timezone: string) => void;
+    country: string;
+    defaultValue: string;
+    onCitySelected: (timezone: string) => void;
 }) {
-  const { t } = useTranslation();
-  const [query, setQuery] = useState(defaultValue);
-  const [debounced, setDebounced] = useState(defaultValue);
+    const { t } = useTranslation();
+    const [query, setQuery] = useState(defaultValue);
+    const [debounced, setDebounced] = useState(defaultValue);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebounced(query);
-    }, 300);
-    return () => {
-      clearTimeout(timer);
-    };
-  }, [query]);
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebounced(query);
+        }, 300);
+        return () => {
+            clearTimeout(timer);
+        };
+    }, [query]);
 
-  const enabled = debounced.trim().length >= 2;
-  const { data, isFetching } = useCityGeocode(api, { q: debounced, country }, enabled);
-  const items = data?.items ?? [];
+    const enabled = debounced.trim().length >= 2;
+    const { data, isFetching } = useCityGeocode(api, { q: debounced, country }, enabled);
+    const items = data?.items ?? [];
 
-  const options = items.map((city) => ({
-    value: city.name,
-    label: city.name,
-    hint: city.region ?? undefined,
-  }));
+    const options = items.map((city) => ({
+        value: city.name,
+        label: city.name,
+        hint: city.region ?? undefined,
+    }));
 
-  return (
-    <Combobox
-      name="city"
-      label={t('church.city')}
-      hint={query.trim().length < 2 ? t('church.cityMinChars') : undefined}
-      placeholder={t('church.searchPlaceholder')}
-      required
-      value={query}
-      options={options}
-      query={query}
-      onQueryChange={setQuery}
-      onSelect={(name) => {
-        setQuery(name);
-        const picked = items.find((one) => one.name === name);
-        if (picked) onCitySelected(picked.timezone);
-      }}
-      loading={enabled && isFetching}
-      emptyLabel={t('church.cityNoResults')}
-    />
-  );
+    return (
+        <Combobox
+            name="city"
+            label={t('church.city')}
+            hint={query.trim().length < 2 ? t('church.cityMinChars') : undefined}
+            placeholder={t('church.searchPlaceholder')}
+            required
+            value={query}
+            options={options}
+            query={query}
+            onQueryChange={setQuery}
+            onSelect={(name) => {
+                setQuery(name);
+                const picked = items.find((one) => one.name === name);
+                if (picked) onCitySelected(picked.timezone);
+            }}
+            loading={enabled && isFetching}
+            emptyLabel={t('church.cityNoResults')}
+        />
+    );
 }

@@ -17,27 +17,27 @@ import { toNoteView } from './notes.mapper';
  */
 @Injectable()
 export class NotesViewService {
-  constructor(
-    private readonly gifts: GiftsService,
-    private readonly users: UsersService,
-    private readonly audios: NoteAudiosService,
-  ) {}
+    constructor(
+        private readonly gifts: GiftsService,
+        private readonly users: UsersService,
+        private readonly audios: NoteAudiosService,
+    ) {}
 
-  async of(churchId: string, notes: readonly BelieverNote[]): Promise<NoteView[]> {
-    if (notes.length === 0) return [];
+    async of(churchId: string, notes: readonly BelieverNote[]): Promise<NoteView[]> {
+        if (notes.length === 0) return [];
 
-    const [catalog, authorNames, audios] = await Promise.all([
-      this.gifts.list(churchId),
-      this.users.namesOf(notes.map((note) => note.authorId)),
-      this.audios.forNotes(notes.map((note) => note.id)),
-    ]);
+        const [catalog, authorNames, audios] = await Promise.all([
+            this.gifts.list(churchId),
+            this.users.namesOf(notes.map((note) => note.authorId)),
+            this.audios.forNotes(notes.map((note) => note.id)),
+        ]);
 
-    const giftNames = new Map(catalog.map((gift) => [gift.id, gift.name]));
-    return notes.map((note) => toNoteView(note, { giftNames, authorNames, audios }));
-  }
+        const giftNames = new Map(catalog.map((gift) => [gift.id, gift.name]));
+        return notes.map((note) => toNoteView(note, { giftNames, authorNames, audios }));
+    }
 
-  async one(churchId: string, note: BelieverNote): Promise<NoteView> {
-    const [view] = await this.of(churchId, [note]);
-    return view;
-  }
+    async one(churchId: string, note: BelieverNote): Promise<NoteView> {
+        const [view] = await this.of(churchId, [note]);
+        return view;
+    }
 }

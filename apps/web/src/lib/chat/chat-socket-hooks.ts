@@ -11,12 +11,12 @@ export const ChatSocketContext = createContext<ChatSocket | null>(null);
 
 /** El sondeo de respaldo (§8): 30 s cuando el socket no está conectado, si no, nada. */
 export function usePollFallback(): number | undefined {
-  const socket = useContext(ChatSocketContext);
-  return socket && socket.state !== 'connected' ? 30_000 : undefined;
+    const socket = useContext(ChatSocketContext);
+    return socket && socket.state !== 'connected' ? 30_000 : undefined;
 }
 
 export function useChatSocketContext(): ChatSocket {
-  const socket = useContext(ChatSocketContext);
-  if (!socket) throw new Error('useChatSocketContext debe usarse dentro de ChatSocketProvider');
-  return socket;
+    const socket = useContext(ChatSocketContext);
+    if (!socket) throw new Error('useChatSocketContext debe usarse dentro de ChatSocketProvider');
+    return socket;
 }

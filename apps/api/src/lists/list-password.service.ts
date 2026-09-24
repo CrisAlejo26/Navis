@@ -4,10 +4,10 @@ import { randomBytes, scrypt, timingSafeEqual } from 'node:crypto';
 import { promisify } from 'node:util';
 
 const derive = promisify(scrypt) as (
-  password: string,
-  salt: Buffer,
-  keylen: number,
-  options: { N: number; r: number; p: number },
+    password: string,
+    salt: Buffer,
+    keylen: number,
+    options: { N: number; r: number; p: number },
 ) => Promise<Buffer>;
 
 /**
@@ -32,64 +32,68 @@ const SALT_BYTES = 16;
  */
 @Injectable()
 export class ListPasswordService {
-  async hash(password: string): Promise<string> {
-    const salt = randomBytes(SALT_BYTES);
-    const key = await derive(normalizeListPassword(password), salt, KEY_BYTES, { N, r: R, p: P });
+    async hash(password: string): Promise<string> {
+        const salt = randomBytes(SALT_BYTES);
+        const key = await derive(normalizeListPassword(password), salt, KEY_BYTES, {
+            N,
+            r: R,
+            p: P,
+        });
 
-    return ['scrypt', N, R, P, salt.toString('base64'), key.toString('base64')].join('$');
-  }
+        return ['scrypt', N, R, P, salt.toString('base64'), key.toString('base64')].join('$');
+    }
 
-  /**
-   * Comparación en **tiempo constante**, y cuando el usuario no existe se
-   * compara igual contra un hash de mentira: tardar menos delataría que ese
-   * usuario no está, y el formulario se convertiría en una máquina de averiguar
-   * quién tiene llave.
-   */
-  async verify(password: string, stored: string | null): Promise<boolean> {
-    const parsed = parse(stored ?? (await falso()));
-    if (!parsed) return false;
+    /**
+     * Comparación en **tiempo constante**, y cuando el usuario no existe se
+     * compara igual contra un hash de mentira: tardar menos delataría que ese
+     * usuario no está, y el formulario se convertiría en una máquina de averiguar
+     * quién tiene llave.
+     */
+    async verify(password: string, stored: string | null): Promise<boolean> {
+        const parsed = parse(stored ?? (await falso()));
+        if (!parsed) return false;
 
-    const key = await derive(normalizeListPassword(password), parsed.salt, parsed.key.length, {
-      N: parsed.N,
-      r: parsed.r,
-      p: parsed.p,
-    });
+        const key = await derive(normalizeListPassword(password), parsed.salt, parsed.key.length, {
+            N: parsed.N,
+            r: parsed.r,
+            p: parsed.p,
+        });
 
-    // La comparación se hace igual con el señuelo y el resultado se descarta
-    // después: salirse antes volvería a delatar al usuario que no existe.
-    const igual = timingSafeEqual(key, parsed.key);
+        // La comparación se hace igual con el señuelo y el resultado se descarta
+        // después: salirse antes volvería a delatar al usuario que no existe.
+        const igual = timingSafeEqual(key, parsed.key);
 
-    return stored !== null && igual;
-  }
+        return stored !== null && igual;
+    }
 }
 
 interface Parsed {
-  N: number;
-  r: number;
-  p: number;
-  salt: Buffer;
-  key: Buffer;
+    N: number;
+    r: number;
+    p: number;
+    salt: Buffer;
+    key: Buffer;
 }
 
 function parse(stored: string): Parsed | null {
-  const [algorithm, n, r, p, salt, key] = stored.split('$');
-  if (algorithm !== 'scrypt' || !n || !r || !p || !salt || !key) return null;
+    const [algorithm, n, r, p, salt, key] = stored.split('$');
+    if (algorithm !== 'scrypt' || !n || !r || !p || !salt || !key) return null;
 
-  const parsed = {
-    N: Number(n),
-    r: Number(r),
-    p: Number(p),
-    salt: Buffer.from(salt, 'base64'),
-    key: Buffer.from(key, 'base64'),
-  };
+    const parsed = {
+        N: Number(n),
+        r: Number(r),
+        p: Number(p),
+        salt: Buffer.from(salt, 'base64'),
+        key: Buffer.from(key, 'base64'),
+    };
 
-  return Number.isFinite(parsed.N) && parsed.key.length > 0 ? parsed : null;
+    return Number.isFinite(parsed.N) && parsed.key.length > 0 ? parsed : null;
 }
 
 /** El señuelo, calculado una sola vez: su coste es el mismo que el de verdad. */
 let señuelo: Promise<string> | null = null;
 
 function falso(): Promise<string> {
-  señuelo ??= new ListPasswordService().hash('no-existe-este-acceso');
-  return señuelo;
+    señuelo ??= new ListPasswordService().hash('no-existe-este-acceso');
+    return señuelo;
 }

@@ -70,21 +70,21 @@ se salta entero y lo deja anotado en el resumen de la ejecución.
   [`docker/nginx/navis.officetools.es.conf`](../docker/nginx/navis.officetools.es.conf);
   al actualizarlo hay que copiarlo al servidor y recargar nginx:
 
-  ```bash
-  sudo nginx -t && sudo systemctl reload nginx
-  ```
+    ```bash
+    sudo nginx -t && sudo systemctl reload nginx
+    ```
 
-  Sin ese bloque, el enlace público de una lista lo contesta la web con el
-  `index.html` de siempre: la tarjeta de WhatsApp sale con el título genérico de
-  Navis para todas las listas y, al pulsarla, la SPA la recoge en su ruta de
-  respaldo y lleva a la lista. **Que la tarjeta salga genérica es la señal de
-  que este bloque falta**, y se comprueba en un segundo:
+    Sin ese bloque, el enlace público de una lista lo contesta la web con el
+    `index.html` de siempre: la tarjeta de WhatsApp sale con el título genérico de
+    Navis para todas las listas y, al pulsarla, la SPA la recoge en su ruta de
+    respaldo y lleva a la lista. **Que la tarjeta salga genérica es la señal de
+    que este bloque falta**, y se comprueba en un segundo:
 
-  ```bash
-  curl -sI https://navis.officetools.es/l/<token> | grep -i x-robots-tag
-  ```
+    ```bash
+    curl -sI https://navis.officetools.es/l/<token> | grep -i x-robots-tag
+    ```
 
-  Si no sale `noindex, nofollow`, lo está contestando la web y no la API.
+    Si no sale `noindex, nofollow`, lo está contestando la web y no la API.
 
 Los únicos ficheros que Actions copia al servidor son
 [`docker-compose.deploy.yml`](../docker-compose.deploy.yml) —que no construye

@@ -15,21 +15,21 @@ import { cn } from '@/lib/cn';
  * bandeja de correo.
  */
 export function CommunicationsPage() {
-  const { channelId } = useParams();
-  const [creating, setCreating] = useState(false);
+    const { channelId } = useParams();
+    const [creating, setCreating] = useState(false);
 
-  return (
-    <ChatSocketProvider>
-      <div className="-m-4 md:-m-8 md:grid-cols-[20rem_1fr] md:h-dvh grid h-[calc(100dvh-3.5rem)] overflow-hidden">
-        <div className={cn(channelId ? 'md:block hidden' : 'block')}>
-          <ChannelList onNewConversation={() => setCreating(true)} />
-        </div>
-        <div className={cn('min-w-0', channelId ? 'block' : 'md:block hidden')}>
-          <Outlet />
-        </div>
-      </div>
+    return (
+        <ChatSocketProvider>
+            <div className="-m-4 md:-m-8 md:grid-cols-[20rem_1fr] md:h-dvh grid h-[calc(100dvh-3.5rem)] overflow-hidden">
+                <div className={cn(channelId ? 'md:block hidden' : 'block')}>
+                    <ChannelList onNewConversation={() => setCreating(true)} />
+                </div>
+                <div className={cn('min-w-0', channelId ? 'block' : 'md:block hidden')}>
+                    <Outlet />
+                </div>
+            </div>
 
-      <NewConversationDialog open={creating} onClose={() => setCreating(false)} />
-    </ChatSocketProvider>
-  );
+            <NewConversationDialog open={creating} onClose={() => setCreating(false)} />
+        </ChatSocketProvider>
+    );
 }

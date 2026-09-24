@@ -1,9 +1,9 @@
 import { useUploadListCover } from '@navis/api-client';
 import {
-  toPublicListMember,
-  type List,
-  type ListMember,
-  type ListPublicFields,
+    toPublicListMember,
+    type List,
+    type ListMember,
+    type ListPublicFields,
 } from '@navis/shared';
 import { useCallback, useImperativeHandle, useRef, type Ref } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -13,8 +13,8 @@ import { api } from '@/lib/api';
 import { nodeToPng } from '@/lib/share/rasterize';
 
 export interface CoverUploader {
-  /** Compone la lámina, la rasteriza y la sube. Falla en silencio: es un extra. */
-  upload: () => Promise<void>;
+    /** Compone la lámina, la rasteriza y la sube. Falla en silencio: es un extra. */
+    upload: () => Promise<void>;
 }
 
 /**
@@ -29,48 +29,48 @@ export interface CoverUploader {
  * de siempre. Se degrada, no se rompe.
  */
 export function CoverUploader({
-  ref,
-  list,
-  churchName,
-  members,
-  fields,
+    ref,
+    list,
+    churchName,
+    members,
+    fields,
 }: {
-  ref: Ref<CoverUploader>;
-  list: List;
-  churchName: string;
-  members: readonly ListMember[];
-  fields: ListPublicFields;
+    ref: Ref<CoverUploader>;
+    list: List;
+    churchName: string;
+    members: readonly ListMember[];
+    fields: ListPublicFields;
 }) {
-  const { t } = useTranslation();
-  const poster = useRef<HTMLDivElement>(null);
-  const upload = useUploadListCover(api);
-  const bloqueada = list.visibility === 'restricted';
+    const { t } = useTranslation();
+    const poster = useRef<HTMLDivElement>(null);
+    const upload = useUploadListCover(api);
+    const bloqueada = list.visibility === 'restricted';
 
-  const subir = useCallback(async () => {
-    const node = poster.current;
-    if (!node) return;
+    const subir = useCallback(async () => {
+        const node = poster.current;
+        if (!node) return;
 
-    try {
-      await upload.mutateAsync({ listId: list.id, file: await nodeToPng(node, 1) });
-    } catch {
-      // Sin portada la tarjeta sigue saliendo: no hay nada que avisar aquí.
-    }
-  }, [list.id, upload]);
+        try {
+            await upload.mutateAsync({ listId: list.id, file: await nodeToPng(node, 1) });
+        } catch {
+            // Sin portada la tarjeta sigue saliendo: no hay nada que avisar aquí.
+        }
+    }, [list.id, upload]);
 
-  useImperativeHandle(ref, () => ({ upload: subir }), [subir]);
+    useImperativeHandle(ref, () => ({ upload: subir }), [subir]);
 
-  return (
-    <div aria-hidden className="top-0 pointer-events-none absolute -left-[9999px]">
-      <ListPoster
-        ref={poster}
-        churchName={churchName}
-        name={list.name}
-        accent={list.accent}
-        // En restringida la portada es otra: ni un nombre, ni el número (D18).
-        members={bloqueada ? [] : members.map((one) => toPublicListMember(one, fields))}
-        locked={bloqueada}
-        lockedLabel={t('lists.lockedCover')}
-      />
-    </div>
-  );
+    return (
+        <div aria-hidden className="top-0 pointer-events-none absolute -left-[9999px]">
+            <ListPoster
+                ref={poster}
+                churchName={churchName}
+                name={list.name}
+                accent={list.accent}
+                // En restringida la portada es otra: ni un nombre, ni el número (D18).
+                members={bloqueada ? [] : members.map((one) => toPublicListMember(one, fields))}
+                locked={bloqueada}
+                lockedLabel={t('lists.lockedCover')}
+            />
+        </div>
+    );
 }

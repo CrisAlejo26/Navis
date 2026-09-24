@@ -481,42 +481,45 @@ Cada día trae sus reuniones, reales o propuestas, con la misma forma:
 
 ```jsonc
 {
-  "from": "2026-08-01",
-  "to": "2026-08-31",
-  "congregations": [
-    { "id": "c1…", "name": "Benidorm", "accent": "primary" },
-    { "id": "c2…", "name": "Alicante", "accent": "accent" },
-    { "id": "c3…", "name": "Elda", "accent": "success" },
-  ],
-  "days": [
-    {
-      "date": "2026-08-15",
-      "meetings": [
+    "from": "2026-08-01",
+    "to": "2026-08-31",
+    "congregations": [
+        { "id": "c1…", "name": "Benidorm", "accent": "primary" },
+        { "id": "c2…", "name": "Alicante", "accent": "accent" },
+        { "id": "c3…", "name": "Elda", "accent": "success" },
+    ],
+    "days": [
         {
-          "id": "3f1c…", // null si todavía es una propuesta
-          "congregationId": "c3…",
-          "patternId": "9ab2…",
-          "name": "Culto",
-          "startTime": "20:00",
-          "status": "programada",
-          "slots": [
-            {
-              "id": "aa1…",
-              "name": "Introducción",
-              "position": 0,
-              "believer": { "id": "77c…", "name": "Juan Carlos Ruiz" },
-            },
-            {
-              "id": null,
-              "name": "Enseñanza",
-              "position": 1,
-              "believer": null,
-            },
-          ],
+            "date": "2026-08-15",
+            "meetings": [
+                {
+                    "id": "3f1c…", // null si todavía es una propuesta
+                    "congregationId": "c3…",
+                    "patternId": "9ab2…",
+                    "name": "Culto",
+                    "startTime": "20:00",
+                    "status": "programada",
+                    "slots": [
+                        {
+                            "id": "aa1…",
+                            "name": "Introducción",
+                            "position": 0,
+                            "believer": {
+                                "id": "77c…",
+                                "name": "Juan Carlos Ruiz",
+                            },
+                        },
+                        {
+                            "id": null,
+                            "name": "Enseñanza",
+                            "position": 1,
+                            "believer": null,
+                        },
+                    ],
+                },
+            ],
         },
-      ],
-    },
-  ],
+    ],
 }
 ```
 
@@ -579,17 +582,17 @@ de bitácora**, y lo que se quiere leer de un vistazo no es «hay un evento», e
 - **Elemento firma: la cinta de fases.** Cada reunión se pinta como un carril
   vertical del color de su sede y, colgando de él, una línea por fase:
 
-  ```
-  │ ELDA · 20:00
-  │ INTRODUCCIÓN   Juan Carlos
-  │ ENSEÑANZA      Luis Fernando
-  │ TESTIMONIOS    ·············
-  ```
+    ```
+    │ ELDA · 20:00
+    │ INTRODUCCIÓN   Juan Carlos
+    │ ENSEÑANZA      Luis Fernando
+    │ TESTIMONIOS    ·············
+    ```
 
-  La sede y la hora en la cabecera del carril, la fase en versalitas pequeñas
-  con `tracking` abierto y color `muted`, el nombre en peso medio. **Los huecos
-  no se esconden**: una fase sin asignar es una línea de puntos que pide que la
-  rellenen, y es justo la información que hoy se pierde en el Excel.
+    La sede y la hora en la cabecera del carril, la fase en versalitas pequeñas
+    con `tracking` abierto y color `muted`, el nombre en peso medio. **Los huecos
+    no se esconden**: una fase sin asignar es una línea de puntos que pide que la
+    rellenen, y es justo la información que hoy se pierde en el Excel.
 
 - **Con una sola sede, la cabecera del carril solo lleva la hora** (D12).
 - **Tipografía con saltos de verdad** (Regla 9): el número del día grande y

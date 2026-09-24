@@ -16,37 +16,37 @@ import { toast } from '@/lib/toast';
  * pasa `onDeleted`.
  */
 export function DeleteTableDialog({
-  table,
-  onClose,
-  onDeleted,
+    table,
+    onClose,
+    onDeleted,
 }: {
-  table: Pick<CustomTable, 'id' | 'name'> | null;
-  onClose: () => void;
-  onDeleted?: () => void;
+    table: Pick<CustomTable, 'id' | 'name'> | null;
+    onClose: () => void;
+    onDeleted?: () => void;
 }) {
-  const { t } = useTranslation();
-  const remove = useDeleteTable(api);
+    const { t } = useTranslation();
+    const remove = useDeleteTable(api);
 
-  return (
-    <ConfirmDialog
-      open={table !== null}
-      onClose={onClose}
-      onConfirm={() => {
-        if (!table) return;
+    return (
+        <ConfirmDialog
+            open={table !== null}
+            onClose={onClose}
+            onConfirm={() => {
+                if (!table) return;
 
-        remove.mutate(table.id, {
-          onSuccess: () => {
-            onClose();
-            toast.success(t('tables.deleted', { name: table.name }));
-            onDeleted?.();
-          },
-        });
-      }}
-      title={t('tables.delete')}
-      description={t('tables.deleteExplain')}
-      confirmLabel={t('common.delete')}
-      destructive
-      isPending={remove.isPending}
-    />
-  );
+                remove.mutate(table.id, {
+                    onSuccess: () => {
+                        onClose();
+                        toast.success(t('tables.deleted', { name: table.name }));
+                        onDeleted?.();
+                    },
+                });
+            }}
+            title={t('tables.delete')}
+            description={t('tables.deleteExplain')}
+            confirmLabel={t('common.delete')}
+            destructive
+            isPending={remove.isPending}
+        />
+    );
 }

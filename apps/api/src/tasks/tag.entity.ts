@@ -12,28 +12,28 @@ import { UUID } from '../database/column-types';
 @Entity('tags')
 @Index('UQ_tags_church_owner_name', ['churchId', 'ownerId', 'name'], { unique: true })
 export class Tag extends BaseEntity {
-  @ApiProperty()
-  @Index()
-  @Column({ name: 'church_id', type: UUID })
-  churchId: string;
+    @ApiProperty()
+    @Index()
+    @Column({ name: 'church_id', type: UUID })
+    churchId: string;
 
-  @ApiProperty({ description: 'De quién es (D12)' })
-  @Column({ name: 'owner_id', type: 'text' })
-  ownerId: string;
+    @ApiProperty({ description: 'De quién es (D12)' })
+    @Column({ name: 'owner_id', type: 'text' })
+    ownerId: string;
 
-  @ApiProperty()
-  @Column({ type: 'text' })
-  name: string;
+    @ApiProperty()
+    @Column({ type: 'text' })
+    name: string;
 
-  @ApiProperty({ description: 'Clave del catálogo de iconos (D14)', example: 'book-open' })
-  @Column({ type: 'text' })
-  icon: string;
+    @ApiProperty({ description: 'Clave del catálogo de iconos (D14)', example: 'book-open' })
+    @Column({ type: 'text' })
+    icon: string;
 
-  @ApiProperty({ description: 'Token o hexadecimal de accentSchema (D13)' })
-  @Column({ type: 'text' })
-  accent: string;
+    @ApiProperty({ description: 'Token o hexadecimal de accentSchema (D13)' })
+    @Column({ type: 'text' })
+    accent: string;
 
-  @ApiProperty()
-  @Column({ type: 'int', default: 0 })
-  position: number;
+    @ApiProperty()
+    @Column({ type: 'int', default: 0 })
+    position: number;
 }

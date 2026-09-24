@@ -9,9 +9,9 @@ import type { IsoDate } from '@navis/shared';
  * sería inventarse una precisión que el dato no tiene.
  */
 export function monthToDay(month: string): IsoDate | null {
-  return /^\d{4}-\d{2}$/.test(month) ? `${month}-01` : null;
+    return /^\d{4}-\d{2}$/.test(month) ? `${month}-01` : null;
 }
 
 export function dayToMonth(day: string | null | undefined): string {
-  return day ? day.slice(0, 7) : '';
+    return day ? day.slice(0, 7) : '';
 }

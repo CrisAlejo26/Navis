@@ -17,91 +17,91 @@ const body = <T>(response: { body: unknown }): T => response.body as T;
  * Necesita Postgres arrancado y migrado (`pnpm db:up && pnpm db:migrate`).
  */
 describe('Auth (e2e)', () => {
-  let app: NestExpressApplication;
-  const email = `e2e-${String(Date.now())}@navis.test`;
-  const password = 'Rebano2026Seguro';
-  let cookie = '';
+    let app: NestExpressApplication;
+    const email = `e2e-${String(Date.now())}@navis.test`;
+    const password = 'Rebano2026Seguro';
+    let cookie = '';
 
-  beforeAll(async () => {
-    const moduleRef = await Test.createTestingModule({ imports: [AppModule] }).compile();
+    beforeAll(async () => {
+        const moduleRef = await Test.createTestingModule({ imports: [AppModule] }).compile();
 
-    app = moduleRef.createNestApplication<NestExpressApplication>({ bodyParser: false });
-    app.use('/api/auth', toNodeHandler(auth));
-    app.use(express.json());
-    app.setGlobalPrefix('api', { exclude: ['health'] });
-    app.enableVersioning({ type: VersioningType.URI, defaultVersion: '1' });
-    app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
+        app = moduleRef.createNestApplication<NestExpressApplication>({ bodyParser: false });
+        app.use('/api/auth', toNodeHandler(auth));
+        app.use(express.json());
+        app.setGlobalPrefix('api', { exclude: ['health'] });
+        app.enableVersioning({ type: VersioningType.URI, defaultVersion: '1' });
+        app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
 
-    await app.init();
-  });
+        await app.init();
+    });
 
-  afterAll(async () => {
-    await app.close();
-  });
+    afterAll(async () => {
+        await app.close();
+    });
 
-  it('/health responde sin sesión', async () => {
-    const response = await request(app.getHttpServer()).get('/health').expect(200);
-    expect(body<{ status: string }>(response).status).toBe('ok');
-  });
+    it('/health responde sin sesión', async () => {
+        const response = await request(app.getHttpServer()).get('/health').expect(200);
+        expect(body<{ status: string }>(response).status).toBe('ok');
+    });
 
-  it('rechaza el perfil sin sesión', async () => {
-    await request(app.getHttpServer()).get('/api/v1/me/profile').expect(401);
-  });
+    it('rechaza el perfil sin sesión', async () => {
+        await request(app.getHttpServer()).get('/api/v1/me/profile').expect(401);
+    });
 
-  it('registra un usuario y devuelve cookie de sesión', async () => {
-    const response = await request(app.getHttpServer())
-      .post('/api/auth/sign-up/email')
-      .send({ email, password, name: 'Usuario E2E' })
-      .expect(200);
+    it('registra un usuario y devuelve cookie de sesión', async () => {
+        const response = await request(app.getHttpServer())
+            .post('/api/auth/sign-up/email')
+            .send({ email, password, name: 'Usuario E2E' })
+            .expect(200);
 
-    const setCookie = response.headers['set-cookie'];
-    expect(setCookie).toBeDefined();
-    cookie = (Array.isArray(setCookie) ? setCookie : [setCookie]).join('; ');
-  });
+        const setCookie = response.headers['set-cookie'];
+        expect(setCookie).toBeDefined();
+        cookie = (Array.isArray(setCookie) ? setCookie : [setCookie]).join('; ');
+    });
 
-  it('devuelve el perfil con la sesión activa y lo crea si no existía', async () => {
-    const response = await request(app.getHttpServer())
-      .get('/api/v1/me/profile')
-      .set('Cookie', cookie)
-      .expect(200);
+    it('devuelve el perfil con la sesión activa y lo crea si no existía', async () => {
+        const response = await request(app.getHttpServer())
+            .get('/api/v1/me/profile')
+            .set('Cookie', cookie)
+            .expect(200);
 
-    expect(response.body).toMatchObject({ timezone: 'Europe/Madrid' });
-    expect(body<{ userId: string }>(response).userId).toBeTruthy();
-  });
+        expect(response.body).toMatchObject({ timezone: 'Europe/Madrid' });
+        expect(body<{ userId: string }>(response).userId).toBeTruthy();
+    });
 
-  it('actualiza el perfil', async () => {
-    const response = await request(app.getHttpServer())
-      .patch('/api/v1/me/profile')
-      .set('Cookie', cookie)
-      .send({ church: 'Iglesia E2E' })
-      .expect(200);
+    it('actualiza el perfil', async () => {
+        const response = await request(app.getHttpServer())
+            .patch('/api/v1/me/profile')
+            .set('Cookie', cookie)
+            .send({ church: 'Iglesia E2E' })
+            .expect(200);
 
-    expect(body<{ church: string }>(response).church).toBe('Iglesia E2E');
-  });
+        expect(body<{ church: string }>(response).church).toBe('Iglesia E2E');
+    });
 
-  // RFC 0023. El entorno de test no lleva SMTP configurado: `sendResetPassword`
-  // registra el enlace por el log en vez de mandarlo, así que estos dos no
-  // comprueban el correo en sí — eso está en `mailer.ts` — sino que el
-  // servidor no filtra si el email existe y que un token inventado no vale.
-  it('pedir el enlace responde igual con un email que existe que con uno que no', async () => {
-    const existing = await request(app.getHttpServer())
-      .post('/api/auth/request-password-reset')
-      .send({ email })
-      .expect(200);
+    // RFC 0023. El entorno de test no lleva SMTP configurado: `sendResetPassword`
+    // registra el enlace por el log en vez de mandarlo, así que estos dos no
+    // comprueban el correo en sí — eso está en `mailer.ts` — sino que el
+    // servidor no filtra si el email existe y que un token inventado no vale.
+    it('pedir el enlace responde igual con un email que existe que con uno que no', async () => {
+        const existing = await request(app.getHttpServer())
+            .post('/api/auth/request-password-reset')
+            .send({ email })
+            .expect(200);
 
-    const missing = await request(app.getHttpServer())
-      .post('/api/auth/request-password-reset')
-      .send({ email: 'no-existe-nunca@navis.test' })
-      .expect(200);
+        const missing = await request(app.getHttpServer())
+            .post('/api/auth/request-password-reset')
+            .send({ email: 'no-existe-nunca@navis.test' })
+            .expect(200);
 
-    expect(body<{ status: boolean }>(existing).status).toBe(true);
-    expect(body<{ status: boolean }>(missing).status).toBe(true);
-  });
+        expect(body<{ status: boolean }>(existing).status).toBe(true);
+        expect(body<{ status: boolean }>(missing).status).toBe(true);
+    });
 
-  it('rechaza cambiar la contraseña con un token que no existe', async () => {
-    await request(app.getHttpServer())
-      .post('/api/auth/reset-password')
-      .send({ newPassword: 'OtraContraseña2026', token: 'token-que-no-existe' })
-      .expect(400);
-  });
+    it('rechaza cambiar la contraseña con un token que no existe', async () => {
+        await request(app.getHttpServer())
+            .post('/api/auth/reset-password')
+            .send({ newPassword: 'OtraContraseña2026', token: 'token-que-no-existe' })
+            .expect(400);
+    });
 });

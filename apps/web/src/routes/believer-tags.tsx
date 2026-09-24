@@ -21,69 +21,71 @@ import { api } from '@/lib/api';
  * una que no está —«En busca de trabajo», «Voluntario»…—.
  */
 export function BelieverTagsPage() {
-  const { t } = useTranslation();
-  const { data: tags = [] } = useBelieverTags(api);
+    const { t } = useTranslation();
+    const { data: tags = [] } = useBelieverTags(api);
 
-  const [adding, setAdding] = useState(false);
-  const [editing, setEditing] = useState<BelieverTag | null>(null);
-  const [deleting, setDeleting] = useState<BelieverTag | null>(null);
+    const [adding, setAdding] = useState(false);
+    const [editing, setEditing] = useState<BelieverTag | null>(null);
+    const [deleting, setDeleting] = useState<BelieverTag | null>(null);
 
-  return (
-    <section className="max-w-2xl gap-6 flex flex-col">
-      <div>
-        <Link
-          to="/believers"
-          className="gap-1.5 text-sm -ml-1 inline-flex w-fit items-center rounded-sm text-muted-foreground hover:text-foreground"
-        >
-          <ChevronLeft size={16} aria-hidden />
-          {t('believers.backToList')}
-        </Link>
+    return (
+        <section className="max-w-2xl gap-6 flex flex-col">
+            <div>
+                <Link
+                    to="/believers"
+                    className="gap-1.5 text-sm -ml-1 inline-flex w-fit items-center rounded-sm text-muted-foreground hover:text-foreground"
+                >
+                    <ChevronLeft size={16} aria-hidden />
+                    {t('believers.backToList')}
+                </Link>
 
-        <div className="gap-3 mt-2 sm:flex-row sm:items-center sm:justify-between flex flex-col">
-          <h1 className="text-2xl font-semibold tracking-[-0.02em]">{t('believerTags.title')}</h1>
-          <Button
-            variant="secondary"
-            size="md"
-            className="sm:self-auto self-start"
-            onClick={() => {
-              setAdding(true);
-            }}
-          >
-            <Plus size={15} aria-hidden />
-            {t('believerTags.add')}
-          </Button>
-        </div>
+                <div className="gap-3 mt-2 sm:flex-row sm:items-center sm:justify-between flex flex-col">
+                    <h1 className="text-2xl font-semibold tracking-[-0.02em]">
+                        {t('believerTags.title')}
+                    </h1>
+                    <Button
+                        variant="secondary"
+                        size="md"
+                        className="sm:self-auto self-start"
+                        onClick={() => {
+                            setAdding(true);
+                        }}
+                    >
+                        <Plus size={15} aria-hidden />
+                        {t('believerTags.add')}
+                    </Button>
+                </div>
 
-        <p className="mt-2 max-w-prose text-sm text-muted-foreground">
-          {t('believerTags.description')}
-        </p>
-      </div>
+                <p className="mt-2 max-w-prose text-sm text-muted-foreground">
+                    {t('believerTags.description')}
+                </p>
+            </div>
 
-      <Card>
-        {tags.length === 0 ? (
-          <EmptyState icon={Tag} title={t('believerTags.empty')} />
-        ) : (
-          <BelieverTagRows tags={tags} onEdit={setEditing} onDelete={setDeleting} />
-        )}
-      </Card>
+            <Card>
+                {tags.length === 0 ? (
+                    <EmptyState icon={Tag} title={t('believerTags.empty')} />
+                ) : (
+                    <BelieverTagRows tags={tags} onEdit={setEditing} onDelete={setDeleting} />
+                )}
+            </Card>
 
-      {(adding || editing) && (
-        <BelieverTagForm
-          open
-          tag={editing ?? undefined}
-          onClose={() => {
-            setAdding(false);
-            setEditing(null);
-          }}
-        />
-      )}
+            {(adding || editing) && (
+                <BelieverTagForm
+                    open
+                    tag={editing ?? undefined}
+                    onClose={() => {
+                        setAdding(false);
+                        setEditing(null);
+                    }}
+                />
+            )}
 
-      <DeleteBelieverTagDialog
-        tag={deleting}
-        onClose={() => {
-          setDeleting(null);
-        }}
-      />
-    </section>
-  );
+            <DeleteBelieverTagDialog
+                tag={deleting}
+                onClose={() => {
+                    setDeleting(null);
+                }}
+            />
+        </section>
+    );
 }

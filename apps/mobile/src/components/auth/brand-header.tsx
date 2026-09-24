@@ -21,38 +21,38 @@ import navisIcon from '../../../assets/icon.png';
  * solo de los cuatro clientes.
  */
 export function BrandHeader({ tagline = true }: { tagline?: boolean }) {
-  const { t } = useTranslation();
+    const { t } = useTranslation();
 
-  return (
-    <View className="px-6 pb-8 pt-16 relative overflow-hidden bg-brand">
-      <ChartLines />
+    return (
+        <View className="px-6 pb-8 pt-16 relative overflow-hidden bg-brand">
+            <ChartLines />
 
-      <Animated.View
-        entering={FadeInDown.duration(500).springify().damping(16)}
-        className="gap-3 flex-row items-center"
-      >
-        <Image source={navisIcon} className="h-11 w-11 rounded-xl" />
-        <Text className="text-xs font-sans-bold -mr-[0.1em] tracking-[6px] text-brand-foreground uppercase">
-          {t('common.appName')}
-        </Text>
-      </Animated.View>
+            <Animated.View
+                entering={FadeInDown.duration(500).springify().damping(16)}
+                className="gap-3 flex-row items-center"
+            >
+                <Image source={navisIcon} className="h-11 w-11 rounded-xl" />
+                <Text className="text-xs font-sans-bold -mr-[0.1em] tracking-[6px] text-brand-foreground uppercase">
+                    {t('common.appName')}
+                </Text>
+            </Animated.View>
 
-      {tagline && (
-        <Animated.View
-          entering={FadeInDown.delay(120).duration(500).springify().damping(16)}
-          className="mt-6 gap-2"
-        >
-          <View className="w-10 h-px bg-accent" />
-          <Title size="lg" className="text-brand-foreground">
-            {t('auth.tagline')}
-          </Title>
-          {/* `/70` no es una clase de color válida en nativo (Regla 3 §5):
+            {tagline && (
+                <Animated.View
+                    entering={FadeInDown.delay(120).duration(500).springify().damping(16)}
+                    className="mt-6 gap-2"
+                >
+                    <View className="w-10 h-px bg-accent" />
+                    <Title size="lg" className="text-brand-foreground">
+                        {t('auth.tagline')}
+                    </Title>
+                    {/* `/70` no es una clase de color válida en nativo (Regla 3 §5):
               la opacidad va como `style`, aparte del color. */}
-          <BodyText className="text-brand-foreground" style={{ opacity: 0.7 }}>
-            {t('auth.taglineDetail')}
-          </BodyText>
-        </Animated.View>
-      )}
-    </View>
-  );
+                    <BodyText className="text-brand-foreground" style={{ opacity: 0.7 }}>
+                        {t('auth.taglineDetail')}
+                    </BodyText>
+                </Animated.View>
+            )}
+        </View>
+    );
 }

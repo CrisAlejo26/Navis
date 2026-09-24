@@ -9,12 +9,12 @@ import { slugify } from '@/lib/share/files';
  * fechas y una sede.
  */
 export function posterFileName(
-  from: string,
-  to: string,
-  congregation?: string,
-  extension = 'png',
+    from: string,
+    to: string,
+    congregation?: string,
+    extension = 'png',
 ): string {
-  const sede = congregation ? `-${slugify(congregation)}` : '';
+    const sede = congregation ? `-${slugify(congregation)}` : '';
 
-  return `navis${sede}-${from}${from === to ? '' : `_${to}`}.${extension}`;
+    return `navis${sede}-${from}${from === to ? '' : `_${to}`}.${extension}`;
 }

@@ -16,7 +16,7 @@ export type BelieverSortField = (typeof BELIEVER_SORT_FIELDS)[number];
 export const DEFAULT_BELIEVER_SORT: BelieverSortField = 'name';
 
 export function isBelieverSortField(value: string): value is BelieverSortField {
-  return (BELIEVER_SORT_FIELDS as readonly string[]).includes(value);
+    return (BELIEVER_SORT_FIELDS as readonly string[]).includes(value);
 }
 
 /**
@@ -24,53 +24,53 @@ export function isBelieverSortField(value: string): value is BelieverSortField {
  * para que la interfaz no tenga que volver a pedir nada (§6.1).
  */
 export interface BelieverListItem extends Believer {
-  daysWithoutNote: number;
-  needsAttention: boolean;
-  /** El don entero —nombre y color—, para pintar la etiqueta sin otra consulta. */
-  gifts: Gift[];
-  /**
-   * Las etiquetas que tiene, con su color (del catálogo de la iglesia).
-   *
-   * La fila de la tabla muestra **solo una** —la destacada, o la primera si no
-   * hay ninguna marcada—; la ficha las enseña todas.
-   */
-  tags: BelieverTag[];
-  /** Cuál sale en la tabla: la destacada. `null` es «la primera de la lista». */
-  featuredTagId: string | null;
-  notesCount: number;
+    daysWithoutNote: number;
+    needsAttention: boolean;
+    /** El don entero —nombre y color—, para pintar la etiqueta sin otra consulta. */
+    gifts: Gift[];
+    /**
+     * Las etiquetas que tiene, con su color (del catálogo de la iglesia).
+     *
+     * La fila de la tabla muestra **solo una** —la destacada, o la primera si no
+     * hay ninguna marcada—; la ficha las enseña todas.
+     */
+    tags: BelieverTag[];
+    /** Cuál sale en la tabla: la destacada. `null` es «la primera de la lista». */
+    featuredTagId: string | null;
+    notesCount: number;
 }
 
 /** Lo que acepta `GET /believers`. Todo opcional salvo la paginación (§6.1). */
 export interface BelieversQuery {
-  page?: number;
-  limit?: number;
-  /** Contra `search_name`, sin acentos (D14). */
-  search?: string;
-  status?: readonly BelieverStatus[];
-  congregationId?: string;
-  giftId?: string;
-  /** Solo quien tenga esa etiqueta del catálogo (no solo la destacada). */
-  tagId?: string;
-  /**
-   * Solo quien tenga esa **labor** (`pulpito`).
-   *
-   * Lo tenía el selector del calendario y no el listado, y hacía falta en los
-   * dos: es uno de los filtros con los que se llena una lista (RFC 0010 D5).
-   */
-  ministry?: string;
-  /** Solo quien esté en esa lista. Es la vuelta del camino de la RFC 0010 D5. */
-  listId?: string;
-  /**
-   * Solo quien esté en **esa cantidad de listas o más** (RFC 0010 D36).
-   *
-   * Es a donde lleva la línea «7 personas están en 4 listas o más» de la portada
-   * de listas: una cifra que no lleva a ninguna parte es un adorno.
-   */
-  inLists?: number;
-  /** Deja solo a quien ha agotado su margen. */
-  attention?: boolean;
-  sort?: BelieverSortField;
-  order?: 'asc' | 'desc';
+    page?: number;
+    limit?: number;
+    /** Contra `search_name`, sin acentos (D14). */
+    search?: string;
+    status?: readonly BelieverStatus[];
+    congregationId?: string;
+    giftId?: string;
+    /** Solo quien tenga esa etiqueta del catálogo (no solo la destacada). */
+    tagId?: string;
+    /**
+     * Solo quien tenga esa **labor** (`pulpito`).
+     *
+     * Lo tenía el selector del calendario y no el listado, y hacía falta en los
+     * dos: es uno de los filtros con los que se llena una lista (RFC 0010 D5).
+     */
+    ministry?: string;
+    /** Solo quien esté en esa lista. Es la vuelta del camino de la RFC 0010 D5. */
+    listId?: string;
+    /**
+     * Solo quien esté en **esa cantidad de listas o más** (RFC 0010 D36).
+     *
+     * Es a donde lleva la línea «7 personas están en 4 listas o más» de la portada
+     * de listas: una cifra que no lleva a ninguna parte es un adorno.
+     */
+    inLists?: number;
+    /** Deja solo a quien ha agotado su margen. */
+    attention?: boolean;
+    sort?: BelieverSortField;
+    order?: 'asc' | 'desc';
 }
 
 /**
@@ -78,10 +78,10 @@ export interface BelieversQuery {
  * donde viven: la métrica es la navegación, no un panel de indicadores.
  */
 export interface BelieversSummary {
-  total: number;
-  byStatus: Record<BelieverStatus, number>;
-  needsAttention: number;
-  newThisMonth: number;
+    total: number;
+    byStatus: Record<BelieverStatus, number>;
+    needsAttention: number;
+    newThisMonth: number;
 }
 
 /**

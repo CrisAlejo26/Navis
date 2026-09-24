@@ -9,35 +9,35 @@ import { Select } from '@/components/ui/select';
  * desplegable vacío.
  */
 export function ViewFormColumnPicker({
-  label,
-  columns,
-  value,
-  onChange,
-  emptyHint,
+    label,
+    columns,
+    value,
+    onChange,
+    emptyHint,
 }: {
-  label: string;
-  columns: readonly CustomTableColumn[];
-  value: string;
-  onChange: (value: string) => void;
-  emptyHint: string;
+    label: string;
+    columns: readonly CustomTableColumn[];
+    value: string;
+    onChange: (value: string) => void;
+    emptyHint: string;
 }) {
-  if (columns.length === 0) {
-    return <p className="text-sm text-muted-foreground">{emptyHint}</p>;
-  }
+    if (columns.length === 0) {
+        return <p className="text-sm text-muted-foreground">{emptyHint}</p>;
+    }
 
-  return (
-    <Select
-      label={label}
-      value={value}
-      onChange={(event) => {
-        onChange(event.target.value);
-      }}
-    >
-      {columns.map((column) => (
-        <option key={column.key} value={column.key}>
-          {column.label}
-        </option>
-      ))}
-    </Select>
-  );
+    return (
+        <Select
+            label={label}
+            value={value}
+            onChange={(event) => {
+                onChange(event.target.value);
+            }}
+        >
+            {columns.map((column) => (
+                <option key={column.key} value={column.key}>
+                    {column.label}
+                </option>
+            ))}
+        </Select>
+    );
 }

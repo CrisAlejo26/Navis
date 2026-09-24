@@ -1,11 +1,11 @@
 {
-  "extends": "@navis/tsconfig/library.json",
-  "compilerOptions": {
-    "outDir": "dist",
-    "rootDir": "src",
-    "lib": ["ES2023", "DOM", "DOM.Iterable"],
-    "types": ["node"]
-  },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist"]
+    "extends": "@navis/tsconfig/library.json",
+    "compilerOptions": {
+        "outDir": "dist",
+        "rootDir": "src",
+        "lib": ["ES2023", "DOM", "DOM.Iterable"],
+        "types": ["node"]
+    },
+    "include": ["src/**/*"],
+    "exclude": ["node_modules", "dist"]
 }

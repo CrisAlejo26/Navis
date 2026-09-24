@@ -79,9 +79,9 @@ Forget "500ms for everything." Use purpose-based categories.
 
 ```css
 :root {
-  --duration-fast: 120ms;
-  --duration-default: 200ms;
-  --duration-slow: 320ms;
+    --duration-fast: 120ms;
+    --duration-default: 200ms;
+    --duration-slow: 320ms;
 }
 ```
 
@@ -108,12 +108,12 @@ Forget "500ms for everything." Use purpose-based categories.
 
 ```css
 :root {
-  --ease-out: cubic-bezier(0, 0, 0.2, 1); /* Enter */
-  --ease-in: cubic-bezier(0.4, 0, 1, 1); /* Exit */
-  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1); /* Change */
+    --ease-out: cubic-bezier(0, 0, 0.2, 1); /* Enter */
+    --ease-in: cubic-bezier(0.4, 0, 1, 1); /* Exit */
+    --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1); /* Change */
 
-  /* Alternative: slightly more "alive" */
-  --ease-emphasized: cubic-bezier(0.2, 0, 0, 1);
+    /* Alternative: slightly more "alive" */
+    --ease-emphasized: cubic-bezier(0.2, 0, 0, 1);
 }
 ```
 
@@ -151,15 +151,15 @@ Maximum effect, minimum risk.
 
 ```css
 .button {
-  transition:
-    background-color 120ms var(--ease-out),
-    transform 90ms var(--ease-out);
+    transition:
+        background-color 120ms var(--ease-out),
+        transform 90ms var(--ease-out);
 }
 .button:hover {
-  background-color: var(--primary-hover);
+    background-color: var(--primary-hover);
 }
 .button:active {
-  transform: scale(0.98);
+    transform: scale(0.98);
 }
 ```
 
@@ -181,13 +181,13 @@ Maximum effect, minimum risk.
 
 ```css
 .list-item-enter {
-  opacity: 0;
-  transform: translateY(-8px);
+    opacity: 0;
+    transform: translateY(-8px);
 }
 .list-item-enter-active {
-  opacity: 1;
-  transform: translateY(0);
-  transition: all 200ms var(--ease-out);
+    opacity: 1;
+    transform: translateY(0);
+    transition: all 200ms var(--ease-out);
 }
 ```
 
@@ -201,15 +201,15 @@ Maximum effect, minimum risk.
 
 ```css
 .modal {
-  opacity: 0;
-  transform: scale(0.95);
-  transition:
-    opacity 200ms var(--ease-out),
-    transform 200ms var(--ease-out);
+    opacity: 0;
+    transform: scale(0.95);
+    transition:
+        opacity 200ms var(--ease-out),
+        transform 200ms var(--ease-out);
 }
 .modal.open {
-  opacity: 1;
-  transform: scale(1);
+    opacity: 1;
+    transform: scale(1);
 }
 ```
 
@@ -223,20 +223,20 @@ Define these to prevent chaos across your team.
 
 ```css
 :root {
-  /* Durations */
-  --duration-fast: 120ms;
-  --duration-default: 200ms;
-  --duration-slow: 320ms;
+    /* Durations */
+    --duration-fast: 120ms;
+    --duration-default: 200ms;
+    --duration-slow: 320ms;
 
-  /* Easings */
-  --ease-out: cubic-bezier(0, 0, 0.2, 1);
-  --ease-in: cubic-bezier(0.4, 0, 1, 1);
-  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+    /* Easings */
+    --ease-out: cubic-bezier(0, 0, 0.2, 1);
+    --ease-in: cubic-bezier(0.4, 0, 1, 1);
+    --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
 
-  /* Distances (for micro slides) */
-  --motion-distance-sm: 4px;
-  --motion-distance-md: 8px;
-  --motion-distance-lg: 16px;
+    /* Distances (for micro slides) */
+    --motion-distance-sm: 4px;
+    --motion-distance-md: 8px;
+    --motion-distance-lg: 16px;
 }
 ```
 
@@ -270,19 +270,19 @@ Always provide a `prefers-reduced-motion` variant.
 ```css
 /* Default: full motion */
 .modal {
-  transform: scale(0.95);
-  opacity: 0;
-  transition:
-    transform 200ms var(--ease-out),
-    opacity 200ms var(--ease-out);
+    transform: scale(0.95);
+    opacity: 0;
+    transition:
+        transform 200ms var(--ease-out),
+        opacity 200ms var(--ease-out);
 }
 
 /* Reduced motion: fade only */
 @media (prefers-reduced-motion: reduce) {
-  .modal {
-    transform: none;
-    transition: opacity 150ms var(--ease-out);
-  }
+    .modal {
+        transform: none;
+        transition: opacity 150ms var(--ease-out);
+    }
 }
 ```
 
@@ -290,13 +290,13 @@ Always provide a `prefers-reduced-motion` variant.
 
 ```css
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
 }
 ```
 
@@ -344,14 +344,14 @@ Things that instantly make motion feel cheap:
 ```css
 /* ❌ NEVER — unpredictable, causes layout thrashing */
 .button {
-  transition: all 200ms ease;
+    transition: all 200ms ease;
 }
 
 /* ✅ ALWAYS — explicit properties only */
 .button {
-  transition:
-    background-color 120ms var(--ease-out),
-    transform 90ms var(--ease-out);
+    transition:
+        background-color 120ms var(--ease-out),
+        transform 90ms var(--ease-out);
 }
 ```
 
@@ -369,13 +369,13 @@ For scale/rotate animations, set `transform-origin` explicitly:
 ```css
 /* Dropdown appearing from top-right corner */
 .dropdown {
-  transform-origin: top right;
-  transform: scale(0.95);
-  opacity: 0;
+    transform-origin: top right;
+    transform: scale(0.95);
+    opacity: 0;
 }
 .dropdown.open {
-  transform: scale(1);
-  opacity: 1;
+    transform: scale(1);
+    opacity: 1;
 }
 ```
 
@@ -393,14 +393,14 @@ Transforms on SVG elements behave differently. Wrap in `<g>`:
 ```css
 /* ❌ Won't work as expected */
 svg path {
-  transform: rotate(45deg);
+    transform: rotate(45deg);
 }
 
 /* ✅ Works correctly */
 svg g.icon-wrapper {
-  transform-box: fill-box;
-  transform-origin: center;
-  transform: rotate(45deg);
+    transform-box: fill-box;
+    transform-origin: center;
+    transform: rotate(45deg);
 }
 ```
 
@@ -411,7 +411,7 @@ User input should be able to interrupt any animation mid-flight:
 ```css
 /* Animation responds to new state immediately */
 .panel {
-  transition: transform 300ms var(--ease-out);
+    transition: transform 300ms var(--ease-out);
 }
 /* No need for animation-fill-mode: forwards or delays that block interaction */
 ```
@@ -452,48 +452,48 @@ Reference implementation:
 
 ```css
 :root {
-  /* ===== DURATIONS ===== */
-  --duration-instant: 0ms;
-  --duration-fast: 120ms;
-  --duration-default: 200ms;
-  --duration-slow: 320ms;
-  --duration-slower: 400ms;
+    /* ===== DURATIONS ===== */
+    --duration-instant: 0ms;
+    --duration-fast: 120ms;
+    --duration-default: 200ms;
+    --duration-slow: 320ms;
+    --duration-slower: 400ms;
 
-  /* ===== EASINGS ===== */
-  /* Standard (Material-inspired) */
-  --ease-out: cubic-bezier(0, 0, 0.2, 1);
-  --ease-in: cubic-bezier(0.4, 0, 1, 1);
-  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+    /* ===== EASINGS ===== */
+    /* Standard (Material-inspired) */
+    --ease-out: cubic-bezier(0, 0, 0.2, 1);
+    --ease-in: cubic-bezier(0.4, 0, 1, 1);
+    --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
 
-  /* Emphasized (more "alive") */
-  --ease-emphasized: cubic-bezier(0.2, 0, 0, 1);
-  --ease-emphasized-decel: cubic-bezier(0.05, 0.7, 0.1, 1);
+    /* Emphasized (more "alive") */
+    --ease-emphasized: cubic-bezier(0.2, 0, 0, 1);
+    --ease-emphasized-decel: cubic-bezier(0.05, 0.7, 0.1, 1);
 
-  /* ===== DISTANCES ===== */
-  --motion-distance-xs: 2px;
-  --motion-distance-sm: 4px;
-  --motion-distance-md: 8px;
-  --motion-distance-lg: 16px;
-  --motion-distance-xl: 24px;
+    /* ===== DISTANCES ===== */
+    --motion-distance-xs: 2px;
+    --motion-distance-sm: 4px;
+    --motion-distance-md: 8px;
+    --motion-distance-lg: 16px;
+    --motion-distance-xl: 24px;
 
-  /* ===== SPRINGS (for JS libraries) ===== */
-  /* Use in Framer Motion / Motion */
-  /* Snappy: { stiffness: 400, damping: 30 } */
-  /* Smooth: { stiffness: 200, damping: 20 } */
-  /* Bouncy: { stiffness: 300, damping: 15 } — use sparingly */
+    /* ===== SPRINGS (for JS libraries) ===== */
+    /* Use in Framer Motion / Motion */
+    /* Snappy: { stiffness: 400, damping: 30 } */
+    /* Smooth: { stiffness: 200, damping: 20 } */
+    /* Bouncy: { stiffness: 300, damping: 15 } — use sparingly */
 }
 
 /* ===== REDUCED MOTION ===== */
 @media (prefers-reduced-motion: reduce) {
-  :root {
-    --duration-fast: 0ms;
-    --duration-default: 0ms;
-    --duration-slow: 100ms;
-    --duration-slower: 100ms;
-    --motion-distance-sm: 0px;
-    --motion-distance-md: 0px;
-    --motion-distance-lg: 0px;
-  }
+    :root {
+        --duration-fast: 0ms;
+        --duration-default: 0ms;
+        --duration-slow: 100ms;
+        --duration-slower: 100ms;
+        --motion-distance-sm: 0px;
+        --motion-distance-md: 0px;
+        --motion-distance-lg: 0px;
+    }
 }
 ```
 

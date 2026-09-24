@@ -1,10 +1,10 @@
 import '@/global.css';
 
 import {
-  Roboto_400Regular,
-  Roboto_500Medium,
-  Roboto_600SemiBold,
-  Roboto_700Bold,
+    Roboto_400Regular,
+    Roboto_500Medium,
+    Roboto_600SemiBold,
+    Roboto_700Bold,
 } from '@expo-google-fonts/roboto';
 import { themeColorsHex } from '@navis/theme';
 import { AppBackdrop } from '@/components/navigation/app-backdrop';
@@ -33,122 +33,126 @@ void SplashScreen.preventAutoHideAsync();
 
 /** Pantallas que viven fuera de las pestañas y se abren desde el menú «Más». */
 const stackScreens = MORE_MENU_ENTRIES.map(({ name, labelKey }) => ({
-  name,
-  titleKey: labelKey,
+    name,
+    titleKey: labelKey,
 }));
 
 function RootNavigator() {
-  const { t } = useTranslation();
-  const resolvedTheme = useThemeStore((state) => state.resolvedTheme);
-  const palette = themeColorsHex[resolvedTheme];
-  const navigationTheme = useNavigationTheme();
-  // El estilo que pide la pantalla enfocada (hero del panel, escena de
-  // creyentes, ficha); sin reclamante, el del tema. Las pantallas con fondo
-  // propio en la zona segura reclaman vía `useStatusBarClaim`.
-  const reclamado = useStatusBarStore((state) => state.style);
+    const { t } = useTranslation();
+    const resolvedTheme = useThemeStore((state) => state.resolvedTheme);
+    const palette = themeColorsHex[resolvedTheme];
+    const navigationTheme = useNavigationTheme();
+    // El estilo que pide la pantalla enfocada (hero del panel, escena de
+    // creyentes, ficha); sin reclamante, el del tema. Las pantallas con fondo
+    // propio en la zona segura reclaman vía `useStatusBarClaim`.
+    const reclamado = useStatusBarStore((state) => state.style);
 
-  return (
-    <ThemeProvider value={navigationTheme}>
-      <StatusBar style={reclamado ?? (resolvedTheme === 'dark' ? 'light' : 'dark')} />
-      <AppBackdrop />
-      <Stack
-        screenOptions={{
-          headerShown: false,
-          headerStyle: { backgroundColor: palette.card },
-          headerTintColor: palette.foreground,
-          // Transparente a propósito: el fondo lo pinta `AppBackdrop`, montado
-          // una sola vez detrás del Stack (como en Dreamkeeper).
-          contentStyle: { backgroundColor: 'transparent' },
-        }}
-      >
-        <Stack.Screen name="index" />
-        <Stack.Screen name="(tabs)" />
-        <Stack.Screen name="(auth)" />
-        {stackScreens.map(({ name, titleKey }) => (
-          <Stack.Screen
-            key={name}
-            name={name}
-            options={{ headerShown: true, title: t(titleKey), animation: PUSHED_SCREEN_ANIMATION }}
-          />
-        ))}
-        <Stack.Screen
-          name="components"
-          options={{
-            headerShown: true,
-            title: t('catalog.title'),
-            animation: PUSHED_SCREEN_ANIMATION,
-          }}
-        />
-        <Stack.Screen
-          name="believers/[id]"
-          options={{ headerShown: false, animation: PUSHED_SCREEN_ANIMATION }}
-        />
-        <Stack.Screen
-          name="calendar/settings"
-          options={{ headerShown: false, animation: PUSHED_SCREEN_ANIMATION }}
-        />
-        <Stack.Screen
-          name="calendar/balance"
-          options={{ headerShown: false, animation: PUSHED_SCREEN_ANIMATION }}
-        />
-        <Stack.Screen
-          name="believers/catalog"
-          options={{ headerShown: false, animation: PUSHED_SCREEN_ANIMATION }}
-        />
-        <Stack.Screen
-          name="prophecies/list"
-          options={{ headerShown: false, animation: PUSHED_SCREEN_ANIMATION }}
-        />
-        <Stack.Screen
-          name="prophecies/[id]"
-          options={{ headerShown: false, animation: PUSHED_SCREEN_ANIMATION }}
-        />
-        <Stack.Screen
-          name="+not-found"
-          options={{ headerShown: true, title: t('errors.notFound') }}
-        />
-      </Stack>
-    </ThemeProvider>
-  );
+    return (
+        <ThemeProvider value={navigationTheme}>
+            <StatusBar style={reclamado ?? (resolvedTheme === 'dark' ? 'light' : 'dark')} />
+            <AppBackdrop />
+            <Stack
+                screenOptions={{
+                    headerShown: false,
+                    headerStyle: { backgroundColor: palette.card },
+                    headerTintColor: palette.foreground,
+                    // Transparente a propósito: el fondo lo pinta `AppBackdrop`, montado
+                    // una sola vez detrás del Stack (como en Dreamkeeper).
+                    contentStyle: { backgroundColor: 'transparent' },
+                }}
+            >
+                <Stack.Screen name="index" />
+                <Stack.Screen name="(tabs)" />
+                <Stack.Screen name="(auth)" />
+                {stackScreens.map(({ name, titleKey }) => (
+                    <Stack.Screen
+                        key={name}
+                        name={name}
+                        options={{
+                            headerShown: true,
+                            title: t(titleKey),
+                            animation: PUSHED_SCREEN_ANIMATION,
+                        }}
+                    />
+                ))}
+                <Stack.Screen
+                    name="components"
+                    options={{
+                        headerShown: true,
+                        title: t('catalog.title'),
+                        animation: PUSHED_SCREEN_ANIMATION,
+                    }}
+                />
+                <Stack.Screen
+                    name="believers/[id]"
+                    options={{ headerShown: false, animation: PUSHED_SCREEN_ANIMATION }}
+                />
+                <Stack.Screen
+                    name="calendar/settings"
+                    options={{ headerShown: false, animation: PUSHED_SCREEN_ANIMATION }}
+                />
+                <Stack.Screen
+                    name="calendar/balance"
+                    options={{ headerShown: false, animation: PUSHED_SCREEN_ANIMATION }}
+                />
+                <Stack.Screen
+                    name="believers/catalog"
+                    options={{ headerShown: false, animation: PUSHED_SCREEN_ANIMATION }}
+                />
+                <Stack.Screen
+                    name="prophecies/list"
+                    options={{ headerShown: false, animation: PUSHED_SCREEN_ANIMATION }}
+                />
+                <Stack.Screen
+                    name="prophecies/[id]"
+                    options={{ headerShown: false, animation: PUSHED_SCREEN_ANIMATION }}
+                />
+                <Stack.Screen
+                    name="+not-found"
+                    options={{ headerShown: true, title: t('errors.notFound') }}
+                />
+            </Stack>
+        </ThemeProvider>
+    );
 }
 
 export default function RootLayout() {
-  // La pareja tipográfica de Navis (packages/theme/src/fonts.ts): se carga
-  // una sola vez, aquí, bajo los mismos nombres que usan los `--font-*` de
-  // `tokens.native.css`. Sin esperar a `fontsLoaded`, el primer fotograma
-  // saldría con la fuente del sistema y se vería el salto al llegar la real.
-  const [fontsLoaded] = useFonts({
-    Roboto_400Regular,
-    Roboto_500Medium,
-    Roboto_600SemiBold,
-    Roboto_700Bold,
-  });
+    // La pareja tipográfica de Navis (packages/theme/src/fonts.ts): se carga
+    // una sola vez, aquí, bajo los mismos nombres que usan los `--font-*` de
+    // `tokens.native.css`. Sin esperar a `fontsLoaded`, el primer fotograma
+    // saldría con la fuente del sistema y se vería el salto al llegar la real.
+    const [fontsLoaded] = useFonts({
+        Roboto_400Regular,
+        Roboto_500Medium,
+        Roboto_600SemiBold,
+        Roboto_700Bold,
+    });
 
-  useEffect(() => {
-    // El store de tema rehidrata desde AsyncStorage de forma asíncrona; se
-    // oculta el splash cuando ya sabemos qué tema pintar y ya está la fuente.
-    if (fontsLoaded) {
-      void SplashScreen.hideAsync();
+    useEffect(() => {
+        // El store de tema rehidrata desde AsyncStorage de forma asíncrona; se
+        // oculta el splash cuando ya sabemos qué tema pintar y ya está la fuente.
+        if (fontsLoaded) {
+            void SplashScreen.hideAsync();
+        }
+        // El usuario de prueba se siembra **al arrancar**, como en Dreamkeeper:
+        // `demo@navis.app` con sus veinte registros, si no estaba ya. No espera ni
+        // lanza: cuando termine, la cuenta simplemente estará en el login.
+        void initializeTestUser();
+    }, [fontsLoaded]);
+
+    if (!fontsLoaded) {
+        return null;
     }
-    // El usuario de prueba se siembra **al arrancar**, como en Dreamkeeper:
-    // `demo@navis.app` con sus veinte registros, si no estaba ya. No espera ni
-    // lanza: cuando termine, la cuenta simplemente estará en el login.
-    void initializeTestUser();
-  }, [fontsLoaded]);
 
-  if (!fontsLoaded) {
-    return null;
-  }
-
-  return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaProvider>
-        <I18nextProvider i18n={i18n}>
-          <QueryClientProvider client={queryClient}>
-            <RootNavigator />
-          </QueryClientProvider>
-        </I18nextProvider>
-      </SafeAreaProvider>
-    </GestureHandlerRootView>
-  );
+    return (
+        <GestureHandlerRootView style={{ flex: 1 }}>
+            <SafeAreaProvider>
+                <I18nextProvider i18n={i18n}>
+                    <QueryClientProvider client={queryClient}>
+                        <RootNavigator />
+                    </QueryClientProvider>
+                </I18nextProvider>
+            </SafeAreaProvider>
+        </GestureHandlerRootView>
+    );
 }

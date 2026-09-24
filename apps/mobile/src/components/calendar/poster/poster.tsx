@@ -34,138 +34,144 @@ const FOOTER_H = 61; // Línea de 17 px con 14 de aire y 30 de pie.
  * carga nada de fuera.
  */
 export function Poster({
-  range,
-  aspect,
-  churchName,
-  subtitle,
-  title,
-  month,
-  congregationName,
-  congregationAccent,
-  showCongregation,
-  width,
+    range,
+    aspect,
+    churchName,
+    subtitle,
+    title,
+    month,
+    congregationName,
+    congregationAccent,
+    showCongregation,
+    width,
 }: {
-  range: CalendarRange;
-  aspect: PosterAspect;
-  churchName: string;
-  /** El calendario y, si va sola, la sede: sale en la cabecera. */
-  subtitle?: string;
-  title: string;
-  /** `AAAA-MM`: en apaisada, los días de otro mes van apagados. */
-  month: string;
-  congregationName: (id: string) => string;
-  congregationAccent: (id: string) => string;
-  showCongregation: boolean;
-  /** El ancho con el que se pinta; el alto sale del `viewBox`. */
-  width: number;
+    range: CalendarRange;
+    aspect: PosterAspect;
+    churchName: string;
+    /** El calendario y, si va sola, la sede: sale en la cabecera. */
+    subtitle?: string;
+    title: string;
+    /** `AAAA-MM`: en apaisada, los días de otro mes van apagados. */
+    month: string;
+    congregationName: (id: string) => string;
+    congregationAccent: (id: string) => string;
+    showCongregation: boolean;
+    /** El ancho con el que se pinta; el alto sale del `viewBox`. */
+    width: number;
 }) {
-  const { t } = useTranslation();
-  const theme = useThemeStore<ResolvedTheme>((state) => state.resolvedTheme);
-  const pal = posterPalette(theme);
-  const baseW = posterWidth(aspect, range);
+    const { t } = useTranslation();
+    const theme = useThemeStore<ResolvedTheme>((state) => state.resolvedTheme);
+    const pal = posterPalette(theme);
+    const baseW = posterWidth(aspect, range);
 
-  // La guía de colores: qué color es cada sede, para que el color de las
-  // columnas/cintas/tarjetas (arriba, en poster-table.tsx, poster-days.tsx y
-  // poster-grid.tsx) diga algo. En los tres formatos ese color pasa a
-  // representar la sede en cuanto hay más de una a la vista.
-  const LEGEND_TOP = TITLE_BASE + 18; // El aire bajo la línea del título.
-  const legend = showCongregation
-    ? posterLegend({
-        range,
-        pal,
-        top: LEGEND_TOP,
-        left: 44,
-        maxWidth: baseW - 88,
-        congregationName,
-        congregationAccent,
-      })
-    : null;
-  const bodyTop = legend && legend.alto > 0 ? LEGEND_TOP + legend.alto + 14 : BODY_TOP;
-
-  const body =
-    aspect === 'portrait'
-      ? posterDays({
-          range,
-          pal,
-          top: bodyTop,
-          congregationName,
-          congregationAccent,
-          showCongregation,
-          unassignedLabel: t('calendar.unassigned'),
-        })
-      : aspect === 'table'
-        ? posterTable({
-            range,
-            pal,
-            top: bodyTop,
-            congregationName,
-            congregationAccent,
-            showCongregation,
+    // La guía de colores: qué color es cada sede, para que el color de las
+    // columnas/cintas/tarjetas (arriba, en poster-table.tsx, poster-days.tsx y
+    // poster-grid.tsx) diga algo. En los tres formatos ese color pasa a
+    // representar la sede en cuanto hay más de una a la vista.
+    const LEGEND_TOP = TITLE_BASE + 18; // El aire bajo la línea del título.
+    const legend = showCongregation
+        ? posterLegend({
+              range,
+              pal,
+              top: LEGEND_TOP,
+              left: 44,
+              maxWidth: baseW - 88,
+              congregationName,
+              congregationAccent,
           })
-        : posterGrid({
-            range,
-            pal,
-            top: bodyTop,
-            month,
-            congregationName,
-            congregationAccent,
-            showCongregation,
-          });
+        : null;
+    const bodyTop = legend && legend.alto > 0 ? LEGEND_TOP + legend.alto + 14 : BODY_TOP;
 
-  const alto = bodyTop + body.alto + BODY_BOTTOM_PAD + FOOTER_H;
-  const footerY = bodyTop + body.alto + BODY_BOTTOM_PAD + 14;
+    const body =
+        aspect === 'portrait'
+            ? posterDays({
+                  range,
+                  pal,
+                  top: bodyTop,
+                  congregationName,
+                  congregationAccent,
+                  showCongregation,
+                  unassignedLabel: t('calendar.unassigned'),
+              })
+            : aspect === 'table'
+              ? posterTable({
+                    range,
+                    pal,
+                    top: bodyTop,
+                    congregationName,
+                    congregationAccent,
+                    showCongregation,
+                })
+              : posterGrid({
+                    range,
+                    pal,
+                    top: bodyTop,
+                    month,
+                    congregationName,
+                    congregationAccent,
+                    showCongregation,
+                });
 
-  return (
-    <Svg
-      width={width}
-      height={Math.round((alto * width) / baseW)}
-      viewBox={`0 0 ${String(baseW)} ${String(alto)}`}
-    >
-      <Rect x={0} y={0} width={baseW} height={alto} fill={pal.background} />
+    const alto = bodyTop + body.alto + BODY_BOTTOM_PAD + FOOTER_H;
+    const footerY = bodyTop + body.alto + BODY_BOTTOM_PAD + 14;
 
-      {/* La banda de marca, como en la web: el barco en blanco y el nombre. */}
-      <Rect x={0} y={0} width={baseW} height={BAND_H} fill={brandColorHex} />
-      <BoatGlyph size={64} x={44} y={34} fill="#ffffff" />
-      <SvgText
-        x={128}
-        y={subtitle ? 70 : 79}
-        fontSize={30}
-        fontFamily={POSTER_FONT.semiBold}
-        fill="#ffffff"
-      >
-        {churchName}
-      </SvgText>
-      {subtitle ? (
-        <SvgText
-          x={128}
-          y={104}
-          fontSize={22}
-          fontFamily={POSTER_FONT.regular}
-          fill="#ffffff"
-          fillOpacity={0.85}
+    return (
+        <Svg
+            width={width}
+            height={Math.round((alto * width) / baseW)}
+            viewBox={`0 0 ${String(baseW)} ${String(alto)}`}
         >
-          {subtitle}
-        </SvgText>
-      ) : null}
+            <Rect x={0} y={0} width={baseW} height={alto} fill={pal.background} />
 
-      <SvgText
-        x={44}
-        y={TITLE_BASE}
-        fontSize={40}
-        fontFamily={POSTER_FONT.semiBold}
-        fill={pal.foreground}
-      >
-        {title}
-      </SvgText>
+            {/* La banda de marca, como en la web: el barco en blanco y el nombre. */}
+            <Rect x={0} y={0} width={baseW} height={BAND_H} fill={brandColorHex} />
+            <BoatGlyph size={64} x={44} y={34} fill="#ffffff" />
+            <SvgText
+                x={128}
+                y={subtitle ? 70 : 79}
+                fontSize={30}
+                fontFamily={POSTER_FONT.semiBold}
+                fill="#ffffff"
+            >
+                {churchName}
+            </SvgText>
+            {subtitle ? (
+                <SvgText
+                    x={128}
+                    y={104}
+                    fontSize={22}
+                    fontFamily={POSTER_FONT.regular}
+                    fill="#ffffff"
+                    fillOpacity={0.85}
+                >
+                    {subtitle}
+                </SvgText>
+            ) : null}
 
-      {legend?.nodes}
-      {body.nodes}
+            <SvgText
+                x={44}
+                y={TITLE_BASE}
+                fontSize={40}
+                fontFamily={POSTER_FONT.semiBold}
+                fill={pal.foreground}
+            >
+                {title}
+            </SvgText>
 
-      <SvgText x={44} y={footerY} fontSize={17} fontFamily={POSTER_FONT.regular} fill={pal.muted}>
-        {t('calendar.generatedOn', {
-          date: formatDay(new Date().toISOString().slice(0, 10), 'short'),
-        })}
-      </SvgText>
-    </Svg>
-  );
+            {legend?.nodes}
+            {body.nodes}
+
+            <SvgText
+                x={44}
+                y={footerY}
+                fontSize={17}
+                fontFamily={POSTER_FONT.regular}
+                fill={pal.muted}
+            >
+                {t('calendar.generatedOn', {
+                    date: formatDay(new Date().toISOString().slice(0, 10), 'short'),
+                })}
+            </SvgText>
+        </Svg>
+    );
 }

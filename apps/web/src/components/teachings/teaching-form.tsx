@@ -13,30 +13,34 @@ import { api } from '@/lib/api';
  * trae un extracto (CLAUDE.md).
  */
 export function TeachingForm({
-  open,
-  onClose,
-  teachingId,
+    open,
+    onClose,
+    teachingId,
 }: {
-  open: boolean;
-  onClose: () => void;
-  /** Si viene, se edita; si no, se anota una nueva. */
-  teachingId?: string;
+    open: boolean;
+    onClose: () => void;
+    /** Si viene, se edita; si no, se anota una nueva. */
+    teachingId?: string;
 }) {
-  const { t } = useTranslation();
-  const { data: teaching } = useTeaching(api, teachingId ?? '', open && Boolean(teachingId));
+    const { t } = useTranslation();
+    const { data: teaching } = useTeaching(api, teachingId ?? '', open && Boolean(teachingId));
 
-  return (
-    <Dialog
-      open={open}
-      onClose={onClose}
-      width="min(42rem, calc(100vw - 2rem))"
-      title={teachingId ? t('teachings.edit') : t('teachings.add')}
-    >
-      {teachingId && !teaching ? (
-        <FormSkeleton />
-      ) : (
-        <TeachingFormBody key={teaching?.id ?? 'nueva'} teaching={teaching} onSaved={onClose} />
-      )}
-    </Dialog>
-  );
+    return (
+        <Dialog
+            open={open}
+            onClose={onClose}
+            width="min(42rem, calc(100vw - 2rem))"
+            title={teachingId ? t('teachings.edit') : t('teachings.add')}
+        >
+            {teachingId && !teaching ? (
+                <FormSkeleton />
+            ) : (
+                <TeachingFormBody
+                    key={teaching?.id ?? 'nueva'}
+                    teaching={teaching}
+                    onSaved={onClose}
+                />
+            )}
+        </Dialog>
+    );
 }

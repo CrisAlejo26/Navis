@@ -18,23 +18,23 @@ import { greetingKeyFor } from '@/lib/greeting';
  * que aporta.
  */
 export function WelcomeHeader({ now = new Date() }: { now?: Date }) {
-  const { t } = useTranslation();
-  const { data: session } = useSession();
+    const { t } = useTranslation();
+    const { data: session } = useSession();
 
-  const name = session?.user.name?.split(' ')[0] ?? '';
+    const name = session?.user.name?.split(' ')[0] ?? '';
 
-  return (
-    <header className="gap-3 sm:flex-row sm:items-end sm:justify-between flex flex-col">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-[-0.02em]">
-          {name ? t(greetingKeyFor(now), { name }) : t('home.title')}
-        </h1>
-        <p className="mt-1 text-sm text-muted-foreground first-letter:uppercase">
-          {formatLongDate(now)}
-        </p>
-      </div>
+    return (
+        <header className="gap-3 sm:flex-row sm:items-end sm:justify-between flex flex-col">
+            <div>
+                <h1 className="text-2xl font-semibold tracking-[-0.02em]">
+                    {name ? t(greetingKeyFor(now), { name }) : t('home.title')}
+                </h1>
+                <p className="mt-1 text-sm text-muted-foreground first-letter:uppercase">
+                    {formatLongDate(now)}
+                </p>
+            </div>
 
-      <WeatherChip />
-    </header>
-  );
+            <WeatherChip />
+        </header>
+    );
 }

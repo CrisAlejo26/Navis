@@ -13,26 +13,26 @@ export const LIST_TOKEN_LENGTH = 22;
 const TOKEN = /^[A-Za-z0-9_-]{22}$/;
 
 export function isListShareToken(value: string): boolean {
-  return TOKEN.test(value);
+    return TOKEN.test(value);
 }
 
 export const listShareTokenSchema = z
-  .string()
-  .refine(isListShareToken, 'El enlace no tiene la forma de un enlace de lista');
+    .string()
+    .refine(isListShareToken, 'El enlace no tiene la forma de un enlace de lista');
 
 /** base64url sin relleno: lo que cabe en una URL sin escaparse. */
 function toBase64Url(bytes: Uint8Array): string {
-  let binario = '';
-  for (const byte of bytes) binario += String.fromCharCode(byte);
+    let binario = '';
+    for (const byte of bytes) binario += String.fromCharCode(byte);
 
-  return btoa(binario).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    return btoa(binario).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 }
 
 export function generateListShareToken(): string {
-  const bytes = new Uint8Array(LIST_TOKEN_BYTES);
-  globalThis.crypto.getRandomValues(bytes);
+    const bytes = new Uint8Array(LIST_TOKEN_BYTES);
+    globalThis.crypto.getRandomValues(bytes);
 
-  return toBase64Url(bytes);
+    return toBase64Url(bytes);
 }
 
 /**
@@ -42,7 +42,7 @@ export function generateListShareToken(): string {
  * JavaScript, así que las etiquetas `og:` las tiene que poner el servidor.
  */
 export function listSharePath(token: string): string {
-  return `/l/${token}`;
+    return `/l/${token}`;
 }
 
 /**
@@ -52,19 +52,19 @@ export function listSharePath(token: string): string {
  * `ActiveChurchGuard` y desde la calle devuelve 401.
  */
 export function listPhotoPath(token: string, believerId: string): string {
-  return `${listSharePath(token)}/photos/${believerId}`;
+    return `${listSharePath(token)}/photos/${believerId}`;
 }
 
 /** La portada de la tarjeta, para la vista previa de WhatsApp (D18). */
 export function listCardPath(token: string): string {
-  return `${listSharePath(token)}/card.png`;
+    return `${listSharePath(token)}/card.png`;
 }
 
 /** La ruta bonita de la SPA, a la que redirige el documento anterior. */
 export function listPublicPath(token: string): string {
-  return `/lists/s/${token}`;
+    return `/lists/s/${token}`;
 }
 
 export function listShareUrl(origin: string, token: string): string {
-  return `${origin.replace(/\/+$/, '')}${listSharePath(token)}`;
+    return `${origin.replace(/\/+$/, '')}${listSharePath(token)}`;
 }

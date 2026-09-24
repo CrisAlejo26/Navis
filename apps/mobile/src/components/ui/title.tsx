@@ -17,8 +17,8 @@ const LEVELS: Record<Size, TypeLevel> = { xl: 'display', lg: 'h1', md: 'h2' };
 const TRACKING: Partial<Record<Size, number>> = { xl: -0.5, lg: -0.3 };
 
 interface TitleProps extends TextProps {
-  size?: Size;
-  className?: string;
+    size?: Size;
+    className?: string;
 }
 
 /**
@@ -31,14 +31,14 @@ interface TitleProps extends TextProps {
  * pudiendo pasarse sin perder el tamaño ni la fuente.
  */
 export function Title({ size = 'lg', className, children, style, ...props }: TitleProps) {
-  return (
-    <Text
-      accessibilityRole="header"
-      className={cn('text-foreground', className)}
-      style={[{ ...typeStyle(LEVELS[size]), letterSpacing: TRACKING[size] }, style]}
-      {...props}
-    >
-      {children}
-    </Text>
-  );
+    return (
+        <Text
+            accessibilityRole="header"
+            className={cn('text-foreground', className)}
+            style={[{ ...typeStyle(LEVELS[size]), letterSpacing: TRACKING[size] }, style]}
+            {...props}
+        >
+            {children}
+        </Text>
+    );
 }

@@ -11,13 +11,13 @@ export const CARD_WIDTH = 1080;
 const EXCERPT_LENGTH = 420;
 
 function excerptFor(text: string): { text: string; cut: boolean } {
-  const flat = text.replace(/\s+/g, ' ').trim();
-  if (flat.length <= EXCERPT_LENGTH) return { text: flat, cut: false };
+    const flat = text.replace(/\s+/g, ' ').trim();
+    if (flat.length <= EXCERPT_LENGTH) return { text: flat, cut: false };
 
-  const cortado = flat.slice(0, EXCERPT_LENGTH);
-  const ultimoEspacio = cortado.lastIndexOf(' ');
-  const cut = ultimoEspacio > EXCERPT_LENGTH / 2 ? cortado.slice(0, ultimoEspacio) : cortado;
-  return { text: cut, cut: true };
+    const cortado = flat.slice(0, EXCERPT_LENGTH);
+    const ultimoEspacio = cortado.lastIndexOf(' ');
+    const cut = ultimoEspacio > EXCERPT_LENGTH / 2 ? cortado.slice(0, ultimoEspacio) : cortado;
+    return { text: cut, cut: true };
 }
 
 /**
@@ -30,57 +30,73 @@ function excerptFor(text: string): { text: string; cut: boolean } {
  * mete el nodo en un `<foreignObject>` (`lib/share/rasterize.ts`).
  */
 export function TeachingPostcard({
-  ref,
-  teaching,
-  appName,
-  continuesLabel,
+    ref,
+    teaching,
+    appName,
+    continuesLabel,
 }: {
-  ref?: Ref<HTMLDivElement>;
-  teaching: Teaching;
-  appName: string;
-  continuesLabel: string;
+    ref?: Ref<HTMLDivElement>;
+    teaching: Teaching;
+    appName: string;
+    continuesLabel: string;
 }) {
-  const { text: plain } = extractTeachingBodyText(teaching.body);
-  const { text: excerpt, cut } = excerptFor(plain);
+    const { text: plain } = extractTeachingBodyText(teaching.body);
+    const { text: excerpt, cut } = excerptFor(plain);
 
-  return (
-    <div
-      ref={ref}
-      style={{
-        width: `${String(CARD_WIDTH)}px`,
-        background: '#ffffff',
-        color: '#101728',
-        fontFamily: 'ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif',
-        display: 'flex',
-        flexDirection: 'column',
-      }}
-    >
-      <div
-        style={{
-          background: brandColorHex,
-          color: '#ffffff',
-          padding: '32px 48px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '18px',
-        }}
-      >
-        <img src={logoBlanco} alt="" width={56} height={56} />
-        <span style={{ fontSize: '26px', fontWeight: 600 }}>{appName}</span>
-      </div>
+    return (
+        <div
+            ref={ref}
+            style={{
+                width: `${String(CARD_WIDTH)}px`,
+                background: '#ffffff',
+                color: '#101728',
+                fontFamily: 'ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif',
+                display: 'flex',
+                flexDirection: 'column',
+            }}
+        >
+            <div
+                style={{
+                    background: brandColorHex,
+                    color: '#ffffff',
+                    padding: '32px 48px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '18px',
+                }}
+            >
+                <img src={logoBlanco} alt="" width={56} height={56} />
+                <span style={{ fontSize: '26px', fontWeight: 600 }}>{appName}</span>
+            </div>
 
-      <div style={{ padding: '44px 48px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
-        <span style={{ fontSize: '20px', color: '#5b6577' }}>{formatDay(teaching.receivedAt)}</span>
+            <div
+                style={{
+                    padding: '44px 48px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '20px',
+                }}
+            >
+                <span style={{ fontSize: '20px', color: '#5b6577' }}>
+                    {formatDay(teaching.receivedAt)}
+                </span>
 
-        <p style={{ fontSize: '42px', fontWeight: 700, letterSpacing: '-0.02em', margin: 0 }}>
-          {teaching.title}
-        </p>
+                <p
+                    style={{
+                        fontSize: '42px',
+                        fontWeight: 700,
+                        letterSpacing: '-0.02em',
+                        margin: 0,
+                    }}
+                >
+                    {teaching.title}
+                </p>
 
-        <p style={{ fontSize: '26px', lineHeight: 1.6, margin: 0 }}>
-          {excerpt}
-          {cut && <span style={{ color: '#5b6577' }}> {continuesLabel}</span>}
-        </p>
-      </div>
-    </div>
-  );
+                <p style={{ fontSize: '26px', lineHeight: 1.6, margin: 0 }}>
+                    {excerpt}
+                    {cut && <span style={{ color: '#5b6577' }}> {continuesLabel}</span>}
+                </p>
+            </div>
+        </div>
+    );
 }

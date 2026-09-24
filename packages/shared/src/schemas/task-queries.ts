@@ -24,7 +24,7 @@ export type TaskSort = (typeof TASK_SORTS)[number];
 export const DEFAULT_TASK_SORT: TaskSort = 'nearest';
 
 export function isTaskSort(value: string): value is TaskSort {
-  return (TASK_SORTS as readonly string[]).includes(value);
+    return (TASK_SORTS as readonly string[]).includes(value);
 }
 
 /**
@@ -35,56 +35,56 @@ export function isTaskSort(value: string): value is TaskSort {
  * propone hoy más 30 días.
  */
 export interface TasksQuery {
-  from?: string;
-  to?: string;
-  page?: number;
-  limit?: number;
-  /** Contra el título y la descripción, sin acentos. */
-  search?: string;
-  /** Repetible: varias etiquetas suman. */
-  tag?: readonly string[];
-  reminder?: 'with' | 'without';
-  hideCompleted?: boolean;
-  sort?: TaskSort;
+    from?: string;
+    to?: string;
+    page?: number;
+    limit?: number;
+    /** Contra el título y la descripción, sin acentos. */
+    search?: string;
+    /** Repetible: varias etiquetas suman. */
+    tag?: readonly string[];
+    reminder?: 'with' | 'without';
+    hideCompleted?: boolean;
+    sort?: TaskSort;
 }
 
 /** Una semana del gráfico de barras apiladas (§9.4). */
 export interface TaskStatsWeek {
-  /** El lunes de esa semana. */
-  week: string;
-  completed: number;
-  pending: number;
+    /** El lunes de esa semana. */
+    week: string;
+    completed: number;
+    pending: number;
 }
 
 export interface TaskStatsByPriority {
-  priority: TaskPriority;
-  count: number;
+    priority: TaskPriority;
+    count: number;
 }
 
 export interface TaskStatsByTag {
-  tagId: string;
-  name: string;
-  icon: string;
-  accent: string;
-  count: number;
+    tagId: string;
+    name: string;
+    icon: string;
+    accent: string;
+    count: number;
 }
 
 /** Un día de los últimos noventa, para la tira del Faro a escala. */
 export interface TaskStreakDay {
-  date: string;
-  completed: boolean;
-  /** Sin ninguna tarea prevista: no cuenta ni a favor ni en contra (D8). */
-  empty: boolean;
+    date: string;
+    completed: boolean;
+    /** Sin ninguna tarea prevista: no cuenta ni a favor ni en contra (D8). */
+    empty: boolean;
 }
 
 /** Las cuentas de «Estadísticas» (§9.4). */
 export interface TaskStats {
-  byWeek: TaskStatsWeek[];
-  byPriority: TaskStatsByPriority[];
-  byTag: TaskStatsByTag[];
-  /** Tasa de cumplimiento semanal, para la línea de tendencia. */
-  trend: { week: string; rate: number }[];
-  streak90: TaskStreakDay[];
-  currentStreak: number;
-  longestStreak: number;
+    byWeek: TaskStatsWeek[];
+    byPriority: TaskStatsByPriority[];
+    byTag: TaskStatsByTag[];
+    /** Tasa de cumplimiento semanal, para la línea de tendencia. */
+    trend: { week: string; rate: number }[];
+    streak90: TaskStreakDay[];
+    currentStreak: number;
+    longestStreak: number;
 }

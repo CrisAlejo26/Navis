@@ -9,8 +9,8 @@ import { cn } from '@/lib/cn';
 
 /** Lunes es 0 en la cabecera y domingo es 0 en el dato: se traduce una vez. */
 function weekdayLabel(weekday: number): string {
-  const headings = weekdayHeadings();
-  return headings[(weekday + 6) % 7]?.label ?? '';
+    const headings = weekdayHeadings();
+    return headings[(weekday + 6) % 7]?.label ?? '';
 }
 
 /**
@@ -21,89 +21,95 @@ function weekdayLabel(weekday: number): string {
  * decisiones tomadas (D7).
  */
 export function PatternRows({
-  patterns,
-  congregations,
-  onEdit,
-  onDelete,
+    patterns,
+    congregations,
+    onEdit,
+    onDelete,
 }: {
-  patterns: readonly MeetingPattern[];
-  congregations: readonly Congregation[];
-  onEdit: (pattern: MeetingPattern) => void;
-  /** Lo confirma `DeletePatternDialog`: aquí solo se pide. */
-  onDelete: (pattern: MeetingPattern) => void;
+    patterns: readonly MeetingPattern[];
+    congregations: readonly Congregation[];
+    onEdit: (pattern: MeetingPattern) => void;
+    /** Lo confirma `DeletePatternDialog`: aquí solo se pide. */
+    onDelete: (pattern: MeetingPattern) => void;
 }) {
-  const { t } = useTranslation();
-  const varias = congregations.length > 1;
+    const { t } = useTranslation();
+    const varias = congregations.length > 1;
 
-  return (
-    <div className="gap-5 flex flex-col">
-      {congregations.map((congregation) => {
-        const suyas = patterns.filter((one) => one.congregationId === congregation.id);
-        if (suyas.length === 0) return null;
+    return (
+        <div className="gap-5 flex flex-col">
+            {congregations.map((congregation) => {
+                const suyas = patterns.filter((one) => one.congregationId === congregation.id);
+                if (suyas.length === 0) return null;
 
-        return (
-          <section key={congregation.id}>
-            {varias && (
-              <h3
-                style={accentVars(congregation.accent)}
-                className={cn(
-                  'mb-1 font-semibold text-[11px] tracking-[0.14em] uppercase',
-                  ACCENT_TEXT,
-                )}
-              >
-                {congregation.name}
-              </h3>
-            )}
+                return (
+                    <section key={congregation.id}>
+                        {varias && (
+                            <h3
+                                style={accentVars(congregation.accent)}
+                                className={cn(
+                                    'mb-1 font-semibold text-[11px] tracking-[0.14em] uppercase',
+                                    ACCENT_TEXT,
+                                )}
+                            >
+                                {congregation.name}
+                            </h3>
+                        )}
 
-            <ul className="divide-y">
-              {suyas.map((pattern) => (
-                <li key={pattern.id} className="gap-3 py-3 flex items-center">
-                  <span
-                    aria-hidden
-                    style={accentVars(pattern.accent)}
-                    className={cn('h-8 w-1.5 shrink-0 rounded-full', ACCENT_RAIL)}
-                  />
+                        <ul className="divide-y">
+                            {suyas.map((pattern) => (
+                                <li key={pattern.id} className="gap-3 py-3 flex items-center">
+                                    <span
+                                        aria-hidden
+                                        style={accentVars(pattern.accent)}
+                                        className={cn(
+                                            'h-8 w-1.5 shrink-0 rounded-full',
+                                            ACCENT_RAIL,
+                                        )}
+                                    />
 
-                  <span className="min-w-0 flex-1">
-                    <span className="gap-2 flex items-baseline">
-                      <span className="font-medium truncate">{pattern.name}</span>
-                      <span className="text-xs text-muted-foreground">
-                        {weekdayLabel(pattern.weekday)} · {pattern.startTime.slice(0, 5)}
-                      </span>
-                    </span>
-                    <span className="text-xs block truncate text-muted-foreground">
-                      {pattern.phases.map((phase) => phase.name).join(' · ')}
-                    </span>
-                  </span>
+                                    <span className="min-w-0 flex-1">
+                                        <span className="gap-2 flex items-baseline">
+                                            <span className="font-medium truncate">
+                                                {pattern.name}
+                                            </span>
+                                            <span className="text-xs text-muted-foreground">
+                                                {weekdayLabel(pattern.weekday)} ·{' '}
+                                                {pattern.startTime.slice(0, 5)}
+                                            </span>
+                                        </span>
+                                        <span className="text-xs block truncate text-muted-foreground">
+                                            {pattern.phases.map((phase) => phase.name).join(' · ')}
+                                        </span>
+                                    </span>
 
-                  <Button
-                    aria-label={`${t('common.edit')}: ${pattern.name}`}
-                    onClick={() => {
-                      onEdit(pattern);
-                    }}
-                    variant="ghost"
-                    size="icon"
-                  >
-                    <Pencil size={15} aria-hidden />
-                  </Button>
+                                    <Button
+                                        aria-label={`${t('common.edit')}: ${pattern.name}`}
+                                        onClick={() => {
+                                            onEdit(pattern);
+                                        }}
+                                        variant="ghost"
+                                        size="icon"
+                                    >
+                                        <Pencil size={15} aria-hidden />
+                                    </Button>
 
-                  <Button
-                    aria-label={`${t('common.delete')}: ${pattern.name}`}
-                    onClick={() => {
-                      onDelete(pattern);
-                    }}
-                    variant="ghost"
-                    size="icon"
-                    className="hover:bg-destructive/10 hover:text-destructive"
-                  >
-                    <Trash2 size={15} aria-hidden />
-                  </Button>
-                </li>
-              ))}
-            </ul>
-          </section>
-        );
-      })}
-    </div>
-  );
+                                    <Button
+                                        aria-label={`${t('common.delete')}: ${pattern.name}`}
+                                        onClick={() => {
+                                            onDelete(pattern);
+                                        }}
+                                        variant="ghost"
+                                        size="icon"
+                                        className="hover:bg-destructive/10 hover:text-destructive"
+                                    >
+                                        <Trash2 size={15} aria-hidden />
+                                    </Button>
+                                </li>
+                            ))}
+                        </ul>
+                    </section>
+                );
+            })}
+        </div>
+    );
 }

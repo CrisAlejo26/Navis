@@ -16,23 +16,23 @@ const GLYPH_SIZE: Record<Size, number> = { sm: 16, md: 20, lg: 24 };
 const CONTAINER_SIZE: Record<Size, number> = { sm: 28, md: 34, lg: 40 };
 
 interface IconProps {
-  name: IoniconName;
-  size?: Size;
-  tone?: Tone;
-  background?: Background;
-  shape?: Shape;
-  className?: string;
-  /**
-   * Color explícito del glifo, para los casos sobre una ilustración de fondo
-   * donde ningún tono del tema es el que toca. Con él, el tono se ignora.
-   */
-  color?: string;
-  /**
-   * Solo hace falta cuando el icono va solo, sin texto al lado (Regla 2):
-   * con etiqueta se anuncia; sin ella, se oculta del lector de pantalla en
-   * vez de leerse dos veces junto al texto que ya lo acompaña.
-   */
-  accessibilityLabel?: string;
+    name: IoniconName;
+    size?: Size;
+    tone?: Tone;
+    background?: Background;
+    shape?: Shape;
+    className?: string;
+    /**
+     * Color explícito del glifo, para los casos sobre una ilustración de fondo
+     * donde ningún tono del tema es el que toca. Con él, el tono se ignora.
+     */
+    color?: string;
+    /**
+     * Solo hace falta cuando el icono va solo, sin texto al lado (Regla 2):
+     * con etiqueta se anuncia; sin ella, se oculta del lector de pantalla en
+     * vez de leerse dos veces junto al texto que ya lo acompaña.
+     */
+    accessibilityLabel?: string;
 }
 
 /**
@@ -44,46 +44,46 @@ interface IconProps {
  * `TileHeader`, que ahora reutiliza este componente).
  */
 export function Icon({
-  name,
-  size = 'md',
-  tone = 'default',
-  background = 'none',
-  shape = 'circle',
-  className,
-  color,
-  accessibilityLabel,
+    name,
+    size = 'md',
+    tone = 'default',
+    background = 'none',
+    shape = 'circle',
+    className,
+    color,
+    accessibilityLabel,
 }: IconProps) {
-  const palette = themeColorsHex[useThemeStore((state) => state.resolvedTheme)];
-  const toneHex = color ?? (tone === 'default' ? palette.mutedForeground : palette[tone]);
+    const palette = themeColorsHex[useThemeStore((state) => state.resolvedTheme)];
+    const toneHex = color ?? (tone === 'default' ? palette.mutedForeground : palette[tone]);
 
-  const glyph = (
-    <Ionicons
-      name={name}
-      size={GLYPH_SIZE[size]}
-      color={toneHex}
-      accessible={Boolean(accessibilityLabel)}
-      accessibilityLabel={accessibilityLabel}
-      accessibilityElementsHidden={!accessibilityLabel}
-      importantForAccessibility={accessibilityLabel ? 'yes' : 'no-hide-descendants'}
-    />
-  );
+    const glyph = (
+        <Ionicons
+            name={name}
+            size={GLYPH_SIZE[size]}
+            color={toneHex}
+            accessible={Boolean(accessibilityLabel)}
+            accessibilityLabel={accessibilityLabel}
+            accessibilityElementsHidden={!accessibilityLabel}
+            importantForAccessibility={accessibilityLabel ? 'yes' : 'no-hide-descendants'}
+        />
+    );
 
-  if (background === 'none') {
-    return glyph;
-  }
+    if (background === 'none') {
+        return glyph;
+    }
 
-  const box = CONTAINER_SIZE[size];
+    const box = CONTAINER_SIZE[size];
 
-  return (
-    <View
-      className={cn(
-        'items-center justify-center',
-        shape === 'circle' ? 'rounded-full' : 'rounded-lg',
-        className,
-      )}
-      style={{ width: box, height: box, backgroundColor: hexAlpha(toneHex, 0.14) }}
-    >
-      {glyph}
-    </View>
-  );
+    return (
+        <View
+            className={cn(
+                'items-center justify-center',
+                shape === 'circle' ? 'rounded-full' : 'rounded-lg',
+                className,
+            )}
+            style={{ width: box, height: box, backgroundColor: hexAlpha(toneHex, 0.14) }}
+        >
+            {glyph}
+        </View>
+    );
 }

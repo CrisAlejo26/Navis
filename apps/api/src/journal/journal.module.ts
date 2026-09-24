@@ -24,20 +24,20 @@ import { JournalController } from './journal.controller';
  * por el mismo motivo.
  */
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([JournalEntry, JournalEntryAudio]),
-    ChurchesModule,
-    UsersModule,
-    MediaModule,
-  ],
-  controllers: [JournalController, JournalAudiosController],
-  providers: [
-    JournalEntriesService,
-    JournalEntriesViewService,
-    JournalPageService,
-    JournalStatsService,
-    JournalExportService,
-    JournalAudiosService,
-  ],
+    imports: [
+        TypeOrmModule.forFeature([JournalEntry, JournalEntryAudio]),
+        ChurchesModule,
+        UsersModule,
+        MediaModule,
+    ],
+    controllers: [JournalController, JournalAudiosController],
+    providers: [
+        JournalEntriesService,
+        JournalEntriesViewService,
+        JournalPageService,
+        JournalStatsService,
+        JournalExportService,
+        JournalAudiosService,
+    ],
 })
 export class JournalModule {}

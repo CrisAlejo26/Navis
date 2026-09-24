@@ -12,46 +12,46 @@ import { toast } from '@/lib/toast';
  * antes, con su nombre, y el botón nombra la acción (`ConfirmDialog`).
  */
 export function DeleteCongregationDialog({
-  congregation,
-  onClose,
+    congregation,
+    onClose,
 }: {
-  congregation: Congregation | null;
-  onClose: () => void;
+    congregation: Congregation | null;
+    onClose: () => void;
 }) {
-  const { t } = useTranslation();
-  const remove = useDeleteCongregation(api);
-  const [error, setError] = useState<string | null>(null);
+    const { t } = useTranslation();
+    const remove = useDeleteCongregation(api);
+    const [error, setError] = useState<string | null>(null);
 
-  const close = () => {
-    setError(null);
-    onClose();
-  };
+    const close = () => {
+        setError(null);
+        onClose();
+    };
 
-  const confirm = () => {
-    if (!congregation) return;
+    const confirm = () => {
+        if (!congregation) return;
 
-    remove.mutate(congregation.id, {
-      onSuccess: () => {
-        close();
-        toast.success(t('calendar.congregationDeleted', { name: congregation.name }));
-      },
-      onError: () => {
-        setError(t('calendar.lastCongregation'));
-      },
-    });
-  };
+        remove.mutate(congregation.id, {
+            onSuccess: () => {
+                close();
+                toast.success(t('calendar.congregationDeleted', { name: congregation.name }));
+            },
+            onError: () => {
+                setError(t('calendar.lastCongregation'));
+            },
+        });
+    };
 
-  return (
-    <ConfirmDialog
-      open={congregation !== null}
-      onClose={close}
-      onConfirm={confirm}
-      title={t('calendar.deleteTitle', { name: congregation?.name ?? '' })}
-      description={t('calendar.deleteCongregationBody')}
-      confirmLabel={t('common.delete')}
-      destructive
-      isPending={remove.isPending}
-      error={error}
-    />
-  );
+    return (
+        <ConfirmDialog
+            open={congregation !== null}
+            onClose={close}
+            onConfirm={confirm}
+            title={t('calendar.deleteTitle', { name: congregation?.name ?? '' })}
+            description={t('calendar.deleteCongregationBody')}
+            confirmLabel={t('common.delete')}
+            destructive
+            isPending={remove.isPending}
+            error={error}
+        />
+    );
 }

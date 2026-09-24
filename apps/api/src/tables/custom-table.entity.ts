@@ -19,50 +19,50 @@ import type { CustomTableView } from './custom-table-view.entity';
 // nombre chocaría con la fila borrada, que sigue en la tabla (D
 // `PartialUniqueSlugs`).
 @Index('UQ_custom_tables_slug', ['churchId', 'slug'], {
-  unique: true,
-  where: '"deleted_at" IS NULL',
+    unique: true,
+    where: '"deleted_at" IS NULL',
 })
 @Index('UQ_custom_tables_name', ['churchId', 'name'], {
-  unique: true,
-  where: '"deleted_at" IS NULL',
+    unique: true,
+    where: '"deleted_at" IS NULL',
 })
 export class CustomTable extends BaseEntity {
-  @ApiProperty()
-  @Index()
-  @Column({ name: 'church_id', type: UUID })
-  churchId: string;
+    @ApiProperty()
+    @Index()
+    @Column({ name: 'church_id', type: UUID })
+    churchId: string;
 
-  @ApiProperty({ example: 'Asistencia a la lectura' })
-  @Column({ type: 'text' })
-  name: string;
+    @ApiProperty({ example: 'Asistencia a la lectura' })
+    @Column({ type: 'text' })
+    name: string;
 
-  @ApiProperty({ description: 'Fijo desde el alta, como en listas (D7)' })
-  @Column({ type: 'text' })
-  slug: string;
+    @ApiProperty({ description: 'Fijo desde el alta, como en listas (D7)' })
+    @Column({ type: 'text' })
+    slug: string;
 
-  @ApiProperty({ description: 'Clave de TASK_ICON_CATALOG (D4)' })
-  @Column({ type: 'text' })
-  icon: string;
+    @ApiProperty({ description: 'Clave de TASK_ICON_CATALOG (D4)' })
+    @Column({ type: 'text' })
+    icon: string;
 
-  @ApiProperty({ description: 'Token o hexadecimal de ACCENT_PALETTE (D5)' })
-  @Column({ type: 'text' })
-  accent: string;
+    @ApiProperty({ description: 'Token o hexadecimal de ACCENT_PALETTE (D5)' })
+    @Column({ type: 'text' })
+    accent: string;
 
-  @ApiProperty({ description: 'El orden en la barra lateral' })
-  @Column({ type: 'int', default: 0 })
-  position: number;
+    @ApiProperty({ description: 'El orden en la barra lateral' })
+    @Column({ type: 'int', default: 0 })
+    position: number;
 
-  @ApiProperty({ description: 'Apagada sale de la barra, no se borra (D6)' })
-  @Column({ name: 'is_active', type: 'boolean', default: true })
-  isActive: boolean;
+    @ApiProperty({ description: 'Apagada sale de la barra, no se borra (D6)' })
+    @Column({ name: 'is_active', type: 'boolean', default: true })
+    isActive: boolean;
 
-  @ApiPropertyOptional()
-  @Column({ name: 'created_by', type: 'text', nullable: true })
-  createdBy: string | null;
+    @ApiPropertyOptional()
+    @Column({ name: 'created_by', type: 'text', nullable: true })
+    createdBy: string | null;
 
-  @OneToMany('CustomTableColumn', 'table')
-  columns: CustomTableColumn[];
+    @OneToMany('CustomTableColumn', 'table')
+    columns: CustomTableColumn[];
 
-  @OneToMany('CustomTableView', 'table')
-  views: CustomTableView[];
+    @OneToMany('CustomTableView', 'table')
+    views: CustomTableView[];
 }

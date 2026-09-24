@@ -4,12 +4,12 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 export const USERS_FILTER_STORAGE_KEY = 'navis.usersFilter';
 
 interface UsersFilterState {
-  /** Iglesias por las que se filtra. Vacío es «todas las accesibles». */
-  churchIds: string[];
-  /** Marca o desmarca una; el resto se queda como estaba. */
-  toggleChurch: (churchId: string) => void;
-  /** Vuelve a todas. */
-  clearChurches: () => void;
+    /** Iglesias por las que se filtra. Vacío es «todas las accesibles». */
+    churchIds: string[];
+    /** Marca o desmarca una; el resto se queda como estaba. */
+    toggleChurch: (churchId: string) => void;
+    /** Vuelve a todas. */
+    clearChurches: () => void;
 }
 
 /**
@@ -24,23 +24,23 @@ interface UsersFilterState {
  * el alcance: una preferencia vieja no da error, simplemente deja de sumar.
  */
 export const useUsersFilterStore = create<UsersFilterState>()(
-  persist(
-    (set) => ({
-      churchIds: [],
-      toggleChurch: (churchId) => {
-        set((state) => ({
-          churchIds: state.churchIds.includes(churchId)
-            ? state.churchIds.filter((id) => id !== churchId)
-            : [...state.churchIds, churchId],
-        }));
-      },
-      clearChurches: () => {
-        set({ churchIds: [] });
-      },
-    }),
-    {
-      name: USERS_FILTER_STORAGE_KEY,
-      storage: createJSONStorage(() => globalThis.localStorage),
-    },
-  ),
+    persist(
+        (set) => ({
+            churchIds: [],
+            toggleChurch: (churchId) => {
+                set((state) => ({
+                    churchIds: state.churchIds.includes(churchId)
+                        ? state.churchIds.filter((id) => id !== churchId)
+                        : [...state.churchIds, churchId],
+                }));
+            },
+            clearChurches: () => {
+                set({ churchIds: [] });
+            },
+        }),
+        {
+            name: USERS_FILTER_STORAGE_KEY,
+            storage: createJSONStorage(() => globalThis.localStorage),
+        },
+    ),
 );

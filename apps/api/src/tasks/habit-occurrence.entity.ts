@@ -9,19 +9,19 @@ import type { Habit } from './habit.entity';
 @Entity('habit_occurrences')
 @Index('UQ_habit_occurrences', ['habitId', 'date'], { unique: true })
 export class HabitOccurrence extends BaseEntity {
-  @Column({ name: 'habit_id', type: UUID })
-  habitId: string;
+    @Column({ name: 'habit_id', type: UUID })
+    habitId: string;
 
-  @ManyToOne('Habit', 'occurrences', { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'habit_id' })
-  habit: Relation<Habit>;
+    @ManyToOne('Habit', 'occurrences', { onDelete: 'CASCADE' })
+    @JoinColumn({ name: 'habit_id' })
+    habit: Relation<Habit>;
 
-  @Column({ type: 'date' })
-  date: string;
+    @Column({ type: 'date' })
+    date: string;
 
-  @Column({ type: 'text' })
-  status: HabitStatus;
+    @Column({ type: 'text' })
+    status: HabitStatus;
 
-  @Column({ name: 'completed_at', type: TIMESTAMP, nullable: true })
-  completedAt: Date | null;
+    @Column({ name: 'completed_at', type: TIMESTAMP, nullable: true })
+    completedAt: Date | null;
 }

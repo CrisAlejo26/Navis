@@ -1,12 +1,12 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
-  daysBetween,
-  eachDay,
-  weekdayOf,
-  MAX_CALENDAR_RANGE_DAYS,
-  type CalendarDay,
-  type CalendarRange,
+    daysBetween,
+    eachDay,
+    weekdayOf,
+    MAX_CALENDAR_RANGE_DAYS,
+    type CalendarDay,
+    type CalendarRange,
 } from '@navis/shared';
 import { Between, In, Repository } from 'typeorm';
 
@@ -21,12 +21,12 @@ import { Meeting } from './meeting.entity';
 import { PatternsService } from './patterns.service';
 
 export interface RangeQuery {
-  /** De qué calendario: púlpito, sonido… (D15). */
-  calendarId: string;
-  from: string;
-  to: string;
-  /** Sedes a las que acotar. Vacío o ausente es «todas». */
-  congregationIds?: readonly string[];
+    /** De qué calendario: púlpito, sonido… (D15). */
+    calendarId: string;
+    from: string;
+    to: string;
+    /** Sedes a las que acotar. Vacío o ausente es «todas». */
+    congregationIds?: readonly string[];
 }
 
 /**
@@ -36,105 +36,105 @@ export interface RangeQuery {
  */
 @Injectable()
 export class ScheduleService {
-  constructor(
-    @InjectRepository(Meeting) private readonly meetings: Repository<Meeting>,
-    @InjectRepository(Church) private readonly churches: Repository<Church>,
-    private readonly congregations: CongregationsService,
-    private readonly patterns: PatternsService,
-    private readonly believers: BelieversRosterService,
-    private readonly holidays: HolidaysService,
-  ) {}
+    constructor(
+        @InjectRepository(Meeting) private readonly meetings: Repository<Meeting>,
+        @InjectRepository(Church) private readonly churches: Repository<Church>,
+        private readonly congregations: CongregationsService,
+        private readonly patterns: PatternsService,
+        private readonly believers: BelieversRosterService,
+        private readonly holidays: HolidaysService,
+    ) {}
 
-  async range(churchId: string, query: RangeQuery): Promise<CalendarRange> {
-    const { from, to } = checkRange(query);
-    const only = query.congregationIds?.length ? new Set(query.congregationIds) : null;
+    async range(churchId: string, query: RangeQuery): Promise<CalendarRange> {
+        const { from, to } = checkRange(query);
+        const only = query.congregationIds?.length ? new Set(query.congregationIds) : null;
 
-    const congregations = await this.congregations.ensureFor(churchId);
-    const order = new Map(congregations.map((one) => [one.id, one.position]));
-    const active = new Set(congregations.filter((one) => one.isActive).map((one) => one.id));
+        const congregations = await this.congregations.ensureFor(churchId);
+        const order = new Map(congregations.map((one) => [one.id, one.position]));
+        const active = new Set(congregations.filter((one) => one.isActive).map((one) => one.id));
 
-    const meetings = await this.meetingsBetween(churchId, query.calendarId, from, to, only);
-    const names = await this.believers.namesOf(
-      meetings.flatMap((meeting) => (meeting.slots ?? []).map((slot) => slot.believerId)),
-    );
+        const meetings = await this.meetingsBetween(churchId, query.calendarId, from, to, only);
+        const names = await this.believers.namesOf(
+            meetings.flatMap((meeting) => (meeting.slots ?? []).map((slot) => slot.believerId)),
+        );
 
-    const patterns = (await this.patterns.activeFor(churchId, query.calendarId)).filter(
-      (pattern) =>
-        active.has(pattern.congregationId) && (!only || only.has(pattern.congregationId)),
-    );
+        const patterns = (await this.patterns.activeFor(churchId, query.calendarId)).filter(
+            (pattern) =>
+                active.has(pattern.congregationId) && (!only || only.has(pattern.congregationId)),
+        );
 
-    // El país y la comunidad son de la iglesia, no del calendario: los cuatro
-    // calendarios de una iglesia caen en los mismos días festivos.
-    const church = await this.churches.findOne({ where: { id: churchId } });
-    const holidays = await this.holidays.forRange(
-      church?.country ?? 'ES',
-      church?.region ?? null,
-      from,
-      to,
-    );
+        // El país y la comunidad son de la iglesia, no del calendario: los cuatro
+        // calendarios de una iglesia caen en los mismos días festivos.
+        const church = await this.churches.findOne({ where: { id: churchId } });
+        const holidays = await this.holidays.forRange(
+            church?.country ?? 'ES',
+            church?.region ?? null,
+            from,
+            to,
+        );
 
-    const byDay = new Map<string, Meeting[]>();
-    for (const meeting of meetings) {
-      const day = toIsoDay(meeting.date);
-      byDay.set(day, [...(byDay.get(day) ?? []), meeting]);
+        const byDay = new Map<string, Meeting[]>();
+        for (const meeting of meetings) {
+            const day = toIsoDay(meeting.date);
+            byDay.set(day, [...(byDay.get(day) ?? []), meeting]);
+        }
+
+        const days: CalendarDay[] = eachDay(from, to).map((date) => {
+            const real = byDay.get(date) ?? [];
+            const taken = new Set(real.map((meeting) => meeting.patternId));
+
+            const proposed = patterns
+                .filter((pattern) => appliesOn(pattern, date) && !taken.has(pattern.id))
+                .map(proposedMeeting);
+
+            return {
+                date,
+                meetings: [...real.map((meeting) => meetingView(meeting, names)), ...proposed].sort(
+                    byTimeThenCongregation(order),
+                ),
+                holiday: holidays.get(date) ?? null,
+            };
+        });
+
+        return { from, to, congregations, days };
     }
 
-    const days: CalendarDay[] = eachDay(from, to).map((date) => {
-      const real = byDay.get(date) ?? [];
-      const taken = new Set(real.map((meeting) => meeting.patternId));
-
-      const proposed = patterns
-        .filter((pattern) => appliesOn(pattern, date) && !taken.has(pattern.id))
-        .map(proposedMeeting);
-
-      return {
-        date,
-        meetings: [...real.map((meeting) => meetingView(meeting, names)), ...proposed].sort(
-          byTimeThenCongregation(order),
-        ),
-        holiday: holidays.get(date) ?? null,
-      };
-    });
-
-    return { from, to, congregations, days };
-  }
-
-  /** Las reuniones materializadas del tramo, con sus fases. */
-  meetingsBetween(
-    churchId: string,
-    calendarId: string,
-    from: string,
-    to: string,
-    only?: ReadonlySet<string> | null,
-  ): Promise<Meeting[]> {
-    return this.meetings.find({
-      where: {
-        churchId,
-        calendarId,
-        date: Between(from, to),
-        ...(only ? { congregationId: In([...only]) } : {}),
-      },
-      relations: { slots: true },
-      order: { date: 'ASC', startTime: 'ASC' },
-    });
-  }
+    /** Las reuniones materializadas del tramo, con sus fases. */
+    meetingsBetween(
+        churchId: string,
+        calendarId: string,
+        from: string,
+        to: string,
+        only?: ReadonlySet<string> | null,
+    ): Promise<Meeting[]> {
+        return this.meetings.find({
+            where: {
+                churchId,
+                calendarId,
+                date: Between(from, to),
+                ...(only ? { congregationId: In([...only]) } : {}),
+            },
+            relations: { slots: true },
+            order: { date: 'ASC', startTime: 'ASC' },
+        });
+    }
 }
 
 /** Un patrón se propone ese día si es su día de la semana y está vigente. */
 function appliesOn(pattern: MeetingPattern, date: string): boolean {
-  if (pattern.weekday !== weekdayOf(date)) return false;
-  if (pattern.validFrom && date < toIsoDay(pattern.validFrom)) return false;
-  if (pattern.validTo && date > toIsoDay(pattern.validTo)) return false;
-  return true;
+    if (pattern.weekday !== weekdayOf(date)) return false;
+    if (pattern.validFrom && date < toIsoDay(pattern.validFrom)) return false;
+    if (pattern.validTo && date > toIsoDay(pattern.validTo)) return false;
+    return true;
 }
 
 function checkRange({ from, to }: RangeQuery): { from: string; to: string } {
-  const total = daysBetween(from, to) + 1;
-  if (total <= 0) throw new BadRequestException('El rango de fechas está del revés');
-  if (total > MAX_CALENDAR_RANGE_DAYS) {
-    throw new BadRequestException(
-      `El rango no puede pasar de ${String(MAX_CALENDAR_RANGE_DAYS)} días`,
-    );
-  }
-  return { from, to };
+    const total = daysBetween(from, to) + 1;
+    if (total <= 0) throw new BadRequestException('El rango de fechas está del revés');
+    if (total > MAX_CALENDAR_RANGE_DAYS) {
+        throw new BadRequestException(
+            `El rango no puede pasar de ${String(MAX_CALENDAR_RANGE_DAYS)} días`,
+        );
+    }
+    return { from, to };
 }

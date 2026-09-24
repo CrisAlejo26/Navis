@@ -11,11 +11,11 @@ import { mobileEnvSchema, parseEnv } from '@navis/shared';
  * local a uno compartido, sin tocar código.
  */
 export const env = parseEnv(
-  mobileEnvSchema,
-  {
-    EXPO_PUBLIC_API_URL: process.env.EXPO_PUBLIC_API_URL,
-    EXPO_PUBLIC_AUTH_URL: process.env.EXPO_PUBLIC_AUTH_URL,
-    EXPO_PUBLIC_APP_SCHEME: process.env.EXPO_PUBLIC_APP_SCHEME,
-  },
-  'apps/mobile — revisa tu .env',
+    mobileEnvSchema,
+    {
+        EXPO_PUBLIC_API_URL: process.env.EXPO_PUBLIC_API_URL,
+        EXPO_PUBLIC_AUTH_URL: process.env.EXPO_PUBLIC_AUTH_URL,
+        EXPO_PUBLIC_APP_SCHEME: process.env.EXPO_PUBLIC_APP_SCHEME,
+    },
+    'apps/mobile — revisa tu .env',
 );

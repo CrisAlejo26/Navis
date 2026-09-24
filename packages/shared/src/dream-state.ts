@@ -13,7 +13,7 @@ export const DREAM_STATES = ['apuntado', 'estudio', 'cumplido'] as const;
 export type DreamState = (typeof DREAM_STATES)[number];
 
 export function isDreamState(value: string): value is DreamState {
-  return (DREAM_STATES as readonly string[]).includes(value);
+    return (DREAM_STATES as readonly string[]).includes(value);
 }
 
 /**
@@ -24,10 +24,10 @@ export function isDreamState(value: string): value is DreamState {
  * listado y la ficha, y los tests no fabrican un sueño completo (Regla 1 §3).
  */
 export interface DreamProgress {
-  /** La posible interpretación, si se ha escrito alguna. */
-  interpretation: string | null;
-  /** El día en que se cumplió. `null` mientras no haya pasado. */
-  fulfilledAt: IsoDate | null;
+    /** La posible interpretación, si se ha escrito alguna. */
+    interpretation: string | null;
+    /** El día en que se cumplió. `null` mientras no haya pasado. */
+    fulfilledAt: IsoDate | null;
 }
 
 /**
@@ -39,12 +39,12 @@ export interface DreamProgress {
  * haber estudiado nada.
  */
 export function dreamState(dream: DreamProgress): DreamState {
-  if (dream.fulfilledAt) return 'cumplido';
-  if (dream.interpretation && dream.interpretation.trim() !== '') return 'estudio';
-  return 'apuntado';
+    if (dream.fulfilledAt) return 'cumplido';
+    if (dream.interpretation && dream.interpretation.trim() !== '') return 'estudio';
+    return 'apuntado';
 }
 
 /** Si ya se cumplió. Se lee mejor que comparar contra la cadena. */
 export function isDreamFulfilled(dream: DreamProgress): boolean {
-  return dream.fulfilledAt !== null;
+    return dream.fulfilledAt !== null;
 }

@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { formatDate } from '@/lib/format';
 import { publicApi } from '@/lib/lists/public-api';
 import { useListDownload } from '@/lib/lists/use-list-download';
+import { toast } from '@/lib/toast';
 
 /**
  * El pie de la página pública (RFC 0010 §8.6 punto 3, D40).
@@ -23,67 +24,80 @@ import { useListDownload } from '@/lib/lists/use-list-download';
  * prestado nadie sabe con qué llave está entrando.
  */
 export function PublicFooter({
-  list,
-  token,
-  poster,
+    list,
+    token,
+    poster,
 }: {
-  list: PublicList;
-  token: string;
-  poster: RefObject<HTMLDivElement | null>;
+    list: PublicList;
+    token: string;
+    poster: RefObject<HTMLDivElement | null>;
 }) {
-  const { t } = useTranslation();
-  const download = useListDownload(poster, list.name);
-  const exit = useExitPublicList(publicApi, token);
+    const { t } = useTranslation();
+    const download = useListDownload(poster, list.name);
+    const exit = useExitPublicList(publicApi, token);
 
-  return (
-    <footer className="gap-4 pt-8 mt-10 flex flex-wrap items-center justify-between border-t">
-      <div className="gap-1 flex flex-col">
-        <p className="text-xs text-muted-foreground">
-          {t('lists.updatedAt', { date: formatDate(list.updatedAt) })}
-        </p>
+    return (
+        <footer className="gap-4 pt-8 mt-10 flex flex-wrap items-center justify-between border-t">
+            <div className="gap-1 flex flex-col">
+                <p className="text-xs text-muted-foreground">
+                    {t('lists.updatedAt', { date: formatDate(list.updatedAt) })}
+                </p>
 
-        {list.restricted && list.viewerLabel && (
-          <p className="gap-2 text-xs flex items-center text-muted-foreground">
-            {t('lists.viewingAs', { name: list.viewerLabel })}
-            <button
-              type="button"
-              onClick={() => {
-                exit.mutate(undefined, {
-                  onSuccess: () => {
-                    globalThis.location.reload();
-                  },
-                });
-              }}
-              className="gap-1 font-medium inline-flex cursor-pointer items-center text-foreground underline-offset-4 hover:underline"
-            >
-              <LogOut size={12} aria-hidden />
-              {t('lists.exit')}
-            </button>
-          </p>
-        )}
-      </div>
+                {list.restricted && list.viewerLabel && (
+                    <p className="gap-2 text-xs flex items-center text-muted-foreground">
+                        {t('lists.viewingAs', { name: list.viewerLabel })}
+                        <button
+                            type="button"
+                            onClick={() => {
+                                exit.mutate(undefined, {
+                                    onSuccess: () => {
+                                        globalThis.location.reload();
+                                    },
+                                    onError: () => {
+                                        toast.error(t('errors.generic'));
+                                    },
+                                });
+                            }}
+                            className="gap-1 font-medium inline-flex cursor-pointer items-center text-foreground underline-offset-4 hover:underline"
+                        >
+                            <LogOut size={12} aria-hidden />
+                            {t('lists.exit')}
+                        </button>
+                    </p>
+                )}
+            </div>
 
-      <div className="gap-2 flex flex-wrap items-center">
-        {list.allowDownload && (
-          <>
-            <Button variant="secondary" size="sm" isLoading={download.busy} onClick={download.pdf}>
-              <FileText size={14} aria-hidden />
-              {t('lists.downloadPdf')}
-            </Button>
-            <Button variant="ghost" size="sm" isLoading={download.busy} onClick={download.png}>
-              <Download size={14} aria-hidden />
-              {t('lists.downloadImage')}
-            </Button>
-          </>
-        )}
+            <div className="gap-2 flex flex-wrap items-center">
+                {list.allowDownload && (
+                    <>
+                        <Button
+                            variant="secondary"
+                            size="sm"
+                            isLoading={download.busy}
+                            onClick={download.pdf}
+                        >
+                            <FileText size={14} aria-hidden />
+                            {t('lists.downloadPdf')}
+                        </Button>
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            isLoading={download.busy}
+                            onClick={download.png}
+                        >
+                            <Download size={14} aria-hidden />
+                            {t('lists.downloadImage')}
+                        </Button>
+                    </>
+                )}
 
-        <InstallListButton />
+                <InstallListButton />
 
-        <span className="gap-1.5 inline-flex items-center text-[11px] text-muted-foreground">
-          <Logo className="h-4 w-4" />
-          {t('lists.madeWith')}
-        </span>
-      </div>
-    </footer>
-  );
+                <span className="gap-1.5 inline-flex items-center text-[11px] text-muted-foreground">
+                    <Logo className="h-4 w-4" />
+                    {t('lists.madeWith')}
+                </span>
+            </div>
+        </footer>
+    );
 }

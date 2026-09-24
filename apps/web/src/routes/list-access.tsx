@@ -21,72 +21,74 @@ import { api } from '@/lib/api';
  * llega Juan?» sin recorrer siete listas.
  */
 export function ListAccessPage() {
-  const { t } = useTranslation();
-  const { data: viewers, isLoading } = useListViewers(api);
-  const { data: lists = [] } = useLists(api);
-  const [creando, setCreando] = useState(false);
-  const [abierto, setAbierto] = useState<ListViewer | null>(null);
+    const { t } = useTranslation();
+    const { data: viewers, isLoading } = useListViewers(api);
+    const { data: lists = [] } = useLists(api);
+    const [creando, setCreando] = useState(false);
+    const [abierto, setAbierto] = useState<ListViewer | null>(null);
 
-  if (isLoading || !viewers) return <PageSkeleton />;
+    if (isLoading || !viewers) return <PageSkeleton />;
 
-  return (
-    <section className="gap-6 max-w-3xl animate-page-in flex flex-col">
-      <BackLink to="/settings" label={t('nav.settings')} />
+    return (
+        <section className="gap-6 max-w-3xl animate-page-in flex flex-col">
+            <BackLink to="/settings" label={t('nav.settings')} />
 
-      <header className="gap-4 flex flex-wrap items-end justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-[-0.02em]">{t('lists.accessTitle')}</h1>
-          <p className="mt-1.5 max-w-prose text-sm text-muted-foreground">
-            {t('lists.accessSubtitle')}
-          </p>
-        </div>
+            <header className="gap-4 flex flex-wrap items-end justify-between">
+                <div>
+                    <h1 className="text-2xl font-semibold tracking-[-0.02em]">
+                        {t('lists.accessTitle')}
+                    </h1>
+                    <p className="mt-1.5 max-w-prose text-sm text-muted-foreground">
+                        {t('lists.accessSubtitle')}
+                    </p>
+                </div>
 
-        <Button
-          size="lg"
-          onClick={() => {
-            setCreando(true);
-          }}
-        >
-          <UserPlus size={16} aria-hidden />
-          {t('lists.newViewer')}
-        </Button>
-      </header>
+                <Button
+                    size="lg"
+                    onClick={() => {
+                        setCreando(true);
+                    }}
+                >
+                    <UserPlus size={16} aria-hidden />
+                    {t('lists.newViewer')}
+                </Button>
+            </header>
 
-      {viewers.length === 0 ? (
-        <EmptyState icon={KeyRound} title={t('lists.noViewers')}>
-          {t('lists.accessEmptyBody')}
-        </EmptyState>
-      ) : (
-        <ul className="divide-y rounded-xl border bg-card">
-          {viewers.map((viewer) => (
-            <ViewerDirectoryRow
-              key={viewer.id}
-              viewer={viewer}
-              lists={lists}
-              onOpen={() => {
-                setAbierto(viewer);
-              }}
+            {viewers.length === 0 ? (
+                <EmptyState icon={KeyRound} title={t('lists.noViewers')}>
+                    {t('lists.accessEmptyBody')}
+                </EmptyState>
+            ) : (
+                <ul className="divide-y rounded-xl border bg-card">
+                    {viewers.map((viewer) => (
+                        <ViewerDirectoryRow
+                            key={viewer.id}
+                            viewer={viewer}
+                            lists={lists}
+                            onOpen={() => {
+                                setAbierto(viewer);
+                            }}
+                        />
+                    ))}
+                </ul>
+            )}
+
+            <ViewerForm
+                open={creando}
+                onClose={() => {
+                    setCreando(false);
+                }}
+                listName={t('lists.title')}
+                url=""
             />
-          ))}
-        </ul>
-      )}
 
-      <ViewerForm
-        open={creando}
-        onClose={() => {
-          setCreando(false);
-        }}
-        listName={t('lists.title')}
-        url=""
-      />
-
-      <ViewerDetailDialog
-        viewer={abierto ? (viewers.find((one) => one.id === abierto.id) ?? null) : null}
-        lists={lists}
-        onClose={() => {
-          setAbierto(null);
-        }}
-      />
-    </section>
-  );
+            <ViewerDetailDialog
+                viewer={abierto ? (viewers.find((one) => one.id === abierto.id) ?? null) : null}
+                lists={lists}
+                onClose={() => {
+                    setAbierto(null);
+                }}
+            />
+        </section>
+    );
 }

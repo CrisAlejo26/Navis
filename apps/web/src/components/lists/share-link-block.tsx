@@ -17,69 +17,73 @@ import { toast } from '@/lib/toast';
  * (D11). Y avisa de lo que cuesta: hay que volver a repartirlo.
  */
 export function ShareLinkBlock({
-  list,
-  churchName,
-  url,
+    list,
+    churchName,
+    url,
 }: {
-  list: List;
-  churchName: string;
-  url: string;
+    list: List;
+    churchName: string;
+    url: string;
 }) {
-  const { t } = useTranslation();
-  const rotate = useRotateListLink(api);
+    const { t } = useTranslation();
+    const rotate = useRotateListLink(api);
 
-  return (
-    <div className="gap-3 flex flex-col">
-      <div className="p-3 gap-3 flex flex-col rounded-lg border bg-muted/40">
-        <div className="gap-2 flex items-start">
-          <Link2 size={16} aria-hidden className="mt-0.5 shrink-0 text-muted-foreground" />
-          <code className="min-w-0 text-xs flex-1 break-all">{url}</code>
+    return (
+        <div className="gap-3 flex flex-col">
+            <div className="p-3 gap-3 flex flex-col rounded-lg border bg-muted/40">
+                <div className="gap-2 flex items-start">
+                    <Link2
+                        size={16}
+                        aria-hidden
+                        className="mt-0.5 shrink-0 text-muted-foreground"
+                    />
+                    <code className="min-w-0 text-xs flex-1 break-all">{url}</code>
+                </div>
+
+                <div className="gap-2 flex flex-wrap">
+                    <Button
+                        variant="secondary"
+                        size="sm"
+                        onClick={() => {
+                            void copyToClipboard(url).then((ok) => {
+                                if (ok) toast.success(t('lists.copied'));
+                            });
+                        }}
+                    >
+                        <Copy size={14} aria-hidden />
+                        {t('lists.copyLink')}
+                    </Button>
+
+                    <Button
+                        variant="secondary"
+                        size="sm"
+                        onClick={() => {
+                            window.open(url, '_blank', 'noopener,noreferrer');
+                        }}
+                    >
+                        <ExternalLink size={14} aria-hidden />
+                        {t('lists.openLink')}
+                    </Button>
+
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        isLoading={rotate.isPending}
+                        onClick={() => {
+                            rotate.mutate(list.id, {
+                                onSuccess: () => {
+                                    toast.success(t('lists.rotateWarning'));
+                                },
+                            });
+                        }}
+                    >
+                        <RefreshCw size={14} aria-hidden />
+                        {t('lists.rotateLink')}
+                    </Button>
+                </div>
+            </div>
+
+            <SharePreview list={list} churchName={churchName} url={url} />
         </div>
-
-        <div className="gap-2 flex flex-wrap">
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={() => {
-              void copyToClipboard(url).then((ok) => {
-                if (ok) toast.success(t('lists.copied'));
-              });
-            }}
-          >
-            <Copy size={14} aria-hidden />
-            {t('lists.copyLink')}
-          </Button>
-
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={() => {
-              window.open(url, '_blank', 'noopener,noreferrer');
-            }}
-          >
-            <ExternalLink size={14} aria-hidden />
-            {t('lists.openLink')}
-          </Button>
-
-          <Button
-            variant="ghost"
-            size="sm"
-            isLoading={rotate.isPending}
-            onClick={() => {
-              rotate.mutate(list.id, {
-                onSuccess: () => {
-                  toast.success(t('lists.rotateWarning'));
-                },
-              });
-            }}
-          >
-            <RefreshCw size={14} aria-hidden />
-            {t('lists.rotateLink')}
-          </Button>
-        </div>
-      </div>
-
-      <SharePreview list={list} churchName={churchName} url={url} />
-    </div>
-  );
+    );
 }

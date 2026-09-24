@@ -7,12 +7,12 @@ import { useTranslation } from 'react-i18next';
  * 0016 §5).
  */
 export function ConversationEmptyPage() {
-  const { t } = useTranslation();
+    const { t } = useTranslation();
 
-  return (
-    <div className="gap-3 flex h-full flex-col items-center justify-center text-center">
-      <span aria-hidden className="mb-2 w-16 h-px bg-border" />
-      <p className="text-sm text-muted-foreground">{t('communications.startOne')}</p>
-    </div>
-  );
+    return (
+        <div className="gap-3 flex h-full flex-col items-center justify-center text-center">
+            <span aria-hidden className="mb-2 w-16 h-px bg-border" />
+            <p className="text-sm text-muted-foreground">{t('communications.startOne')}</p>
+        </div>
+    );
 }

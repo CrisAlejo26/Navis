@@ -19,72 +19,76 @@ import { requestPasswordReset } from '@/lib/auth-client';
  * enviado» o un error de red.
  */
 export function ForgotPasswordPage() {
-  const { t } = useTranslation();
-  const [sent, setSent] = useState(false);
-  const [serverError, setServerError] = useState<string | null>(null);
+    const { t } = useTranslation();
+    const [sent, setSent] = useState(false);
+    const [serverError, setServerError] = useState<string | null>(null);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useForm<ForgotPasswordInput>({
-    resolver: zodResolver(forgotPasswordSchema),
-    defaultValues: { email: '' },
-  });
-
-  const onSubmit = handleSubmit(async (values) => {
-    setServerError(null);
-    const { error } = await requestPasswordReset({
-      email: values.email,
-      redirectTo: `${window.location.origin}/reset-password`,
+    const {
+        register,
+        handleSubmit,
+        formState: { errors, isSubmitting },
+    } = useForm<ForgotPasswordInput>({
+        resolver: zodResolver(forgotPasswordSchema),
+        defaultValues: { email: '' },
     });
 
-    if (error) {
-      setServerError(t('errors.generic'));
-      return;
+    const onSubmit = handleSubmit(async (values) => {
+        setServerError(null);
+        const { error } = await requestPasswordReset({
+            email: values.email,
+            redirectTo: `${window.location.origin}/reset-password`,
+        });
+
+        if (error) {
+            setServerError(t('errors.generic'));
+            return;
+        }
+
+        setSent(true);
+    });
+
+    if (sent) {
+        return (
+            <AuthLayout
+                title={t('auth.resetLinkSent')}
+                subtitle={t('auth.resetLinkSentDetail')}
+                footer={<TextLink to="/login">{t('auth.backToLogin')}</TextLink>}
+            >
+                <div
+                    aria-hidden
+                    className="h-14 w-14 rounded-2xl animate-rise-in flex items-center justify-center bg-primary/10 text-primary"
+                >
+                    <MailCheck size={26} />
+                </div>
+            </AuthLayout>
+        );
     }
 
-    setSent(true);
-  });
-
-  if (sent) {
     return (
-      <AuthLayout
-        title={t('auth.resetLinkSent')}
-        subtitle={t('auth.resetLinkSentDetail')}
-        footer={<TextLink to="/login">{t('auth.backToLogin')}</TextLink>}
-      >
-        <div
-          aria-hidden
-          className="h-14 w-14 rounded-2xl animate-rise-in flex items-center justify-center bg-primary/10 text-primary"
+        <AuthLayout
+            title={t('auth.forgotPasswordTitle')}
+            subtitle={t('auth.forgotPasswordSubtitle')}
+            footer={<TextLink to="/login">{t('auth.backToLogin')}</TextLink>}
         >
-          <MailCheck size={26} />
-        </div>
-      </AuthLayout>
+            <form
+                onSubmit={(event) => void onSubmit(event)}
+                className="gap-5 flex flex-col"
+                noValidate
+            >
+                <Input
+                    label={t('auth.email')}
+                    type="email"
+                    autoComplete="email"
+                    error={errors.email?.message}
+                    {...register('email')}
+                />
+
+                <FormError message={serverError} />
+
+                <Button type="submit" size="lg" className="mt-1 w-full" isLoading={isSubmitting}>
+                    {isSubmitting ? t('auth.sendingResetLink') : t('auth.sendResetLink')}
+                </Button>
+            </form>
+        </AuthLayout>
     );
-  }
-
-  return (
-    <AuthLayout
-      title={t('auth.forgotPasswordTitle')}
-      subtitle={t('auth.forgotPasswordSubtitle')}
-      footer={<TextLink to="/login">{t('auth.backToLogin')}</TextLink>}
-    >
-      <form onSubmit={(event) => void onSubmit(event)} className="gap-5 flex flex-col" noValidate>
-        <Input
-          label={t('auth.email')}
-          type="email"
-          autoComplete="email"
-          error={errors.email?.message}
-          {...register('email')}
-        />
-
-        <FormError message={serverError} />
-
-        <Button type="submit" size="lg" className="mt-1 w-full" isLoading={isSubmitting}>
-          {isSubmitting ? t('auth.sendingResetLink') : t('auth.sendResetLink')}
-        </Button>
-      </form>
-    </AuthLayout>
-  );
 }

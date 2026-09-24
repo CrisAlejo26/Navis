@@ -13,21 +13,21 @@ import { useThemeStore } from '@/lib/theme';
  * de verdad.
  */
 export function useNavigationTheme(): Theme {
-  const resolvedTheme = useThemeStore((state) => state.resolvedTheme);
-  const palette = themeColorsHex[resolvedTheme];
-  const base = resolvedTheme === 'dark' ? DarkTheme : DefaultTheme;
+    const resolvedTheme = useThemeStore((state) => state.resolvedTheme);
+    const palette = themeColorsHex[resolvedTheme];
+    const base = resolvedTheme === 'dark' ? DarkTheme : DefaultTheme;
 
-  return {
-    ...base,
-    dark: resolvedTheme === 'dark',
-    colors: {
-      ...base.colors,
-      primary: palette.primary,
-      background: palette.background,
-      card: palette.card,
-      text: palette.foreground,
-      border: palette.border,
-      notification: palette.destructive,
-    },
-  };
+    return {
+        ...base,
+        dark: resolvedTheme === 'dark',
+        colors: {
+            ...base.colors,
+            primary: palette.primary,
+            background: palette.background,
+            card: palette.card,
+            text: palette.foreground,
+            border: palette.border,
+            notification: palette.destructive,
+        },
+    };
 }

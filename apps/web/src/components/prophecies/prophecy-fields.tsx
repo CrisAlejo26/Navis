@@ -14,48 +14,48 @@ import { Textarea } from '@/components/ui/textarea';
  * principal de esta pantalla y no puede ser una caja de tres líneas.
  */
 export function ProphecyFields({
-  prophecy,
-  titleRef,
+    prophecy,
+    titleRef,
 }: {
-  prophecy?: Prophecy;
-  titleRef: RefObject<HTMLInputElement | null>;
+    prophecy?: Prophecy;
+    titleRef: RefObject<HTMLInputElement | null>;
 }) {
-  const { t } = useTranslation();
+    const { t } = useTranslation();
 
-  return (
-    <>
-      <Input
-        ref={titleRef}
-        name="title"
-        label={t('prophecies.titleField')}
-        placeholder={t('prophecies.titlePlaceholder')}
-        defaultValue={prophecy?.title}
-        required
-      />
+    return (
+        <>
+            <Input
+                ref={titleRef}
+                name="title"
+                label={t('prophecies.titleField')}
+                placeholder={t('prophecies.titlePlaceholder')}
+                defaultValue={prophecy?.title}
+                required
+            />
 
-      {/* La fecha no necesita todo el ancho del diálogo: un campo de día
+            {/* La fecha no necesita todo el ancho del diálogo: un campo de día
           estirado a 42 rem se lee como un fallo de maquetación. */}
-      <div className="sm:max-w-56">
-        <Input
-          name="receivedAt"
-          type="date"
-          label={t('prophecies.receivedAt')}
-          defaultValue={prophecy?.receivedAt ?? toIsoDate(new Date())}
-          required
-        />
-      </div>
+            <div className="sm:max-w-56">
+                <Input
+                    name="receivedAt"
+                    type="date"
+                    label={t('prophecies.receivedAt')}
+                    defaultValue={prophecy?.receivedAt ?? toIsoDate(new Date())}
+                    required
+                />
+            </div>
 
-      {/* Sin `max-w-prose`: aquí se **escribe**, y un campo más estrecho que su
+            {/* Sin `max-w-prose`: aquí se **escribe**, y un campo más estrecho que su
           diálogo se lee como un error. El ancho de lectura es cosa de la ficha,
           que es donde el texto se relee. */}
-      <Textarea
-        name="body"
-        rows={12}
-        label={t('prophecies.bodyField')}
-        placeholder={t('prophecies.bodyPlaceholder')}
-        defaultValue={prophecy?.body}
-        required
-      />
-    </>
-  );
+            <Textarea
+                name="body"
+                rows={12}
+                label={t('prophecies.bodyField')}
+                placeholder={t('prophecies.bodyPlaceholder')}
+                defaultValue={prophecy?.body}
+                required
+            />
+        </>
+    );
 }

@@ -9,6 +9,6 @@ import { PropheciesQueryDto } from './prophecies-query.dto';
  * de filtrar lo mismo acaban filtrando distinto.
  */
 export class PropheciesExportQueryDto extends IntersectionType(
-  PropheciesQueryDto,
-  ExportSelectionDto,
+    PropheciesQueryDto,
+    ExportSelectionDto,
 ) {}

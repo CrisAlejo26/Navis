@@ -20,89 +20,94 @@ export const POSTER_HEIGHT = 630;
  * número de personas (D18).
  */
 export function ListPoster({
-  ref,
-  churchName,
-  name,
-  accent,
-  members,
-  locked,
-  lockedLabel,
+    ref,
+    churchName,
+    name,
+    accent,
+    members,
+    locked,
+    lockedLabel,
 }: {
-  ref?: Ref<HTMLDivElement>;
-  churchName: string;
-  name: string;
-  accent: string;
-  members: readonly PublicListMember[];
-  locked: boolean;
-  lockedLabel: string;
+    ref?: Ref<HTMLDivElement>;
+    churchName: string;
+    name: string;
+    accent: string;
+    members: readonly PublicListMember[];
+    locked: boolean;
+    lockedLabel: string;
 }) {
-  const fondo = accentHex(accent);
-  const tinta = accentForeground(accent).startsWith('#') ? accentForeground(accent) : '#ffffff';
+    const fondo = accentHex(accent);
+    const tinta = accentForeground(accent).startsWith('#') ? accentForeground(accent) : '#ffffff';
 
-  return (
-    <div
-      ref={ref}
-      style={{
-        width: `${String(POSTER_WIDTH)}px`,
-        height: `${String(POSTER_HEIGHT)}px`,
-        backgroundColor: fondo,
-        color: tinta,
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-        padding: '56px 64px',
-        fontFamily: 'system-ui, -apple-system, Segoe UI, Roboto, sans-serif',
-        boxSizing: 'border-box',
-      }}
-    >
-      <div>
-        <p
-          style={{
-            fontSize: '20px',
-            letterSpacing: '0.28em',
-            textTransform: 'uppercase',
-            opacity: 0.8,
-          }}
+    return (
+        <div
+            ref={ref}
+            style={{
+                width: `${String(POSTER_WIDTH)}px`,
+                height: `${String(POSTER_HEIGHT)}px`,
+                backgroundColor: fondo,
+                color: tinta,
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+                padding: '56px 64px',
+                fontFamily: 'system-ui, -apple-system, Segoe UI, Roboto, sans-serif',
+                boxSizing: 'border-box',
+            }}
         >
-          {churchName}
-        </p>
-        <p
-          style={{ fontSize: '84px', fontWeight: 700, letterSpacing: '-0.04em', marginTop: '12px' }}
-        >
-          {name}
-        </p>
-      </div>
+            <div>
+                <p
+                    style={{
+                        fontSize: '20px',
+                        letterSpacing: '0.28em',
+                        textTransform: 'uppercase',
+                        opacity: 0.8,
+                    }}
+                >
+                    {churchName}
+                </p>
+                <p
+                    style={{
+                        fontSize: '84px',
+                        fontWeight: 700,
+                        letterSpacing: '-0.04em',
+                        marginTop: '12px',
+                    }}
+                >
+                    {name}
+                </p>
+            </div>
 
-      {locked ? (
-        <p style={{ fontSize: '28px', opacity: 0.85 }}>{lockedLabel}</p>
-      ) : (
-        <ol
-          style={{
-            display: 'flex',
-            flexWrap: 'wrap',
-            gap: '10px 40px',
-            fontSize: '26px',
-            lineHeight: 1.4,
-            margin: 0,
-            padding: 0,
-            listStyle: 'none',
-            maxHeight: '320px',
-            overflow: 'hidden',
-          }}
-        >
-          {members.map((member) => (
-            <li
-              key={`${String(member.position)}-${member.name}`}
-              style={{ display: 'flex', gap: '12px' }}
-            >
-              <span style={{ opacity: 0.55, fontVariantNumeric: 'tabular-nums' }}>
-                {member.position + 1}
-              </span>
-              <span>{member.name}</span>
-            </li>
-          ))}
-        </ol>
-      )}
-    </div>
-  );
+            {locked ? (
+                <p style={{ fontSize: '28px', opacity: 0.85 }}>{lockedLabel}</p>
+            ) : (
+                <ol
+                    style={{
+                        display: 'flex',
+                        flexWrap: 'wrap',
+                        gap: '10px 40px',
+                        fontSize: '26px',
+                        lineHeight: 1.4,
+                        margin: 0,
+                        padding: 0,
+                        listStyle: 'none',
+                        maxHeight: '320px',
+                        overflow: 'hidden',
+                    }}
+                >
+                    {members.map((member) => (
+                        <li
+                            key={`${String(member.position)}-${member.name}`}
+                            style={{ display: 'flex', gap: '12px' }}
+                        >
+                            <span style={{ opacity: 0.55, fontVariantNumeric: 'tabular-nums' }}>
+                                {member.position + 1}
+                            </span>
+                            <span>{member.name}</span>
+                        </li>
+                    ))}
+                </ol>
+            )}
+        </div>
+    );
 }

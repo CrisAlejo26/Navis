@@ -1,11 +1,11 @@
 import {
-  dreamState,
-  toExcerpt,
-  type Dream as DreamView,
-  type DreamAudio as DreamAudioView,
-  type DreamExportRow,
-  type DreamListItem,
-  type Emotion as EmotionView,
+    dreamState,
+    toExcerpt,
+    type Dream as DreamView,
+    type DreamAudio as DreamAudioView,
+    type DreamExportRow,
+    type DreamListItem,
+    type Emotion as EmotionView,
 } from '@navis/shared';
 
 import { toIsoDay } from '../database/iso-day';
@@ -14,25 +14,25 @@ import type { Dream } from './dream.entity';
 import type { Emotion } from './emotion.entity';
 
 export function toEmotionView(emotion: Emotion): EmotionView {
-  return {
-    id: emotion.id,
-    slug: emotion.slug,
-    name: emotion.name,
-    accent: emotion.accent,
-    position: emotion.position,
-  };
+    return {
+        id: emotion.id,
+        slug: emotion.slug,
+        name: emotion.name,
+        accent: emotion.accent,
+        position: emotion.position,
+    };
 }
 
 export function toDreamAudioView(audio: DreamAudio): DreamAudioView {
-  return {
-    id: audio.id,
-    dreamId: audio.dreamId,
-    mimeType: audio.mimeType,
-    sizeBytes: audio.sizeBytes,
-    durationSeconds: audio.durationSeconds,
-    recorded: audio.recorded,
-    createdAt: audio.createdAt.toISOString(),
-  };
+    return {
+        id: audio.id,
+        dreamId: audio.dreamId,
+        mimeType: audio.mimeType,
+        sizeBytes: audio.sizeBytes,
+        durationSeconds: audio.durationSeconds,
+        recorded: audio.recorded,
+        createdAt: audio.createdAt.toISOString(),
+    };
 }
 
 /**
@@ -43,18 +43,18 @@ export function toDreamAudioView(audio: DreamAudio): DreamAudioView {
  * que sirve para toda una página de sueños a la vez.
  */
 export function toDreamView(dream: Dream, emotions: readonly Emotion[]): DreamView {
-  return {
-    id: dream.id,
-    title: dream.title,
-    body: dream.body,
-    dreamedAt: toIsoDay(dream.dreamedAt),
-    interpretation: dream.interpretation,
-    fulfilledAt: dream.fulfilledAt ? toIsoDay(dream.fulfilledAt) : null,
-    fulfillmentMeaning: dream.fulfillmentMeaning,
-    emotions: emotions.map(toEmotionView),
-    audios: (dream.audios ?? []).map(toDreamAudioView),
-    createdAt: dream.createdAt.toISOString(),
-  };
+    return {
+        id: dream.id,
+        title: dream.title,
+        body: dream.body,
+        dreamedAt: toIsoDay(dream.dreamedAt),
+        interpretation: dream.interpretation,
+        fulfilledAt: dream.fulfilledAt ? toIsoDay(dream.fulfilledAt) : null,
+        fulfillmentMeaning: dream.fulfillmentMeaning,
+        emotions: emotions.map(toEmotionView),
+        audios: (dream.audios ?? []).map(toDreamAudioView),
+        createdAt: dream.createdAt.toISOString(),
+    };
 }
 
 /**
@@ -62,26 +62,27 @@ export function toDreamView(dream: Dream, emotions: readonly Emotion[]): DreamVi
  * volver a pedir nada para pintarla (§6.1).
  */
 export function toListItem(
-  dream: Dream,
-  emotions: readonly Emotion[],
-  audiosCount: number,
+    dream: Dream,
+    emotions: readonly Emotion[],
+    audiosCount: number,
 ): DreamListItem {
-  const progress = {
-    interpretation: dream.interpretation,
-    fulfilledAt: dream.fulfilledAt ? toIsoDay(dream.fulfilledAt) : null,
-  };
+    const progress = {
+        interpretation: dream.interpretation,
+        fulfilledAt: dream.fulfilledAt ? toIsoDay(dream.fulfilledAt) : null,
+    };
 
-  return {
-    id: dream.id,
-    title: dream.title,
-    excerpt: toExcerpt(dream.body),
-    dreamedAt: toIsoDay(dream.dreamedAt),
-    fulfilledAt: progress.fulfilledAt,
-    state: dreamState(progress),
-    hasInterpretation: progress.interpretation !== null && progress.interpretation.trim() !== '',
-    audiosCount,
-    emotions: emotions.map(toEmotionView),
-  };
+    return {
+        id: dream.id,
+        title: dream.title,
+        excerpt: toExcerpt(dream.body),
+        dreamedAt: toIsoDay(dream.dreamedAt),
+        fulfilledAt: progress.fulfilledAt,
+        state: dreamState(progress),
+        hasInterpretation:
+            progress.interpretation !== null && progress.interpretation.trim() !== '',
+        audiosCount,
+        emotions: emotions.map(toEmotionView),
+    };
 }
 
 /**
@@ -95,24 +96,24 @@ export function toListItem(
  * va también al fichero.
  */
 export function toExportRow(
-  dream: Dream,
-  emotions: readonly Emotion[],
-  audiosCount: number,
+    dream: Dream,
+    emotions: readonly Emotion[],
+    audiosCount: number,
 ): DreamExportRow {
-  const item = toListItem(dream, emotions, audiosCount);
+    const item = toListItem(dream, emotions, audiosCount);
 
-  return {
-    id: item.id,
-    title: item.title,
-    body: dream.body,
-    dreamedAt: item.dreamedAt,
-    interpretation: dream.interpretation,
-    fulfilledAt: item.fulfilledAt,
-    fulfillmentMeaning: dream.fulfillmentMeaning,
-    state: item.state,
-    hasInterpretation: item.hasInterpretation,
-    audiosCount: item.audiosCount,
-    emotions: item.emotions,
-    createdAt: dream.createdAt.toISOString(),
-  };
+    return {
+        id: item.id,
+        title: item.title,
+        body: dream.body,
+        dreamedAt: item.dreamedAt,
+        interpretation: dream.interpretation,
+        fulfilledAt: item.fulfilledAt,
+        fulfillmentMeaning: dream.fulfillmentMeaning,
+        state: item.state,
+        hasInterpretation: item.hasInterpretation,
+        audiosCount: item.audiosCount,
+        emotions: item.emotions,
+        createdAt: dream.createdAt.toISOString(),
+    };
 }

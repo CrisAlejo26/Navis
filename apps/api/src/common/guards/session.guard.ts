@@ -1,8 +1,8 @@
 import {
-  CanActivate,
-  type ExecutionContext,
-  Injectable,
-  UnauthorizedException,
+    CanActivate,
+    type ExecutionContext,
+    Injectable,
+    UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import type { Request } from 'express';
@@ -18,28 +18,28 @@ import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
  */
 @Injectable()
 export class SessionGuard implements CanActivate {
-  constructor(
-    private readonly reflector: Reflector,
-    private readonly authService: AuthService,
-  ) {}
+    constructor(
+        private readonly reflector: Reflector,
+        private readonly authService: AuthService,
+    ) {}
 
-  async canActivate(context: ExecutionContext): Promise<boolean> {
-    const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
-      context.getHandler(),
-      context.getClass(),
-    ]);
+    async canActivate(context: ExecutionContext): Promise<boolean> {
+        const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
+            context.getHandler(),
+            context.getClass(),
+        ]);
 
-    const request = context.switchToHttp().getRequest<Request>();
-    const session = await this.authService.getSession(request.headers);
+        const request = context.switchToHttp().getRequest<Request>();
+        const session = await this.authService.getSession(request.headers);
 
-    if (session) {
-      request.user = session.user;
-      request.session = session.session;
-      return true;
+        if (session) {
+            request.user = session.user;
+            request.session = session.session;
+            return true;
+        }
+
+        if (isPublic) return true;
+
+        throw new UnauthorizedException('Necesitas iniciar sesión');
     }
-
-    if (isPublic) return true;
-
-    throw new UnauthorizedException('Necesitas iniciar sesión');
-  }
 }

@@ -10,8 +10,8 @@ export const IMAGE_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image
 export type ImageMimeType = (typeof IMAGE_MIME_TYPES)[number];
 
 export function isImageMimeType(value: string): value is ImageMimeType {
-  const base = value.split(';')[0]?.trim().toLowerCase() ?? '';
-  return (IMAGE_MIME_TYPES as readonly string[]).includes(base);
+    const base = value.split(';')[0]?.trim().toLowerCase() ?? '';
+    return (IMAGE_MIME_TYPES as readonly string[]).includes(base);
 }
 
 /**
@@ -25,13 +25,13 @@ export const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
 
 /** La extensión con la que se guarda cada tipo. Nunca la que diga el cliente. */
 export const IMAGE_EXTENSIONS: Record<ImageMimeType, string> = {
-  'image/jpeg': 'jpg',
-  'image/png': 'png',
-  'image/webp': 'webp',
-  'image/heic': 'heic',
+    'image/jpeg': 'jpg',
+    'image/png': 'png',
+    'image/webp': 'webp',
+    'image/heic': 'heic',
 };
 
 /** De dónde la descarga la interfaz. Un solo sitio que lo diga (Regla 1). */
 export function believerPhotoPath(believerId: string): string {
-  return `/believer-photos/${believerId}`;
+    return `/believer-photos/${believerId}`;
 }

@@ -18,49 +18,49 @@ import { PatternPhase } from './pattern-phase.entity';
  */
 @Entity('meeting_patterns')
 export class MeetingPattern extends BaseEntity {
-  @ApiProperty()
-  @Index()
-  @Column({ name: 'church_id', type: UUID })
-  churchId: string;
+    @ApiProperty()
+    @Index()
+    @Column({ name: 'church_id', type: UUID })
+    churchId: string;
 
-  @ApiProperty({ description: 'De qué calendario es (D15)' })
-  @Index()
-  @Column({ name: 'calendar_id', type: UUID })
-  calendarId: string;
+    @ApiProperty({ description: 'De qué calendario es (D15)' })
+    @Index()
+    @Column({ name: 'calendar_id', type: UUID })
+    calendarId: string;
 
-  @ApiProperty()
-  @Index()
-  @Column({ name: 'congregation_id', type: UUID })
-  congregationId: string;
+    @ApiProperty()
+    @Index()
+    @Column({ name: 'congregation_id', type: UUID })
+    congregationId: string;
 
-  @ApiProperty({ example: 'Culto' })
-  @Column({ type: 'text' })
-  name: string;
+    @ApiProperty({ example: 'Culto' })
+    @Column({ type: 'text' })
+    name: string;
 
-  @ApiProperty({ description: 'Domingo es 0, como en Date.getDay()', example: 5 })
-  @Column({ type: 'int' })
-  weekday: number;
+    @ApiProperty({ description: 'Domingo es 0, como en Date.getDay()', example: 5 })
+    @Column({ type: 'int' })
+    weekday: number;
 
-  @ApiProperty({ description: 'Hora local de la iglesia', example: '20:00' })
-  @Column({ name: 'start_time', type: 'time' })
-  startTime: string;
+    @ApiProperty({ description: 'Hora local de la iglesia', example: '20:00' })
+    @Column({ name: 'start_time', type: 'time' })
+    startTime: string;
 
-  @ApiProperty({ example: 'success' })
-  @Column({ type: 'text' })
-  accent: string;
+    @ApiProperty({ example: 'success' })
+    @Column({ type: 'text' })
+    accent: string;
 
-  @ApiProperty()
-  @Column({ name: 'is_active', type: 'boolean', default: true })
-  isActive: boolean;
+    @ApiProperty()
+    @Column({ name: 'is_active', type: 'boolean', default: true })
+    isActive: boolean;
 
-  @ApiPropertyOptional({ description: 'Desde cuándo se propone. Nulo es siempre' })
-  @Column({ name: 'valid_from', type: 'date', nullable: true })
-  validFrom: string | null;
+    @ApiPropertyOptional({ description: 'Desde cuándo se propone. Nulo es siempre' })
+    @Column({ name: 'valid_from', type: 'date', nullable: true })
+    validFrom: string | null;
 
-  @ApiPropertyOptional({ description: 'Hasta cuándo se propone. Nulo es siempre' })
-  @Column({ name: 'valid_to', type: 'date', nullable: true })
-  validTo: string | null;
+    @ApiPropertyOptional({ description: 'Hasta cuándo se propone. Nulo es siempre' })
+    @Column({ name: 'valid_to', type: 'date', nullable: true })
+    validTo: string | null;
 
-  @OneToMany(() => PatternPhase, (phase) => phase.pattern, { cascade: true })
-  phases: PatternPhase[];
+    @OneToMany(() => PatternPhase, (phase) => phase.pattern, { cascade: true })
+    phases: PatternPhase[];
 }

@@ -11,25 +11,25 @@ import { BucketBars } from '@/components/ui/bucket-bars';
  * igual en los dos.
  */
 export function CompositionSection({
-  composition,
+    composition,
 }: {
-  composition: DashboardSummary['composition'];
+    composition: DashboardSummary['composition'];
 }) {
-  const { t } = useTranslation();
+    const { t } = useTranslation();
 
-  if (
-    composition.byCongregation.length === 0 &&
-    composition.byMinistry.length === 0 &&
-    composition.byGift.length === 0
-  ) {
-    return null;
-  }
+    if (
+        composition.byCongregation.length === 0 &&
+        composition.byMinistry.length === 0 &&
+        composition.byGift.length === 0
+    ) {
+        return null;
+    }
 
-  return (
-    <div className="gap-4 lg:grid-cols-3 grid">
-      <BucketBars title={t('calendar.congregations')} buckets={composition.byCongregation} />
-      <BucketBars title={t('believers.ministries')} buckets={composition.byMinistry} />
-      <BucketBars title={t('believers.gifts')} buckets={composition.byGift} />
-    </div>
-  );
+    return (
+        <div className="gap-4 lg:grid-cols-3 grid">
+            <BucketBars title={t('calendar.congregations')} buckets={composition.byCongregation} />
+            <BucketBars title={t('believers.ministries')} buckets={composition.byMinistry} />
+            <BucketBars title={t('believers.gifts')} buckets={composition.byGift} />
+        </div>
+    );
 }

@@ -256,27 +256,27 @@ celda por día, si la tabla tiene una columna `date`).
 
 - **D5 — Once tipos de dato, y ni uno más de los que se han pedido.**
 
-  | Tipo           | Qué guarda                                                      | Se edita con                     |
-  | -------------- | --------------------------------------------------------------- | -------------------------------- |
-  | `text`         | Una línea de texto                                              | Campo de texto                   |
-  | `longText`     | Texto largo, sin Markdown (misma razón que las notas, RFC 0003) | Área de texto                    |
-  | `number`       | Un número                                                       | Campo numérico, `tabular-nums`   |
-  | `date`         | Una fecha (`date`, no `timestamptz` — RFC 0003 D9)              | Selector de fecha                |
-  | `checkbox`     | Sí / no                                                         | Casilla                          |
-  | `singleSelect` | Una opción de una lista con color                               | Desplegable de etiquetas         |
-  | `multiSelect`  | Varias opciones de una lista con color                          | Etiquetas que se encienden       |
-  | `url`          | Un enlace                                                       | Campo de texto validado          |
-  | `phone`        | Un teléfono                                                     | Campo de texto, enlace `tel:`    |
-  | `email`        | Un correo                                                       | Campo de texto, enlace `mailto:` |
-  | `count`        | Cuántas casillas de otras columnas están marcadas (D6)          | No se edita: se calcula          |
+    | Tipo           | Qué guarda                                                      | Se edita con                     |
+    | -------------- | --------------------------------------------------------------- | -------------------------------- |
+    | `text`         | Una línea de texto                                              | Campo de texto                   |
+    | `longText`     | Texto largo, sin Markdown (misma razón que las notas, RFC 0003) | Área de texto                    |
+    | `number`       | Un número                                                       | Campo numérico, `tabular-nums`   |
+    | `date`         | Una fecha (`date`, no `timestamptz` — RFC 0003 D9)              | Selector de fecha                |
+    | `checkbox`     | Sí / no                                                         | Casilla                          |
+    | `singleSelect` | Una opción de una lista con color                               | Desplegable de etiquetas         |
+    | `multiSelect`  | Varias opciones de una lista con color                          | Etiquetas que se encienden       |
+    | `url`          | Un enlace                                                       | Campo de texto validado          |
+    | `phone`        | Un teléfono                                                     | Campo de texto, enlace `tel:`    |
+    | `email`        | Un correo                                                       | Campo de texto, enlace `mailto:` |
+    | `count`        | Cuántas casillas de otras columnas están marcadas (D6)          | No se edita: se calcula          |
 
-  Once y no más porque son los que cubren lo que se ha pedido —texto, número,
-  fecha, opción única, opción múltiple, casilla, y los tres formatos de
-  contacto que ya usan creyentes y listas—. Un tipo `currency` o `rating` se
-  añade el día que alguien lo pida, sin tocar el resto: la lista vive en
-  `packages/shared` y el `switch` que la interpreta ya tiene que cubrir un
-  tipo desconocido con una excepción, así que añadir uno es una fila en una
-  tabla y un caso en un `switch`, no un rediseño.
+    Once y no más porque son los que cubren lo que se ha pedido —texto, número,
+    fecha, opción única, opción múltiple, casilla, y los tres formatos de
+    contacto que ya usan creyentes y listas—. Un tipo `currency` o `rating` se
+    añade el día que alguien lo pida, sin tocar el resto: la lista vive en
+    `packages/shared` y el `switch` que la interpreta ya tiene que cubrir un
+    tipo desconocido con una excepción, así que añadir uno es una fila en una
+    tabla y un caso en un `switch`, no un rediseño.
 
 - **D6 — El recuento es un tipo de columna, no una fórmula.** Se pidió
   «número de días», «cantidad de clases», «asistencia» — la misma pregunta
@@ -290,11 +290,11 @@ celda por día, si la tabla tiene una columna `date`).
   cada fila de un listado grande; aquí son casillas de la propia fila, no un
   `MAX` sobre miles de notas).
 
-  Añadir una columna `checkbox` nueva no actualiza los recuentos que ya
-  existían **a menos que se la añada a su configuración**: contar solo lo que
-  se ha dicho que se cuente, y no todo lo que se parezca, es lo que hace que
-  un cuadrante pueda tener casillas que no son de asistencia (por ejemplo,
-  «trajo la Biblia») sin que se cuelen en el total.
+    Añadir una columna `checkbox` nueva no actualiza los recuentos que ya
+    existían **a menos que se la añada a su configuración**: contar solo lo que
+    se ha dicho que se cuente, y no todo lo que se parezca, es lo que hace que
+    un cuadrante pueda tener casillas que no son de asistencia (por ejemplo,
+    «trajo la Biblia») sin que se cuelen en el total.
 
 - **D7 — Las opciones de `singleSelect` y `multiSelect` llevan su color, del
   mismo `ACCENT_PALETTE` de siempre.** Es lo que hace que la vista agrupada
@@ -313,9 +313,9 @@ celda por día, si la tabla tiene una columna `date`).
   que ninguna de las dos secciones dependa de la carpeta de la otra, y las dos
   lo importan de ahí.
 
-  Quien todavía no esté en creyentes se da de alta ahí, desde el mismo
-  diálogo — el patrón ya establecido en el selector de predicadores del
-  calendario y repetido en listas.
+    Quien todavía no esté en creyentes se da de alta ahí, desde el mismo
+    diálogo — el patrón ya establecido en el selector de predicadores del
+    calendario y repetido en listas.
 
 - **D9 — Los campos de creyente son columnas en vivo, no copiadas.** Es la
   decisión que más se aparta de lo que se pidió en la conversación original
@@ -328,28 +328,28 @@ celda por día, si la tabla tiene una columna `date`).
   publicación** congelada a propósito como una lista compartida — es una
   herramienta de trabajo donde un dato viejo es simplemente un error.
 
-  Al crear el cuadrante o al añadir la primera fila se elige qué campos de
-  creyente **mostrar** como columnas, de una lista blanca cerrada — mismo
-  mecanismo que la D16 de listas, pero aquí la motivación es de diseño y no de
-  seguridad:
+    Al crear el cuadrante o al añadir la primera fila se elige qué campos de
+    creyente **mostrar** como columnas, de una lista blanca cerrada — mismo
+    mecanismo que la D16 de listas, pero aquí la motivación es de diseño y no de
+    seguridad:
 
-  | Campo disponible         | De dónde sale                                                          |
-  | ------------------------ | ---------------------------------------------------------------------- |
-  | Nombre                   | Siempre presente, no se puede quitar                                   |
-  | Teléfono, correo         | `believer.phone`, `believer.email`                                     |
-  | Sede                     | `believer.congregation` (nombre y color)                               |
-  | Estado                   | `believer.status`                                                      |
-  | Dones                    | `believer.gifts`                                                       |
-  | Labores                  | `believer.ministries`                                                  |
-  | Sonda                    | `daysWithoutNote` / `needsAttention` (RFC 0003)                        |
-  | Llegada, sede de llegada | `arrivedAt`, `arrivalSite` (RFC 0012)                                  |
-  | Lecturas e institutos    | `bibleReadings`, `vivenciasReadings`, `bibleInstituteTimes` (RFC 0012) |
+    | Campo disponible         | De dónde sale                                                          |
+    | ------------------------ | ---------------------------------------------------------------------- |
+    | Nombre                   | Siempre presente, no se puede quitar                                   |
+    | Teléfono, correo         | `believer.phone`, `believer.email`                                     |
+    | Sede                     | `believer.congregation` (nombre y color)                               |
+    | Estado                   | `believer.status`                                                      |
+    | Dones                    | `believer.gifts`                                                       |
+    | Labores                  | `believer.ministries`                                                  |
+    | Sonda                    | `daysWithoutNote` / `needsAttention` (RFC 0003)                        |
+    | Llegada, sede de llegada | `arrivedAt`, `arrivalSite` (RFC 0012)                                  |
+    | Lecturas e institutos    | `bibleReadings`, `vivenciasReadings`, `bibleInstituteTimes` (RFC 0012) |
 
-  Estas columnas **no se pueden editar desde el cuadrante**: se editan en la
-  ficha del creyente, con `believers.manage`. El cuadrante solo puede
-  mostrarlas u ocultarlas, nunca escribir en ellas — evita el error de que
-  alguien con `boards.manage` y sin `believers.manage` cambie el teléfono de
-  alguien sin darse cuenta de que está editando la ficha real.
+    Estas columnas **no se pueden editar desde el cuadrante**: se editan en la
+    ficha del creyente, con `believers.manage`. El cuadrante solo puede
+    mostrarlas u ocultarlas, nunca escribir en ellas — evita el error de que
+    alguien con `boards.manage` y sin `believers.manage` cambie el teléfono de
+    alguien sin darse cuenta de que está editando la ficha real.
 
 - **D10 — Quitar una fila no borra al creyente, ni al revés.** Quitar a Juan
   del cuadrante de instituto le borra sus celdas de ese cuadrante y nada más.
@@ -366,22 +366,22 @@ celda por día, si la tabla tiene una columna `date`).
 - **D12 — Cuatro vistas, cada una activa solo cuando la tabla la puede
   enseñar.**
 
-  | Vista          | Qué hace                                                           | Exige                               |
-  | -------------- | ------------------------------------------------------------------ | ----------------------------------- |
-  | **Rejilla**    | Filas × columnas, edición en la propia celda. La vista por defecto | Nada                                |
-  | **Fichas**     | Una tarjeta por creyente, sus columnas en lista                    | Nada                                |
-  | **Agrupada**   | Columnas de tablero por el valor de un `singleSelect` elegido      | Al menos una columna `singleSelect` |
-  | **Calendario** | Una celda del mes por cada valor de una columna `date` elegida     | Al menos una columna `date`         |
+    | Vista          | Qué hace                                                           | Exige                               |
+    | -------------- | ------------------------------------------------------------------ | ----------------------------------- |
+    | **Rejilla**    | Filas × columnas, edición en la propia celda. La vista por defecto | Nada                                |
+    | **Fichas**     | Una tarjeta por creyente, sus columnas en lista                    | Nada                                |
+    | **Agrupada**   | Columnas de tablero por el valor de un `singleSelect` elegido      | Al menos una columna `singleSelect` |
+    | **Calendario** | Una celda del mes por cada valor de una columna `date` elegida     | Al menos una columna `date`         |
 
-  Cuando falta el tipo de columna que una vista necesita, el conmutador la
-  enseña **apagada con el motivo** («Crea una columna de fecha para ver el
-  calendario»), nunca escondida sin explicación — es la misma idea de la
-  Regla 9 §6 de que un hueco invita a hacer algo, no se disimula.
+    Cuando falta el tipo de columna que una vista necesita, el conmutador la
+    enseña **apagada con el motivo** («Crea una columna de fecha para ver el
+    calendario»), nunca escondida sin explicación — es la misma idea de la
+    Regla 9 §6 de que un hueco invita a hacer algo, no se disimula.
 
-  Cuatro y no menos, porque es el conjunto exacto que ya usa esta aplicación
-  en el módulo más parecido —las cuatro vistas de la bitácora de creyentes,
-  RFC 0003 D17— y el que confirma la investigación (§ Baserow) como el juego
-  mínimo que cubre spreadsheet, tarjetas, agrupación y tiempo.
+    Cuatro y no menos, porque es el conjunto exacto que ya usa esta aplicación
+    en el módulo más parecido —las cuatro vistas de la bitácora de creyentes,
+    RFC 0003 D17— y el que confirma la investigación (§ Baserow) como el juego
+    mínimo que cubre spreadsheet, tarjetas, agrupación y tiempo.
 
 - **D13 — El filtro va en la URL; la vista elegida, en `localStorage`.** Mismo
   reparto que en creyentes (RFC 0003 §7.2): una búsqueda concreta se comparte
@@ -419,10 +419,10 @@ celda por día, si la tabla tiene una columna `date`).
   las cuenta. Nace vacía de filas: es un ejemplo que funciona desde el primer
   vistazo, no datos inventados de personas que no han venido a ninguna clase.
 
-  La migración **escribe los nombres a mano**, sin importar ninguna
-  constante — la misma trampa que ya deja escrito `CLAUDE.md` sobre
-  `CreateRoles`: si mañana cambia el texto de una traducción, no debe cambiar
-  lo que la migración siembra en una base de datos que ya existe.
+    La migración **escribe los nombres a mano**, sin importar ninguna
+    constante — la misma trampa que ya deja escrito `CLAUDE.md` sobre
+    `CreateRoles`: si mañana cambia el texto de una traducción, no debe cambiar
+    lo que la migración siembra en una base de datos que ya existe.
 
 - **D17 — Elemento firma: la marea.** En cada fila, una pista fina —el mismo
   lenguaje visual que la sonda de creyentes (RFC 0003 §7.3), pero con otro
@@ -432,13 +432,13 @@ celda por día, si la tabla tiene una columna `date`).
   —es el caso más útil, y evita enseñar dos indicadores que dicen casi lo
   mismo—.
 
-  Es lo que responde, de un vistazo por la tabla entera y sin abrir ninguna
-  fila, a **«¿a quién le falta algo por rellenar?»** — el mismo tipo de
-  pregunta que la sonda responde para «con quién no he hablado», llevada al
-  terreno de una tabla que se está completando en vez de una relación que se
-  está enfriando. `bg-muted` de fondo, relleno de `bg-primary` con
-  `transform: scaleX()` al entrar (nunca `width`, Regla 9 §5), y sin pintarse
-  en absoluto en una tabla sin columnas propias que valga la pena medir.
+    Es lo que responde, de un vistazo por la tabla entera y sin abrir ninguna
+    fila, a **«¿a quién le falta algo por rellenar?»** — el mismo tipo de
+    pregunta que la sonda responde para «con quién no he hablado», llevada al
+    terreno de una tabla que se está completando en vez de una relación que se
+    está enfriando. `bg-muted` de fondo, relleno de `bg-primary` con
+    `transform: scaleX()` al entrar (nunca `width`, Regla 9 §5), y sin pintarse
+    en absoluto en una tabla sin columnas propias que valga la pena medir.
 
 - **D18 — Nada de degradados ni de un icono por columna.** Los tipos de
   columna llevan su icono en la cabecera —es información, localiza el tipo de
@@ -520,41 +520,41 @@ cien filas no escribe mil celdas vacías de golpe.
 ```ts
 // packages/shared/src/schemas/boards.ts
 export const BOARD_COLUMN_TYPES = [
-  'text',
-  'longText',
-  'number',
-  'date',
-  'checkbox',
-  'singleSelect',
-  'multiSelect',
-  'url',
-  'phone',
-  'email',
-  'count',
+    'text',
+    'longText',
+    'number',
+    'date',
+    'checkbox',
+    'singleSelect',
+    'multiSelect',
+    'url',
+    'phone',
+    'email',
+    'count',
 ] as const;
 
 export type BoardColumnType = (typeof BOARD_COLUMN_TYPES)[number];
 
 const selectOptionSchema = z.object({
-  key: z.string(),
-  label: z.string(),
-  accent: accentSchema,
+    key: z.string(),
+    label: z.string(),
+    accent: accentSchema,
 });
 
 /** Discriminada por tipo: cada variante lleva solo lo que su tipo necesita. */
 export const boardColumnConfigSchema = z.discriminatedUnion('type', [
-  z.object({
-    type: z.literal('singleSelect'),
-    options: z.array(selectOptionSchema),
-  }),
-  z.object({
-    type: z.literal('multiSelect'),
-    options: z.array(selectOptionSchema),
-  }),
-  z.object({
-    type: z.literal('count'),
-    countColumnIds: z.array(z.uuid()).min(1),
-  }),
+    z.object({
+        type: z.literal('singleSelect'),
+        options: z.array(selectOptionSchema),
+    }),
+    z.object({
+        type: z.literal('multiSelect'),
+        options: z.array(selectOptionSchema),
+    }),
+    z.object({
+        type: z.literal('count'),
+        countColumnIds: z.array(z.uuid()).min(1),
+    }),
 ]);
 // El resto de tipos no lleva configuración: no aparecen en la unión.
 
@@ -562,18 +562,18 @@ export type BoardColumnConfig = z.infer<typeof boardColumnConfigSchema>;
 
 /** Los campos de creyente que se pueden mostrar como columna (D9), lista blanca. */
 export const BOARD_BELIEVER_FIELDS = [
-  'phone',
-  'email',
-  'congregation',
-  'status',
-  'gifts',
-  'ministries',
-  'probe', // la sonda: daysWithoutNote / needsAttention
-  'arrivedAt',
-  'arrivalSite',
-  'bibleReadings',
-  'vivenciasReadings',
-  'bibleInstituteTimes',
+    'phone',
+    'email',
+    'congregation',
+    'status',
+    'gifts',
+    'ministries',
+    'probe', // la sonda: daysWithoutNote / needsAttention
+    'arrivedAt',
+    'arrivalSite',
+    'bibleReadings',
+    'vivenciasReadings',
+    'bibleInstituteTimes',
 ] as const;
 
 export type BoardBelieverField = (typeof BOARD_BELIEVER_FIELDS)[number];
@@ -589,21 +589,21 @@ web reinventen el formato:
 
 ```ts
 export type CellValue =
-  | { kind: 'text'; value: string }
-  | { kind: 'number'; value: number }
-  | { kind: 'date'; value: string } // AAAA-MM-DD
-  | { kind: 'checkbox'; value: boolean }
-  | { kind: 'select'; value: string } // la `key` de la opción
-  | { kind: 'multiSelect'; value: string[] }
-  | { kind: 'empty' };
+    | { kind: 'text'; value: string }
+    | { kind: 'number'; value: number }
+    | { kind: 'date'; value: string } // AAAA-MM-DD
+    | { kind: 'checkbox'; value: boolean }
+    | { kind: 'select'; value: string } // la `key` de la opción
+    | { kind: 'multiSelect'; value: string[] }
+    | { kind: 'empty' };
 
 export function parseCellValue(
-  type: BoardColumnType,
-  raw: string | null,
+    type: BoardColumnType,
+    raw: string | null,
 ): CellValue;
 export function serializeCellValue(
-  type: BoardColumnType,
-  value: CellValue,
+    type: BoardColumnType,
+    value: CellValue,
 ): string | null;
 ```
 

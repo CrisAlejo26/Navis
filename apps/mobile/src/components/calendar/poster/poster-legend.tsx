@@ -23,64 +23,66 @@ const CHAR_W = FONT_SIZE * 0.55;
  * aparecen en el tramo que se comparte, no todo el catálogo de la iglesia.
  */
 export function posterLegend({
-  range,
-  pal,
-  top,
-  left,
-  maxWidth,
-  congregationName,
-  congregationAccent,
+    range,
+    pal,
+    top,
+    left,
+    maxWidth,
+    congregationName,
+    congregationAccent,
 }: {
-  range: CalendarRange;
-  pal: PosterPalette;
-  /** De dónde cuelga la leyenda, en coordenadas del poster. */
-  top: number;
-  left: number;
-  maxWidth: number;
-  congregationName: (id: string) => string;
-  congregationAccent: (id: string) => string;
+    range: CalendarRange;
+    pal: PosterPalette;
+    /** De dónde cuelga la leyenda, en coordenadas del poster. */
+    top: number;
+    left: number;
+    maxWidth: number;
+    congregationName: (id: string) => string;
+    congregationAccent: (id: string) => string;
 }): { alto: number; nodes: ReactNode } {
-  const ids = [
-    ...new Set(range.days.flatMap((day) => day.meetings.map((meeting) => meeting.congregationId))),
-  ];
+    const ids = [
+        ...new Set(
+            range.days.flatMap((day) => day.meetings.map((meeting) => meeting.congregationId)),
+        ),
+    ];
 
-  const nodes: ReactNode[] = [];
-  let x = left;
-  let row = 0;
+    const nodes: ReactNode[] = [];
+    let x = left;
+    let row = 0;
 
-  for (const id of ids) {
-    const name = congregationName(id);
-    const itemWidth = DOT_R * 2 + GAP_AFTER_DOT + name.length * CHAR_W + GAP_BETWEEN_ITEMS;
-    if (x + itemWidth > left + maxWidth && x > left) {
-      row += 1;
-      x = left;
+    for (const id of ids) {
+        const name = congregationName(id);
+        const itemWidth = DOT_R * 2 + GAP_AFTER_DOT + name.length * CHAR_W + GAP_BETWEEN_ITEMS;
+        if (x + itemWidth > left + maxWidth && x > left) {
+            row += 1;
+            x = left;
+        }
+
+        // `top` es el borde superior de la leyenda, no una línea base: se baja
+        // lo que hace falta para que el texto —y no su techo— quede dentro.
+        const y = top + 23 + row * ROW_H;
+        nodes.push(
+            <Circle
+                key={`d-${id}`}
+                cx={x + DOT_R}
+                cy={y - 6}
+                r={DOT_R}
+                fill={accentHex(congregationAccent(id), pal.palette)}
+            />,
+            <SvgText
+                key={`t-${id}`}
+                x={x + DOT_R * 2 + GAP_AFTER_DOT}
+                y={y}
+                fontSize={FONT_SIZE}
+                fontFamily={POSTER_FONT.medium}
+                fill={pal.foreground}
+            >
+                {name}
+            </SvgText>,
+        );
+
+        x += itemWidth;
     }
 
-    // `top` es el borde superior de la leyenda, no una línea base: se baja
-    // lo que hace falta para que el texto —y no su techo— quede dentro.
-    const y = top + 23 + row * ROW_H;
-    nodes.push(
-      <Circle
-        key={`d-${id}`}
-        cx={x + DOT_R}
-        cy={y - 6}
-        r={DOT_R}
-        fill={accentHex(congregationAccent(id), pal.palette)}
-      />,
-      <SvgText
-        key={`t-${id}`}
-        x={x + DOT_R * 2 + GAP_AFTER_DOT}
-        y={y}
-        fontSize={FONT_SIZE}
-        fontFamily={POSTER_FONT.medium}
-        fill={pal.foreground}
-      >
-        {name}
-      </SvgText>,
-    );
-
-    x += itemWidth;
-  }
-
-  return { alto: ids.length === 0 ? 0 : (row + 1) * ROW_H, nodes };
+    return { alto: ids.length === 0 ? 0 : (row + 1) * ROW_H, nodes };
 }

@@ -15,26 +15,26 @@ import type { PublicList } from '@navis/shared';
  * `apps/web/src/lib/lists/share-card.ts`.
  */
 export interface ShareDescriptionInput {
-  /** Lo que escribió su dueño. Si lo hay, manda: son sus palabras. */
-  description: string | null;
-  /** Nulo en restringida: ahí no hay ni recuento ni fecha (D18). */
-  list: Pick<PublicList, 'members' | 'updatedAt'> | null;
+    /** Lo que escribió su dueño. Si lo hay, manda: son sus palabras. */
+    description: string | null;
+    /** Nulo en restringida: ahí no hay ni recuento ni fecha (D18). */
+    list: Pick<PublicList, 'members' | 'updatedAt'> | null;
 }
 
 export function shareDescription({ description, list }: ShareDescriptionInput): string {
-  const propia = description?.trim();
-  if (propia) return propia;
+    const propia = description?.trim();
+    if (propia) return propia;
 
-  if (!list) return 'Lista compartida con Navis. Hace falta un acceso para verla.';
+    if (!list) return 'Lista compartida con Navis. Hace falta un acceso para verla.';
 
-  return [cuantas(list.members.length), actualizada(list.updatedAt)].filter(Boolean).join(' ');
+    return [cuantas(list.members.length), actualizada(list.updatedAt)].filter(Boolean).join(' ');
 }
 
 function cuantas(total: number): string {
-  if (total === 0) return 'Lista todavía sin nadie, compartida con Navis.';
-  if (total === 1) return 'Lista de 1 persona, compartida con Navis.';
+    if (total === 0) return 'Lista todavía sin nadie, compartida con Navis.';
+    if (total === 1) return 'Lista de 1 persona, compartida con Navis.';
 
-  return `Lista de ${total} personas, compartida con Navis.`;
+    return `Lista de ${total} personas, compartida con Navis.`;
 }
 
 /**
@@ -46,8 +46,8 @@ function cuantas(total: number): string {
 const DIA = new Intl.DateTimeFormat('es-ES', { day: 'numeric', month: 'long', timeZone: 'UTC' });
 
 function actualizada(iso: string): string {
-  const fecha = new Date(iso);
-  if (Number.isNaN(fecha.getTime())) return '';
+    const fecha = new Date(iso);
+    if (Number.isNaN(fecha.getTime())) return '';
 
-  return `Actualizada el ${DIA.format(fecha)}.`;
+    return `Actualizada el ${DIA.format(fecha)}.`;
 }

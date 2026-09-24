@@ -7,32 +7,32 @@ import { Profile } from './profile.entity';
 
 @Injectable()
 export class ProfilesService {
-  constructor(
-    @InjectRepository(Profile)
-    private readonly profiles: Repository<Profile>,
-  ) {}
+    constructor(
+        @InjectRepository(Profile)
+        private readonly profiles: Repository<Profile>,
+    ) {}
 
-  /**
-   * Devuelve el perfil del usuario y lo crea vacío la primera vez.
-   * Evita tener que engancharse a los hooks de creación de Better Auth.
-   */
-  async findOrCreate(userId: string): Promise<Profile> {
-    const existing = await this.profiles.findOne({ where: { userId } });
-    if (existing) return existing;
+    /**
+     * Devuelve el perfil del usuario y lo crea vacío la primera vez.
+     * Evita tener que engancharse a los hooks de creación de Better Auth.
+     */
+    async findOrCreate(userId: string): Promise<Profile> {
+        const existing = await this.profiles.findOne({ where: { userId } });
+        if (existing) return existing;
 
-    return this.profiles.save(this.profiles.create({ userId }));
-  }
+        return this.profiles.save(this.profiles.create({ userId }));
+    }
 
-  /** Deja apuntada la iglesia sobre la que trabaja esta cuenta. */
-  async setActiveChurch(userId: string, churchId: string): Promise<void> {
-    const profile = await this.findOrCreate(userId);
-    profile.activeChurchId = churchId;
-    await this.profiles.save(profile);
-  }
+    /** Deja apuntada la iglesia sobre la que trabaja esta cuenta. */
+    async setActiveChurch(userId: string, churchId: string): Promise<void> {
+        const profile = await this.findOrCreate(userId);
+        profile.activeChurchId = churchId;
+        await this.profiles.save(profile);
+    }
 
-  async update(userId: string, dto: UpdateProfileDto): Promise<Profile> {
-    const profile = await this.findOrCreate(userId);
-    Object.assign(profile, dto);
-    return this.profiles.save(profile);
-  }
+    async update(userId: string, dto: UpdateProfileDto): Promise<Profile> {
+        const profile = await this.findOrCreate(userId);
+        Object.assign(profile, dto);
+        return this.profiles.save(profile);
+    }
 }

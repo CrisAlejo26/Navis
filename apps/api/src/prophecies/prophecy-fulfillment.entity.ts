@@ -20,25 +20,25 @@ import type { Prophecy } from './prophecy.entity';
 @Entity('prophecy_fulfillments')
 @Index('IDX_prophecy_fulfillments_prophecy', ['prophecyId', 'occurredAt'])
 export class ProphecyFulfillment extends BaseEntity {
-  @ApiProperty()
-  @Column({ name: 'prophecy_id', type: UUID })
-  prophecyId: string;
+    @ApiProperty()
+    @Column({ name: 'prophecy_id', type: UUID })
+    prophecyId: string;
 
-  @ApiProperty({ description: 'Denormalizado para no depender de un JOIN (D1)' })
-  @Index()
-  @Column({ name: 'owner_id', type: 'text' })
-  ownerId: string;
+    @ApiProperty({ description: 'Denormalizado para no depender de un JOIN (D1)' })
+    @Index()
+    @Column({ name: 'owner_id', type: 'text' })
+    ownerId: string;
 
-  /* Por nombre y con `Relation<>`: ver `calendar/pattern-phase.entity.ts`. */
-  @ManyToOne('Prophecy', 'fulfillments', { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'prophecy_id' })
-  prophecy: Relation<Prophecy>;
+    /* Por nombre y con `Relation<>`: ver `calendar/pattern-phase.entity.ts`. */
+    @ManyToOne('Prophecy', 'fulfillments', { onDelete: 'CASCADE' })
+    @JoinColumn({ name: 'prophecy_id' })
+    prophecy: Relation<Prophecy>;
 
-  @ApiProperty({ description: 'Qué parte se ha cumplido' })
-  @Column({ type: 'text' })
-  text: string;
+    @ApiProperty({ description: 'Qué parte se ha cumplido' })
+    @Column({ type: 'text' })
+    text: string;
 
-  @ApiProperty({ description: 'Cuándo se cumplió esa parte', example: '2026-07-14' })
-  @Column({ name: 'occurred_at', type: 'date' })
-  occurredAt: string;
+    @ApiProperty({ description: 'Cuándo se cumplió esa parte', example: '2026-07-14' })
+    @Column({ name: 'occurred_at', type: 'date' })
+    occurredAt: string;
 }

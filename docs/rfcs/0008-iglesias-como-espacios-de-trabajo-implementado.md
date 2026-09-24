@@ -393,14 +393,14 @@ Tres migraciones, y en este orden:
    permisos de los roles de serie.
 3. **`RenameSystemRoles`** — renombra los slugs y actualiza `user.role`:
 
-   | Antes    | Después      | Motivo                             |
-   | -------- | ------------ | ---------------------------------- |
-   | `admin`  | `superadmin` | Es el papel que describe la tabla  |
-   | `pastor` | `pastor`     | Se queda igual                     |
-   | `leader` | `recepcion`  | Mismo nivel y el papel más cercano |
-   | `member` | `creyente`   | El nombre que se usa en la iglesia |
+    | Antes    | Después      | Motivo                             |
+    | -------- | ------------ | ---------------------------------- |
+    | `admin`  | `superadmin` | Es el papel que describe la tabla  |
+    | `pastor` | `pastor`     | Se queda igual                     |
+    | `leader` | `recepcion`  | Mismo nivel y el papel más cercano |
+    | `member` | `creyente`   | El nombre que se usa en la iglesia |
 
-   Y añade los tres que faltan: `biblias`, `sonido`, `pulpito`.
+    Y añade los tres que faltan: `biblias`, `sonido`, `pulpito`.
 
 **Traspaso de lo que ya hay** (una instalación en marcha):
 

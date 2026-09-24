@@ -16,22 +16,22 @@ export const PROPHECY_DETAIL_VIEWS = ['bitacora', 'lectura', 'recorrido', 'ficha
 export type ProphecyDetailView = (typeof PROPHECY_DETAIL_VIEWS)[number];
 
 interface ViewState {
-  view: ProphecyDetailView;
-  setView: (view: ProphecyDetailView) => void;
+    view: ProphecyDetailView;
+    setView: (view: ProphecyDetailView) => void;
 }
 
 /** Como el resto de las vistas: preferencia de quien mira, no del enlace (D11). */
 export const useProphecyDetailViewStore = create<ViewState>()(
-  persist(
-    (set) => ({
-      view: 'bitacora',
-      setView: (view) => {
-        set({ view });
-      },
-    }),
-    {
-      name: PROPHECY_DETAIL_VIEW_STORAGE_KEY,
-      storage: createJSONStorage(() => globalThis.localStorage),
-    },
-  ),
+    persist(
+        (set) => ({
+            view: 'bitacora',
+            setView: (view) => {
+                set({ view });
+            },
+        }),
+        {
+            name: PROPHECY_DETAIL_VIEW_STORAGE_KEY,
+            storage: createJSONStorage(() => globalThis.localStorage),
+        },
+    ),
 );

@@ -8,20 +8,20 @@ import { useThemeStore } from '@/lib/theme';
  * asíncronos (React 19 hace el `act` en promesa): hay que esperarlos.
  */
 describe('ThemeToggle', () => {
-  beforeEach(() => {
-    useThemeStore.getState().setMode('system');
-  });
+    beforeEach(() => {
+        useThemeStore.getState().setMode('system');
+    });
 
-  it('arranca siguiendo al sistema', async () => {
-    await render(<ThemeToggle />);
-    expect(screen.getByLabelText('Sistema')).toBeTruthy();
-    expect(useThemeStore.getState().mode).toBe('system');
-  });
+    it('arranca siguiendo al sistema', async () => {
+        await render(<ThemeToggle />);
+        expect(screen.getByLabelText('Sistema')).toBeTruthy();
+        expect(useThemeStore.getState().mode).toBe('system');
+    });
 
-  it('cambia a oscuro al pulsar su opción', async () => {
-    await render(<ThemeToggle />);
-    await fireEvent.press(screen.getByLabelText('Oscuro'));
-    expect(useThemeStore.getState().mode).toBe('dark');
-    expect(useThemeStore.getState().resolvedTheme).toBe('dark');
-  });
+    it('cambia a oscuro al pulsar su opción', async () => {
+        await render(<ThemeToggle />);
+        await fireEvent.press(screen.getByLabelText('Oscuro'));
+        expect(useThemeStore.getState().mode).toBe('dark');
+        expect(useThemeStore.getState().resolvedTheme).toBe('dark');
+    });
 });

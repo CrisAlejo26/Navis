@@ -14,7 +14,7 @@ import { File, Paths } from 'expo-file-system';
 const DIRECTORY = 'photos';
 
 function photoFile(id: string): File {
-  return new File(new File(Paths.document, DIRECTORY), id);
+    return new File(new File(Paths.document, DIRECTORY), id);
 }
 
 /**
@@ -23,23 +23,23 @@ function photoFile(id: string): File {
  * basta con saber que la tiene (`hasPhoto`).
  */
 export function believerPhotoUri(id: string): string {
-  return photoFile(id).uri;
+    return photoFile(id).uri;
 }
 
 /** Copia la imagen elegida a su sitio definitivo y devuelve su URI. */
 export async function storeBelieverPhoto(id: string, sourceUri: string): Promise<string> {
-  const file = photoFile(id);
-  await new File(sourceUri).copy(file);
-  return file.uri;
+    const file = photoFile(id);
+    await new File(sourceUri).copy(file);
+    return file.uri;
 }
 
 export function removeBelieverPhoto(id: string): void {
-  const file = photoFile(id);
-  if (file.exists) file.delete();
+    const file = photoFile(id);
+    if (file.exists) file.delete();
 }
 
 /** Borra por URI directa (lo que ya está guardado en la fila). */
 export function removeBelieverPhotoAt(uri: string): void {
-  const file = new File(uri);
-  if (file.exists) file.delete();
+    const file = new File(uri);
+    if (file.exists) file.delete();
 }

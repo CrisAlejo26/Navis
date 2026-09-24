@@ -3,15 +3,15 @@ import { expect, test } from '@playwright/test';
 const TOKEN = 'aaaaaaaaaaaaaaaaaaaaaa';
 
 const LISTA = {
-  churchName: 'Iglesia El Faro',
-  name: 'Púlpito',
-  description: null,
-  accent: '#2140cf',
-  updatedAt: '2026-08-03T10:00:00.000Z',
-  allowDownload: false,
-  restricted: false,
-  viewerLabel: null,
-  members: [],
+    churchName: 'Iglesia El Faro',
+    name: 'Púlpito',
+    description: null,
+    accent: '#2140cf',
+    updatedAt: '2026-08-03T10:00:00.000Z',
+    allowDownload: false,
+    restricted: false,
+    viewerLabel: null,
+    members: [],
 };
 
 /**
@@ -28,32 +28,36 @@ const LISTA = {
  * pública: una vez activo se come los `page.route` (CLAUDE.md).
  */
 test.describe('El manifest de la página pública de una lista', () => {
-  test.use({ serviceWorkers: 'block' });
+    test.use({ serviceWorkers: 'block' });
 
-  test('en /lists/s/<token> el manifest enlazado es el de esa lista, no el general', async ({
-    page,
-  }) => {
-    await page.route(`**/api/v1/public/lists/${TOKEN}`, (route) =>
-      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(LISTA) }),
-    );
+    test('en /lists/s/<token> el manifest enlazado es el de esa lista, no el general', async ({
+        page,
+    }) => {
+        await page.route(`**/api/v1/public/lists/${TOKEN}`, (route) =>
+            route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify(LISTA),
+            }),
+        );
 
-    await page.goto(`/lists/s/${TOKEN}`);
-    await expect(page.getByRole('heading', { name: 'Púlpito' })).toBeVisible();
+        await page.goto(`/lists/s/${TOKEN}`);
+        await expect(page.getByRole('heading', { name: 'Púlpito' })).toBeVisible();
 
-    await expect(page.locator('link[rel="manifest"]')).toHaveAttribute(
-      'href',
-      `/l/${TOKEN}/manifest.webmanifest`,
-    );
-  });
+        await expect(page.locator('link[rel="manifest"]')).toHaveAttribute(
+            'href',
+            `/l/${TOKEN}/manifest.webmanifest`,
+        );
+    });
 
-  test('en cualquier otra pantalla, el manifest sigue siendo el general de Navis', async ({
-    page,
-  }) => {
-    await page.goto('/login');
+    test('en cualquier otra pantalla, el manifest sigue siendo el general de Navis', async ({
+        page,
+    }) => {
+        await page.goto('/login');
 
-    await expect(page.locator('link[rel="manifest"]')).toHaveAttribute(
-      'href',
-      '/manifest.webmanifest',
-    );
-  });
+        await expect(page.locator('link[rel="manifest"]')).toHaveAttribute(
+            'href',
+            '/manifest.webmanifest',
+        );
+    });
 });

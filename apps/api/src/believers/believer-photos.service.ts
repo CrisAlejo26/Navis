@@ -13,10 +13,10 @@ export type { UploadedImage };
 
 /** El tipo que se sirve, a partir de la extensión con la que se guardó. */
 const MIME_BY_EXTENSION: Record<string, string> = {
-  jpg: 'image/jpeg',
-  png: 'image/png',
-  webp: 'image/webp',
-  heic: 'image/heic',
+    jpg: 'image/jpeg',
+    png: 'image/png',
+    webp: 'image/webp',
+    heic: 'image/heic',
 };
 
 /**
@@ -33,47 +33,47 @@ const MIME_BY_EXTENSION: Record<string, string> = {
  */
 @Injectable()
 export class BelieverPhotosService {
-  constructor(
-    @InjectRepository(Believer) private readonly believers: Repository<Believer>,
-    private readonly people: BelieversService,
-    private readonly images: ImageStorageService,
-  ) {}
+    constructor(
+        @InjectRepository(Believer) private readonly believers: Repository<Believer>,
+        private readonly people: BelieversService,
+        private readonly images: ImageStorageService,
+    ) {}
 
-  async set(churchId: string, id: string, file: UploadedImage): Promise<Believer> {
-    const believer = await this.people.require(churchId, id);
-    const previous = believer.photoKey;
+    async set(churchId: string, id: string, file: UploadedImage): Promise<Believer> {
+        const believer = await this.people.require(churchId, id);
+        const previous = believer.photoKey;
 
-    const stored = await this.images.save(churchScope(churchId), file);
-    believer.photoKey = stored.storageKey;
-    const saved = await this.believers.save(believer);
+        const stored = await this.images.save(churchScope(churchId), file);
+        believer.photoKey = stored.storageKey;
+        const saved = await this.believers.save(believer);
 
-    if (previous) await this.images.remove(previous);
+        if (previous) await this.images.remove(previous);
 
-    return saved;
-  }
+        return saved;
+    }
 
-  /** El fichero para servirlo, comprobando **antes** que es de esta iglesia. */
-  async stream(churchId: string, id: string): Promise<{ file: ReadStream; mimeType: string }> {
-    const believer = await this.people.require(churchId, id);
-    if (!believer.photoKey) throw new NotFoundException('Esa persona no tiene fotografía');
+    /** El fichero para servirlo, comprobando **antes** que es de esta iglesia. */
+    async stream(churchId: string, id: string): Promise<{ file: ReadStream; mimeType: string }> {
+        const believer = await this.people.require(churchId, id);
+        if (!believer.photoKey) throw new NotFoundException('Esa persona no tiene fotografía');
 
-    const extension = believer.photoKey.split('.').pop() ?? '';
+        const extension = believer.photoKey.split('.').pop() ?? '';
 
-    return {
-      file: this.images.read(believer.photoKey),
-      mimeType: MIME_BY_EXTENSION[extension] ?? 'application/octet-stream',
-    };
-  }
+        return {
+            file: this.images.read(believer.photoKey),
+            mimeType: MIME_BY_EXTENSION[extension] ?? 'application/octet-stream',
+        };
+    }
 
-  async remove(churchId: string, id: string): Promise<Believer> {
-    const believer = await this.people.require(churchId, id);
-    const previous = believer.photoKey;
+    async remove(churchId: string, id: string): Promise<Believer> {
+        const believer = await this.people.require(churchId, id);
+        const previous = believer.photoKey;
 
-    believer.photoKey = null;
-    const saved = await this.believers.save(believer);
+        believer.photoKey = null;
+        const saved = await this.believers.save(believer);
 
-    if (previous) await this.images.remove(previous);
+        if (previous) await this.images.remove(previous);
 
-    return saved;
-  }
+        return saved;
+    }
 }

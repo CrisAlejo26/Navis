@@ -4,8 +4,9 @@ import { isPostgres } from './column-types';
 const SAFE_KEY = /^[a-z0-9-]+$/;
 
 function safe(key: string): string {
-  if (!SAFE_KEY.test(key)) throw new Error(`Clave de columna con caracteres no permitidos: ${key}`);
-  return key;
+    if (!SAFE_KEY.test(key))
+        throw new Error(`Clave de columna con caracteres no permitidos: ${key}`);
+    return key;
 }
 
 /**
@@ -17,8 +18,10 @@ function safe(key: string): string {
  * trampa que ya resuelven `column-types.ts` y `date-sql.ts`.
  */
 export function jsonFieldExpr(column: string, key: string): string {
-  const clave = safe(key);
-  return isPostgres ? `(${column}::jsonb ->> '${clave}')` : `json_extract(${column}, '$.${clave}')`;
+    const clave = safe(key);
+    return isPostgres
+        ? `(${column}::jsonb ->> '${clave}')`
+        : `json_extract(${column}, '$.${clave}')`;
 }
 
 /**
@@ -31,13 +34,13 @@ export function jsonFieldExpr(column: string, key: string): string {
  * `'true'`/`'false'`, que ya ordena como cabe esperar.
  */
 export function jsonFieldOrderExpr(column: string, key: string, type: string): string {
-  const value = jsonFieldExpr(column, key);
-  if (type !== 'number' && type !== 'currency') return value;
+    const value = jsonFieldExpr(column, key);
+    if (type !== 'number' && type !== 'currency') return value;
 
-  return isPostgres ? `NULLIF(${value}, '')::numeric` : `CAST(NULLIF(${value}, '') AS REAL)`;
+    return isPostgres ? `NULLIF(${value}, '')::numeric` : `CAST(NULLIF(${value}, '') AS REAL)`;
 }
 
 /** Igual, pero para **comparar** en un filtro `between` sobre número o moneda. */
 export function jsonFieldNumericExpr(column: string, key: string): string {
-  return jsonFieldOrderExpr(column, key, 'number');
+    return jsonFieldOrderExpr(column, key, 'number');
 }

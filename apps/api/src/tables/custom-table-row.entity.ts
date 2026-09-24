@@ -18,20 +18,20 @@ import type { CustomTable } from './custom-table.entity';
 @Entity('custom_table_rows')
 @Index('IDX_custom_table_rows_page', ['tableId', 'createdAt'])
 export class CustomTableRow extends BaseEntity {
-  @ApiProperty()
-  @Index()
-  @Column({ name: 'table_id', type: UUID })
-  tableId: string;
+    @ApiProperty()
+    @Index()
+    @Column({ name: 'table_id', type: UUID })
+    tableId: string;
 
-  @ManyToOne('CustomTable', { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'table_id' })
-  table: Relation<CustomTable>;
+    @ManyToOne('CustomTable', { onDelete: 'CASCADE' })
+    @JoinColumn({ name: 'table_id' })
+    table: Relation<CustomTable>;
 
-  @ApiProperty({ description: '{ [columnKey]: valor }, validado al leer (D13)' })
-  @Column({ type: 'text' })
-  data: string;
+    @ApiProperty({ description: '{ [columnKey]: valor }, validado al leer (D13)' })
+    @Column({ type: 'text' })
+    data: string;
 
-  @ApiPropertyOptional({ description: 'Identificador de Better Auth' })
-  @Column({ name: 'created_by', type: 'text', nullable: true })
-  createdBy: string | null;
+    @ApiPropertyOptional({ description: 'Identificador de Better Auth' })
+    @Column({ name: 'created_by', type: 'text', nullable: true })
+    createdBy: string | null;
 }

@@ -22,85 +22,89 @@ import { usePermissions } from '@/lib/permissions';
  * «Compartir» se pueda pegar en un mensaje.
  */
 export function ListPage() {
-  const { t } = useTranslation();
-  const { can } = usePermissions();
-  const { active } = useChurches();
-  const { detail, isLoading, notFound, tab, setTab } = useListScreen();
-  const [dialog, setDialog] = useState<ListDialog>(null);
+    const { t } = useTranslation();
+    const { can } = usePermissions();
+    const { active } = useChurches();
+    const { detail, isLoading, notFound, tab, setTab } = useListScreen();
+    const [dialog, setDialog] = useState<ListDialog>(null);
 
-  if (isLoading) return <PageSkeleton />;
-  if (notFound || !detail) {
-    return <p className="text-sm text-muted-foreground">{t('lists.notFound')}</p>;
-  }
+    if (isLoading) return <PageSkeleton />;
+    if (notFound || !detail) {
+        return <p className="text-sm text-muted-foreground">{t('lists.notFound')}</p>;
+    }
 
-  const editable = can('lists.manage');
-  const abrir = (one: ListDialog) => () => {
-    setDialog(one);
-  };
+    const editable = can('lists.manage');
+    const abrir = (one: ListDialog) => () => {
+        setDialog(one);
+    };
 
-  const tabs = [
-    {
-      value: 'people' as const,
-      label: t('lists.tabPeople'),
-      icon: Users,
-      count: detail.members.length,
-    },
-    { value: 'stats' as const, label: t('lists.tabStats'), icon: BarChart3 },
-    ...(can('lists.share')
-      ? [{ value: 'share' as const, label: t('lists.tabShare'), icon: Share2 }]
-      : []),
-  ];
+    const tabs = [
+        {
+            value: 'people' as const,
+            label: t('lists.tabPeople'),
+            icon: Users,
+            count: detail.members.length,
+        },
+        { value: 'stats' as const, label: t('lists.tabStats'), icon: BarChart3 },
+        ...(can('lists.share')
+            ? [{ value: 'share' as const, label: t('lists.tabShare'), icon: Share2 }]
+            : []),
+    ];
 
-  return (
-    <section className="gap-6 animate-page-in flex flex-col">
-      <ListHeader
-        list={detail}
-        onEdit={editable ? abrir('edit') : undefined}
-        onDelete={editable ? abrir('delete') : undefined}
-      />
+    return (
+        <section className="gap-6 animate-page-in flex flex-col">
+            <ListHeader
+                list={detail}
+                onEdit={editable ? abrir('edit') : undefined}
+                onDelete={editable ? abrir('delete') : undefined}
+            />
 
-      <Tabs
-        items={tabs}
-        value={tab}
-        label={t('lists.title')}
-        onChange={(value: ListTab) => {
-          setTab(value);
-        }}
-      />
+            <Tabs
+                items={tabs}
+                value={tab}
+                label={t('lists.title')}
+                onChange={(value: ListTab) => {
+                    setTab(value);
+                }}
+            />
 
-      {tab === 'people' && (
-        <div className="gap-4 flex flex-col">
-          <div className="gap-2 flex flex-wrap">
-            {editable && (
-              <Button size="lg" onClick={abrir('members')}>
-                <UserPlus size={16} aria-hidden />
-                {t('lists.addPeople')}
-              </Button>
+            {tab === 'people' && (
+                <div className="gap-4 flex flex-col">
+                    <div className="gap-2 flex flex-wrap">
+                        {editable && (
+                            <Button size="lg" onClick={abrir('members')}>
+                                <UserPlus size={16} aria-hidden />
+                                {t('lists.addPeople')}
+                            </Button>
+                        )}
+                        <Button variant="secondary" onClick={abrir('export')}>
+                            <Download size={15} aria-hidden />
+                            {t('export.title')}
+                        </Button>
+                    </div>
+
+                    <MemberRows listId={detail.id} members={detail.members} editable={editable} />
+                </div>
             )}
-            <Button variant="secondary" onClick={abrir('export')}>
-              <Download size={15} aria-hidden />
-              {t('export.title')}
-            </Button>
-          </div>
 
-          <MemberRows listId={detail.id} members={detail.members} editable={editable} />
-        </div>
-      )}
+            {tab === 'stats' && <ListStats list={detail} />}
 
-      {tab === 'stats' && <ListStats list={detail} />}
+            {tab === 'share' && can('lists.share') && (
+                <SharePanel
+                    list={detail}
+                    churchName={active?.name ?? ''}
+                    members={detail.members}
+                />
+            )}
 
-      {tab === 'share' && can('lists.share') && (
-        <SharePanel list={detail} churchName={active?.name ?? ''} members={detail.members} />
-      )}
-
-      <ListDialogs
-        list={detail}
-        churchName={active?.name ?? ''}
-        open={dialog}
-        onClose={() => {
-          setDialog(null);
-        }}
-      />
-    </section>
-  );
+            <ListDialogs
+                list={detail}
+                churchName={active?.name ?? ''}
+                open={dialog}
+                onClose={() => {
+                    setDialog(null);
+                }}
+            />
+        </section>
+    );
 }

@@ -1,7 +1,7 @@
 /** `mm:ss`, que es como se lee el tiempo de un audio en todas partes. */
 export function formatSeconds(total: number): string {
-  const minutes = Math.floor(total / 60);
-  return `${String(minutes)}:${String(total % 60).padStart(2, '0')}`;
+    const minutes = Math.floor(total / 60);
+    return `${String(minutes)}:${String(total % 60).padStart(2, '0')}`;
 }
 
 /**
@@ -14,9 +14,9 @@ export function formatSeconds(total: number): string {
  * lo dice quien lo usa, con `path`, porque cada uno cuelga de su ruta.
  */
 export interface SavedAudio {
-  id: string;
-  durationSeconds: number | null;
-  recorded: boolean;
+    id: string;
+    durationSeconds: number | null;
+    recorded: boolean;
 }
 
 /** De dónde se baja un audio: `noteAudioPath` o `dreamAudioPath`, de `shared`. */

@@ -21,24 +21,25 @@ import { MeetingPattern } from '../calendar/meeting-pattern.entity';
 
 /** Los dones se casan por nombre; lo que colgaba de uno fundido se reapunta. */
 export async function mergeGifts(manager: EntityManager, origenId: string, destinoId: string) {
-  const origenRows = await manager.find(Gift, { where: { churchId: origenId } });
-  if (origenRows.length === 0) return;
+    const origenRows = await manager.find(Gift, { where: { churchId: origenId } });
+    if (origenRows.length === 0) return;
 
-  const porNombre = new Map(
-    (await manager.find(Gift, { where: { churchId: destinoId } })).map((g) => [g.name, g]),
-  );
+    const porNombre = new Map(
+        (await manager.find(Gift, { where: { churchId: destinoId } })).map((g) => [g.name, g]),
+    );
 
-  const movidos: string[] = [];
-  for (const origen of origenRows) {
-    const destino = porNombre.get(origen.name);
-    if (destino) {
-      await manager.update(BelieverGift, { giftId: origen.id }, { giftId: destino.id });
-      await manager.softRemove(origen);
-    } else {
-      movidos.push(origen.id);
+    const movidos: string[] = [];
+    for (const origen of origenRows) {
+        const destino = porNombre.get(origen.name);
+        if (destino) {
+            await manager.update(BelieverGift, { giftId: origen.id }, { giftId: destino.id });
+            await manager.softRemove(origen);
+        } else {
+            movidos.push(origen.id);
+        }
     }
-  }
-  if (movidos.length > 0) await manager.update(Gift, { id: In(movidos) }, { churchId: destinoId });
+    if (movidos.length > 0)
+        await manager.update(Gift, { id: In(movidos) }, { churchId: destinoId });
 }
 
 /**
@@ -47,20 +48,20 @@ export async function mergeGifts(manager: EntityManager, origenId: string, desti
  * fundida sigue siendo válida tal cual está escrita.
  */
 export async function mergeMinistries(manager: EntityManager, origenId: string, destinoId: string) {
-  const origenRows = await manager.find(Ministry, { where: { churchId: origenId } });
-  if (origenRows.length === 0) return;
+    const origenRows = await manager.find(Ministry, { where: { churchId: origenId } });
+    if (origenRows.length === 0) return;
 
-  const slugsDestino = new Set(
-    (await manager.find(Ministry, { where: { churchId: destinoId } })).map((m) => m.slug),
-  );
+    const slugsDestino = new Set(
+        (await manager.find(Ministry, { where: { churchId: destinoId } })).map((m) => m.slug),
+    );
 
-  const movidas: string[] = [];
-  for (const origen of origenRows) {
-    if (slugsDestino.has(origen.slug)) await manager.softRemove(origen);
-    else movidas.push(origen.id);
-  }
-  if (movidas.length > 0)
-    await manager.update(Ministry, { id: In(movidas) }, { churchId: destinoId });
+    const movidas: string[] = [];
+    for (const origen of origenRows) {
+        if (slugsDestino.has(origen.slug)) await manager.softRemove(origen);
+        else movidas.push(origen.id);
+    }
+    if (movidas.length > 0)
+        await manager.update(Ministry, { id: In(movidas) }, { churchId: destinoId });
 }
 
 /**
@@ -71,83 +72,94 @@ export async function mergeMinistries(manager: EntityManager, origenId: string, 
  * si el destino ya tiene la suya.
  */
 export async function mergeCongregations(
-  manager: EntityManager,
-  origenId: string,
-  destinoId: string,
+    manager: EntityManager,
+    origenId: string,
+    destinoId: string,
 ) {
-  const origenRows = await manager.find(Congregation, { where: { churchId: origenId } });
-  if (origenRows.length === 0) return;
+    const origenRows = await manager.find(Congregation, { where: { churchId: origenId } });
+    if (origenRows.length === 0) return;
 
-  const porNombre = new Map(
-    (await manager.find(Congregation, { where: { churchId: destinoId } })).map((c) => [c.name, c]),
-  );
-
-  const movidas: string[] = [];
-  for (const origen of origenRows) {
-    const destino = porNombre.get(origen.name);
-    if (destino) {
-      await reapuntarSede(manager, origen.id, destino.id, destinoId);
-      await manager.softRemove(origen);
-    } else {
-      await manager.update(Believer, { congregationId: origen.id }, { churchId: destinoId });
-      await manager.update(Meeting, { congregationId: origen.id }, { churchId: destinoId });
-      await manager.update(MeetingPattern, { congregationId: origen.id }, { churchId: destinoId });
-      movidas.push(origen.id);
-    }
-  }
-  if (movidas.length > 0) {
-    await manager.update(
-      Congregation,
-      { id: In(movidas) },
-      { churchId: destinoId, isDefault: false },
+    const porNombre = new Map(
+        (await manager.find(Congregation, { where: { churchId: destinoId } })).map((c) => [
+            c.name,
+            c,
+        ]),
     );
-  }
+
+    const movidas: string[] = [];
+    for (const origen of origenRows) {
+        const destino = porNombre.get(origen.name);
+        if (destino) {
+            await reapuntarSede(manager, origen.id, destino.id, destinoId);
+            await manager.softRemove(origen);
+        } else {
+            await manager.update(Believer, { congregationId: origen.id }, { churchId: destinoId });
+            await manager.update(Meeting, { congregationId: origen.id }, { churchId: destinoId });
+            await manager.update(
+                MeetingPattern,
+                { congregationId: origen.id },
+                { churchId: destinoId },
+            );
+            movidas.push(origen.id);
+        }
+    }
+    if (movidas.length > 0) {
+        await manager.update(
+            Congregation,
+            { id: In(movidas) },
+            { churchId: destinoId, isDefault: false },
+        );
+    }
 }
 
 async function reapuntarSede(
-  manager: EntityManager,
-  origenCongId: string,
-  destinoCongId: string,
-  destinoId: string,
+    manager: EntityManager,
+    origenCongId: string,
+    destinoCongId: string,
+    destinoId: string,
 ) {
-  await manager.update(
-    Believer,
-    { congregationId: origenCongId },
-    { congregationId: destinoCongId, churchId: destinoId },
-  );
-  await manager.update(
-    Meeting,
-    { congregationId: origenCongId },
-    { congregationId: destinoCongId, churchId: destinoId },
-  );
-  await manager.update(
-    MeetingPattern,
-    { congregationId: origenCongId },
-    { congregationId: destinoCongId, churchId: destinoId },
-  );
+    await manager.update(
+        Believer,
+        { congregationId: origenCongId },
+        { congregationId: destinoCongId, churchId: destinoId },
+    );
+    await manager.update(
+        Meeting,
+        { congregationId: origenCongId },
+        { congregationId: destinoCongId, churchId: destinoId },
+    );
+    await manager.update(
+        MeetingPattern,
+        { congregationId: origenCongId },
+        { congregationId: destinoCongId, churchId: destinoId },
+    );
 }
 
 /** Los calendarios se casan por `slug`. Lo que cuelga es solo `meetings`/`meeting_patterns`. */
 export async function mergeCalendars(manager: EntityManager, origenId: string, destinoId: string) {
-  const origenRows = await manager.find(Calendar, { where: { churchId: origenId } });
-  if (origenRows.length === 0) return;
+    const origenRows = await manager.find(Calendar, { where: { churchId: origenId } });
+    if (origenRows.length === 0) return;
 
-  const porSlug = new Map(
-    (await manager.find(Calendar, { where: { churchId: destinoId } })).map((c) => [c.slug, c]),
-  );
+    const porSlug = new Map(
+        (await manager.find(Calendar, { where: { churchId: destinoId } })).map((c) => [c.slug, c]),
+    );
 
-  const movidos: string[] = [];
-  for (const origen of origenRows) {
-    const destino = porSlug.get(origen.slug);
-    if (destino) {
-      await manager.update(Meeting, { calendarId: origen.id }, { calendarId: destino.id });
-      await manager.update(MeetingPattern, { calendarId: origen.id }, { calendarId: destino.id });
-      await manager.softRemove(origen);
-    } else {
-      movidos.push(origen.id);
+    const movidos: string[] = [];
+    for (const origen of origenRows) {
+        const destino = porSlug.get(origen.slug);
+        if (destino) {
+            await manager.update(Meeting, { calendarId: origen.id }, { calendarId: destino.id });
+            await manager.update(
+                MeetingPattern,
+                { calendarId: origen.id },
+                { calendarId: destino.id },
+            );
+            await manager.softRemove(origen);
+        } else {
+            movidos.push(origen.id);
+        }
     }
-  }
-  if (movidos.length > 0) {
-    await manager.update(Calendar, { id: In(movidos) }, { churchId: destinoId });
-  }
+    if (movidos.length > 0) {
+        await manager.update(Calendar, { id: In(movidos) }, { churchId: destinoId });
+    }
 }

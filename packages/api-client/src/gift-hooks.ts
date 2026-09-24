@@ -11,43 +11,43 @@ import { queryKeys } from './query-keys';
  * el listado, la ficha, el formulario de alta y el de nota.
  */
 export function useGifts(api: ApiClient, enabled = true): UseQueryResult<Gift[]> {
-  return useQuery({
-    queryKey: queryKeys.believers.gifts,
-    queryFn: () => api.get<Gift[]>('/gifts'),
-    enabled,
-    staleTime: 300_000,
-  });
+    return useQuery({
+        queryKey: queryKeys.believers.gifts,
+        queryFn: () => api.get<Gift[]>('/gifts'),
+        enabled,
+        staleTime: 300_000,
+    });
 }
 
 /** Renombrar o apagar un don cambia lo que se pinta en cada ficha y cada fila. */
 function refresh(client: ReturnType<typeof useQueryClient>) {
-  return client.invalidateQueries({ queryKey: queryKeys.believers.all });
+    return client.invalidateQueries({ queryKey: queryKeys.believers.all });
 }
 
 export function useCreateGift(api: ApiClient) {
-  const client = useQueryClient();
+    const client = useQueryClient();
 
-  return useMutation({
-    mutationFn: (input: CreateGiftInput) => api.post<Gift>('/gifts', { ...input }),
-    onSuccess: () => refresh(client),
-  });
+    return useMutation({
+        mutationFn: (input: CreateGiftInput) => api.post<Gift>('/gifts', { ...input }),
+        onSuccess: () => refresh(client),
+    });
 }
 
 export function useUpdateGift(api: ApiClient) {
-  const client = useQueryClient();
+    const client = useQueryClient();
 
-  return useMutation({
-    mutationFn: ({ id, ...input }: UpdateGiftInput & { id: string }) =>
-      api.patch<Gift>(`/gifts/${id}`, { ...input }),
-    onSuccess: () => refresh(client),
-  });
+    return useMutation({
+        mutationFn: ({ id, ...input }: UpdateGiftInput & { id: string }) =>
+            api.patch<Gift>(`/gifts/${id}`, { ...input }),
+        onSuccess: () => refresh(client),
+    });
 }
 
 export function useDeleteGift(api: ApiClient) {
-  const client = useQueryClient();
+    const client = useQueryClient();
 
-  return useMutation({
-    mutationFn: (id: string) => api.delete<void>(`/gifts/${id}`),
-    onSuccess: () => refresh(client),
-  });
+    return useMutation({
+        mutationFn: (id: string) => api.delete<void>(`/gifts/${id}`),
+        onSuccess: () => refresh(client),
+    });
 }

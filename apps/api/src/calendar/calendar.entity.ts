@@ -19,24 +19,24 @@ import { UUID } from '../database/column-types';
 // chocaría con la fila borrada, que sigue en la tabla (D `PartialUniqueSlugs`).
 @Index('UQ_calendars_slug', ['churchId', 'slug'], { unique: true, where: '"deleted_at" IS NULL' })
 export class Calendar extends BaseEntity {
-  @ApiProperty()
-  @Index()
-  @Column({ name: 'church_id', type: UUID })
-  churchId: string;
+    @ApiProperty()
+    @Index()
+    @Column({ name: 'church_id', type: UUID })
+    churchId: string;
 
-  @ApiProperty({ example: 'Púlpito' })
-  @Column({ type: 'text' })
-  name: string;
+    @ApiProperty({ example: 'Púlpito' })
+    @Column({ type: 'text' })
+    name: string;
 
-  @ApiProperty({ description: 'Derivado del nombre; es lo que va en la URL', example: 'pulpito' })
-  @Column({ type: 'text' })
-  slug: string;
+    @ApiProperty({ description: 'Derivado del nombre; es lo que va en la URL', example: 'pulpito' })
+    @Column({ type: 'text' })
+    slug: string;
 
-  @ApiPropertyOptional({ description: 'A quién propone el selector', example: 'pulpito' })
-  @Column({ type: 'text', nullable: true })
-  ministry: string | null;
+    @ApiPropertyOptional({ description: 'A quién propone el selector', example: 'pulpito' })
+    @Column({ type: 'text', nullable: true })
+    ministry: string | null;
 
-  @ApiProperty({ description: 'El orden en la barra lateral' })
-  @Column({ type: 'int', default: 0 })
-  position: number;
+    @ApiProperty({ description: 'El orden en la barra lateral' })
+    @Column({ type: 'int', default: 0 })
+    position: number;
 }

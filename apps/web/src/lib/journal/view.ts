@@ -9,8 +9,8 @@ export const JOURNAL_VIEWS = ['cards', 'table', 'calendar'] as const;
 export type JournalView = (typeof JOURNAL_VIEWS)[number];
 
 interface ViewState {
-  view: JournalView;
-  setView: (view: JournalView) => void;
+    view: JournalView;
+    setView: (view: JournalView) => void;
 }
 
 /**
@@ -18,16 +18,16 @@ interface ViewState {
  * mira, no del enlace que manda (mismo criterio que profecías y creyentes).
  */
 export const useJournalViewStore = create<ViewState>()(
-  persist(
-    (set) => ({
-      view: 'cards',
-      setView: (view) => {
-        set({ view });
-      },
-    }),
-    {
-      name: JOURNAL_VIEW_STORAGE_KEY,
-      storage: createJSONStorage(() => globalThis.localStorage),
-    },
-  ),
+    persist(
+        (set) => ({
+            view: 'cards',
+            setView: (view) => {
+                set({ view });
+            },
+        }),
+        {
+            name: JOURNAL_VIEW_STORAGE_KEY,
+            storage: createJSONStorage(() => globalThis.localStorage),
+        },
+    ),
 );

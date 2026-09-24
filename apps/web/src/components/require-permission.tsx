@@ -12,16 +12,16 @@ import { usePermissions } from '@/lib/permissions';
  * aplicación al recargar.
  */
 export function RequirePermission({
-  permission,
-  children,
+    permission,
+    children,
 }: {
-  permission: Permission;
-  children: ReactNode;
+    permission: Permission;
+    children: ReactNode;
 }) {
-  const { can, isLoading } = usePermissions();
+    const { can, isLoading } = usePermissions();
 
-  if (isLoading) return <PageSkeleton />;
-  if (!can(permission)) return <Navigate to="/no-access" replace />;
+    if (isLoading) return <PageSkeleton />;
+    if (!can(permission)) return <Navigate to="/no-access" replace />;
 
-  return children;
+    return children;
 }
