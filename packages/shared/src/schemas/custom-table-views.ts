@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { rowFilterSchema } from './custom-table-rows';
+import { rowFilterSchema, rowFiltersSchema } from './custom-table-rows';
 
 /**
  * Solo tres tipos de vista, y dos de ellos piden una columna concreta para
@@ -12,33 +12,37 @@ export type TableViewType = (typeof TABLE_VIEW_TYPES)[number];
 
 /** Una vista guardada de la tabla: filtros, orden y qué columnas se ven (D24). */
 export const customTableViewSchema = z.object({
-  id: z.uuid(),
-  tableId: z.uuid(),
-  name: z.string(),
-  type: z.enum(TABLE_VIEW_TYPES),
-  /** La `key` de la columna de selección que agrupa un tablero. */
-  groupBy: z.string().nullable(),
-  /** La `key` de la columna de fecha que ordena un calendario. */
-  dateColumn: z.string().nullable(),
-  filters: z.array(rowFilterSchema),
-  sortBy: z.string().nullable(),
-  sortOrder: z.enum(['asc', 'desc']),
-  position: z.number().int(),
+    id: z.uuid(),
+    tableId: z.uuid(),
+    name: z.string(),
+    type: z.enum(TABLE_VIEW_TYPES),
+    /** La `key` de la columna de selección que agrupa un tablero. */
+    groupBy: z.string().nullable(),
+    /** La `key` de la columna de fecha que ordena un calendario. */
+    dateColumn: z.string().nullable(),
+    filters: z.array(rowFilterSchema),
+    sortBy: z.string().nullable(),
+    sortOrder: z.enum(['asc', 'desc']),
+    position: z.number().int(),
 });
 export type CustomTableView = z.infer<typeof customTableViewSchema>;
 
 export const createTableViewSchema = z.object({
-  name: z.string().trim().min(1, 'La vista necesita un nombre').max(60),
-  type: z.enum(['kanban', 'calendar']),
-  groupBy: z.string().max(80).optional(),
-  dateColumn: z.string().max(80).optional(),
+    name: z.string().trim().min(1, 'La vista necesita un nombre').max(60),
+    type: z.enum(['kanban', 'calendar']),
+    groupBy: z.string().max(80).optional(),
+    dateColumn: z.string().max(80).optional(),
+    /** Los filtros y el orden con los que se estaba mirando la cuadrícula (D5). */
+    filters: rowFiltersSchema.optional(),
+    sortBy: z.string().max(80).nullable().optional(),
+    sortOrder: z.enum(['asc', 'desc']).optional(),
 });
 export type CreateTableViewInput = z.infer<typeof createTableViewSchema>;
 
 export const updateTableViewSchema = z.object({
-  name: z.string().trim().min(1).max(60).optional(),
-  filters: z.array(rowFilterSchema).max(30).optional(),
-  sortBy: z.string().max(80).nullable().optional(),
-  sortOrder: z.enum(['asc', 'desc']).optional(),
+    name: z.string().trim().min(1).max(60).optional(),
+    filters: z.array(rowFilterSchema).max(30).optional(),
+    sortBy: z.string().max(80).nullable().optional(),
+    sortOrder: z.enum(['asc', 'desc']).optional(),
 });
 export type UpdateTableViewInput = z.infer<typeof updateTableViewSchema>;

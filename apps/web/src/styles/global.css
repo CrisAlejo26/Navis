@@ -14,34 +14,38 @@
  * compositor resuelve sin volver a calcular el diseño.
  */
 @theme {
-  --animate-page-in: page-in 320ms cubic-bezier(0.22, 1, 0.36, 1) both;
-  --animate-rise-in: rise-in 460ms cubic-bezier(0.22, 1, 0.36, 1) both;
-  --animate-drift: drift 26s linear infinite;
-  --animate-drift-slow: drift 42s linear infinite reverse;
-  --animate-slide-in: slide-in 240ms cubic-bezier(0.22, 1, 0.36, 1) both;
-  --animate-slide-in-right: slide-in-right 240ms cubic-bezier(0.22, 1, 0.36, 1) both;
-  --animate-sonda: sonda 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
-  --animate-latido: latido 2400ms ease-in-out infinite;
-  --animate-track-in: track-in 480ms cubic-bezier(0.22, 1, 0.36, 1) both;
-  --animate-ring-in: ring-in 600ms cubic-bezier(0.22, 1, 0.36, 1) both;
-  /* 4800ms: ~38% de chispazo y el resto de calma. Ver el keyframe de abajo. */
-  --animate-chispa: chispa 4800ms cubic-bezier(0.16, 1, 0.3, 1) infinite both;
-  /* El oleaje del cuaderno (RFC 0017 D14): mismo keyframe que la deriva de la
+    --animate-page-in: page-in 320ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    --animate-rise-in: rise-in 460ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    --animate-drift: drift 26s linear infinite;
+    --animate-drift-slow: drift 42s linear infinite reverse;
+    --animate-slide-in: slide-in 240ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    --animate-slide-in-right: slide-in-right 240ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    --animate-sonda: sonda 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    --animate-latido: latido 2400ms ease-in-out infinite;
+    --animate-track-in: track-in 480ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    --animate-ring-in: ring-in 600ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    /* 4800ms: ~38% de chispazo y el resto de calma. Ver el keyframe de abajo. */
+    --animate-chispa: chispa 4800ms cubic-bezier(0.16, 1, 0.3, 1) infinite both;
+    /* El oleaje del cuaderno (RFC 0017 D14): mismo keyframe que la deriva de la
      carta náutica —la costura es la misma técnica—, solo que más lento y
      fuera de una pantalla de acceso. */
-  --animate-oleaje: drift 18s linear infinite;
-  /* El Faro de la racha de tareas (RFC 0018 D19, §9.1): un haz que gira sin
+    --animate-oleaje: drift 18s linear infinite;
+    /* El Faro de la racha de tareas (RFC 0018 D19, §9.1): un haz que gira sin
      parar mientras «Hoy» está abierta. `prefers-reduced-motion` lo congela
      con la regla global de más abajo, no con una propia. */
-  --animate-faro: faro-gira 9s linear infinite;
-  /* El pulso único al cerrar el día (§9.3): no en bucle, es la celebración de
+    --animate-faro: faro-gira 9s linear infinite;
+    /* El pulso único al cerrar el día (§9.3): no en bucle, es la celebración de
      un momento. */
-  --animate-pulso: pulso 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
-  /* El trazo de una checklist de enseñanzas al marcarla (RFC 0022 §3): se
+    --animate-pulso: pulso 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    /* El trazo de una checklist de enseñanzas al marcarla (RFC 0022 §3): se
      dibuja de izquierda a derecha sobre el texto, como quien tacha algo
      aprendido en un cuaderno de verdad — no el `check` genérico de una
      librería de iconos. */
-  --animate-tacha: tacha 320ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    --animate-tacha: tacha 320ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    /* Un chip de filtro activo que nace en su sitio: breve y sin desplazarse,
+     porque aparece pegado a otra cosa (el botón de filtro o la fila de
+     chips) y un vuelo largo se lee como desorden. */
+    --animate-chip-in: chip-in 180ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 /*
@@ -68,167 +72,175 @@
  * `opacity` y `transform` se mueven en cada fotograma.
  */
 @keyframes chispa {
-  0% {
-    opacity: 0;
-    transform: translate3d(0, 0, 0) scale(1.6);
-  }
-  14% {
-    opacity: 1;
-  }
-  40%,
-  100% {
-    opacity: 0;
-    transform: translate3d(var(--chispa-x), var(--chispa-y), 0) scale(0.4);
-  }
+    0% {
+        opacity: 0;
+        transform: translate3d(0, 0, 0) scale(1.6);
+    }
+    14% {
+        opacity: 1;
+    }
+    40%,
+    100% {
+        opacity: 0;
+        transform: translate3d(var(--chispa-x), var(--chispa-y), 0) scale(0.4);
+    }
 }
 
 /* El trayecto de la travesía se dibuja de izquierda a derecha al entrar (RFC
    0004 §7.8). `scaleX` y no `width`: el compositor sabe resolver el primero y
    no el segundo. */
 @keyframes track-in {
-  from {
-    transform: scaleX(0);
-  }
+    from {
+        transform: scaleX(0);
+    }
 }
 
 /* El anillo de la tasa se llena de cero a su valor. Se anima
    `stroke-dashoffset`, que es lo que dibuja el arco. */
 @keyframes ring-in {
-  from {
-    stroke-dashoffset: var(--ring-length);
-  }
+    from {
+        stroke-dashoffset: var(--ring-length);
+    }
 }
 
 /* La sonda se llena de cero a su valor al entrar (RFC 0003 §7.8). Solo en la
    primera pintura: React conserva el nodo entre refrescos, así que un `refetch`
    no la vuelve a lanzar —una tabla que se rellena en cada consulta marea—. */
 @keyframes sonda {
-  from {
-    transform: scaleX(0);
-  }
+    from {
+        transform: scaleX(0);
+    }
 }
 
 /* Quien ha agotado su margen respira. El retardo lo escalona cada fila desde
    `--fila`: veinte cosas latiendo al unísono se leen como un fallo de la
    pantalla y no como un aviso. */
 @keyframes latido {
-  0%,
-  100% {
-    opacity: 0.55;
-  }
-  50% {
-    opacity: 1;
-  }
+    0%,
+    100% {
+        opacity: 0.55;
+    }
+    50% {
+        opacity: 1;
+    }
 }
 
 /* El panel de navegación de móvil, entrando desde el borde izquierdo. */
 @keyframes slide-in {
-  from {
-    transform: translate3d(-100%, 0, 0);
-  }
+    from {
+        transform: translate3d(-100%, 0, 0);
+    }
 }
 
 /* El panel de detalle del calendario, que entra por donde se ha tirado. */
 @keyframes slide-in-right {
-  from {
-    transform: translate3d(100%, 0, 0);
-  }
+    from {
+        transform: translate3d(100%, 0, 0);
+    }
 }
 
 @keyframes page-in {
-  from {
-    opacity: 0;
-    transform: translate3d(0, 10px, 0);
-  }
+    from {
+        opacity: 0;
+        transform: translate3d(0, 10px, 0);
+    }
 }
 
 @keyframes rise-in {
-  from {
-    opacity: 0;
-    transform: translate3d(0, 16px, 0);
-  }
+    from {
+        opacity: 0;
+        transform: translate3d(0, 16px, 0);
+    }
 }
 
 /* La banda de líneas se pinta dos veces seguidas: al desplazarla media anchura
    vuelve al punto de partida y el bucle no tiene costura. */
 @keyframes drift {
-  to {
-    transform: translate3d(-50%, 0, 0);
-  }
+    to {
+        transform: translate3d(-50%, 0, 0);
+    }
 }
 
 /* El haz del Faro, girando sin parar (RFC 0018 D19). Solo `transform`. */
 @keyframes faro-gira {
-  to {
-    transform: rotate(360deg);
-  }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 /* El trazo de una checklist de enseñanzas, de izquierda a derecha (RFC 0022
    §3). Mismo mecanismo que `track-in` y `sonda`: solo `scaleX`, nunca `width`. */
 @keyframes tacha {
-  from {
-    transform: scaleX(0);
-  }
+    from {
+        transform: scaleX(0);
+    }
 }
 
 /* El pulso único al completar la última tarea del día: un latido que no se
    repite, la celebración de un momento y no el ambiente de la pantalla. */
 @keyframes pulso {
-  0% {
-    transform: scale(1);
-  }
-  40% {
-    transform: scale(1.08);
-  }
-  100% {
-    transform: scale(1);
-  }
+    0% {
+        transform: scale(1);
+    }
+    40% {
+        transform: scale(1.08);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Un chip o un panel que nace encogiéndose un poco, sin desplazarse. */
+@keyframes chip-in {
+    from {
+        opacity: 0;
+        transform: scale(0.94);
+    }
 }
 
 @layer base {
-  * {
-    border-color: var(--color-border);
-  }
+    * {
+        border-color: var(--color-border);
+    }
 
-  html {
-    color-scheme: light;
-    -webkit-tap-highlight-color: transparent;
-  }
+    html {
+        color-scheme: light;
+        -webkit-tap-highlight-color: transparent;
+    }
 
-  html.dark {
-    color-scheme: dark;
-  }
+    html.dark {
+        color-scheme: dark;
+    }
 
-  body {
-    background-color: var(--color-background);
-    color: var(--color-foreground);
-    font-family:
-      ui-sans-serif,
-      system-ui,
-      -apple-system,
-      'Segoe UI',
-      Roboto,
-      sans-serif;
-    min-height: 100dvh;
-  }
+    body {
+        background-color: var(--color-background);
+        color: var(--color-foreground);
+        font-family:
+            ui-sans-serif,
+            system-ui,
+            -apple-system,
+            'Segoe UI',
+            Roboto,
+            sans-serif;
+        min-height: 100dvh;
+    }
 
-  :focus-visible {
-    outline: 2px solid var(--color-ring);
-    outline-offset: 2px;
-  }
+    :focus-visible {
+        outline: 2px solid var(--color-ring);
+        outline-offset: 2px;
+    }
 
-  /* Quien pide menos movimiento no lo pide a medias: se apaga todo, también
+    /* Quien pide menos movimiento no lo pide a medias: se apaga todo, también
      las transiciones de los componentes. Con `both` en las animaciones de
      entrada el elemento se queda en su estado final igualmente. */
-  @media (prefers-reduced-motion: reduce) {
-    *,
-    *::before,
-    *::after {
-      animation-duration: 0.01ms !important;
-      animation-iteration-count: 1 !important;
-      transition-duration: 0.01ms !important;
-      scroll-behavior: auto !important;
+    @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+            scroll-behavior: auto !important;
+        }
     }
-  }
 }

@@ -16,64 +16,72 @@ import { TableColumnsService } from './table-columns.service';
  */
 @Injectable()
 export class TableViewsService {
-  constructor(
-    @InjectRepository(CustomTableView) private readonly views: Repository<CustomTableView>,
-    private readonly columns: TableColumnsService,
-  ) {}
+    constructor(
+        @InjectRepository(CustomTableView) private readonly views: Repository<CustomTableView>,
+        private readonly columns: TableColumnsService,
+    ) {}
 
-  list(tableId: string): Promise<CustomTableView[]> {
-    return this.views.find({ where: { tableId }, order: { position: 'ASC' } });
-  }
-
-  async create(tableId: string, input: CreateTableViewInput): Promise<CustomTableView> {
-    const active = await this.columns.listActive(tableId);
-
-    if (input.type === 'kanban') {
-      const column = active.find(
-        (one) => one.key === input.groupBy && one.type === 'single_select',
-      );
-      if (!column)
-        throw new BadRequestException('El tablero necesita una columna de selección única');
-    }
-    if (input.type === 'calendar') {
-      const column = active.find((one) => one.key === input.dateColumn && one.type === 'date');
-      if (!column) throw new BadRequestException('El calendario necesita una columna de fecha');
+    list(tableId: string): Promise<CustomTableView[]> {
+        return this.views.find({ where: { tableId }, order: { position: 'ASC' } });
     }
 
-    const count = await this.views.count({ where: { tableId } });
+    async create(tableId: string, input: CreateTableViewInput): Promise<CustomTableView> {
+        const active = await this.columns.listActive(tableId);
 
-    return this.views.save(
-      this.views.create({
-        tableId,
-        name: input.name,
-        type: input.type,
-        groupBy: input.type === 'kanban' ? (input.groupBy ?? null) : null,
-        dateColumn: input.type === 'calendar' ? (input.dateColumn ?? null) : null,
-        filters: '[]',
-        sortOrder: 'desc',
-        position: count,
-      }),
-    );
-  }
+        if (input.type === 'kanban') {
+            const column = active.find(
+                (one) => one.key === input.groupBy && one.type === 'single_select',
+            );
+            if (!column)
+                throw new BadRequestException('El tablero necesita una columna de selección única');
+        }
+        if (input.type === 'calendar') {
+            const column = active.find(
+                (one) => one.key === input.dateColumn && one.type === 'date',
+            );
+            if (!column)
+                throw new BadRequestException('El calendario necesita una columna de fecha');
+        }
 
-  async update(tableId: string, id: string, input: UpdateTableViewInput): Promise<CustomTableView> {
-    const view = await this.require(tableId, id);
+        const count = await this.views.count({ where: { tableId } });
 
-    if (input.name !== undefined) view.name = input.name;
-    if (input.filters !== undefined) view.filters = JSON.stringify(input.filters);
-    if (input.sortBy !== undefined) view.sortBy = input.sortBy;
-    if (input.sortOrder !== undefined) view.sortOrder = input.sortOrder;
+        return this.views.save(
+            this.views.create({
+                tableId,
+                name: input.name,
+                type: input.type,
+                groupBy: input.type === 'kanban' ? (input.groupBy ?? null) : null,
+                dateColumn: input.type === 'calendar' ? (input.dateColumn ?? null) : null,
+                filters: JSON.stringify(input.filters ?? []),
+                sortBy: input.sortBy ?? null,
+                sortOrder: input.sortOrder ?? 'desc',
+                position: count,
+            }),
+        );
+    }
 
-    return this.views.save(view);
-  }
+    async update(
+        tableId: string,
+        id: string,
+        input: UpdateTableViewInput,
+    ): Promise<CustomTableView> {
+        const view = await this.require(tableId, id);
 
-  async remove(tableId: string, id: string): Promise<void> {
-    await this.views.remove(await this.require(tableId, id));
-  }
+        if (input.name !== undefined) view.name = input.name;
+        if (input.filters !== undefined) view.filters = JSON.stringify(input.filters);
+        if (input.sortBy !== undefined) view.sortBy = input.sortBy;
+        if (input.sortOrder !== undefined) view.sortOrder = input.sortOrder;
 
-  async require(tableId: string, id: string): Promise<CustomTableView> {
-    const view = await this.views.findOne({ where: { id, tableId } });
-    if (!view) throw new NotFoundException('Esa vista no existe en esta tabla');
-    return view;
-  }
+        return this.views.save(view);
+    }
+
+    async remove(tableId: string, id: string): Promise<void> {
+        await this.views.remove(await this.require(tableId, id));
+    }
+
+    async require(tableId: string, id: string): Promise<CustomTableView> {
+        const view = await this.views.findOne({ where: { id, tableId } });
+        if (!view) throw new NotFoundException('Esa vista no existe en esta tabla');
+        return view;
+    }
 }

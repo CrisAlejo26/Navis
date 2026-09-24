@@ -1,5 +1,5 @@
 import { useCreateTableView } from '@navis/api-client';
-import type { CustomTableColumn } from '@navis/shared';
+import type { CustomTableColumn, RowFilter } from '@navis/shared';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -18,112 +18,129 @@ import { toast } from '@/lib/toast';
  *
  * Solo se ofrece el tipo que la tabla puede soportar: sin una columna de
  * selección única no hay tablero, sin una de fecha no hay calendario.
+ *
+ * Cuando nace desde la cuadrícula ya filtrada (D5), trae `initialFilters`:
+ * la vista que se guarda reproduce el filtrado que se está viendo.
  */
 export function ViewForm({
-  open,
-  onClose,
-  tableId,
-  columns,
+    open,
+    onClose,
+    tableId,
+    columns,
+    initialFilters,
 }: {
-  open: boolean;
-  onClose: () => void;
-  tableId: string;
-  columns: readonly CustomTableColumn[];
+    open: boolean;
+    onClose: () => void;
+    tableId: string;
+    columns: readonly CustomTableColumn[];
+    initialFilters?: readonly RowFilter[];
 }) {
-  const { t } = useTranslation();
-  const create = useCreateTableView(api);
+    const { t } = useTranslation();
+    const create = useCreateTableView(api);
 
-  const selectColumns = columns.filter((one) => one.type === 'single_select');
-  const dateColumns = columns.filter((one) => one.type === 'date');
-  const [type, setType] = useState<'kanban' | 'calendar'>(
-    selectColumns.length > 0 ? 'kanban' : 'calendar',
-  );
-  const [groupBy, setGroupBy] = useState(selectColumns[0]?.key ?? '');
-  const [dateColumn, setDateColumn] = useState(dateColumns[0]?.key ?? '');
-  const [error, setError] = useState<string | null>(null);
-
-  const submit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const form = new FormData(event.currentTarget);
-    const name = formText(form.get('name')).trim();
-
-    if (!name) {
-      setError(t('tables.viewNameRequired'));
-      return;
-    }
-
-    setError(null);
-    create.mutate(
-      {
-        tableId,
-        name,
-        type,
-        groupBy: type === 'kanban' ? groupBy : undefined,
-        dateColumn: type === 'calendar' ? dateColumn : undefined,
-      },
-      {
-        onSuccess: () => {
-          toast.success(t('tables.viewCreated'));
-          onClose();
-        },
-        onError: () => {
-          setError(t('errors.generic'));
-        },
-      },
+    const selectColumns = columns.filter((one) => one.type === 'single_select');
+    const dateColumns = columns.filter((one) => one.type === 'date');
+    const [type, setType] = useState<'kanban' | 'calendar'>(
+        selectColumns.length > 0 ? 'kanban' : 'calendar',
     );
-  };
+    const [groupBy, setGroupBy] = useState(selectColumns[0]?.key ?? '');
+    const [dateColumn, setDateColumn] = useState(dateColumns[0]?.key ?? '');
+    const [error, setError] = useState<string | null>(null);
 
-  return (
-    <Dialog open={open} onClose={onClose} title={t('tables.newView')}>
-      <form onSubmit={submit} className="gap-4 flex flex-col" noValidate>
-        <Input name="name" label={t('tables.viewName')} required />
+    const submit = (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        const form = new FormData(event.currentTarget);
+        const name = formText(form.get('name')).trim();
 
-        <Select
-          label={t('tables.viewTypeLabel')}
-          value={type}
-          onChange={(event) => {
-            setType(event.target.value === 'calendar' ? 'calendar' : 'kanban');
-          }}
-        >
-          {selectColumns.length > 0 && <option value="kanban">{t('tables.view.kanban')}</option>}
-          {dateColumns.length > 0 && <option value="calendar">{t('tables.view.calendar')}</option>}
-        </Select>
+        if (!name) {
+            setError(t('tables.viewNameRequired'));
+            return;
+        }
 
-        {type === 'kanban' && (
-          <ViewFormColumnPicker
-            label={t('tables.groupByColumn')}
-            columns={selectColumns}
-            value={groupBy}
-            onChange={setGroupBy}
-            emptyHint={t('tables.noSingleSelectForKanban')}
-          />
-        )}
+        setError(null);
+        create.mutate(
+            {
+                tableId,
+                name,
+                type,
+                groupBy: type === 'kanban' ? groupBy : undefined,
+                dateColumn: type === 'calendar' ? dateColumn : undefined,
+                filters:
+                    initialFilters && initialFilters.length > 0 ? [...initialFilters] : undefined,
+            },
+            {
+                onSuccess: () => {
+                    toast.success(t('tables.viewCreated'));
+                    onClose();
+                },
+                onError: () => {
+                    setError(t('errors.generic'));
+                },
+            },
+        );
+    };
 
-        {type === 'calendar' && (
-          <ViewFormColumnPicker
-            label={t('tables.dateColumnLabel')}
-            columns={dateColumns}
-            value={dateColumn}
-            onChange={setDateColumn}
-            emptyHint={t('tables.noDateForCalendar')}
-          />
-        )}
+    return (
+        <Dialog open={open} onClose={onClose} title={t('tables.newView')}>
+            <form onSubmit={submit} className="gap-4 flex flex-col" noValidate>
+                <Input name="name" label={t('tables.viewName')} required />
 
-        <FormError message={error} />
+                {initialFilters && initialFilters.length > 0 && (
+                    <p className="text-xs text-muted-foreground">
+                        {t('tables.filters.willSave', { count: initialFilters.length })}
+                    </p>
+                )}
 
-        <Button
-          type="submit"
-          size="lg"
-          className="w-full"
-          isLoading={create.isPending}
-          disabled={
-            (type === 'kanban' && selectColumns.length === 0) ||
-            (type === 'calendar' && dateColumns.length === 0)
-          }
-        >
-          {t('tables.newView')}
-        </Button>
-      </form>
-    </Dialog>
-  );
+                <Select
+                    label={t('tables.viewTypeLabel')}
+                    value={type}
+                    onChange={(event) => {
+                        setType(event.target.value === 'calendar' ? 'calendar' : 'kanban');
+                    }}
+                >
+                    {selectColumns.length > 0 && (
+                        <option value="kanban">{t('tables.view.kanban')}</option>
+                    )}
+                    {dateColumns.length > 0 && (
+                        <option value="calendar">{t('tables.view.calendar')}</option>
+                    )}
+                </Select>
+
+                {type === 'kanban' && (
+                    <ViewFormColumnPicker
+                        label={t('tables.groupByColumn')}
+                        columns={selectColumns}
+                        value={groupBy}
+                        onChange={setGroupBy}
+                        emptyHint={t('tables.noSingleSelectForKanban')}
+                    />
+                )}
+
+                {type === 'calendar' && (
+                    <ViewFormColumnPicker
+                        label={t('tables.dateColumnLabel')}
+                        columns={dateColumns}
+                        value={dateColumn}
+                        onChange={setDateColumn}
+                        emptyHint={t('tables.noDateForCalendar')}
+                    />
+                )}
+
+                <FormError message={error} />
+
+                <Button
+                    type="submit"
+                    size="lg"
+                    className="w-full"
+                    isLoading={create.isPending}
+                    disabled={
+                        (type === 'kanban' && selectColumns.length === 0) ||
+                        (type === 'calendar' && dateColumns.length === 0)
+                    }
+                >
+                    {t('tables.newView')}
+                </Button>
+            </form>
+        </Dialog>
+    );
 }

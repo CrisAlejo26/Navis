@@ -12,99 +12,108 @@ import { cn } from '@/lib/cn';
  * por sí solo.
  */
 export function ColumnRow({
-  column,
-  index,
-  total,
-  dragging,
-  onDragStart,
-  onDragOver,
-  onDrop,
-  onMove,
-  onEdit,
-  onDelete,
+    column,
+    index,
+    total,
+    dragging,
+    onDragStart,
+    onDragOver,
+    onDrop,
+    onMove,
+    onEdit,
+    onDelete,
 }: {
-  column: CustomTableColumn;
-  index: number;
-  total: number;
-  dragging: boolean;
-  onDragStart: () => void;
-  onDragOver: () => void;
-  onDrop: () => void;
-  onMove: (from: number, to: number) => void;
-  onEdit: () => void;
-  onDelete: () => void;
+    column: CustomTableColumn;
+    index: number;
+    total: number;
+    dragging: boolean;
+    onDragStart: () => void;
+    onDragOver: () => void;
+    onDrop: () => void;
+    onMove: (from: number, to: number) => void;
+    onEdit: () => void;
+    onDelete: () => void;
 }) {
-  const { t } = useTranslation();
-  const Icon = COLUMN_TYPE_ICON[column.type];
+    const { t } = useTranslation();
+    const Icon = COLUMN_TYPE_ICON[column.type];
 
-  return (
-    <li
-      draggable
-      onDragStart={onDragStart}
-      onDragOver={(event) => {
-        event.preventDefault();
-        onDragOver();
-      }}
-      onDrop={onDrop}
-      className={cn(
-        'px-2 py-2 gap-2 flex items-center rounded-lg border-b last:border-b-0',
-        dragging && 'opacity-40',
-      )}
-    >
-      <GripVertical size={16} aria-hidden className="shrink-0 cursor-grab text-muted-foreground" />
-
-      <div className="gap-1 sm:flex hidden">
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          aria-label={t('tables.moveUp')}
-          disabled={index === 0}
-          onClick={() => {
-            onMove(index, index - 1);
-          }}
+    return (
+        <li
+            draggable
+            onDragStart={onDragStart}
+            onDragOver={(event) => {
+                event.preventDefault();
+                onDragOver();
+            }}
+            onDrop={onDrop}
+            className={cn(
+                'px-2 py-2 gap-2 flex items-center rounded-lg border-b last:border-b-0',
+                dragging && 'opacity-40',
+            )}
         >
-          ↑
-        </Button>
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          aria-label={t('tables.moveDown')}
-          disabled={index === total - 1}
-          onClick={() => {
-            onMove(index, index + 1);
-          }}
-        >
-          ↓
-        </Button>
-      </div>
+            <GripVertical
+                size={16}
+                aria-hidden
+                className="shrink-0 cursor-grab text-muted-foreground"
+            />
 
-      <Icon size={16} aria-hidden className="shrink-0 text-muted-foreground" />
+            <div className="gap-1 sm:flex hidden">
+                <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    aria-label={t('tables.moveUp')}
+                    disabled={index === 0}
+                    onClick={() => {
+                        onMove(index, index - 1);
+                    }}
+                >
+                    ↑
+                </Button>
+                <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    aria-label={t('tables.moveDown')}
+                    disabled={index === total - 1}
+                    onClick={() => {
+                        onMove(index, index + 1);
+                    }}
+                >
+                    ↓
+                </Button>
+            </div>
 
-      <div className="min-w-0 flex-1">
-        <p className="text-sm font-medium truncate">{column.label}</p>
-        <p className="text-xs text-muted-foreground">{t(COLUMN_TYPE_LABEL_KEY[column.type])}</p>
-      </div>
+            <Icon size={16} aria-hidden className="shrink-0 text-muted-foreground" />
 
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon"
-        aria-label={t('common.edit')}
-        onClick={onEdit}
-      >
-        <Pencil size={14} aria-hidden />
-      </Button>
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon"
-        aria-label={t('tables.deleteColumn')}
-        onClick={onDelete}
-      >
-        <Trash2 size={14} aria-hidden />
-      </Button>
-    </li>
-  );
+            <div className="min-w-0 flex-1">
+                <p className="text-sm font-medium truncate">{column.label}</p>
+                <p className="text-xs text-muted-foreground">
+                    {t(COLUMN_TYPE_LABEL_KEY[column.type])}
+                    {column.options &&
+                        column.options.length > 0 &&
+                        ` · ${t('tables.optionsCount', { count: column.options.length })}`}
+                </p>
+            </div>
+
+            <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                aria-label={t('common.edit')}
+                onClick={onEdit}
+            >
+                <Pencil size={14} aria-hidden />
+            </Button>
+            <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                aria-label={t('tables.deleteColumn')}
+                onClick={onDelete}
+            >
+                <Trash2 size={14} aria-hidden />
+            </Button>
+        </li>
+    );
 }

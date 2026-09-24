@@ -12,19 +12,19 @@ import { cn } from '@/lib/cn';
  * la página entera (Regla 5).
  */
 export function TableScroll({ children }: { children: ReactNode }) {
-  return <div className="w-full overflow-x-auto">{children}</div>;
+    return <div className="w-full overflow-x-auto">{children}</div>;
 }
 
 export function Table({ className, ...props }: HTMLAttributes<HTMLTableElement>) {
-  return <table className={cn('text-sm w-full border-collapse', className)} {...props} />;
+    return <table className={cn('text-sm w-full border-collapse', className)} {...props} />;
 }
 
 export function TableHead({ className, ...props }: HTMLAttributes<HTMLTableSectionElement>) {
-  return <thead className={cn('border-b bg-muted/40', className)} {...props} />;
+    return <thead className={cn('border-b bg-muted/40', className)} {...props} />;
 }
 
 export function TableBody({ className, ...props }: HTMLAttributes<HTMLTableSectionElement>) {
-  return <tbody className={cn('divide-y', className)} {...props} />;
+    return <tbody className={cn('divide-y', className)} {...props} />;
 }
 
 /**
@@ -33,73 +33,79 @@ export function TableBody({ className, ...props }: HTMLAttributes<HTMLTableSecti
  * el contenido.
  */
 export function TableRow({ className, ...props }: HTMLAttributes<HTMLTableRowElement>) {
-  return (
-    <tr
-      className={cn(
-        'border-l-2 border-l-transparent transition-colors duration-150',
-        'hover:border-l-primary hover:bg-muted/40',
-        className,
-      )}
-      {...props}
-    />
-  );
+    return (
+        <tr
+            className={cn(
+                'border-l-2 border-l-transparent transition-colors duration-150',
+                'hover:border-l-primary hover:bg-muted/40',
+                className,
+            )}
+            {...props}
+        />
+    );
 }
 
 export function TableCell({ className, ...props }: HTMLAttributes<HTMLTableCellElement>) {
-  return <td className={cn('px-4 py-3 align-middle', className)} {...props} />;
+    return <td className={cn('px-4 py-3 align-middle', className)} {...props} />;
 }
 
 interface HeaderProps extends ThHTMLAttributes<HTMLTableCellElement> {
-  /** Sentido actual si esta columna es por la que se ordena ahora mismo. */
-  sorted?: 'asc' | 'desc' | false;
-  /** Sin él, la cabecera es una etiqueta y no un botón. */
-  onSort?: () => void;
-  /** Texto accesible del botón de ordenar, ya traducido. */
-  sortLabel?: string;
+    /** Sentido actual si esta columna es por la que se ordena ahora mismo. */
+    sorted?: 'asc' | 'desc' | false;
+    /** Sin él, la cabecera es una etiqueta y no un botón. */
+    onSort?: () => void;
+    /** Texto accesible del botón de ordenar, ya traducido. */
+    sortLabel?: string;
+    /** Lo que va pegado a la etiqueta — el botón de filtro de columna (D1). */
+    filter?: ReactNode;
 }
 
 export function TableHeader({
-  sorted = false,
-  onSort,
-  sortLabel,
-  className,
-  children,
-  ...props
+    sorted = false,
+    onSort,
+    sortLabel,
+    filter,
+    className,
+    children,
+    ...props
 }: HeaderProps) {
-  const label = (
-    <span className="font-semibold text-[11px] tracking-[0.08em] text-muted-foreground uppercase">
-      {children}
-    </span>
-  );
+    const label = (
+        <span className="font-semibold text-[11px] tracking-[0.08em] text-muted-foreground uppercase">
+            {children}
+        </span>
+    );
 
-  return (
-    <th
-      scope="col"
-      aria-sort={sorted ? (sorted === 'asc' ? 'ascending' : 'descending') : undefined}
-      className={cn('px-4 py-3 font-medium text-left whitespace-nowrap', className)}
-      {...props}
-    >
-      {onSort ? (
-        <button
-          type="button"
-          onClick={onSort}
-          aria-label={sortLabel}
-          className="gap-1.5 inline-flex cursor-pointer items-center rounded-sm hover:text-foreground"
+    return (
+        <th
+            scope="col"
+            aria-sort={sorted ? (sorted === 'asc' ? 'ascending' : 'descending') : undefined}
+            className={cn('px-4 py-3 font-medium text-left whitespace-nowrap', className)}
+            {...props}
         >
-          {label}
-          <ChevronDown
-            size={13}
-            aria-hidden
-            className={cn(
-              'transition-[transform,opacity] duration-200',
-              sorted ? 'text-foreground opacity-100' : 'opacity-30',
-              sorted === 'asc' && 'rotate-180',
-            )}
-          />
-        </button>
-      ) : (
-        label
-      )}
-    </th>
-  );
+            <div className="gap-1 flex items-center">
+                {onSort ? (
+                    <button
+                        type="button"
+                        onClick={onSort}
+                        aria-label={sortLabel}
+                        className="gap-1.5 inline-flex cursor-pointer items-center rounded-sm hover:text-foreground"
+                    >
+                        {label}
+                        <ChevronDown
+                            size={13}
+                            aria-hidden
+                            className={cn(
+                                'transition-[transform,opacity] duration-200',
+                                sorted ? 'text-foreground opacity-100' : 'opacity-30',
+                                sorted === 'asc' && 'rotate-180',
+                            )}
+                        />
+                    </button>
+                ) : (
+                    label
+                )}
+                {filter}
+            </div>
+        </th>
+    );
 }
