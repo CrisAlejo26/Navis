@@ -6,7 +6,7 @@ import { MeetingRibbon } from '@/components/calendar/meeting-ribbon';
 import { EmptyState } from '@/components/ui/empty-state';
 import { cn } from '@/lib/cn';
 import { formatDay } from '@/lib/format';
-import type { CalendarRange } from '@navis/shared';
+import { isSlotEmpty, type CalendarRange } from '@navis/shared';
 
 interface AgendaListProps {
     range: CalendarRange;
@@ -49,7 +49,7 @@ export function AgendaList({ range, today, onOpenDay }: AgendaListProps) {
                 {dias.slice(0, 14).map((day) => {
                     const pendientes = day.meetings
                         .flatMap((meeting) => meeting.slots)
-                        .filter((slot) => !slot.believer).length;
+                        .filter(isSlotEmpty).length;
                     const activo = selected === day.date;
 
                     return (

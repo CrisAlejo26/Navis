@@ -1,11 +1,12 @@
 import { useAssignSlot, useCalendar, useCongregations } from '@navis/api-client';
-import type { Meeting, MeetingSlot } from '@navis/shared';
+import { joinNames, type Meeting, type MeetingSlot } from '@navis/shared';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { PickTarget } from '@/components/calendar/preacher-picker';
 import { api } from '@/lib/api';
 import { useCalendarParams } from '@/lib/calendar/params';
+import { getLocale } from '@/lib/i18n';
 import { CALENDAR_VIEWS, type CalendarView } from '@/lib/calendar/view-range';
 import { toast } from '@/lib/toast';
 
@@ -59,7 +60,7 @@ export function useCalendarScreen(calendarId: string) {
         setTarget({ slot, meeting, date });
     };
 
-    const applyAssignment = (believerId: string | null, name: string | null) => {
+    const applyAssignment = (people: MeetingSlot['believers']) => {
         if (!target) return;
 
         assign.mutate(
@@ -68,14 +69,20 @@ export function useCalendarScreen(calendarId: string) {
                 meetingId: target.meeting.id ?? undefined,
                 patternId: target.meeting.patternId ?? undefined,
                 position: target.slot.position,
-                believerId,
-                believerName: name,
+                believerIds: people.map((one) => one.id),
+                believers: people,
             },
             {
                 onSuccess: () => {
                     toast.success(
-                        believerId
-                            ? t('calendar.assigned', { name, phase: target.slot.name })
+                        people.length > 0
+                            ? t('calendar.assigned', {
+                                  name: joinNames(
+                                      people.map((one) => one.name),
+                                      getLocale(),
+                                  ),
+                                  phase: target.slot.name,
+                              })
                             : t('calendar.cleared', { phase: target.slot.name }),
                     );
                 },

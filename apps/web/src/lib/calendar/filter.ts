@@ -23,11 +23,14 @@ export function hasDisplayFilters(filters: DisplayFilters): boolean {
  * mirando cuando se pregunta «¿quién más va este día?».
  */
 export function slotMatches(slot: MeetingSlot, meeting: Meeting, filters: DisplayFilters): boolean {
-    if (filters.personId && slot.believer?.id !== filters.personId) return false;
-    if (filters.pending && slot.believer) return false;
+    if (filters.personId && !slot.believers.some((one) => one.id === filters.personId)) {
+        return false;
+    }
+    if (filters.pending && slot.believers.length > 0) return false;
 
     if (filters.q) {
-        const haystack = normalize(`${meeting.name} ${slot.name} ${slot.believer?.name ?? ''}`);
+        const names = slot.believers.map((one) => one.name).join(' ');
+        const haystack = normalize(`${meeting.name} ${slot.name} ${names}`);
         if (!haystack.includes(normalize(filters.q))) return false;
     }
 

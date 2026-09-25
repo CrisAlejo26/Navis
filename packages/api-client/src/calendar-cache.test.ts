@@ -23,8 +23,8 @@ const tramo: CalendarRange = {
                     status: 'programada',
                     notes: null,
                     slots: [
-                        { id: null, name: 'Introducción', position: 0, note: null, believer: null },
-                        { id: null, name: 'Enseñanza', position: 1, note: null, believer: null },
+                        { id: null, name: 'Introducción', position: 0, note: null, believers: [] },
+                        { id: null, name: 'Enseñanza', position: 1, note: null, believers: [] },
                     ],
                 },
             ],
@@ -33,38 +33,66 @@ const tramo: CalendarRange = {
 };
 
 describe('parcheo optimista del calendario', () => {
-    it('pone a la persona en su fase sin tocar el resto del tramo', () => {
+    it('pone a las personas en su fase, en orden, sin tocar el resto del tramo', () => {
         const conAsignacion = withAssignment(tramo, {
             date: '2026-08-15',
             patternId: 'p1',
             position: 1,
-            believerId: 'b1',
-            believerName: 'Luis Fernando',
+            believerIds: ['b2', 'b1'],
+            believers: [
+                { id: 'b1', name: 'Luis Fernando' },
+                { id: 'b2', name: 'Ana' },
+            ],
         });
 
         const reunion = conAsignacion.days[1]?.meetings[0];
-        expect(reunion?.slots[1]?.believer).toEqual({ id: 'b1', name: 'Luis Fernando' });
-        expect(reunion?.slots[0]?.believer).toBeNull();
+        expect(reunion?.slots[1]?.believers).toEqual([
+            { id: 'b2', name: 'Ana' },
+            { id: 'b1', name: 'Luis Fernando' },
+        ]);
+        expect(reunion?.slots[0]?.believers).toEqual([]);
         expect(conAsignacion.days[0]).toBe(tramo.days[0]);
     });
 
-    it('vaciar una fase quita a quien estaba', () => {
+    it('quien ya estaba en la fase conserva su nombre al añadir a otro', () => {
         const puesta = withAssignment(tramo, {
             date: '2026-08-15',
             patternId: 'p1',
             position: 0,
-            believerId: 'b1',
-            believerName: 'Juan Carlos',
+            believerIds: ['b1'],
+            believers: [{ id: 'b1', name: 'Juan Carlos' }],
+        });
+
+        const con2 = withAssignment(puesta, {
+            date: '2026-08-15',
+            patternId: 'p1',
+            position: 0,
+            believerIds: ['b1', 'b2'],
+            believers: [{ id: 'b2', name: 'Ana' }],
+        });
+
+        expect(con2.days[1]?.meetings[0]?.slots[0]?.believers).toEqual([
+            { id: 'b1', name: 'Juan Carlos' },
+            { id: 'b2', name: 'Ana' },
+        ]);
+    });
+
+    it('vaciar una fase quita a todos los que estaban', () => {
+        const puesta = withAssignment(tramo, {
+            date: '2026-08-15',
+            patternId: 'p1',
+            position: 0,
+            believerIds: ['b1', 'b2'],
         });
 
         const vaciada = withAssignment(puesta, {
             date: '2026-08-15',
             patternId: 'p1',
             position: 0,
-            believerId: null,
+            believerIds: [],
         });
 
-        expect(vaciada.days[1]?.meetings[0]?.slots[0]?.believer).toBeNull();
+        expect(vaciada.days[1]?.meetings[0]?.slots[0]?.believers).toEqual([]);
     });
 
     it('no toca la reunión de otra sede aunque sea el mismo día', () => {
@@ -72,11 +100,11 @@ describe('parcheo optimista del calendario', () => {
             date: '2026-08-15',
             patternId: 'otro-patron',
             position: 0,
-            believerId: 'b1',
-            believerName: 'Nadie',
+            believerIds: ['b1'],
+            believers: [{ id: 'b1', name: 'Nadie' }],
         });
 
-        expect(otra.days[1]?.meetings[0]?.slots[0]?.believer).toBeNull();
+        expect(otra.days[1]?.meetings[0]?.slots[0]?.believers).toEqual([]);
     });
 
     it('reconoce lo que es un tramo y lo que no', () => {

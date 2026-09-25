@@ -384,6 +384,8 @@ export const pt = {
         pending: 'Faltam {{count}}',
         assign: 'Atribuir',
         clearSlot: 'Deixar livre',
+        removePerson: 'Remover {{name}}',
+        pickHint: 'Toque em quem quiser incluir; pode escolher várias pessoas.',
         addMeeting: 'Adicionar reunião',
         meetingName: 'Nome da reunião',
         startTime: 'Hora',

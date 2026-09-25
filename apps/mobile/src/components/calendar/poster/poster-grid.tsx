@@ -1,8 +1,9 @@
 import type { ReactNode } from 'react';
 import { Rect, TSpan, Text as SvgText } from 'react-native-svg';
-import type { CalendarRange } from '@navis/shared';
+import { isSlotEmpty, slotNames, type CalendarRange } from '@navis/shared';
 
 import { accentHex } from '@/lib/accent';
+import { getLocale } from '@/lib/i18n';
 import { dayNumber, weekdayHeadings } from '@/lib/calendar/labels';
 import type { PosterPalette } from './poster-palette';
 import { leadingBlanks, POSTER_WIDTH } from './poster-size';
@@ -108,12 +109,12 @@ export function posterGrid({
                 cy = nameY + 6;
 
                 const slots = meeting.slots
-                    .filter((slot2) => slot2.believer)
+                    .filter((slot2) => !isSlotEmpty(slot2))
                     .map((slot2) => {
-                        const believer = slot2.believer?.name ?? '';
+                        const believer = slotNames(slot2, getLocale(), '');
                         const nameLines = wrapPosterText(believer, textWidth, {
                             fontSize: NAME_FONT,
-                            maxLines: 2,
+                            maxLines: 3,
                         });
 
                         const roleY = cy + 10;
@@ -132,7 +133,7 @@ export function posterGrid({
                 // Debajo de lo que ya se pintó (`cy`), no de la reunión (`nameY`):
                 // con al menos una fase asignada, «relativo al título» caía encima
                 // de su rol o su nombre en vez de debajo de todos.
-                const dots = meeting.slots.some((slot2) => !slot2.believer);
+                const dots = meeting.slots.some(isSlotEmpty);
                 const dotsY = cy + 15;
                 if (dots) cy += 19; // La línea de puntos, de 15 px.
 

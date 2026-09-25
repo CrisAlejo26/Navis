@@ -394,6 +394,8 @@ export const es = {
         pending: 'Faltan {{count}}',
         assign: 'Asignar',
         clearSlot: 'Dejar libre',
+        removePerson: 'Quitar a {{name}}',
+        pickHint: 'Toca a quien quieras poner; puedes elegir a varios.',
         addMeeting: 'Añadir reunión',
         meetingName: 'Nombre de la reunión',
         startTime: 'Hora',

@@ -18,9 +18,9 @@ const reunion = (name: string, congregationId: string, startTime: string) => ({
             name: 'Introducción',
             position: 0,
             note: null,
-            believer: { id: 'b1', name: 'Juan Carlos' },
+            believers: [{ id: 'b1', name: 'Juan Carlos' }],
         },
-        { id: 's2', name: 'Enseñanza', position: 1, note: null, believer: null },
+        { id: 's2', name: 'Enseñanza', position: 1, note: null, believers: [] },
     ],
 });
 
@@ -47,6 +47,40 @@ describe('el tramo como texto para pegar en el grupo', () => {
                 '  Introducción · Juan Carlos',
                 '  Enseñanza · Sin asignar',
             ].join('\n'),
+        );
+    });
+
+    it('junta a varias personas de una fase con la conjunción del idioma', () => {
+        const conVarias: CalendarRange = {
+            ...tramo,
+            days: [
+                {
+                    date: '2026-08-15',
+                    holiday: null,
+                    meetings: [
+                        {
+                            ...reunion('Culto', 'elda', '20:00'),
+                            slots: [
+                                {
+                                    id: 's1',
+                                    name: 'Introducción',
+                                    position: 0,
+                                    note: null,
+                                    believers: [
+                                        { id: 'b1', name: 'Juan Carlos' },
+                                        { id: 'b2', name: 'Ana' },
+                                        { id: 'b3', name: 'Luis' },
+                                    ],
+                                },
+                            ],
+                        },
+                    ],
+                },
+            ],
+        };
+
+        expect(rangeAsText(conVarias, { ...opciones, locale: 'es' })).toContain(
+            '  Introducción · Juan Carlos, Ana y Luis',
         );
     });
 

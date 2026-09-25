@@ -2,6 +2,7 @@ import { eachDay, weekdayOf, MAX_CALENDAR_RANGE_DAYS, type CalendarRange } from 
 
 import { getDb } from '../db';
 import { byTimeThenCongregation, toHm, slotView } from './calendar-format';
+import { peopleBySlot } from './calendar-slot-people';
 
 /**
  * La programación de un tramo en **local** — la pareja de `ScheduleService`
@@ -16,7 +17,7 @@ type SlotRow = {
     id: string;
     name: string;
     position: number;
-    believer_id: string | null;
+    believerIds: string[];
     note: string | null;
 };
 
@@ -107,7 +108,7 @@ export async function calendarRange(
     )) {
         phasesByPattern.set(phase.pattern_id, [
             ...(phasesByPattern.get(phase.pattern_id) ?? []),
-            { id: '', name: phase.name, position: phase.position, believer_id: null, note: null },
+            { id: '', name: phase.name, position: phase.position, believerIds: [], note: null },
         ]);
     }
 
@@ -132,12 +133,17 @@ export async function calendarRange(
     );
     const slotsByMeeting = new Map<string, SlotRow[]>();
     for (const meeting of meetings) {
+        const slots = await db.getAllAsync<Omit<SlotRow, 'believerIds'>>(
+            'SELECT id, name, position, note FROM meeting_slots WHERE meeting_id = ? ORDER BY position ASC',
+            meeting.id,
+        );
+        const people = await peopleBySlot(
+            db,
+            slots.map((slot) => slot.id),
+        );
         slotsByMeeting.set(
             meeting.id,
-            await db.getAllAsync<SlotRow>(
-                'SELECT id, name, position, believer_id, note FROM meeting_slots WHERE meeting_id = ? ORDER BY position ASC',
-                meeting.id,
-            ),
+            slots.map((slot) => ({ ...slot, believerIds: people.get(slot.id) ?? [] })),
         );
     }
 
@@ -200,7 +206,7 @@ export async function calendarRange(
                         name: phase.name,
                         position: phase.position,
                         note: null,
-                        believer: null,
+                        believers: [],
                     })),
                 }));
 

@@ -13,6 +13,7 @@ import { meetingView } from './calendar-format';
 import { CongregationsService } from './congregations.service';
 import { MeetingSlot } from './meeting-slot.entity';
 import { Meeting } from './meeting.entity';
+import { believerIdsOf, SLOTS_WITH_PEOPLE } from './slot-people';
 
 /**
  * Las reuniones ya materializadas: las puntuales, las que se editan y las que
@@ -95,7 +96,10 @@ export class MeetingsService {
                     meetingId: meeting.id,
                     name: slot.name,
                     position,
-                    believerId: slot.believerId ?? null,
+                    people: (slot.believerIds ?? []).map((believerId, index) => ({
+                        believerId,
+                        position: index,
+                    })),
                     note: slot.note ?? null,
                 }),
             ),
@@ -112,7 +116,7 @@ export class MeetingsService {
     async require(churchId: string, id: string): Promise<Meeting> {
         const meeting = await this.meetings.findOne({
             where: { id, churchId },
-            relations: { slots: true },
+            relations: SLOTS_WITH_PEOPLE,
         });
         if (!meeting) throw new NotFoundException('Esa reunión no existe en esta iglesia');
         return meeting;
@@ -121,9 +125,7 @@ export class MeetingsService {
     /** La reunión tal y como viaja, con el nombre de cada persona ya compuesto. */
     async view(churchId: string, id: string): Promise<MeetingView> {
         const meeting = await this.require(churchId, id);
-        const names = await this.believers.namesOf(
-            (meeting.slots ?? []).map((slot) => slot.believerId),
-        );
+        const names = await this.believers.namesOf(believerIdsOf([meeting]));
 
         return meetingView(meeting, names);
     }

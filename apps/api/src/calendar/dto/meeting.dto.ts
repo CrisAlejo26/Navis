@@ -4,6 +4,7 @@ import { Transform, Type } from 'class-transformer';
 import {
     ArrayMaxSize,
     ArrayMinSize,
+    ArrayUnique,
     IsArray,
     IsIn,
     IsISO8601,
@@ -83,11 +84,12 @@ export class UpdateMeetingDto {
 
 /** Fase con su asignación, para reemplazar la lista entera de una reunión. */
 export class SlotDto extends PhaseDto {
-    @ApiPropertyOptional()
+    @ApiPropertyOptional({ type: [String], description: 'Quienes la ocupan, en orden' })
     @IsOptional()
-    @ValidateIf((_object, value) => value !== null)
-    @IsUUID()
-    believerId?: string | null;
+    @IsArray()
+    @ArrayUnique()
+    @IsUUID('all', { each: true })
+    believerIds?: string[];
 
     @ApiPropertyOptional()
     @IsOptional()

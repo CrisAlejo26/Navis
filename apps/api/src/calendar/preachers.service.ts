@@ -85,7 +85,8 @@ export class PreachersService {
             .orderBy(
                 `(SELECT MAX(m.date) FROM meetings m
           INNER JOIN meeting_slots ms ON ms.meeting_id = m.id
-          WHERE ms.believer_id = believer.id
+          INNER JOIN meeting_slot_believers sb ON sb.slot_id = ms.id
+          WHERE sb.believer_id = believer.id
             AND m.church_id = :lastChurchId AND m.calendar_id = :lastCalendarId
             AND m.deleted_at IS NULL AND m.status <> 'cancelada')`,
                 'ASC',
@@ -147,7 +148,8 @@ export class PreachersService {
                 'meeting',
                 'meeting.id = slot.meeting_id AND meeting.deleted_at IS NULL',
             )
-            .select('slot.believer_id', 'believerId')
+            .innerJoin('meeting_slot_believers', 'person', 'person.slot_id = slot.id')
+            .select('person.believer_id', 'believerId')
             .addSelect('MAX(meeting.date)', 'lastDate')
             .addSelect(
                 'SUM(CASE WHEN meeting.date >= :from AND meeting.date <= :to THEN 1 ELSE 0 END)',
@@ -157,10 +159,9 @@ export class PreachersService {
             // El historial es **de este calendario**: quien lleva el sonido no compite
             // con quien predica.
             .andWhere('meeting.calendar_id = :calendarId', { calendarId })
-            .andWhere('slot.believer_id IS NOT NULL')
             .andWhere("meeting.status <> 'cancelada'")
             .setParameters({ from, to })
-            .groupBy('slot.believer_id')
+            .groupBy('person.believer_id')
             .getRawMany<HistoryRow>();
 
         return new Map(

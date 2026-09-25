@@ -18,7 +18,7 @@ const reunion = (congregationId: string, conNombre: boolean) => ({
             name: 'Introducción',
             position: 0,
             note: null,
-            believer: conNombre ? { id: 'b1', name: 'Carlos' } : null,
+            believers: conNombre ? [{ id: 'b1', name: 'Carlos' }] : [],
         },
     ],
 });

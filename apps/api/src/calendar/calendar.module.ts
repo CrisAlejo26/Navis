@@ -16,6 +16,7 @@ import { CongregationsController } from './congregations.controller';
 import { CongregationsService } from './congregations.service';
 import { MeetingPattern } from './meeting-pattern.entity';
 import { MeetingSlot } from './meeting-slot.entity';
+import { MeetingSlotBeliever } from './meeting-slot-believer.entity';
 import { Meeting } from './meeting.entity';
 import { MeetingsService } from './meetings.service';
 import { PatternPhase } from './pattern-phase.entity';
@@ -41,6 +42,7 @@ import { WeekSeederService } from './week-seeder.service';
             PatternPhase,
             Meeting,
             MeetingSlot,
+            MeetingSlotBeliever,
             Church,
             Believer,
             BelieverMinistry,

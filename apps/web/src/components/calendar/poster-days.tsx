@@ -1,6 +1,7 @@
-import type { CalendarRange } from '@navis/shared';
+import { isSlotEmpty, slotNames, type CalendarRange } from '@navis/shared';
 
 import { accentHex } from '@/lib/accents';
+import { getLocale } from '@/lib/i18n';
 import { longDay } from '@/lib/calendar/labels';
 import type { PosterPalette } from './poster-palette';
 
@@ -113,13 +114,13 @@ export function PosterDays({
                                         <span
                                             style={{
                                                 fontSize: '26px',
-                                                fontWeight: slot.believer ? 500 : 400,
-                                                color: slot.believer
-                                                    ? palette.foreground
-                                                    : palette.muted,
+                                                fontWeight: isSlotEmpty(slot) ? 400 : 500,
+                                                color: isSlotEmpty(slot)
+                                                    ? palette.muted
+                                                    : palette.foreground,
                                             }}
                                         >
-                                            {slot.believer?.name ?? unassignedLabel}
+                                            {slotNames(slot, getLocale(), unassignedLabel)}
                                         </span>
                                     </div>
                                 ))}

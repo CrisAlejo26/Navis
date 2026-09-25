@@ -2,7 +2,8 @@ export interface SlotLike {
     id: string;
     name: string;
     position: number;
-    believerId: string | null;
+    /** Cuántas personas la ocupan. */
+    peopleCount: number;
     note: string | null;
 }
 
@@ -39,7 +40,7 @@ export function mergeSlots(
     const dropIds: string[] = [];
     for (const slot of pool) {
         const removedFromPattern = before.includes(slot.name) && !after.includes(slot.name);
-        const isEmpty = slot.believerId === null && !slot.note;
+        const isEmpty = slot.peopleCount === 0 && !slot.note;
         if (removedFromPattern && isEmpty) dropIds.push(slot.id);
         else ordered.push({ id: slot.id });
     }

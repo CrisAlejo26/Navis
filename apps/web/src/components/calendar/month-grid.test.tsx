@@ -33,7 +33,7 @@ const rango: CalendarRange = {
                                   name: 'Enseñanza',
                                   position: 0,
                                   note: null,
-                                  believer: { id: 'b1', name: 'Luis Fernando' },
+                                  believers: [{ id: 'b1', name: 'Luis Fernando' }],
                               },
                           ],
                       },

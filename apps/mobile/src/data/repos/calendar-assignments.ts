@@ -7,7 +7,8 @@ import {
     type SetMeetingSlotsInput,
 } from '@navis/shared';
 
-import { getDb, newId, nowIso } from '../db';
+import { getDb, newId, nowIso, type LocalDb } from '../db';
+import { peopleBySlot, replaceSlotPeople } from './calendar-slot-people';
 
 /**
  * Asignar es la primitiva (D4) y el CRUD de reuniones — la pareja de
@@ -27,11 +28,14 @@ import { getDb, newId, nowIso } from '../db';
 export async function assignSlot(churchId: string, input: AssignSlotInput): Promise<void> {
     const db = await getDb();
 
-    if (input.believerId) {
+    // Solo se comprueba a quien **entra**: si alguien de la fase pasó a inactivo,
+    // guardar la nota o reordenar a los demás no puede fallar por él.
+    const already = input.meetingId ? await currentIds(db, input.meetingId, input.position) : [];
+    for (const believerId of input.believerIds.filter((id) => !already.includes(id))) {
         const person = await db.getFirstAsync<{ status: string }>(
             'SELECT status FROM believers WHERE church_id = ? AND id = ? AND deleted_at IS NULL',
             churchId,
-            input.believerId,
+            believerId,
         );
         if (!person) throw new Error('Esa persona no existe en esta iglesia');
         if (!isBelieverStatus(person.status) || !isSchedulable(person.status)) {
@@ -89,7 +93,7 @@ export async function assignSlot(churchId: string, input: AssignSlotInput): Prom
                 );
                 for (const phase of phases) {
                     await db.runAsync(
-                        'INSERT INTO meeting_slots (id, created_at, updated_at, deleted_at, meeting_id, name, position, believer_id, note) VALUES (?, ?, ?, NULL, ?, ?, ?, NULL, NULL)',
+                        'INSERT INTO meeting_slots (id, created_at, updated_at, deleted_at, meeting_id, name, position, note) VALUES (?, ?, ?, NULL, ?, ?, ?, NULL)',
                         newId(),
                         nowIso(),
                         nowIso(),
@@ -111,12 +115,12 @@ export async function assignSlot(churchId: string, input: AssignSlotInput): Prom
         if (!slot) throw new Error('Esa fase no existe en la reunión');
 
         await db.runAsync(
-            'UPDATE meeting_slots SET believer_id = ?, note = ?, updated_at = ? WHERE id = ?',
-            input.believerId,
+            'UPDATE meeting_slots SET note = ?, updated_at = ? WHERE id = ?',
             input.note !== undefined ? (input.note ?? null) : slot.note,
             nowIso(),
             slot.id,
         );
+        await replaceSlotPeople(db, slot.id, input.believerIds, nowIso(), newId);
     });
 }
 
@@ -154,7 +158,7 @@ export async function createMeeting(
         );
         for (const [position, phase] of input.phases.entries()) {
             await db.runAsync(
-                'INSERT INTO meeting_slots (id, created_at, updated_at, deleted_at, meeting_id, name, position, believer_id, note) VALUES (?, ?, ?, NULL, ?, ?, ?, NULL, NULL)',
+                'INSERT INTO meeting_slots (id, created_at, updated_at, deleted_at, meeting_id, name, position, note) VALUES (?, ?, ?, NULL, ?, ?, ?, NULL)',
                 newId(),
                 now,
                 now,
@@ -245,19 +249,37 @@ export async function setMeetingSlots(
         );
         if (!meeting) throw new Error('Esa reunión no existe en esta iglesia');
 
+        // Sin claves ajenas en local: las personas de las fases que se van se
+        // borran a mano, o quedarían huérfanas.
+        await db.runAsync(
+            'DELETE FROM meeting_slot_believers WHERE slot_id IN (SELECT id FROM meeting_slots WHERE meeting_id = ?)',
+            input.id,
+        );
         await db.runAsync('DELETE FROM meeting_slots WHERE meeting_id = ?', input.id);
         for (const [position, slot] of input.slots.entries()) {
+            const slotId = newId();
             await db.runAsync(
-                'INSERT INTO meeting_slots (id, created_at, updated_at, deleted_at, meeting_id, name, position, believer_id, note) VALUES (?, ?, ?, NULL, ?, ?, ?, ?, ?)',
-                newId(),
+                'INSERT INTO meeting_slots (id, created_at, updated_at, deleted_at, meeting_id, name, position, note) VALUES (?, ?, ?, NULL, ?, ?, ?, ?)',
+                slotId,
                 now,
                 now,
                 input.id,
                 slot.name,
                 position,
-                slot.believerId ?? null,
                 slot.note ?? null,
             );
+            await replaceSlotPeople(db, slotId, slot.believerIds ?? [], now, newId);
         }
     });
+}
+
+/** Quién ocupa ya la fase de una reunión que existe. */
+async function currentIds(db: LocalDb, meetingId: string, position: number): Promise<string[]> {
+    const slot = await db.getFirstAsync<{ id: string }>(
+        'SELECT id FROM meeting_slots WHERE meeting_id = ? AND position = ?',
+        meetingId,
+        position,
+    );
+    if (!slot) return [];
+    return (await peopleBySlot(db, [slot.id])).get(slot.id) ?? [];
 }

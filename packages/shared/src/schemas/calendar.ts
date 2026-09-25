@@ -21,6 +21,15 @@ export type MeetingStatus = (typeof MEETING_STATUSES)[number];
 export const slotBelieverSchema = z.object({ id: z.uuid(), name: z.string() });
 
 /**
+ * Las personas de una fase, sin repetir a nadie. No hay tope: una fase de
+ * testimonios puede llevar a tres hermanos y otra a doce. El orden es el que
+ * se eligió y es el que se enseña.
+ */
+export const slotBelieverIdsSchema = z
+    .array(z.uuid())
+    .refine((ids) => new Set(ids).size === ids.length, 'No se puede repetir a una persona');
+
+/**
  * Una **fase** y quién la ocupa. Es la unidad real de este calendario: lo que
  * se toca, lo que se comparte y lo que puede estar vacío (RFC 0002 D1).
  *
@@ -32,7 +41,8 @@ export const meetingSlotSchema = z.object({
     name: z.string(),
     position: z.number().int(),
     note: z.string().nullable(),
-    believer: slotBelieverSchema.nullable(),
+    /** Vacío es una fase sin asignar. */
+    believers: z.array(slotBelieverSchema),
 });
 
 export type MeetingSlot = z.infer<typeof meetingSlotSchema>;
@@ -90,7 +100,8 @@ export const assignSlotSchema = z.object({
     patternId: z.uuid().optional(),
     meetingId: z.uuid().optional(),
     position: z.number().int().min(0).max(MAX_PHASES),
-    believerId: z.uuid().nullable(),
+    /** El conjunto entero de la fase: reemplaza al anterior. Vacío la deja libre. */
+    believerIds: slotBelieverIdsSchema,
     note: z.string().trim().max(160).nullable().optional(),
 });
 
@@ -126,7 +137,7 @@ export const setMeetingSlotsSchema = z.object({
         .array(
             z.object({
                 name: z.string().trim().min(1).max(60),
-                believerId: z.uuid().nullable().optional(),
+                believerIds: slotBelieverIdsSchema.optional(),
                 note: z.string().trim().max(160).nullable().optional(),
             }),
         )

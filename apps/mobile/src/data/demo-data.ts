@@ -438,7 +438,7 @@ export async function seedDemoData(churchId: string, userId: string): Promise<bo
                     date: day,
                     patternId: patron.id,
                     position,
-                    believerId: persona.id,
+                    believerIds: [persona.id],
                 });
                 turno += 1;
             }

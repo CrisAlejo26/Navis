@@ -97,9 +97,9 @@ describe('el calendario en local (RFC 0002)', () => {
         const reunion = rango.days[0]?.meetings[0];
         expect(reunion?.id).toBeNull(); // propuesta del patrón, sin fila propia
         expect(reunion?.slots).toHaveLength(4);
-        expect(reunion?.slots.every((slot) => slot.believer === null && slot.id === null)).toBe(
-            true,
-        );
+        expect(
+            reunion?.slots.every((slot) => slot.believers.length === 0 && slot.id === null),
+        ).toBe(true);
     });
 
     it('asignar a un día propuesto materializa la reunión con todas sus fases, y repetir no duplica', async () => {
@@ -108,8 +108,8 @@ describe('el calendario en local (RFC 0002)', () => {
         const patternId = (await calendarRange(churchId, pulpitoId, viernes, viernes)).days[0]
             ?.meetings[0]?.patternId!;
 
-        await assignSlot(churchId, { date: viernes, patternId, position: 0, believerId: juan });
-        await assignSlot(churchId, { date: viernes, patternId, position: 0, believerId: juan });
+        await assignSlot(churchId, { date: viernes, patternId, position: 0, believerIds: [juan] });
+        await assignSlot(churchId, { date: viernes, patternId, position: 0, believerIds: [juan] });
 
         const rango = await calendarRange(churchId, pulpitoId, viernes, viernes);
         expect(rango.days[0]?.meetings).toHaveLength(1);
@@ -117,8 +117,8 @@ describe('el calendario en local (RFC 0002)', () => {
         const reunion = rango.days[0]?.meetings[0];
         expect(reunion?.id).not.toBeNull();
         expect(reunion?.slots).toHaveLength(4);
-        expect(reunion?.slots[0]?.believer?.id).toBe(juan);
-        expect(reunion?.slots[1]?.believer).toBeNull();
+        expect(reunion?.slots[0]?.believers.map((one) => one.id)).toEqual([juan]);
+        expect(reunion?.slots[1]?.believers).toEqual([]);
     });
 
     it('cada calendario muestra sus propias fases al abrir un día: el sonido no pinta las del púlpito', async () => {
@@ -191,7 +191,7 @@ describe('el calendario en local (RFC 0002)', () => {
         const patternId = (await calendarRange(churchId, pulpitoId, viernes, viernes)).days[0]
             ?.meetings[0]?.patternId!;
 
-        await assignSlot(churchId, { date: viernes, patternId, position: 0, believerId: null });
+        await assignSlot(churchId, { date: viernes, patternId, position: 0, believerIds: [] });
         await updatePattern(churchId, pulpitoId, { id: patternId, name: 'Culto nuevo' });
 
         const despues = await calendarRange(churchId, pulpitoId, viernes, viernes);
@@ -218,7 +218,7 @@ describe('el calendario en local (RFC 0002)', () => {
         const juan = addBeliever('Luis', 'Fernández');
         const patternId = (await calendarRange(churchId, pulpitoId, viernes, viernes)).days[0]
             ?.meetings[0]?.patternId!;
-        await assignSlot(churchId, { date: viernes, patternId, position: 0, believerId: juan });
+        await assignSlot(churchId, { date: viernes, patternId, position: 0, believerIds: [juan] });
 
         const summary = await calendarSummary(churchId, pulpitoId, from, to);
         expect(summary.people.some((one) => one.believerId === juan)).toBe(true);
@@ -230,6 +230,46 @@ describe('el calendario en local (RFC 0002)', () => {
         // Las semanas que nadie tocó no generan avisos: solo hay huecos donde hay
         // reunión de verdad.
         expect(summary.warnings.some((one) => one.date === otroViernes)).toBe(false);
+    });
+
+    it('una fase admite a varias personas en el orden elegido; reasignar reemplaza el conjunto y vaciar la deja libre', async () => {
+        const { viernes } = semanaDesde(84);
+        const ana = addBeliever('Ana', 'Varias');
+        const pedro = addBeliever('Pedro', 'Varias');
+        const patternId = (await calendarRange(churchId, pulpitoId, viernes, viernes)).days[0]
+            ?.meetings[0]?.patternId!;
+        const nombres = async (): Promise<string[]> =>
+            (
+                (await calendarRange(churchId, pulpitoId, viernes, viernes)).days[0]?.meetings[0]
+                    ?.slots[0]?.believers ?? []
+            ).map((one) => one.name);
+
+        await assignSlot(churchId, {
+            date: viernes,
+            patternId,
+            position: 0,
+            believerIds: [pedro, ana],
+        });
+        expect(await nombres()).toEqual(['Pedro Varias', 'Ana Varias']);
+
+        await assignSlot(churchId, { date: viernes, patternId, position: 0, believerIds: [ana] });
+        expect(await nombres()).toEqual(['Ana Varias']);
+
+        // Cada persona de la fase cuenta como una subida suya en el reparto.
+        await assignSlot(churchId, {
+            date: viernes,
+            patternId,
+            position: 0,
+            believerIds: [ana, pedro],
+        });
+        const from = new Date(Date.now() + 83 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+        const to = new Date(Date.now() + 91 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+        const summary = await calendarSummary(churchId, pulpitoId, from, to);
+        expect(summary.people.find((one) => one.believerId === pedro)?.times).toBe(1);
+        expect(summary.people.find((one) => one.believerId === ana)?.times).toBe(1);
+
+        await assignSlot(churchId, { date: viernes, patternId, position: 0, believerIds: [] });
+        expect(await nombres()).toEqual([]);
     });
 
     it('el buscador del selector quita acentos (Regla 1)', () => {
@@ -244,7 +284,7 @@ describe('el calendario en local (RFC 0002)', () => {
         const ana = addBeliever('Ana', 'Preacher');
         const patternId = (await calendarRange(churchId, pulpitoId, viernes, viernes)).days[0]
             ?.meetings[0]?.patternId!;
-        await assignSlot(churchId, { date: viernes, patternId, position: 0, believerId: ana });
+        await assignSlot(churchId, { date: viernes, patternId, position: 0, believerIds: [ana] });
 
         const primera = await listPreachers(churchId, {
             calendarId: pulpitoId,

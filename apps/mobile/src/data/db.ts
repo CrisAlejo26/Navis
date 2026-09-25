@@ -105,7 +105,7 @@ export function setDbForTests(fake: LocalDb | null): void {
 }
 
 /** Versión actual del esquema local. Cada cambio añade un caso a `migrations`. */
-const SCHEMA_VERSION = 6;
+const SCHEMA_VERSION = 7;
 
 type Migration = (db: LocalDb) => Promise<void>;
 
@@ -300,6 +300,49 @@ const migrations: Record<number, Migration> = {
             await db.execAsync(
                 `CREATE INDEX IF NOT EXISTS "${one.name}" ON "${one.table}" (${one.columns.map((column) => `"${column}"`).join(', ')})`,
             );
+        }
+    },
+    // Varias personas por fase (docs/planes/pendientes/varios-creyentes-por-fase-plan.md):
+    // `meeting_slots.believer_id` pasa a la tabla de unión `meeting_slot_believers`.
+    // Los datos se copian **antes** de quitar la columna, con `position` 0, y el
+    // índice de la columna se borra antes de soltarla (SQLite no deja quitar una
+    // columna indexada). Idempotente: en una base nueva la migración 1 ya crea la
+    // tabla y la columna nunca existió.
+    7: async (db) => {
+        const existing = new Set(
+            (
+                await db.getAllAsync<{ name: string }>(
+                    "SELECT name FROM sqlite_master WHERE type = 'table'",
+                )
+            ).map((row) => row.name),
+        );
+        for (const one of ALL_LOCAL_TABLES) {
+            if (one.name !== 'meeting_slot_believers' || existing.has(one.name)) continue;
+            await db.execAsync(createTableSql(one));
+        }
+        for (const one of LOCAL_INDEXES) {
+            if (one.table !== 'meeting_slot_believers') continue;
+            await db.execAsync(
+                `CREATE INDEX IF NOT EXISTS "${one.name}" ON "${one.table}" (${one.columns.map((column) => `"${column}"`).join(', ')})`,
+            );
+        }
+
+        if (await columnOf('meeting_slots', 'believer_id', db)) {
+            const now = nowIso();
+            for (const row of await db.getAllAsync<{ id: string; believer_id: string }>(
+                'SELECT id, believer_id FROM meeting_slots WHERE believer_id IS NOT NULL',
+            )) {
+                await db.runAsync(
+                    'INSERT INTO meeting_slot_believers (id, created_at, updated_at, deleted_at, slot_id, believer_id, position) VALUES (?, ?, ?, NULL, ?, ?, 0)',
+                    newId(),
+                    now,
+                    now,
+                    row.id,
+                    row.believer_id,
+                );
+            }
+            await db.execAsync('DROP INDEX IF EXISTS "IDX_meeting_slots_believer"');
+            await db.execAsync('ALTER TABLE meeting_slots DROP COLUMN "believer_id"');
         }
     },
 };

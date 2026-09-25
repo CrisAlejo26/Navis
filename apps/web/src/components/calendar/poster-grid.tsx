@@ -1,6 +1,7 @@
-import type { CalendarRange } from '@navis/shared';
+import { isSlotEmpty, slotNames, type CalendarRange } from '@navis/shared';
 
 import { accentHex } from '@/lib/accents';
+import { getLocale } from '@/lib/i18n';
 import { dayNumber, weekdayHeadings } from '@/lib/calendar/labels';
 import { leadingBlanks } from './poster-grid-blanks';
 import type { PosterPalette } from './poster-palette';
@@ -95,7 +96,7 @@ export function PosterGrid({
                                     </span>
 
                                     {meeting.slots
-                                        .filter((slot) => slot.believer)
+                                        .filter((slot) => !isSlotEmpty(slot))
                                         .map((slot) => (
                                             <span
                                                 key={`${slot.name}-${String(slot.position)}`}
@@ -112,11 +113,11 @@ export function PosterGrid({
                                                         color: palette.foreground,
                                                     }}
                                                 >
-                                                    {slot.believer?.name}
+                                                    {slotNames(slot, getLocale(), '')}
                                                 </span>
                                             </span>
                                         ))}
-                                    {meeting.slots.some((slot) => !slot.believer) && (
+                                    {meeting.slots.some(isSlotEmpty) && (
                                         <span style={{ fontSize: '15px', color: palette.muted }}>
                                             {'·'.repeat(12)}
                                         </span>

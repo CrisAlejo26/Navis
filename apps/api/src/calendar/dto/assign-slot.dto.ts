@@ -1,6 +1,8 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { MAX_PHASES } from '@navis/shared';
 import {
+    ArrayUnique,
+    IsArray,
     IsInt,
     IsISO8601,
     IsOptional,
@@ -39,10 +41,15 @@ export class AssignSlotDto {
     @Max(MAX_PHASES)
     position: number;
 
-    @ApiPropertyOptional({ description: 'Quién la ocupa. `null` la deja libre' })
-    @ValidateIf((_object, value) => value !== null)
-    @IsUUID()
-    believerId: string | null;
+    @ApiProperty({
+        type: [String],
+        description:
+            'Quienes la ocupan, en orden. Reemplaza al conjunto anterior; vacío la deja libre',
+    })
+    @IsArray()
+    @ArrayUnique()
+    @IsUUID('all', { each: true })
+    believerIds: string[];
 
     @ApiPropertyOptional({ example: 'Tema: Hechos 2' })
     @IsOptional()

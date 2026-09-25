@@ -1,8 +1,9 @@
 import type { ReactNode } from 'react';
 import { Rect, TSpan, Text as SvgText } from 'react-native-svg';
-import type { CalendarRange } from '@navis/shared';
+import { isSlotEmpty, slotNames, type CalendarRange } from '@navis/shared';
 
 import { accentHex } from '@/lib/accent';
+import { getLocale } from '@/lib/i18n';
 import { longDay } from '@/lib/calendar/labels';
 import type { PosterPalette } from './poster-palette';
 import { truncatePosterText } from './poster-text';
@@ -77,7 +78,7 @@ export function posterDays({
                     y: slotY,
                     position: slot.position,
                     name: slot.name,
-                    believer: slot.believer?.name ?? null,
+                    believer: isSlotEmpty(slot) ? null : slotNames(slot, getLocale(), ''),
                 };
             });
 

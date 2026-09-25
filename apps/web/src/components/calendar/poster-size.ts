@@ -1,4 +1,4 @@
-import { startOfWeek, type CalendarRange } from '@navis/shared';
+import { isSlotEmpty, startOfWeek, type CalendarRange } from '@navis/shared';
 
 /** Los formatos de la lámina y el ancho real de cada uno, que es el del PNG. */
 export type PosterAspect = 'portrait' | 'landscape' | 'table';
@@ -36,7 +36,8 @@ export function tableColumns(range: CalendarRange): TableColumn[] {
             .map((meeting, meetingIndex) => ({ meeting, meetingIndex }))
             .filter(
                 ({ meeting }) =>
-                    meeting.status !== 'cancelada' && meeting.slots.some((slot) => slot.believer),
+                    meeting.status !== 'cancelada' &&
+                    meeting.slots.some((slot) => !isSlotEmpty(slot)),
             )
             .map(({ meetingIndex }) => ({ date: day.date, meetingIndex })),
     );

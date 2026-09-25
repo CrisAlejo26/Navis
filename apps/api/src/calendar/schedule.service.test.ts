@@ -111,7 +111,18 @@ describe('el calendario de un tramo', () => {
             accent: 'success',
             status: 'programada',
             notes: null,
-            slots: [{ id: 's1', name: 'Introducción', position: 0, believerId: 'b1', note: null }],
+            slots: [
+                {
+                    id: 's1',
+                    name: 'Introducción',
+                    position: 0,
+                    note: null,
+                    people: [
+                        { believerId: 'b2', position: 1 },
+                        { believerId: 'b1', position: 0 },
+                    ],
+                },
+            ],
         } as unknown as Meeting;
 
         const rango = await build({ meetings: [materializada] }).range('c1', {
@@ -123,7 +134,11 @@ describe('el calendario de un tramo', () => {
         const dia = rango.days.find((day) => day.date === '2026-08-07');
         expect(dia?.meetings).toHaveLength(1);
         expect(dia?.meetings[0]).toMatchObject({ id: 'm1', startTime: '19:30' });
-        expect(dia?.meetings[0]?.slots[0]?.believer).toEqual({ id: 'b1', name: 'Luis Fernando' });
+        // En el orden en que se eligieron, no en el que devuelve la base de datos.
+        expect(dia?.meetings[0]?.slots[0]?.believers).toEqual([
+            { id: 'b1', name: 'Luis Fernando' },
+            { id: 'b2', name: '—' },
+        ]);
     });
 
     it('rechaza un rango del revés o más largo de lo permitido', async () => {

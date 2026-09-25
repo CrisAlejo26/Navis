@@ -62,7 +62,8 @@ export async function listPreachers(
     const lastSql = `(
     SELECT MAX(m.date) FROM meetings m
     INNER JOIN meeting_slots ms ON ms.meeting_id = m.id
-    WHERE ms.believer_id = b.id AND m.church_id = ? AND m.calendar_id = ?
+    INNER JOIN meeting_slot_believers sb ON sb.slot_id = ms.id
+    WHERE sb.believer_id = b.id AND m.church_id = ? AND m.calendar_id = ?
       AND m.deleted_at IS NULL AND m.status <> 'cancelada'
   )`;
 
@@ -116,12 +117,13 @@ export async function listPreachers(
 
     const rows = people.length
         ? await db.getAllAsync<{ believer_id: string; times: number }>(
-              `SELECT ms.believer_id, COUNT(*) AS times FROM meeting_slots ms
+              `SELECT sb.believer_id, COUNT(*) AS times FROM meeting_slots ms
+         INNER JOIN meeting_slot_believers sb ON sb.slot_id = ms.id
          INNER JOIN meetings m ON m.id = ms.meeting_id
          WHERE m.church_id = ? AND m.calendar_id = ? AND m.deleted_at IS NULL
            AND m.status <> 'cancelada' AND m.date >= ? AND m.date <= ?
-           AND ms.believer_id IN (${people.map(() => '?').join(', ')})
-         GROUP BY ms.believer_id`,
+           AND sb.believer_id IN (${people.map(() => '?').join(', ')})
+         GROUP BY sb.believer_id`,
               churchId,
               query.calendarId,
               query.from,

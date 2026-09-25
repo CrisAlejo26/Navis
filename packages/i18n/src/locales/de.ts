@@ -393,6 +393,8 @@ export const de = {
         pending: '{{count}} offen',
         assign: 'Zuteilen',
         clearSlot: 'Frei lassen',
+        removePerson: '{{name}} entfernen',
+        pickHint: 'Tippe auf die Personen, die du eintragen willst; du kannst mehrere wählen.',
         addMeeting: 'Versammlung hinzufügen',
         meetingName: 'Name der Versammlung',
         startTime: 'Uhrzeit',

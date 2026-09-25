@@ -387,6 +387,8 @@ export const fr = {
         pending: '{{count}} à combler',
         assign: 'Attribuer',
         clearSlot: 'Laisser libre',
+        removePerson: 'Retirer {{name}}',
+        pickHint: 'Touchez les personnes à ajouter ; vous pouvez en choisir plusieurs.',
         addMeeting: 'Ajouter une réunion',
         meetingName: 'Nom de la réunion',
         startTime: 'Heure',

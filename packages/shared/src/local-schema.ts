@@ -161,8 +161,12 @@ export const LOCAL_TABLES: LocalTable[] = [
         { name: 'meeting_id', type: 'text' },
         { name: 'name', type: 'text' },
         { name: 'position', type: 'int' },
-        { name: 'believer_id', type: 'text', nullable: true },
         { name: 'note', type: 'text', nullable: true },
+    ]),
+    table('meeting_slot_believers', 'MeetingSlotBeliever', [
+        { name: 'slot_id', type: 'text' },
+        { name: 'believer_id', type: 'text' },
+        { name: 'position', type: 'int' },
     ]),
     table('ministries', 'Ministry', [
         { name: 'church_id', type: 'text' },
@@ -315,8 +319,13 @@ export const LOCAL_INDEXES: {
         columns: ['meeting_id', 'position'],
     },
     {
-        name: 'IDX_meeting_slots_believer',
-        table: 'meeting_slots',
+        name: 'IDX_meeting_slot_believers_slot',
+        table: 'meeting_slot_believers',
+        columns: ['slot_id', 'position'],
+    },
+    {
+        name: 'IDX_meeting_slot_believers_believer',
+        table: 'meeting_slot_believers',
         columns: ['believer_id'],
     },
     {

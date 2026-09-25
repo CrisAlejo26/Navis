@@ -324,6 +324,7 @@ export default function CalendarScreen() {
                         meetingId: slot.id ? (meeting.id ?? undefined) : undefined,
                         patternId: slot.id ? undefined : (meeting.patternId ?? undefined),
                         position: slot.position,
+                        believers: slot.believers,
                     });
                 }}
                 onAddMeeting={setAddMeetingFor}
@@ -333,14 +334,14 @@ export default function CalendarScreen() {
                 calendarId={activo?.id ?? ''}
                 target={target}
                 onClose={() => setTarget(null)}
-                onPick={(person) => {
+                onSave={(people) => {
                     if (!target) return;
                     asignar.mutate({
                         date: target.date,
                         meetingId: target.meetingId,
                         patternId: target.patternId,
                         position: target.position,
-                        believerId: person?.id ?? null,
+                        believerIds: people.map((one) => one.id),
                     });
                 }}
             />

@@ -27,6 +27,7 @@ import { Chip } from '@/components/ui/chip';
 import { longDay, rangeTitle } from '@/lib/calendar/labels';
 import { posterFileName } from '@/lib/calendar/share';
 import { rangeAsText } from '@/lib/calendar/share-text';
+import { getLocale } from '@/lib/i18n';
 import {
     SHARE_LABELS,
     SHARE_PRESETS,
@@ -199,6 +200,7 @@ export function ShareSheet({
             congregationName: nameOf,
             showCongregation,
             unassigned: t('calendar.unassigned'),
+            locale: getLocale(),
         });
 
         await RNShare.share({

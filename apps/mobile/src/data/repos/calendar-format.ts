@@ -18,7 +18,8 @@ export function slotView(
         id: string;
         name: string;
         position: number;
-        believer_id: string | null;
+        /** Quien la ocupa, en el orden elegido. Vacío es sin asignar. */
+        believerIds: readonly string[];
         note: string | null;
     },
     names: ReadonlyMap<string, string>,
@@ -28,9 +29,7 @@ export function slotView(
         name: slot.name,
         position: slot.position,
         note: slot.note,
-        believer: slot.believer_id
-            ? { id: slot.believer_id, name: names.get(slot.believer_id) ?? '—' }
-            : null,
+        believers: slot.believerIds.map((id) => ({ id, name: names.get(id) ?? '—' })),
     };
 }
 

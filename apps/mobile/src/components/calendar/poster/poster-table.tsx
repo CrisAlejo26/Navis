@@ -1,8 +1,9 @@
 import type { ReactNode } from 'react';
 import { Rect, TSpan, Text as SvgText } from 'react-native-svg';
-import type { CalendarRange } from '@navis/shared';
+import { isSlotEmpty, slotNames, type CalendarRange } from '@navis/shared';
 
 import { accentHex } from '@/lib/accent';
+import { getLocale } from '@/lib/i18n';
 import { dayNumber, rangeTitle, weekdayName } from '@/lib/calendar/labels';
 import type { PosterPalette } from './poster-palette';
 import { truncatePosterText, wrapPosterText } from './poster-text';
@@ -100,13 +101,13 @@ export function posterTable({
             cy = meetingY + 8;
 
             const slots = meeting.slots
-                .filter((slot) => slot.believer)
+                .filter((slot) => !isSlotEmpty(slot))
                 .map((slot) => {
-                    const believer = slot.believer?.name ?? '';
+                    const believer = slotNames(slot, getLocale(), '');
                     const nameFull = `${believer}${slot.note ? ` · ${slot.note}` : ''}`;
                     const nameLines = wrapPosterText(nameFull, TEXT_WIDTH, {
                         fontSize: NAME_FONT,
-                        maxLines: 2,
+                        maxLines: 3,
                     });
 
                     const roleY = cy + 15;

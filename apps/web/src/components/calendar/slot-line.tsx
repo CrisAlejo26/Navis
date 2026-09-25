@@ -1,7 +1,8 @@
-import type { Meeting, MeetingSlot } from '@navis/shared';
+import { joinNames, type Meeting, type MeetingSlot } from '@navis/shared';
 import { useTranslation } from 'react-i18next';
 
 import { cn } from '@/lib/cn';
+import { getLocale } from '@/lib/i18n';
 
 /**
  * Una fase y quién la ocupa: `INTRODUCCIÓN  Juan Carlos`.
@@ -33,7 +34,13 @@ export function SlotLine({
     stacked?: boolean;
 }) {
     const { t } = useTranslation();
-    const name = slot.believer?.name;
+    const name =
+        slot.believers.length > 0
+            ? joinNames(
+                  slot.believers.map((one) => one.name),
+                  getLocale(),
+              )
+            : null;
 
     const phase = (
         <span
@@ -52,7 +59,10 @@ export function SlotLine({
         <span
             title={name}
             className={cn(
-                'font-medium truncate',
+                // Con varias personas el nombre pasa a dos líneas, en la columna
+                // estrecha del mes y en un teléfono; a partir de ahí se abrevia
+                // (y el `title` lo dice entero).
+                'font-medium line-clamp-2',
                 stacked ? 'text-[12px]' : size === 'sm' ? 'text-[11px]' : 'text-[13px]',
             )}
         >

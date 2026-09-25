@@ -1,8 +1,11 @@
-import type { AssignSlotInput, CalendarRange } from '@navis/shared';
+import type { AssignSlotInput, CalendarRange, MeetingSlot } from '@navis/shared';
 
 export interface AssignVariables extends AssignSlotInput {
-    /** El nombre ya compuesto, para poder pintarlo antes de que responda la API. */
-    believerName?: string | null;
+    /**
+     * Los nombres ya compuestos de quien entra, para pintarlos antes de que
+     * responda la API. Quien ya estaba en la fase conserva el suyo.
+     */
+    believers?: MeetingSlot['believers'];
 }
 
 /**
@@ -42,12 +45,14 @@ export function withAssignment(range: CalendarRange, input: AssignVariables): Ca
                             slot.position === input.position
                                 ? {
                                       ...slot,
-                                      believer: input.believerId
-                                          ? {
-                                                id: input.believerId,
-                                                name: input.believerName ?? '…',
-                                            }
-                                          : null,
+                                      believers: input.believerIds.map(
+                                          (id) =>
+                                              input.believers?.find((one) => one.id === id) ??
+                                              slot.believers.find((one) => one.id === id) ?? {
+                                                  id,
+                                                  name: '…',
+                                              },
+                                      ),
                                       note:
                                           input.note === undefined
                                               ? slot.note

@@ -22,9 +22,9 @@ const CULTO = {
             name: 'Introducción',
             position: 0,
             note: null,
-            believer: { id: 'b1', name: 'Juan Carlos' },
+            believers: [{ id: 'b1', name: 'Juan Carlos' }],
         },
-        { id: null, name: 'Enseñanza', position: 1, note: null, believer: null },
+        { id: null, name: 'Enseñanza', position: 1, note: null, believers: [] },
     ],
 };
 

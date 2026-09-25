@@ -385,6 +385,8 @@ export const it = {
         pending: 'Mancano {{count}}',
         assign: 'Assegna',
         clearSlot: 'Lascia libero',
+        removePerson: 'Rimuovi {{name}}',
+        pickHint: 'Tocca chi vuoi inserire; puoi sceglierne più di una.',
         addMeeting: 'Aggiungi riunione',
         meetingName: 'Nome della riunione',
         startTime: 'Ora',

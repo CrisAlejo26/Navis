@@ -31,29 +31,29 @@ export function peopleRows(range: CalendarRange): PersonRow[] {
             if (meeting.status === 'cancelada') continue;
 
             for (const slot of meeting.slots) {
-                const person = slot.believer;
-                if (!person) continue;
+                // Cada persona de la fase cuenta como una subida suya.
+                for (const person of slot.believers) {
+                    const row = rows.get(person.id) ?? {
+                        id: person.id,
+                        name: person.name,
+                        times: 0,
+                        lastDate: null,
+                        days: new Map<string, PersonDay[]>(),
+                    };
 
-                const row = rows.get(person.id) ?? {
-                    id: person.id,
-                    name: person.name,
-                    times: 0,
-                    lastDate: null,
-                    days: new Map<string, PersonDay[]>(),
-                };
+                    row.times += 1;
+                    if (!row.lastDate || day.date > row.lastDate) row.lastDate = day.date;
+                    row.days.set(day.date, [
+                        ...(row.days.get(day.date) ?? []),
+                        {
+                            date: day.date,
+                            accent: meeting.accent,
+                            detail: `${meeting.name} · ${slot.name}`,
+                        },
+                    ]);
 
-                row.times += 1;
-                if (!row.lastDate || day.date > row.lastDate) row.lastDate = day.date;
-                row.days.set(day.date, [
-                    ...(row.days.get(day.date) ?? []),
-                    {
-                        date: day.date,
-                        accent: meeting.accent,
-                        detail: `${meeting.name} · ${slot.name}`,
-                    },
-                ]);
-
-                rows.set(person.id, row);
+                    rows.set(person.id, row);
+                }
             }
         }
     }

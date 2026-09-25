@@ -1,6 +1,7 @@
-import type { CalendarRange } from '@navis/shared';
+import { isSlotEmpty, slotNames, type CalendarRange } from '@navis/shared';
 
 import { accentHex } from '@/lib/accents';
+import { getLocale } from '@/lib/i18n';
 import { dayNumber, rangeTitle, weekdayName } from '@/lib/calendar/labels';
 import type { PosterPalette } from './poster-palette';
 import { TABLE_COLUMN, tableWeeks } from './poster-size';
@@ -117,7 +118,7 @@ export function PosterTable({
                                         </div>
 
                                         {meeting.slots
-                                            .filter((slot) => slot.believer)
+                                            .filter((slot) => !isSlotEmpty(slot))
                                             .map((slot) => (
                                                 <div
                                                     key={`${slot.name}-${String(slot.position)}`}
@@ -127,7 +128,7 @@ export function PosterTable({
                                                         {slot.name}{' '}
                                                     </span>
                                                     <span style={{ fontWeight: 500 }}>
-                                                        {slot.believer?.name}
+                                                        {slotNames(slot, getLocale(), '')}
                                                     </span>
                                                     {slot.note && (
                                                         <span

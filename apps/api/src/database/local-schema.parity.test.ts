@@ -22,6 +22,7 @@ import { MeetingPattern } from '../calendar/meeting-pattern.entity';
 import { PatternPhase } from '../calendar/pattern-phase.entity';
 import { Church } from '../churches/church.entity';
 import { MeetingSlot } from '../calendar/meeting-slot.entity';
+import { MeetingSlotBeliever } from '../calendar/meeting-slot-believer.entity';
 import { NoteAudio } from '../believers/note-audio.entity';
 import { Prophecy } from '../prophecies/prophecy.entity';
 import { ProphecyFulfillment } from '../prophecies/prophecy-fulfillment.entity';
@@ -51,6 +52,7 @@ const ENTITIES = [
     PatternPhase,
     Meeting,
     MeetingSlot,
+    MeetingSlotBeliever,
     Believer,
     BelieverNote,
     BelieverTag,

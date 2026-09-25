@@ -3,10 +3,11 @@ import { Pressable, Text, View } from 'react-native';
 
 import { cn } from '@/lib/cn';
 import { accentHex } from '@/lib/accent';
+import { getLocale } from '@/lib/i18n';
 import { useThemeStore } from '@/lib/theme';
 import { themeColorsHex } from '@navis/theme';
 import Animated, { FadeIn, FadeInDown, useReducedMotion } from 'react-native-reanimated';
-import type { Meeting, MeetingSlot } from '@navis/shared';
+import { isSlotEmpty, slotNames, type Meeting, type MeetingSlot } from '@navis/shared';
 
 interface MeetingRibbonProps {
     meeting: Meeting;
@@ -95,11 +96,7 @@ function SlotLine({
     return (
         <Pressable
             accessibilityRole={canManage ? 'button' : 'text'}
-            accessibilityLabel={
-                slot.believer
-                    ? `${slot.name}: ${slot.believer.name}`
-                    : `${slot.name}: ${t('calendar.unassigned')}`
-            }
+            accessibilityLabel={`${slot.name}: ${slotNames(slot, getLocale(), t('calendar.unassigned'))}`}
             onPress={onPress}
             disabled={!canManage}
             className={cn(
@@ -110,14 +107,18 @@ function SlotLine({
             <Text className="flex-1 text-[11px] tracking-[0.06em] text-muted-foreground uppercase">
                 {slot.name}
             </Text>
-            {slot.believer ? (
+            {!isSlotEmpty(slot) ? (
                 // El nombre entra con un fundido de 150 ms y se va con el mismo
                 // gesto al quitar: es la confirmación de que se ha guardado (§8.8).
+                // Con varias personas la clave es el conjunto: al cambiarlo, vuelve a entrar.
                 <Animated.View
-                    key={slot.believer.id}
+                    key={slot.believers.map((one) => one.id).join('|')}
                     entering={reducedMotion ? undefined : FadeIn.duration(150)}
+                    className="max-w-[60%]"
                 >
-                    <Text className="text-[13px] text-foreground">{slot.believer.name}</Text>
+                    <Text className="text-right text-[13px] text-foreground">
+                        {slotNames(slot, getLocale(), '')}
+                    </Text>
                 </Animated.View>
             ) : (
                 <Text className="text-[13px] text-muted-foreground">···········</Text>

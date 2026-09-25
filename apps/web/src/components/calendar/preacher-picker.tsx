@@ -1,18 +1,9 @@
-import { isMinistry, type Meeting, type MeetingSlot, type Preacher } from '@navis/shared';
-import { useCreateBeliever, usePreachers } from '@navis/api-client';
-import { UserPlus } from 'lucide-react';
-import { useState } from 'react';
+import type { Meeting, MeetingSlot } from '@navis/shared';
 import { useTranslation } from 'react-i18next';
 
-import { PreacherRow } from '@/components/calendar/preacher-row';
-import { Button } from '@/components/ui/button';
-import { Chip } from '@/components/ui/chip';
+import { PickerBody } from '@/components/calendar/preacher-picker-body';
 import { Dialog } from '@/components/ui/dialog';
-import { SearchField } from '@/components/ui/search-field';
-import { api } from '@/lib/api';
-import { toast } from '@/lib/toast';
 import type { DateRange } from '@/lib/calendar/view-range';
-import { cn } from '@/lib/cn';
 
 export interface PickTarget {
     date: string;
@@ -21,26 +12,18 @@ export interface PickTarget {
 }
 
 /**
- * Asignar en dos toques: se toca la fase y se elige a quién.
+ * Asignar en dos toques: se toca la fase y se marca a quién. Una fase admite a
+ * cuantas personas hagan falta, así que el selector no se cierra al tocar a
+ * alguien: se marcan todas y se guarda.
  *
- * La lista **no va en orden alfabético**: la encabeza quien lleva más tiempo
- * sin subir, que es la pregunta que se está haciendo quien programa. Y si la
- * persona no está todavía en la lista, se da de alta aquí mismo: mandar a otra
- * pantalla es la forma segura de que se vuelva a la hoja de cálculo.
- *
- * **Por defecto se proponen todos**, no solo la labor del calendario: quien
- * asigna quiere ver a la persona que piensa, y el filtro de la labor se queda
- * como alternativa. Y se carga por tandas —de veinticinco en veinticinco, con
- * «Ver más»— para que abrir el selector no arrastre a la iglesia entera.
+ * El cuerpo lleva `key` con la fase que se abre: así su estado —a quién se
+ * marcó, qué se buscó— nace limpio cada vez, sin copiarlo desde props en un
+ * efecto.
  */
 export function PreacherPicker({
     target,
-    range,
-    calendarId,
-    ministry,
     onClose,
-    onAssign,
-    congregationName,
+    ...body
 }: {
     target: PickTarget | null;
     range: DateRange;
@@ -48,32 +31,11 @@ export function PreacherPicker({
     /** El ministerio del calendario: es a quien se propone primero (D16). */
     ministry: string | null;
     onClose: () => void;
-    onAssign: (believerId: string | null, name: string | null) => void;
+    onAssign: (people: MeetingSlot['believers']) => void;
     congregationName: (id: string | null) => string | undefined;
 }) {
     const { t } = useTranslation();
-    const [q, setQ] = useState('');
-    const [all, setAll] = useState(true);
-
-    const preachers = usePreachers(api, { ...range, calendarId, q, all }, Boolean(target));
-    const candidates = preachers.data?.pages.flatMap((page) => page.items) ?? [];
-    const createBeliever = useCreateBeliever(api);
-
-    const addPerson = async () => {
-        const [firstName = q, ...rest] = q.trim().split(/\s+/);
-        const person = await createBeliever.mutateAsync({
-            firstName,
-            lastName: rest.join(' '),
-            // Se da de alta ya con el ministerio del calendario: quien se añade
-            // desde el de sonido es de sonido.
-            ministries: ministry && isMinistry(ministry) ? [ministry] : [],
-            congregationId: target?.meeting.congregationId ?? null,
-        });
-
-        const nombre = `${person.firstName} ${person.lastName}`.trim();
-        toast.success(t('believers.created', { name: nombre }));
-        onAssign(person.id, nombre);
-    };
+    const meetingKey = target ? (target.meeting.id ?? target.meeting.patternId ?? '') : '';
 
     return (
         <Dialog
@@ -84,77 +46,13 @@ export function PreacherPicker({
                 target ? `${target.meeting.name} · ${target.meeting.startTime}` : undefined
             }
         >
-            <div className="gap-3 flex flex-col">
-                <div className="gap-2 flex items-center">
-                    <SearchField
-                        value={q}
-                        onChange={setQ}
-                        label={t('calendar.searchPerson')}
-                        className="flex-1"
-                    />
-                    <Chip
-                        active={all}
-                        className="h-10 shrink-0"
-                        onClick={() => {
-                            setAll(!all);
-                        }}
-                    >
-                        {t(all ? 'calendar.everyone' : 'calendar.onlyLabor')}
-                    </Chip>
-                </div>
-
-                <ul className="max-h-72 -mx-1 flex flex-col overflow-y-auto">
-                    {candidates.map((preacher: Preacher) => (
-                        <PreacherRow
-                            key={preacher.id}
-                            preacher={preacher}
-                            selected={preacher.id === target?.slot.believer?.id}
-                            congregationName={congregationName(preacher.congregationId)}
-                            onPick={(chosen) => {
-                                onAssign(chosen.id, chosen.name);
-                            }}
-                        />
-                    ))}
-                </ul>
-
-                {preachers.hasNextPage && (
-                    <button
-                        type="button"
-                        disabled={preachers.isFetchingNextPage}
-                        onClick={() => {
-                            void preachers.fetchNextPage();
-                        }}
-                        className="h-10 px-4 text-sm font-medium self-center rounded-lg border bg-card hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none disabled:opacity-50"
-                    >
-                        {t('calendar.loadMore')}
-                    </button>
-                )}
-
-                <div className="gap-2 pt-3 flex flex-wrap items-center justify-between border-t">
-                    {q.trim().length > 1 && (
-                        <Button
-                            variant="secondary"
-                            size="sm"
-                            isLoading={createBeliever.isPending}
-                            onClick={() => void addPerson()}
-                        >
-                            <UserPlus size={15} aria-hidden />
-                            {t('believers.addPerson')}: {q.trim()}
-                        </Button>
-                    )}
-
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        className="ml-auto"
-                        onClick={() => {
-                            onAssign(null, null);
-                        }}
-                    >
-                        {t('calendar.clearSlot')}
-                    </Button>
-                </div>
-            </div>
+            {target && (
+                <PickerBody
+                    key={`${target.date}|${meetingKey}|${String(target.slot.position)}`}
+                    target={target}
+                    {...body}
+                />
+            )}
         </Dialog>
     );
 }

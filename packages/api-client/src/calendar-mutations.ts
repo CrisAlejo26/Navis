@@ -22,7 +22,7 @@ export function useAssignSlot(api: ApiClient, calendarId: string) {
     const client = useQueryClient();
 
     return useMutation({
-        mutationFn: ({ believerName: _name, ...input }: AssignVariables) =>
+        mutationFn: ({ believers: _names, ...input }: AssignVariables) =>
             api.put<Meeting>(`/calendars/${calendarId}/slots`, { ...input }),
 
         onMutate: async (input: AssignVariables) => {

@@ -1,8 +1,9 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Column, Entity, Index, JoinColumn, ManyToOne, type Relation } from 'typeorm';
+import { Column, Entity, Index, JoinColumn, ManyToOne, OneToMany, type Relation } from 'typeorm';
 
 import { BaseEntity } from '../common/entities/base.entity';
 import { UUID } from '../database/column-types';
+import type { MeetingSlotBeliever } from './meeting-slot-believer.entity';
 import type { Meeting } from './meeting.entity';
 
 /**
@@ -10,7 +11,7 @@ import type { Meeting } from './meeting.entity';
  * calendario (D1): lo que se toca, lo que se comparte y lo que puede estar
  * vacío.
  *
- * `believer_id` nulo es una fase sin asignar, y se ve: en la interfaz sale
+ * Una fase sin personas es una fase sin asignar, y se ve: en la interfaz sale
  * como una línea de puntos que pide que la rellenen, que es justo la
  * información que hoy se pierde en la hoja de cálculo.
  */
@@ -35,10 +36,12 @@ export class MeetingSlot extends BaseEntity {
     @Column({ type: 'int' })
     position: number;
 
-    @ApiPropertyOptional({ description: 'Quién la ocupa. Nulo es sin asignar' })
-    @Index()
-    @Column({ name: 'believer_id', type: UUID, nullable: true })
-    believerId: string | null;
+    /**
+     * Quién la ocupa, sin orden garantizado al cargar: se ordena por `position`
+     * en `slotBelieverIds`. Sin filas es una fase sin asignar.
+     */
+    @OneToMany('MeetingSlotBeliever', 'slot', { cascade: true })
+    people: MeetingSlotBeliever[];
 
     @ApiPropertyOptional({ example: 'Tema: Hechos 2' })
     @Column({ type: 'text', nullable: true })

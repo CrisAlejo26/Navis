@@ -1,6 +1,7 @@
 import { addDays, type CalendarSummary, type PreacherBalance } from '@navis/shared';
 
 import { getDb } from '../db';
+import { peopleBySlot } from './calendar-slot-people';
 
 /**
  * El reparto del tramo en **local** — la pareja de `SummaryService` +
@@ -153,24 +154,34 @@ export async function calendarSummary(
     for (const meeting of meetings) {
         if (meeting.status === 'cancelada') continue;
 
-        for (const slot of await db.getAllAsync<{ name: string; believer_id: string | null }>(
-            'SELECT name, believer_id FROM meeting_slots WHERE meeting_id = ? ORDER BY position ASC',
+        const slots = await db.getAllAsync<{ id: string; name: string }>(
+            'SELECT id, name FROM meeting_slots WHERE meeting_id = ? ORDER BY position ASC',
             meeting.id,
-        )) {
-            const detail = `${meeting.name} · ${slot.name}`;
+        );
+        const people = await peopleBySlot(
+            db,
+            slots.map((slot) => slot.id),
+        );
 
-            if (!slot.believer_id) {
+        for (const slot of slots) {
+            const detail = `${meeting.name} · ${slot.name}`;
+            const ids = people.get(slot.id) ?? [];
+
+            if (ids.length === 0) {
                 gaps.push({ date: meeting.date, congregationId: meeting.congregation_id, detail });
                 continue;
             }
 
-            assignments.push({
-                believerId: slot.believer_id,
-                name: names.get(slot.believer_id) ?? '—',
-                date: meeting.date,
-                congregationId: meeting.congregation_id,
-                detail,
-            });
+            // Cada persona de la fase cuenta como una subida suya.
+            for (const believerId of ids) {
+                assignments.push({
+                    believerId,
+                    name: names.get(believerId) ?? '—',
+                    date: meeting.date,
+                    congregationId: meeting.congregation_id,
+                    detail,
+                });
+            }
         }
     }
 

@@ -207,14 +207,16 @@ describe('Calendario (e2e)', () => {
             request(app.getHttpServer())
                 .put(`/api/v1/calendars/${calendarId}/slots`)
                 .set('Cookie', cookie)
-                .send({ date: viernes, patternId, position: 1, believerId })
+                .send({ date: viernes, patternId, position: 1, believerIds: [believerId] })
                 .expect(200);
 
         const primera = await asignar();
         const segunda = await asignar();
 
         expect(body<Meeting>(primera).id).toBe(body<Meeting>(segunda).id);
-        expect(body<Meeting>(segunda).slots[1]?.believer?.name).toBe('Luis Fernando Ruiz');
+        expect(body<Meeting>(segunda).slots[1]?.believers.map((one) => one.name)).toEqual([
+            'Luis Fernando Ruiz',
+        ]);
 
         const calendario = await request(app.getHttpServer())
             .get(`/api/v1/calendars/${calendarId}/schedule?from=${viernes}&to=${viernes}`)
@@ -256,8 +258,8 @@ describe('Calendario (e2e)', () => {
         );
         expect(reunion?.id).not.toBeNull();
         expect(reunion?.slots.at(-1)?.name).toBe('Ofrenda');
-        expect(reunion?.slots.at(-1)?.believer).toBeNull();
-        expect(reunion?.slots[1]?.believer?.name).toBe('Luis Fernando Ruiz');
+        expect(reunion?.slots.at(-1)?.believers).toEqual([]);
+        expect(reunion?.slots[1]?.believers.map((one) => one.name)).toEqual(['Luis Fernando Ruiz']);
     });
 
     it('los candidatos vienen paginados, con quien lleva más tiempo sin subir primero', async () => {
@@ -366,5 +368,37 @@ describe('Calendario (e2e)', () => {
             .get(`/api/v1/calendars/${calendarId}/schedule?from=2026-01-01&to=2026-12-31`)
             .set('Cookie', cookie)
             .expect(400);
+    });
+
+    // Al final: crea creyentes, y los recuentos de los candidatos de arriba cuentan a
+    // toda la iglesia.
+    it('una fase admite a varias personas, en el orden elegido, y vaciarla la deja libre', async () => {
+        const crear = async (firstName: string): Promise<string> =>
+            body<{ id: string }>(
+                await request(app.getHttpServer())
+                    .post('/api/v1/believers')
+                    .set('Cookie', cookie)
+                    .send({ firstName, lastName: 'Prueba', ministries: [] })
+                    .expect(201),
+            ).id;
+        const [ana, pedro] = [await crear('Ana'), await crear('Pedro')];
+
+        const poner = (believerIds: string[]) =>
+            request(app.getHttpServer())
+                .put(`/api/v1/calendars/${calendarId}/slots`)
+                .set('Cookie', cookie)
+                .send({ date: viernes, patternId, position: 0, believerIds });
+        const nombres = (respuesta: request.Response): string[] =>
+            body<Meeting>(respuesta).slots[0]?.believers.map((one) => one.name) ?? [];
+
+        expect(nombres(await poner([pedro, ana]).expect(200))).toEqual([
+            'Pedro Prueba',
+            'Ana Prueba',
+        ]);
+        // Reemplaza el conjunto: quitar a uno y reordenar es la misma llamada.
+        expect(nombres(await poner([ana]).expect(200))).toEqual(['Ana Prueba']);
+        // Sin repetir a nadie.
+        await poner([ana, ana]).expect(400);
+        expect(nombres(await poner([]).expect(200))).toEqual([]);
     });
 });

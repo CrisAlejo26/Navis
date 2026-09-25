@@ -5,6 +5,7 @@ import { BelieversRosterService } from '../believers/believers-roster.service';
 import { toIsoDay } from '../database/iso-day';
 import { buildWarnings, type Assignment, type Gap } from './calendar-warnings';
 import { ScheduleService, type RangeQuery } from './schedule.service';
+import { believerIdsOf, slotBelieverIds } from './slot-people';
 
 /**
  * El reparto del tramo: quién ha subido cuántas veces, cuándo fue la última y
@@ -32,9 +33,7 @@ export class SummaryService {
             only,
         );
 
-        const names = await this.believers.namesOf(
-            meetings.flatMap((meeting) => (meeting.slots ?? []).map((slot) => slot.believerId)),
-        );
+        const names = await this.believers.namesOf(believerIdsOf(meetings));
 
         const assignments: Assignment[] = [];
         const gaps: Gap[] = [];
@@ -46,18 +45,22 @@ export class SummaryService {
             for (const slot of meeting.slots ?? []) {
                 const detail = `${meeting.name} · ${slot.name}`;
 
-                if (!slot.believerId) {
+                const ids = slotBelieverIds(slot);
+                if (ids.length === 0) {
                     gaps.push({ date, congregationId: meeting.congregationId, detail });
                     continue;
                 }
 
-                assignments.push({
-                    believerId: slot.believerId,
-                    name: names.get(slot.believerId) ?? '—',
-                    date,
-                    congregationId: meeting.congregationId,
-                    detail,
-                });
+                // Cada persona de la fase cuenta como una subida suya.
+                for (const believerId of ids) {
+                    assignments.push({
+                        believerId,
+                        name: names.get(believerId) ?? '—',
+                        date,
+                        congregationId: meeting.congregationId,
+                        detail,
+                    });
+                }
             }
         }
 

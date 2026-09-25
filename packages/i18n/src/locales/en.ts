@@ -384,6 +384,8 @@ export const en = {
         pending: '{{count}} to fill',
         assign: 'Assign',
         clearSlot: 'Leave open',
+        removePerson: 'Remove {{name}}',
+        pickHint: 'Tap whoever you want to add; you can pick several.',
         addMeeting: 'Add meeting',
         meetingName: 'Meeting name',
         startTime: 'Time',

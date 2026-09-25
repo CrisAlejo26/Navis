@@ -9,10 +9,12 @@ import { isSchedulable, type AssignSlotInput, type Meeting as MeetingView } from
 import { DataSource, Repository } from 'typeorm';
 
 import { BelieversService } from '../believers/believers.service';
+import { MeetingSlotBeliever } from './meeting-slot-believer.entity';
 import { MeetingSlot } from './meeting-slot.entity';
 import { Meeting } from './meeting.entity';
 import { MeetingsService } from './meetings.service';
 import { PatternsService } from './patterns.service';
+import { slotBelieverIds } from './slot-people';
 
 /**
  * Asignar es la primitiva de este calendario (D4): un clic pone a alguien en
@@ -30,30 +32,67 @@ export class AssignmentsService {
         private readonly meetingsService: MeetingsService,
     ) {}
 
+    /**
+     * Reemplaza a quienes ocupan la fase por `believerIds`, en ese orden. Vacío
+     * la deja libre. Una sola primitiva para añadir, quitar y reordenar.
+     */
     async assign(churchId: string, input: AssignSlotInput): Promise<MeetingView> {
-        if (input.believerId) {
-            // Se programa a quien sigue viniendo: es lo que antes decía `is_active` y
-            // ahora dice el estado, sin dos fuentes de verdad (RFC 0003 D2).
-            const person = await this.believers.require(churchId, input.believerId);
-            if (!isSchedulable(person.status)) {
-                throw new UnprocessableEntityException('Esa persona ya no está activa');
-            }
-        }
-
-        const meeting = input.meetingId
+        const existing = input.meetingId
             ? await this.meetingsService.require(churchId, input.meetingId)
-            : await this.ensureMeeting(churchId, input);
+            : null;
+
+        // Solo se comprueba a quien **entra**: si alguien de la fase pasó a inactivo,
+        // guardar la nota o reordenar a los demás no puede fallar por él.
+        const already = existing ? await this.currentIds(existing.id, input.position) : [];
+        await this.requireSchedulable(
+            churchId,
+            input.believerIds.filter((id) => !already.includes(id)),
+        );
+
+        const meeting = existing ?? (await this.ensureMeeting(churchId, input));
 
         const slot = await this.slots.findOne({
             where: { meetingId: meeting.id, position: input.position },
         });
         if (!slot) throw new NotFoundException('Esa fase no existe en la reunión');
 
-        slot.believerId = input.believerId;
-        if (input.note !== undefined) slot.note = input.note ?? null;
-        await this.slots.save(slot);
+        await this.dataSource.transaction(async (manager) => {
+            await manager.delete(MeetingSlotBeliever, { slotId: slot.id });
+            if (input.believerIds.length > 0) {
+                await manager.save(
+                    input.believerIds.map((believerId, position) =>
+                        manager.create(MeetingSlotBeliever, {
+                            slotId: slot.id,
+                            believerId,
+                            position,
+                        }),
+                    ),
+                );
+            }
+            if (input.note !== undefined) {
+                await manager.update(MeetingSlot, { id: slot.id }, { note: input.note ?? null });
+            }
+        });
 
         return this.meetingsService.view(churchId, meeting.id);
+    }
+
+    /** Se programa a quien sigue viniendo: lo dice el estado (RFC 0003 D2). */
+    private async requireSchedulable(churchId: string, ids: readonly string[]): Promise<void> {
+        for (const id of ids) {
+            const person = await this.believers.require(churchId, id);
+            if (!isSchedulable(person.status)) {
+                throw new UnprocessableEntityException('Esa persona ya no está activa');
+            }
+        }
+    }
+
+    private async currentIds(meetingId: string, position: number): Promise<string[]> {
+        const slot = await this.slots.findOne({
+            where: { meetingId, position },
+            relations: { people: true },
+        });
+        return slot ? slotBelieverIds(slot) : [];
     }
 
     /**

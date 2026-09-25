@@ -16,6 +16,7 @@ import { Calendar } from '../calendar/calendar.entity';
 import { Congregation } from '../calendar/congregation.entity';
 import { MeetingPattern } from '../calendar/meeting-pattern.entity';
 import { MeetingSlot } from '../calendar/meeting-slot.entity';
+import { MeetingSlotBeliever } from '../calendar/meeting-slot-believer.entity';
 import { Meeting } from '../calendar/meeting.entity';
 import { PatternPhase } from '../calendar/pattern-phase.entity';
 import { ChannelMember } from '../chat/channel-member.entity';
@@ -92,6 +93,7 @@ const entities = [
     PatternPhase,
     Meeting,
     MeetingSlot,
+    MeetingSlotBeliever,
     Prophecy,
     ProphecyFulfillment,
     Dream,

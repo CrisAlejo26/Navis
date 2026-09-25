@@ -21,6 +21,7 @@ export * from './schemas/believer-queries';
 export * from './schemas/believer-tags';
 export * from './schemas/believers';
 export * from './schemas/calendar';
+export * from './slot-people';
 export * from './schemas/calendars';
 export * from './schemas/chat-attachments';
 export * from './schemas/chat-channels';

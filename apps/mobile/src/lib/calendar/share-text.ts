@@ -1,4 +1,4 @@
-import type { CalendarRange } from '@navis/shared';
+import { slotNames, type CalendarRange } from '@navis/shared';
 
 export interface TextOptions {
     /** Cómo se escribe cada día; llega ya localizado. */
@@ -9,6 +9,8 @@ export interface TextOptions {
     showCongregation: boolean;
     /** Qué poner donde no hay nadie. */
     unassigned: string;
+    /** El idioma con el que se juntan los nombres de una fase («Ana y Pedro»). */
+    locale?: string;
 }
 
 /**
@@ -32,7 +34,7 @@ export function rangeAsText(range: CalendarRange, options: TextOptions): string 
                 : '';
 
             const lineas = meeting.slots.map(
-                (slot) => `  ${slot.name} · ${slot.believer?.name ?? options.unassigned}`,
+                (slot) => `  ${slot.name} · ${slotNames(slot, options.locale, options.unassigned)}`,
             );
 
             bloques.push(

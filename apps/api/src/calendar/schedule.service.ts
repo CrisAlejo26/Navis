@@ -19,6 +19,7 @@ import { CongregationsService } from './congregations.service';
 import type { MeetingPattern } from './meeting-pattern.entity';
 import { Meeting } from './meeting.entity';
 import { PatternsService } from './patterns.service';
+import { believerIdsOf, SLOTS_WITH_PEOPLE } from './slot-people';
 
 export interface RangeQuery {
     /** De qué calendario: púlpito, sonido… (D15). */
@@ -54,9 +55,7 @@ export class ScheduleService {
         const active = new Set(congregations.filter((one) => one.isActive).map((one) => one.id));
 
         const meetings = await this.meetingsBetween(churchId, query.calendarId, from, to, only);
-        const names = await this.believers.namesOf(
-            meetings.flatMap((meeting) => (meeting.slots ?? []).map((slot) => slot.believerId)),
-        );
+        const names = await this.believers.namesOf(believerIdsOf(meetings));
 
         const patterns = (await this.patterns.activeFor(churchId, query.calendarId)).filter(
             (pattern) =>
@@ -114,7 +113,7 @@ export class ScheduleService {
                 date: Between(from, to),
                 ...(only ? { congregationId: In([...only]) } : {}),
             },
-            relations: { slots: true },
+            relations: SLOTS_WITH_PEOPLE,
             order: { date: 'ASC', startTime: 'ASC' },
         });
     }

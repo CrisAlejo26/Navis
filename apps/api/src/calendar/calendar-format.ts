@@ -2,6 +2,7 @@ import type { Meeting as MeetingView } from '@navis/shared';
 
 import type { MeetingPattern } from './meeting-pattern.entity';
 import type { Meeting } from './meeting.entity';
+import { slotBelieverIds } from './slot-people';
 
 /**
  * `20:00:00` → `20:00`.
@@ -36,7 +37,7 @@ export function proposedMeeting(pattern: MeetingPattern): MeetingView {
                 name: phase.name,
                 position: phase.position,
                 note: null,
-                believer: null,
+                believers: [],
             })),
     };
 }
@@ -59,9 +60,10 @@ export function meetingView(meeting: Meeting, names: ReadonlyMap<string, string>
                 name: slot.name,
                 position: slot.position,
                 note: slot.note,
-                believer: slot.believerId
-                    ? { id: slot.believerId, name: names.get(slot.believerId) ?? '—' }
-                    : null,
+                believers: slotBelieverIds(slot).map((id) => ({
+                    id,
+                    name: names.get(id) ?? '—',
+                })),
             })),
     };
 }
