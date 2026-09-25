@@ -227,6 +227,39 @@ describe('Calendario (e2e)', () => {
         expect(materializada[0]?.id).not.toBeNull();
     });
 
+    /**
+     * Regresión: una fase añadida al patrón no salía en las reuniones ya
+     * materializadas, porque cada reunión guarda su propia copia de las fases.
+     */
+    it('una fase nueva del patrón llega a la reunión ya materializada sin perder lo asignado', async () => {
+        const patrones = body<MeetingPattern[]>(
+            await request(app.getHttpServer())
+                .get(`/api/v1/calendars/${calendarId}/patterns`)
+                .set('Cookie', cookie)
+                .expect(200),
+        );
+        const actuales = patrones.find((one) => one.id === patternId)?.phases ?? [];
+
+        await request(app.getHttpServer())
+            .patch(`/api/v1/calendars/${calendarId}/patterns/${patternId}`)
+            .set('Cookie', cookie)
+            .send({ phases: [...actuales.map(({ name }) => ({ name })), { name: 'Ofrenda' }] })
+            .expect(200);
+
+        const calendario = await request(app.getHttpServer())
+            .get(`/api/v1/calendars/${calendarId}/schedule?from=${viernes}&to=${viernes}`)
+            .set('Cookie', cookie)
+            .expect(200);
+
+        const reunion = body<CalendarRange>(calendario).days[0]?.meetings.find(
+            (meeting) => meeting.patternId === patternId,
+        );
+        expect(reunion?.id).not.toBeNull();
+        expect(reunion?.slots.at(-1)?.name).toBe('Ofrenda');
+        expect(reunion?.slots.at(-1)?.believer).toBeNull();
+        expect(reunion?.slots[1]?.believer?.name).toBe('Luis Fernando Ruiz');
+    });
+
     it('los candidatos vienen paginados, con quien lleva más tiempo sin subir primero', async () => {
         const pagina = await request(app.getHttpServer())
             .get(

@@ -7,13 +7,16 @@ import { toHm } from './calendar-format';
 import { CongregationsService } from './congregations.service';
 import { MeetingPattern } from './meeting-pattern.entity';
 import { PatternPhase } from './pattern-phase.entity';
+import { PatternSlotsSyncService } from './pattern-slots-sync.service';
 
 /**
  * Los patrones semanales: «los viernes en Elda a las 20:00, con estas fases».
  *
  * Editar un patrón **no reescribe lo ya materializado** (D7): una reunión que
  * alguien tocó es una decisión tomada, y el patrón nuevo se aplica de ahí en
- * adelante a lo que siga siendo propuesta.
+ * adelante a lo que siga siendo propuesta. La excepción son sus **fases**: las
+ * añadidas llegan vacías a las reuniones ya materializadas y lo asignado se
+ * respeta (`PatternSlotsSyncService`).
  */
 @Injectable()
 export class PatternsService {
@@ -21,6 +24,7 @@ export class PatternsService {
         @InjectRepository(MeetingPattern) private readonly patterns: Repository<MeetingPattern>,
         @InjectRepository(PatternPhase) private readonly phases: Repository<PatternPhase>,
         private readonly congregations: CongregationsService,
+        private readonly slotsSync: PatternSlotsSyncService,
     ) {}
 
     async list(churchId: string, calendarId: string): Promise<MeetingPattern[]> {
@@ -83,7 +87,15 @@ export class PatternsService {
         if (input.validTo !== undefined) pattern.validTo = input.validTo;
 
         await this.patterns.save(pattern);
-        if (input.phases) await this.replacePhases(pattern.id, input.phases);
+        if (input.phases) {
+            const before = (pattern.phases ?? []).map((phase) => phase.name);
+            await this.replacePhases(pattern.id, input.phases);
+            await this.slotsSync.apply(
+                pattern.id,
+                before,
+                input.phases.map((phase) => phase.name),
+            );
+        }
 
         return this.toView(await this.require(churchId, id));
     }

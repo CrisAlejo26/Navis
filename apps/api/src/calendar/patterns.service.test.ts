@@ -4,6 +4,7 @@ import { describe, expect, it, vi } from 'vitest';
 import type { CongregationsService } from './congregations.service';
 import type { MeetingPattern } from './meeting-pattern.entity';
 import type { PatternPhase } from './pattern-phase.entity';
+import type { PatternSlotsSyncService } from './pattern-slots-sync.service';
 import { PatternsService } from './patterns.service';
 
 /**
@@ -56,7 +57,11 @@ function build(existing: MeetingPattern[]) {
         require: vi.fn(() => Promise.resolve({ id: 'elda', accent: 'success' })),
     } as unknown as CongregationsService;
 
-    return { service: new PatternsService(patterns, phases, congregations), save };
+    const slotsSync = {
+        apply: vi.fn(() => Promise.resolve()),
+    } as unknown as PatternSlotsSyncService; // doble: solo se usa `apply`
+
+    return { service: new PatternsService(patterns, phases, congregations, slotsSync), save };
 }
 
 describe('los segundos que devuelve Postgres en `startTime`', () => {

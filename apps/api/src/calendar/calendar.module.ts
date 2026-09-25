@@ -19,6 +19,7 @@ import { MeetingSlot } from './meeting-slot.entity';
 import { Meeting } from './meeting.entity';
 import { MeetingsService } from './meetings.service';
 import { PatternPhase } from './pattern-phase.entity';
+import { PatternSlotsSyncService } from './pattern-slots-sync.service';
 import { PatternsController } from './patterns.controller';
 import { PatternsService } from './patterns.service';
 import { PreachersService } from './preachers.service';
@@ -58,6 +59,7 @@ import { WeekSeederService } from './week-seeder.service';
         CalendarsService,
         CongregationsService,
         PatternsService,
+        PatternSlotsSyncService,
         ScheduleService,
         MeetingsService,
         AssignmentsService,
