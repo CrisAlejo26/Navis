@@ -38,11 +38,14 @@ describe('la iglesia local', () => {
 
         expect(church.slug).toBe('iglesia-del-sur');
 
+        // La zona es la del dispositivo, no una fija: en CI el runner está en UTC.
+        const deviceTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
         const stored = await findChurch(church.id);
         expect(stored).toMatchObject({
             name: 'Iglesia del Sur',
             city: 'Elda',
-            timezone: 'Europe/Madrid',
+            timezone: deviceTimezone,
             ownerId,
         });
 
