@@ -121,7 +121,7 @@ decisión definitiva: dejaba a cualquier iglesia fuera de España sin festivos
 regionales y con un campo de texto que había que rellenar sabiendo el código
 ISO 3166-2 de memoria. País, comunidad y ciudad pasan a ser un único selector
 en cascada, y funciona igual para cualquier país. El detalle de la
-implementación está en `docs/selector-geografico-plan.md`; aquí solo lo que
+implementación está en `docs/planes/implementados/selector-geografico-plan.md`; aquí solo lo que
 cambia del contrato de esta RFC:
 
 - El país deja de ser un campo de texto de dos letras: es un buscador sobre la

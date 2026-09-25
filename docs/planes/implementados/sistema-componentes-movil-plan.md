@@ -81,7 +81,7 @@ Antes de crear un componente, `search_code`/`search_graph` sobre
    `refero_get_similar_screens` sobre la mejor amplía sin gastar más búsquedas.
 2. **Filtrar por lo que aplica aquí.** Descartar lo que no encaja con la marca
    o con Regla 9 (genérico, degradados, emoji); anotar en el plan **qué se
-   toma y qué se evita**, como ya hace `docs/navegacion-movil-plan.md`.
+   toma y qué se evita**, como ya hace `docs/planes/implementados/navegacion-movil-plan.md`.
 3. **Definir la matriz de variantes** de ese componente: tamaños, estados
    (normal/hover→pressed/disabled/loading/error), con icono / sin icono, y si
    aplica, día/noche visualmente distintos más allá del token de color.
@@ -322,7 +322,7 @@ sigue siendo pantalla puente. Salida:
   tres selectores para que un formulario con campos de texto y selectores se
   vea de la misma familia.
 - **`Select`**: hoja con la lista completa, patrón de «contenedor dominante»
-  ya investigado en `docs/referencias-app-movil.md` §1.
+  ya investigado en `docs/referencias/referencias-app-movil.md` §1.
 - **`SegmentedControl`**: la misma firma de pastilla deslizante que
   `AnimatedTabBar` (Regla 9 §7: se reutiliza el gesto con `withSpring`, no el
   fichero — allí las opciones son rutas fijas, aquí son genéricas).
@@ -372,7 +372,7 @@ fase).
   (atajos tipo `chip` + fechas de inicio/fin manuales + rango resaltado en la
   cuadrícula + botón «Actualizar»).
 - **Variantes**: `Select` (abre un `bottom sheet` con la lista, patrón ya
-  investigado en `docs/referencias-app-movil.md` §1 como «contenedor
+  investigado en `docs/referencias/referencias-app-movil.md` §1 como «contenedor
   dominante»), `SegmentedControl` (2-4 opciones visibles, como el que ya usa
   una referencia de la fase de navegación), `DatePicker` (hoja inferior con
   cuadrícula del mes, navegación de mes con `IconButton` y atajo «Hoy»),
@@ -500,7 +500,7 @@ referencia de la variante que no se construyó). Salida:
 
 `pnpm check` en verde; `expo-doctor` 20/20.
 
-- **Buscar**: ya investigado en `docs/referencias-app-movil.md` — reutilizar
+- **Buscar**: ya investigado en `docs/referencias/referencias-app-movil.md` — reutilizar
   esas referencias (pill deslizante, bottom sheet escalonado) antes de buscar
   otras nuevas. Si falta algo puntual (p. ej. una cabecera con acción a la
   derecha), una búsqueda dirigida: «top app bar with action button mobile».
@@ -801,7 +801,7 @@ Una fase = un mensaje/sesión: «vamos con la fase 3, botones» dispara los paso
 del punto 4 para ese componente. No se hacen dos fases en paralelo en la misma
 sesión — es lo que pediste al decir «un componente a la vez»— y cada fase deja
 en este documento, debajo de su sección, una línea de **Estado** con la fecha
-y qué se tomó de Refero, igual que hace `docs/navegacion-movil-plan.md` con
+y qué se tomó de Refero, igual que hace `docs/planes/implementados/navegacion-movil-plan.md` con
 sus hallazgos.
 
 Antes de dar una fase por cerrada: `pnpm check`, mirar el componente en el
@@ -813,7 +813,7 @@ por ejemplo).
 
 ## Notas
 
-- Este documento es el equivalente de `docs/navegacion-movil-plan.md` pero
+- Este documento es el equivalente de `docs/planes/implementados/navegacion-movil-plan.md` pero
   para componentes en vez de navegación; sigue su mismo formato para que se
   lean igual.
 - Los ejemplos de Refero citados arriba (Perplexity, ChatGPT, Dock, Copilot,

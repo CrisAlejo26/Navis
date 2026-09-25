@@ -13,7 +13,7 @@ export interface ChartTheme {
 
 /**
  * Los colores de las gráficas (Fase 11 de
- * `docs/sistema-componentes-movil-plan.md`) salen todos de los tokens — nunca
+ * `docs/planes/implementados/sistema-componentes-movil-plan.md`) salen todos de los tokens — nunca
  * de un valor suelto (Regla 3): `react-native-gifted-charts` pinta ejes,
  * reglas y etiquetas con props propios que no aceptan `className`, así que
  * necesitan el hexadecimal, resuelto aquí una sola vez.

@@ -10,7 +10,7 @@ interface CardGroupProps {
 
 /**
  * La tarjeta agrupada de un listado (Fase 9 de
- * `docs/sistema-componentes-movil-plan.md`): un contenedor redondeado con
+ * `docs/planes/implementados/sistema-componentes-movil-plan.md`): un contenedor redondeado con
  * borde que parte en filas con separadores finos — el patrón de LEGO Builder y
  * Comet que enseña Refero. Las filas suelen ser `ListRow`; aquí va el borde y
  * el divisor, así cada fila no repite el suyo.

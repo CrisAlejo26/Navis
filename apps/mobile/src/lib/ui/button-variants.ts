@@ -5,7 +5,7 @@ export type ButtonSize = 'sm' | 'md' | 'lg';
 
 /**
  * Fondo y borde de cada variante — compartido por `Button` e `IconButton`
- * (Fase 3, `docs/sistema-componentes-movil-plan.md`). `outline` y `link` no
+ * (Fase 3, `docs/planes/implementados/sistema-componentes-movil-plan.md`). `outline` y `link` no
  * llevaban tono de fondo hasta ahora.
  */
 export const BUTTON_CONTAINERS: Record<ButtonVariant, string> = {

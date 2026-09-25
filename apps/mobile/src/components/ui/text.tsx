@@ -13,7 +13,7 @@ interface BodyTextProps extends TextProps {
     className?: string;
 }
 
-/** Cuerpo de texto — Fase 1 de `docs/sistema-componentes-movil-plan.md`. */
+/** Cuerpo de texto — Fase 1 de `docs/planes/implementados/sistema-componentes-movil-plan.md`. */
 export function BodyText({
     weight = 'regular',
     className,

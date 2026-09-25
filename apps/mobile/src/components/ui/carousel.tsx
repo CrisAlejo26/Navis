@@ -28,7 +28,7 @@ interface CarouselProps {
 
 /**
  * Carrusel de tarjetas con snap por tarjeta (Fase 12 de
- * `docs/sistema-componentes-movil-plan.md`). Es un `FlatList` horizontal —
+ * `docs/planes/implementados/sistema-componentes-movil-plan.md`). Es un `FlatList` horizontal —
  * nunca un `ScrollView` con `map` (Regla 5 punto 5): virtualiza las tarjetas
  * y da el snap gratis. El indicador de página es `PageDots`, que se compone
  * fuera con `onIndexChange`.

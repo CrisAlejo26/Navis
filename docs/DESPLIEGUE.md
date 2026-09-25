@@ -124,7 +124,7 @@ para cambiarlas sin tocar el YAML.
 
 Cambiar `VITE_*` obliga a reconstruir la imagen de la web: son constantes de
 compilación, no configuración de ejecución. La API, en cambio, sí lee su entorno
-al arrancar (ver [RFC 0007](./rfcs/0007-modo-local-y-servidor.md)).
+al arrancar (ver [RFC 0007](./rfcs/0007-modo-local-y-servidor-implementado.md)).
 
 ### Aprobación manual (opcional)
 

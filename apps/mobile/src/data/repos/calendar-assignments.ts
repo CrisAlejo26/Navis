@@ -12,7 +12,7 @@ import { getDb, newId, nowIso } from '../db';
 /**
  * Asignar es la primitiva (D4) y el CRUD de reuniones — la pareja de
  * `AssignmentsService` + `MeetingsService` de la API, sobre SQLite del
- * teléfono (docs/calendario-movil-plan.md §4.3).
+ * teléfono (docs/planes/implementados/calendario-movil-plan.md §4.3).
  *
  * Todo pasa por la cola de `db.ts` (la trampa de Android) y las escrituras
  * van dentro de `withTransactionAsync`.

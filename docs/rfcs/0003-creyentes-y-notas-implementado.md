@@ -5,9 +5,9 @@
 - **Fecha**: 2026-08-03 · reescrito e implementado el 2026-08-04
 - **Apps afectadas**: **api y web** (escritorio la hereda: es la misma web
   dentro de Tauri). La app móvil queda fuera de esta versión — §7.9
-- **Depende de**: [0008](./0008-iglesias-como-espacios-de-trabajo.md) (iglesias
+- **Depende de**: [0008](./0008-iglesias-como-espacios-de-trabajo-implementado.md) (iglesias
   y permisos) y del **núcleo mínimo de creyentes** que adelantó la
-  [0002](./0002-calendario-de-programaciones.md) §6, que este documento
+  [0002](./0002-calendario-de-programaciones-implementado.md) §6, que este documento
   continúa
 
 ## Problema
@@ -795,7 +795,7 @@ Alta, edición, borrado con confirmación, el catálogo de dones en
 ### Fase 5 — Rematar
 
 Las animaciones de §7.8, los tres anchos, los dos temas, el alemán, e2e de
-Playwright en los dos perfiles, y actualizar `docs/ESTADO.md` y `CLAUDE.md` con
+Playwright en los dos perfiles, y actualizar `docs/historico/ESTADO-2026-08-04.md` y `CLAUDE.md` con
 lo que haya mordido.
 
 ## Pruebas

@@ -23,7 +23,7 @@ interface TitleProps extends TextProps {
 
 /**
  * Título de pantalla o de sección (Fase 1 de
- * `docs/sistema-componentes-movil-plan.md`). `accessibilityRole="header"`
+ * `docs/planes/implementados/sistema-componentes-movil-plan.md`). `accessibilityRole="header"`
  * deja que un lector de pantalla salte entre títulos, como en la web con las
  * etiquetas `h1`-`h3`. `style` se acepta y se compone detrás del de la
  * escala (RN admite un array): así un caso como la opacidad del eslogan de

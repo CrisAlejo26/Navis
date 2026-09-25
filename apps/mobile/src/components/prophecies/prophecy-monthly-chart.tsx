@@ -32,7 +32,7 @@ const Y_AXIS_WIDTH = 30;
 const EDGE_SPACING = 6;
 
 /**
- * Cumplimiento mes a mes, dos series (docs/profecias-movil-plan.md §4.6): sin
+ * Cumplimiento mes a mes, dos series (docs/planes/implementados/profecias-movil-plan.md §4.6): sin
  * primitiva de dos series en `components/ui` todavía —es el primer caso—, así
  * que se construye aquí, sobre el soporte de barras agrupadas de
  * `react-native-gifted-charts`: dos barras juntas por mes (recibidas,

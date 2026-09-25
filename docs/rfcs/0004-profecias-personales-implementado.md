@@ -724,7 +724,7 @@ la tasa y el gráfico mensual. Carga diferida del módulo de gráficos.
 ### Fase 6 — Rematar
 
 Las animaciones de §7.8, los tres anchos, los dos temas, el alemán, e2e de
-Playwright en los dos perfiles, y actualizar `docs/ESTADO.md` y `CLAUDE.md` con
+Playwright en los dos perfiles, y actualizar `docs/historico/ESTADO-2026-08-04.md` y `CLAUDE.md` con
 lo que haya mordido.
 
 ## Pruebas

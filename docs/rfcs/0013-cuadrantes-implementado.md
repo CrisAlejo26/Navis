@@ -832,7 +832,7 @@ iglesia — mismo patrón que `GiftsService.ensureFor()` y
    apagados cuando falta el tipo de columna que necesitan (D12).
 4. **La marea, la exportación y rematar.** El elemento firma (D17), el
    `/export` del RFC 0009, animaciones, los tres anchos, los dos temas, el
-   alemán, e2e de Playwright, y actualizar `docs/ESTADO.md` y `CLAUDE.md`.
+   alemán, e2e de Playwright, y actualizar `docs/historico/ESTADO-2026-08-04.md` y `CLAUDE.md`.
 
 ## Pruebas
 

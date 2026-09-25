@@ -21,7 +21,7 @@ const ROW = 'min-h-11 gap-3 px-3 py-2 flex-row items-center';
 
 /**
  * La fila-tarjeta de un listado (Fase 9 de
- * `docs/sistema-componentes-movil-plan.md`): icono/avatar + título + subtítulo
+ * `docs/planes/implementados/sistema-componentes-movil-plan.md`): icono/avatar + título + subtítulo
  * + `trailing` (valor o `Badge`) + chevron cuando se puede pulsar. El patrón
  * de tarjeta agrupada con separadores finos lo aporta `CardGroup`, que la
  * envuelve; la fila sola no repite bordes. Alto mínimo de 44 px en toda la

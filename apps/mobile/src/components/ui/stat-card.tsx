@@ -43,7 +43,7 @@ interface StatCardProps {
 
 /**
  * Tarjeta de estadística compacta (Fase 10 de
- * `docs/sistema-componentes-movil-plan.md`): número grande + etiqueta + icono
+ * `docs/planes/implementados/sistema-componentes-movil-plan.md`): número grande + etiqueta + icono
  * opcional + indicador de cambio con flecha, texto y color — el patrón de
  * Dock/Copilot que enseña Refero (número grande, etiqueta pequeña, variación
  * debajo).

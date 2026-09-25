@@ -229,7 +229,7 @@ export const LOCAL_TABLES: LocalTable[] = [
     // La primera tabla local sin `church_id`, y a propósito (RFC 0004 D1): una
     // profecía es de quien la recibe, no de una iglesia. La única barrera de
     // acceso es el filtro por `owner_id` en el repositorio — igual que en la
-    // API (docs/profecias-movil-plan.md).
+    // API (docs/planes/implementados/profecias-movil-plan.md).
     table('prophecies', 'Prophecy', [
         { name: 'owner_id', type: 'text' },
         { name: 'title', type: 'text' },

@@ -16,7 +16,7 @@ jest.mock('expo-sqlite', () => ({
     openDatabaseAsync: jest.fn(),
 }));
 
-describe('las profecías en local (docs/profecias-movil-plan.md)', () => {
+describe('las profecías en local (docs/planes/implementados/profecias-movil-plan.md)', () => {
     let db: Awaited<ReturnType<typeof setupLocalDb>>;
     const ownerId = 'usuario-a';
     const otroOwnerId = 'usuario-b';

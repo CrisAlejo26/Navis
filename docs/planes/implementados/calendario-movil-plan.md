@@ -1,12 +1,12 @@
 # Calendario de programaciones en la app móvil — plan de implementación
 
-Amplía [RFC 0002](./rfcs/0002-calendario-de-programaciones-implementado.md)
+Amplía [RFC 0002](../../rfcs/0002-calendario-de-programaciones-implementado.md)
 (§8.7 lo dejó fuera de la app nativa «hasta que exista su propio documento»:
-este es ese documento) y [RFC 0011](./rfcs/0011-festivos-en-el-calendario-implementado.md).
+este es ese documento) y [RFC 0011](../../rfcs/0011-festivos-en-el-calendario-implementado.md).
 
 - **Estado**: **Implementado** (pasos 1 a 9; la captura del PNG va por
   `toDataURL` de react-native-svg con `expo-sharing`; el texto es el
-  respaldo). Ver «Pasos» y el historial en `docs/ESTADO.md`.
+  respaldo). Ver «Pasos» y el historial en `docs/historico/ESTADO-2026-08-04.md`.
 - **Fecha**: 2026-09-20
 - **Apps afectadas**: **mobile** (y `packages/shared`: esquema local). La API
   no se toca: ya está implementada y probada. Web no cambia.

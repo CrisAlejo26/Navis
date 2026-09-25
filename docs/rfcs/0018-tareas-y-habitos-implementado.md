@@ -6,9 +6,9 @@
   dentro de Tauri). La app móvil **queda fuera de esta versión**, con su
   pantalla puente hasta que exista su propio documento — mismo criterio que la
   RFC 0002 aplicó al calendario (§8.7 de esa RFC).
-- **Depende de**: [0008](./0008-iglesias-como-espacios-de-trabajo.md) (iglesias
+- **Depende de**: [0008](./0008-iglesias-como-espacios-de-trabajo-implementado.md) (iglesias
   como espacio de trabajo: de ahí sale el `church_id` y el sistema de permisos
-  que usa esta propuesta) y de [0001](./0001-panel-de-metricas.md) (panel de
+  que usa esta propuesta) y de [0001](./0001-panel-de-metricas-implementado.md) (panel de
   inicio, que esta RFC amplía con una tarjeta nueva).
 
 ## Problema

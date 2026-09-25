@@ -34,7 +34,7 @@ interface BadgeProps {
 
 /**
  * Pastilla de estado que no se toca — la `Badge` de la web portada a móvil
- * (Fase 9 de `docs/sistema-componentes-movil-plan.md`, adelantada de la Fase
+ * (Fase 9 de `docs/planes/implementados/sistema-componentes-movil-plan.md`, adelantada de la Fase
  * 13 §18.1). A diferencia de la web (fondo sólido), aquí el tinte es suave
  * (`hexAlpha`, el mismo lenguaje que `Icon`) para no saturar: el color nunca
  * va solo, siempre con el texto que lo explica (Regla 3 §7).

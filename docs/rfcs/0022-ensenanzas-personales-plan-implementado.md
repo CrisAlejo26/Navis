@@ -5,7 +5,7 @@
 - **Tipo**: sección nueva, self-contained. No reabre ningún RFC existente, pero
   reutiliza tres patrones ya resueltos: el modelo «personal, sin `church_id`»
   de la [RFC 0004](./0004-profecias-personales-implementado.md) (profecías), la
-  columna JSON en `text` de la [RFC 0021](./0021-tablas-personalizadas.md)
+  columna JSON en `text` de la [RFC 0021](./0021-tablas-personalizadas-implementado.md)
   (tablas personalizadas, D13), y el exportar-y-compartir de una sola entrada
   (Markdown + imagen) de la
   [RFC 0017](./0017-notas-de-iglesia-implementado.md) (el cuaderno, D12/D13).

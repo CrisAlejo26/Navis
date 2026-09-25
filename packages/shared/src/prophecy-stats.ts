@@ -4,7 +4,7 @@ import type { PropheciesStats, ProphecyMonth } from './schemas/prophecy-queries'
 
 /**
  * Las cuentas de la portada de profecías (RFC 0004 §6.2), compartidas entre la
- * API y el repositorio local del móvil (docs/profecias-movil-plan.md §4.3):
+ * API y el repositorio local del móvil (docs/planes/implementados/profecias-movil-plan.md §4.3):
  * no toca TypeORM ni SQLite, así que es la misma función en los dos sitios.
  */
 

@@ -26,7 +26,7 @@ A ninguno propio: usa las mismas variables que la web (`VITE_API_URL`,
 `VITE_AUTH_URL`) **en el momento de construir**. Para una instalación local basta
 con dejar la API en `localhost` con `DB_DRIVER=sqlite`; para trabajo en equipo,
 apuntar a un servidor con `DB_DRIVER=postgres`. Ver
-[`docs/rfcs/0007-modo-local-y-servidor.md`](../../docs/rfcs/0007-modo-local-y-servidor.md).
+[`docs/rfcs/0007-modo-local-y-servidor-implementado.md`](../../docs/rfcs/0007-modo-local-y-servidor-implementado.md).
 
 ## Estructura
 

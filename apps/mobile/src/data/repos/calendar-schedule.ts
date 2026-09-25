@@ -5,7 +5,7 @@ import { byTimeThenCongregation, toHm, slotView } from './calendar-format';
 
 /**
  * La programación de un tramo en **local** — la pareja de `ScheduleService`
- * de la API, sobre SQLite del teléfono (docs/calendario-movil-plan.md §4.3).
+ * de la API, sobre SQLite del teléfono (docs/planes/implementados/calendario-movil-plan.md §4.3).
  *
  * El mes se pinta expandiendo los patrones al vuelo; en la base solo hay fila
  * cuando alguien asigna (D3). Una propuesta se distingue por su `id` nulo, y

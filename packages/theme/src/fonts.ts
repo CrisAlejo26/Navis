@@ -1,6 +1,6 @@
 /**
  * La pareja tipográfica de Navis y la escala que usan los componentes de
- * texto (Fase 1 del plan `docs/sistema-componentes-movil-plan.md`).
+ * texto (Fase 1 del plan `docs/planes/implementados/sistema-componentes-movil-plan.md`).
  *
  * **Cambiar la fuente de toda la app es cambiar los valores de
  * `FONT_FAMILIES` — nada más.** Ningún componente escribe un nombre de

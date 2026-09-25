@@ -1,6 +1,6 @@
 # Plan — Rediseño de filtros y gestión de columnas en Tablas
 
-- **Estado**: Propuesto
+- **Estado**: Implementado (2026-09-24, commit «rediseña los filtros de las tablas»)
 - **Autor**: Cristian Alejandro Arroyave (con Claude)
 - **Fecha**: 2026-09-24
 - **Origen**: el usuario reporta que, al crear una tabla con muchas columnas,

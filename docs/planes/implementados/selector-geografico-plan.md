@@ -1,5 +1,7 @@
 # Selector geográfico en cascada: país, comunidad, ciudad, zona horaria
 
+> **Estado: implementado.** Único pendiente: correr el e2e de la API contra Postgres (ver criterios al final).
+
 - **Tipo**: ampliación de interfaz + un endpoint nuevo. Amplía RFC 0011 (D7,
   D9 revisadas — ver esa RFC) y toca la ficha de iglesia de RFC 0008.
 - **Apps afectadas**: api y web (escritorio la hereda). Móvil no tiene ficha de

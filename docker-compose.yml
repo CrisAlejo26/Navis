@@ -4,7 +4,7 @@
 #   pnpm docker:dev   todo el stack en contenedores
 #
 # Recuerda: el modo por defecto del proyecto es SQLite y no necesita nada de
-# esto. Postgres es el modo compartido (ver docs/rfcs/0007-modo-local-y-servidor.md).
+# esto. Postgres es el modo compartido (ver docs/rfcs/0007-modo-local-y-servidor-implementado.md).
 
 name: navis
 

@@ -198,7 +198,7 @@ const migrations: Record<number, Migration> = {
             }
         }
     },
-    // El calendario de programaciones en móvil (docs/calendario-movil-plan.md,
+    // El calendario de programaciones en móvil (docs/planes/implementados/calendario-movil-plan.md,
     // paso 1): cuatro tablas nuevas —calendars, meeting_patterns,
     // pattern_phases, meeting_slots— y su siembra: los cuatro calendarios de
     // serie y la semana por defecto de cada pareja calendario–sede. En una base
@@ -276,7 +276,7 @@ const migrations: Record<number, Migration> = {
             );
         }
     },
-    // Profecías en móvil (docs/profecias-movil-plan.md §4.2): las dos tablas
+    // Profecías en móvil (docs/planes/implementados/profecias-movil-plan.md §4.2): las dos tablas
     // nuevas, las primeras sin `church_id` (D1). En una base **nueva** la
     // migración 1 ya las crea; aquí solo se crea lo que falte.
     6: async (db) => {

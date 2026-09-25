@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react';
  * `expo-sqlite` reventaban con «Call to function 'NativeDatabase.prepareAsync'
  * has been rejected» (NullPointerException) — justo lo que pasaba al buscar
  * en Creyentes. Ya estaba previsto («buscador con retardo») en
- * `docs/creyentes-movil-plan.md`, pero no llegó a escribirse.
+ * `docs/planes/implementados/creyentes-movil-plan.md`, pero no llegó a escribirse.
  */
 export function useDebouncedValue<T>(value: T, delayMs = 300): T {
     const [debounced, setDebounced] = useState(value);

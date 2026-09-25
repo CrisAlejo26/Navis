@@ -7,7 +7,7 @@
 - **Depende de**: 0003 (creyentes), 0008 (iglesias como espacio de trabajo)
 
 > El modelo de datos, la API y las decisiones de esta página son las que fijó
-> [RFC 0016](./0016-chat-comunicaciones-plan.md) al implementarla: `kind`
+> [RFC 0016](./0016-chat-comunicaciones-plan-implementado.md) al implementarla: `kind`
 > renombrado a `individual`/`grupo`/`aviso`, `churchId` en `Channel`, los
 > cursores `archivedAt`/`clearedAt` por miembro y los adjuntos. Este documento
 > queda actualizado con ese resultado; el detalle de por qué se decidió así

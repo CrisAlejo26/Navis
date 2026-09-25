@@ -5,11 +5,11 @@
 - **Fecha**: 2026-08-10
 - **Apps afectadas**: **api y web** (escritorio la hereda: es la misma web
   dentro de Tauri). La app móvil queda fuera de esta versión — §7.10
-- **Depende de**: [0008](./0008-iglesias-como-espacios-de-trabajo.md) (iglesias
+- **Depende de**: [0008](./0008-iglesias-como-espacios-de-trabajo-implementado.md) (iglesias
   y permisos, para el alcance por `church_id`), y reutiliza infraestructura de
-  la [0003](./0003-creyentes-y-notas.md) (audios), la
-  [0004](./0004-profecias-personales.md) (recharts envuelto) y la
-  [0009](./0009-exportar-listados.md) (ZIP sin librerías, la lámina
+  la [0003](./0003-creyentes-y-notas-implementado.md) (audios), la
+  [0004](./0004-profecias-personales-implementado.md) (recharts envuelto) y la
+  [0009](./0009-exportar-listados-implementado.md) (ZIP sin librerías, la lámina
   rasterizada)
 
 ## Problema
@@ -770,7 +770,7 @@ Markdown (una entrada y en lote, con el ZIP reutilizado) e imagen
 ### Fase 6 — Rematar
 
 Los tres anchos, los dos temas, el alemán, e2e de Playwright, y actualizar
-`docs/ESTADO.md` y `CLAUDE.md` con lo que haya mordido (el prefijo de
+`docs/historico/ESTADO-2026-08-04.md` y `CLAUDE.md` con lo que haya mordido (el prefijo de
 `/journal/audios/:id`, seguro que sí).
 
 ## Pruebas

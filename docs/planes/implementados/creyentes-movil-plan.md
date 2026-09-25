@@ -1,5 +1,7 @@
 # Plan: Creyentes en móvil
 
+> **Estado: implementado** (listado, ficha, notas y tarjetas sobre la base local del móvil).
+
 Adaptación de la sección Creyentes (RFC 0003, implementada en API y web) a
 `apps/mobile`. La mecánica ya existe y se comparte: tipos de `@navis/shared`,
 hooks de `@navis/api-client` (`useBelievers`, `useBelieversSummary`,

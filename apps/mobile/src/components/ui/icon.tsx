@@ -37,7 +37,7 @@ interface IconProps {
 
 /**
  * El icono envuelto: tamaño, tono y contenedor opcional — Fase 2 de
- * `docs/sistema-componentes-movil-plan.md`. Los iconos de
+ * `docs/planes/implementados/sistema-componentes-movil-plan.md`. Los iconos de
  * `@expo/vector-icons` no admiten `className` en su prop `color` (Regla 3
  * §5), así que el tono se resuelve aquí una sola vez a partir del tema, en
  * vez de que cada pantalla repita su propio `hexAlpha` (como hacía

@@ -105,7 +105,7 @@ repositorio (`Settings → Variables`):
 Si no las defines, apuntan a `localhost:3000`, que es lo correcto para que
 alguien pruebe la app contra su propia API local, pero **no** para publicar
 binarios que la gente vaya a usar contra tu servidor. Ver
-[RFC 0007](./rfcs/0007-modo-local-y-servidor.md).
+[RFC 0007](./rfcs/0007-modo-local-y-servidor-implementado.md).
 
 ## Firma de escritorio
 

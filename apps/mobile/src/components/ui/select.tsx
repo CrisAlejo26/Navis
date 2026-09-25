@@ -23,7 +23,7 @@ interface SelectProps<T extends string> {
 
 /**
  * Selector con hoja inferior — Fase 5. El patrón de «contenedor dominante»
- * ya investigado en `docs/referencias-app-movil.md` §1: la lista completa
+ * ya investigado en `docs/referencias/referencias-app-movil.md` §1: la lista completa
  * vive en la hoja, no en un `<select>` nativo que aquí no existe.
  */
 export function Select<T extends string>({

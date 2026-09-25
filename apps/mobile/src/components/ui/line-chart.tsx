@@ -23,7 +23,7 @@ interface LineChartProps {
 }
 
 /**
- * Gráfica de línea (Fase 11 de `docs/sistema-componentes-movil-plan.md`),
+ * Gráfica de línea (Fase 11 de `docs/planes/implementados/sistema-componentes-movil-plan.md`),
  * envuelta sobre `react-native-gifted-charts` (la librería ya estaba en
  * `apps/mobile`): la línea en `--primary`, ejes y reglas en `--border`,
  * etiquetas en `--muted-foreground` — resueltos desde el tema, como el resto

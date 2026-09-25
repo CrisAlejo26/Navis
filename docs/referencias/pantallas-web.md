@@ -202,7 +202,7 @@ Aparecen en más de una pantalla y no son de ninguna sección en concreto:
 ## Qué falta en móvil, a la fecha de este documento
 
 Todo lo de arriba, salvo Panel (RFC 0001, implementado, ver
-`docs/navegacion-movil-plan.md`) y la navegación misma. Las 5 pestañas +
+`docs/planes/implementados/navegacion-movil-plan.md`) y la navegación misma. Las 5 pestañas +
 menú «Más» ya dan acceso a las 13 entradas, pero **cada una sigue siendo una
 pantalla puente** (`PlaceholderScreen`) sin ninguna de las sub-pantallas ni
 modales listados aquí — esas se implementan cuando le toque el turno a cada

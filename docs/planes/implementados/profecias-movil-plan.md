@@ -1,5 +1,6 @@
 # Profecías en la app móvil — plan de implementación
 
+- **Estado**: Implementado (profecías en modo local, con cumplimiento y estadísticas)
 - **Fecha**: 2026-09-22
 - **Depende de**: RFC 0004 (profecías, implementado en api/web) y RFC 0024
   (login completo en móvil, Fase 1 implementada — base local + repositorios).

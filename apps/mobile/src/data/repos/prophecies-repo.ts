@@ -23,7 +23,7 @@ import {
 } from './prophecies-sql';
 
 /**
- * Las profecías **en local** (docs/profecias-movil-plan.md §4.3): el mismo
+ * Las profecías **en local** (docs/planes/implementados/profecias-movil-plan.md §4.3): el mismo
  * contrato que `PropheciesService`/`PropheciesPageService` de la API, resuelto
  * con SQL directo sobre SQLite del teléfono.
  *

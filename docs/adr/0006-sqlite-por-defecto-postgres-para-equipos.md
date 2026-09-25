@@ -2,7 +2,7 @@
 
 - **Estado**: Aceptada
 - **Fecha**: 2026-08-03
-- **Detalle**: [RFC 0007](../rfcs/0007-modo-local-y-servidor.md)
+- **Detalle**: [RFC 0007](../rfcs/0007-modo-local-y-servidor-implementado.md)
 
 ## Contexto
 

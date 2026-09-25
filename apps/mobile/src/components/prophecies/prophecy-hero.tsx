@@ -10,7 +10,7 @@ interface ProphecyHeroProps {
 }
 
 /**
- * La cabecera de la portada (docs/profecias-movil-plan.md §3.2): el anillo de
+ * La cabecera de la portada (docs/planes/implementados/profecias-movil-plan.md §3.2): el anillo de
  * tasa de cumplimiento como firma —se anima de 0 a su valor solo al montar,
  * comportamiento ya de `ProgressRing`— y la frase con los tres totales
  * (`prophecies.lead`), reutilizada tal cual de las claves ya traducidas.

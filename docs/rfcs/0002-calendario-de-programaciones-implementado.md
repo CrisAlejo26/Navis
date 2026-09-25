@@ -5,9 +5,9 @@
 - **Fecha**: 2026-08-03 · reescrito 2026-08-04
 - **Apps afectadas**: **api y web** (escritorio la hereda: es la misma web
   dentro de Tauri). La app móvil queda fuera de esta versión — §8.7
-- **Depende de**: [0008](./0008-iglesias-como-espacios-de-trabajo.md) (iglesias
+- **Depende de**: [0008](./0008-iglesias-como-espacios-de-trabajo-implementado.md) (iglesias
   y permisos, ya implementado en web) y del **núcleo mínimo** de
-  [0003](./0003-creyentes-y-notas.md) (§6), que este documento adelanta.
+  [0003](./0003-creyentes-y-notas-implementado.md) (§6), que este documento adelanta.
 
 ## Problema
 

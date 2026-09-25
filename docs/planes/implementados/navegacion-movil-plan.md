@@ -2,7 +2,7 @@
 
 Rediseño de la navegación de `apps/mobile` con el espejo de la sidebar web, en
 claro y oscuro y en los seis idiomas, con todas sus páginas como puente
-(pendientes de implementar). Sigue `docs/referencias-app-movil.md`.
+(pendientes de implementar). Sigue `docs/referencias/referencias-app-movil.md`.
 
 Estado: **Implementado** (2026-08-30). Se ejecutó `pnpm check` en verde y
 `expo-doctor` 20/20. Ver «Notas» al final.
@@ -38,7 +38,7 @@ Estado: **Implementado** (2026-08-30). Se ejecutó `pnpm check` en verde y
 
 ## 2. Hallazgos de la fase 2 (referencias)
 
-De `docs/referencias-app-movil.md`, lo que se toma y lo que se evita:
+De `docs/referencias/referencias-app-movil.md`, lo que se toma y lo que se evita:
 
 | Referencia                                                  | Qué se toma                                                                                     | Qué se evita                                                                         |
 | ----------------------------------------------------------- | ----------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
@@ -277,7 +277,7 @@ actividad + tab bar de tres), Wispr Flow (tarjeta hero con la cifra grande +
 tab bar flotante en pill — valida el `AnimatedTabBar` ya implementado, mismo
 patrón), Poppy (cabecera de saludo + chips + rejilla de accesos), TIDE
 (tarjeta de estadística + lista corta). Screens completas en
-`docs/referencias-app-movil.md` §2-3 quedan vigentes; esta fase no las repite.
+`docs/referencias/referencias-app-movil.md` §2-3 quedan vigentes; esta fase no las repite.
 
 **Decisión de diseño — sin rejilla de accesos aparte**: cada tarjeta del panel
 ya navega a su sección al tocarla (creyentes, calendario, tareas, bitácora),

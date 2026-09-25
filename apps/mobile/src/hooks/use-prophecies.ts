@@ -26,7 +26,7 @@ import {
 import { useLocalSession } from '@/stores/local-session';
 
 /**
- * Los hooks de profecías **en local** (docs/profecias-movil-plan.md §4.4): la
+ * Los hooks de profecías **en local** (docs/planes/implementados/profecias-movil-plan.md §4.4): la
  * pantalla no sabe que los datos vienen de SQLite. Todo cuelga de
  * `['prophecies', ownerId]`, para invalidar lista, cuentas y ficha juntas.
  */

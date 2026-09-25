@@ -4,7 +4,7 @@ import type { ProphecyWindow } from './schemas/prophecy-queries';
 /**
  * El primer día de la ventana de tiempo del filtro de profecías (RFC 0004
  * D12), o `null` si es «todo». Compartida entre la API y el repositorio local
- * del móvil (docs/profecias-movil-plan.md §4.3): con dos usos reales ya no
+ * del móvil (docs/planes/implementados/profecias-movil-plan.md §4.3): con dos usos reales ya no
  * merece la pena duplicarla.
  */
 export function windowStart(window: ProphecyWindow, today: string): string | null {

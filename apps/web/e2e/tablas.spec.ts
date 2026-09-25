@@ -4,7 +4,7 @@ import { believer, montarApi, type StubTable } from './servidor';
 
 /**
  * Los filtros de las tablas personalizadas (mejora del RFC 0021, plan
- * `docs/filtros-tablas-plan.md`): popover por columna, chips activos, menú
+ * `docs/planes/implementados/filtros-tablas-plan.md`): popover por columna, chips activos, menú
  * aditivo, filtros en la URL y guardarlos como vista.
  *
  * Sin service worker: con él, tras una recarga los `page.route` dejan de

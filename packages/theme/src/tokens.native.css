@@ -13,7 +13,7 @@
 @import './tokens.css';
 
 /*
- * Tipografía (Fase 0 de docs/sistema-componentes-movil-plan.md): los nombres
+ * Tipografía (Fase 0 de docs/planes/implementados/sistema-componentes-movil-plan.md): los nombres
  * exactos que registra `useFonts` en `apps/mobile/app/_layout.tsx`, así que
  * tienen que coincidir letra a letra con lo que exporta cada paquete
  * `@expo-google-fonts/*`. La pareja está documentada en

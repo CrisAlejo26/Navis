@@ -7,7 +7,7 @@ escritorio, en seis idiomas y con tema claro, oscuro o el del sistema.
 **Funciona sin servidor.** Por defecto guarda todo en un fichero local (SQLite):
 se instala y se usa. Cuando una iglesia necesita que varias personas compartan
 los mismos datos, se cambia **una variable** y todas las apps apuntan al mismo
-Postgres. Ver [RFC 0007](./docs/rfcs/0007-modo-local-y-servidor.md).
+Postgres. Ver [RFC 0007](./docs/rfcs/0007-modo-local-y-servidor-implementado.md).
 
 > Estado: **infraestructura completa, funcionalidad por implementar**. Las
 > pantallas de creyentes, calendario, profecías, sueños y comunicaciones son
@@ -69,7 +69,7 @@ puede añadir a la pantalla de inicio.
 - [`docs/`](./docs) — índice de decisiones (ADR) y propuestas de features (RFC)
 - [`docs/RELEASES.md`](./docs/RELEASES.md) — cómo se publica una versión
 - [`docs/DESPLIEGUE.md`](./docs/DESPLIEGUE.md) — cómo se despliega a producción
-- [`docs/ESTADO.md`](./docs/ESTADO.md) — en qué punto está el proyecto
+- [`docs/historico/ESTADO-2026-08-04.md`](./docs/historico/ESTADO-2026-08-04.md) — instantánea archivada (2026-08-04); el estado vigente está en el [índice de docs](./docs/README.md)
 
 Antes de tocar código conviene leer [`CONTRIBUTING.md`](./CONTRIBUTING.md).
 

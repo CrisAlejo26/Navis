@@ -3,7 +3,7 @@ import type { ProphecyState } from '@navis/shared';
 import type { IoniconName } from '@/lib/nav-mobile';
 
 /**
- * Los papeles de profecías, traducidos a Ionicons (docs/profecias-movil-plan.md
+ * Los papeles de profecías, traducidos a Ionicons (docs/planes/implementados/profecias-movil-plan.md
  * §3.3): «Anchor» y «Waves» de la web no existen en este juego de iconos, así
  * que «cumplida» pasa a una bandera de llegada y «en camino» a una señal de
  * sendero. Comprobados a simple vista: ninguno se lee como cruz (Regla 7 §6).
