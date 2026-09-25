@@ -22,6 +22,7 @@ const COLUMNS: CustomTableColumn[] = [
         ],
         config: null,
         isActive: true,
+        believerField: null,
     },
     {
         id: 'c2',
@@ -34,6 +35,7 @@ const COLUMNS: CustomTableColumn[] = [
         options: null,
         config: null,
         isActive: true,
+        believerField: null,
     },
 ];
 

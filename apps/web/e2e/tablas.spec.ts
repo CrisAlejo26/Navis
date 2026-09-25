@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 
-import { montarApi, type StubTable } from './servidor';
+import { believer, montarApi, type StubTable } from './servidor';
 
 /**
  * Los filtros de las tablas personalizadas (mejora del RFC 0021, plan
@@ -202,5 +202,113 @@ test.describe('En móvil', () => {
             () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
         );
         expect(overflow).toBeLessThanOrEqual(0);
+    });
+});
+
+/*
+ * La tabla enlazada a creyentes (RFC 0025): la ficha ya lleva los valores
+ * resueltos, el nombre vinculado enlaza a su ficha, el botón de añadir abre
+ * el selector — que hojea en veinte con «Ver más» y marca a quien ya está
+ * dentro (D9).
+ */
+const ENLAZADA: StubTable = {
+    id: '55555555-5555-4555-8555-555555555555',
+    name: 'Retiro de jóvenes',
+    slug: 'retiro-de-jovenes',
+    source: 'believers',
+    columns: [
+        { id: 'col-v1', key: 'quien', label: 'Quién', type: 'text', believerField: 'fullName' },
+        { id: 'col-v2', key: 'confirmo', label: 'Confirmó', type: 'checkbox' },
+    ],
+    rows: [
+        {
+            id: 'row-v1',
+            data: { quien: 'Juan Carlos Ruiz', confirmo: true },
+            believer: {
+                id: '11111111-2222-4222-8222-222222222201',
+                name: 'Juan Carlos Ruiz',
+                photoKey: null,
+            },
+        },
+        {
+            id: 'row-v2',
+            data: { quien: 'Ana Molina', confirmo: true },
+            believer: {
+                id: '11111111-2222-4222-8222-222222222202',
+                name: 'Ana Molina',
+                photoKey: null,
+            },
+        },
+    ],
+};
+
+test.describe('La tabla enlazada a creyentes', () => {
+    test.use({ viewport: { width: 1280, height: 800 } });
+
+    test('el botón de añadir abre el selector y «Ver más» aparece con más de una página', async ({
+        page,
+    }) => {
+        await montarApi(page, {
+            believers: Array.from({ length: 25 }, (_, index) => believer(index, { phone: null })),
+            tables: [ENLAZADA],
+            believerIds: [],
+        });
+        await page.addInitScript(() => {
+            globalThis.localStorage.setItem('navis.locale', 'es');
+        });
+        await page.goto(`/tables/${ENLAZADA.slug}`);
+        await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+
+        await page.getByRole('button', { name: 'Añadir creyentes' }).click();
+
+        const dialogo = page.getByRole('dialog', { name: 'Añadir creyentes' });
+        await expect(dialogo).toBeVisible();
+        await expect(dialogo.getByText('Hermano 19')).toBeVisible();
+
+        // Veinte en la primera página, y «Ver más» trae la siguiente (D8).
+        await dialogo.getByRole('button', { name: 'Ver más' }).click();
+        await expect(dialogo.getByRole('checkbox', { name: 'Hermano 24 De prueba' })).toBeVisible();
+
+        await dialogo.getByRole('checkbox', { name: 'Hermano 0 De prueba' }).click();
+        await dialogo.getByRole('button', { name: 'Añadir 1 a la tabla' }).click();
+
+        await expect(page.getByText('1 añadidos a la tabla')).toBeVisible();
+        await expect(page.getByRole('dialog', { name: 'Añadir creyentes' })).toBeHidden();
+    });
+
+    test('quien ya está en la tabla sale marcado y deshabilitado (D9)', async ({ page }) => {
+        await montarApi(page, {
+            believers: Array.from({ length: 3 }, (_, index) => believer(index)),
+            tables: [ENLAZADA],
+            // El hermano 0 ya está dentro: marcado, no escondido.
+            believerIds: [believer(0).id],
+        });
+        await page.addInitScript(() => {
+            globalThis.localStorage.setItem('navis.locale', 'es');
+        });
+        await page.goto(`/tables/${ENLAZADA.slug}`);
+        await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+
+        await page.getByRole('button', { name: 'Añadir creyentes' }).click();
+
+        const dialogo = page.getByRole('dialog', { name: 'Añadir creyentes' });
+        await expect(dialogo).toBeVisible();
+        await expect(dialogo.getByText(/Ya está en la tabla/)).toBeVisible();
+    });
+
+    test('la celda vinculada enlaza a la ficha del creyente (D14)', async ({ page }) => {
+        await montarApi(page, { believers: [], tables: [ENLAZADA] });
+        await page.addInitScript(() => {
+            globalThis.localStorage.setItem('navis.locale', 'es');
+        });
+        await page.goto(`/tables/${ENLAZADA.slug}`);
+        await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+
+        await expect(fila(page, 'Juan Carlos Ruiz')).toBeVisible();
+        await expect(fila(page, 'Ana Molina')).toBeVisible();
+
+        await fila(page, 'Juan Carlos Ruiz').click();
+
+        await expect(page).toHaveURL(/believers\/11111111-2222-4222-8222-222222222201/);
     });
 });

@@ -25,6 +25,7 @@ function base(key: string, type: CustomTableColumn['type']): CustomTableColumn {
         options: null,
         config: null,
         isActive: true,
+        believerField: null,
     };
 }
 

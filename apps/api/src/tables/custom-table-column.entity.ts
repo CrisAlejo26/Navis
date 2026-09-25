@@ -75,6 +75,12 @@ export class CustomTableColumn {
     @Column({ name: 'is_active', type: 'boolean', default: true })
     isActive: boolean;
 
+    @ApiPropertyOptional({
+        description: 'El campo del creyente con el que se rellena, o nulo = a mano (RFC 0025 D2)',
+    })
+    @Column({ name: 'believer_field', type: 'text', nullable: true })
+    believerField: string | null;
+
     @CreateDateColumn({ name: 'created_at', type: TIMESTAMP })
     createdAt: Date;
 

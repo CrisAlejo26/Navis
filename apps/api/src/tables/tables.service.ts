@@ -72,6 +72,10 @@ export class TablesService {
         if (input.accent !== undefined) table.accent = input.accent;
         if (input.isActive !== undefined) table.isActive = input.isActive;
         if (input.position !== undefined) table.position = input.position;
+        // Enlazar o desvincular no toca filas ni columnas: es reversible (RFC
+        // 0025 D1). Las filas enlazadas conservan su `believer_id` y las
+        // columnas mantienen su `believer_field` por si se vuelve a enlazar.
+        if (input.source !== undefined) table.source = input.source;
 
         return this.tables.save(table);
     }

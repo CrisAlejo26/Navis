@@ -40,6 +40,7 @@ Estructura estándar de la industria para separar **decisiones** de **propuestas
 | [0021](./rfcs/0021-tablas-personalizadas.md)                   | Tablas personalizadas, con columnas, vistas y filtros dinámicos                                  | Implementado |
 | [0022](./rfcs/0022-ensenanzas-personales-plan-implementado.md) | Enseñanzas personales                                                                            | Implementado |
 | [0023](./rfcs/0023-recuperar-contrasena.md)                    | Recuperar contraseña por email                                                                   | Implementado |
+| [0025](./rfcs/0025-tablas-vinculadas-a-creyentes.md)           | Tablas vinculadas a creyentes: filas del listado y columnas que se rellenan solas (amplía 0021)  | Implementado |
 | [Plan](./filtros-tablas-plan.md)                               | Filtros de tablas: popover por columna, chips activos y vistas que guardan filtros (mejora 0021) | Propuesto    |
 
 Orden sugerido de implementación: **0008 → 0003 → 0002 → 0001 → 0006 → 0004 →

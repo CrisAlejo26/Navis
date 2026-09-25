@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 import { accentSchema } from './congregations';
 import { customTableColumnSchema } from './custom-table-columns';
+import { tableSourceSchema } from './table-believer-fields';
 import { taskIconSchema } from './tags';
 
 /** Una tabla personalizada (RFC 0021, «La tabla»). */
@@ -14,6 +15,8 @@ export const customTableSchema = z.object({
     accent: z.string(),
     position: z.number().int(),
     isActive: z.boolean(),
+    /** De dónde salen sus filas: nulo = a mano, `'believers'` = el listado (RFC 0025 D1). */
+    source: tableSourceSchema.nullable(),
 });
 export type CustomTable = z.infer<typeof customTableSchema>;
 
@@ -33,5 +36,7 @@ export type CreateCustomTableInput = z.infer<typeof createCustomTableSchema>;
 export const updateCustomTableSchema = createCustomTableSchema.partial().extend({
     isActive: z.boolean().optional(),
     position: z.number().int().min(0).optional(),
+    /** Nulo desvincula: las filas y los valores a mano no se tocan (RFC 0025 D1). */
+    source: tableSourceSchema.nullable().optional(),
 });
 export type UpdateCustomTableInput = z.infer<typeof updateCustomTableSchema>;

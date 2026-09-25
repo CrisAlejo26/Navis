@@ -20,11 +20,14 @@ export function ColumnsDialog({
     onClose,
     tableId,
     columns,
+    linked,
 }: {
     open: boolean;
     onClose: () => void;
     tableId: string;
     columns: readonly CustomTableColumn[];
+    /** La tabla está enlazada a creyentes: el editor muestra «Rellenar con» (RFC 0025 D2). */
+    linked?: boolean;
 }) {
     const { t } = useTranslation();
     const reorder = useReorderTableColumns(api);
@@ -113,6 +116,7 @@ export function ColumnsDialog({
                     <ColumnForm
                         tableId={tableId}
                         column={view.kind === 'edit' ? view.column : undefined}
+                        linked={linked}
                         onSaved={() => {
                             setView({ kind: 'list' });
                         }}

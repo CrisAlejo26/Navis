@@ -46,6 +46,11 @@
      porque aparece pegado a otra cosa (el botón de filtro o la fila de
      chips) y un vuelo largo se lee como desorden. */
     --animate-chip-in: chip-in 180ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    /* La celda vinculada de una fila que acaba de llegar (RFC 0025 D16): entra
+     con un desplazamiento de un par de píxeles, y cada columna con su retraso
+     —escalonado a mano con `animation-delay`— para que se vea que la fila se
+     rellenó sola. Solo `opacity` y `transform`. */
+    --animate-celda-in: celda-in 320ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 /*
@@ -187,6 +192,13 @@
     }
     100% {
         transform: scale(1);
+    }
+}
+
+@keyframes celda-in {
+    from {
+        opacity: 0;
+        transform: translateY(3px);
     }
 }
 

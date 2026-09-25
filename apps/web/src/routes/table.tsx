@@ -78,6 +78,7 @@ export function TablePage() {
                 columns={table.columns}
                 editable={can('tables.edit')}
                 canManage={can('tables.manage')}
+                linked={table.source === 'believers'}
             />
 
             <TableDialogs

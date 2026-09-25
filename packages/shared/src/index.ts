@@ -63,6 +63,7 @@ export * from './schemas/profile';
 export * from './schemas/prophecies';
 export * from './schemas/prophecy-queries';
 export * from './schemas/roles';
+export * from './schemas/table-believer-fields';
 export * from './schemas/tags';
 export * from './schemas/task-queries';
 export * from './schemas/tasks';

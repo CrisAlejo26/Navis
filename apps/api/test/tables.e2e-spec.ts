@@ -440,4 +440,297 @@ describe('Tablas personalizadas (e2e)', () => {
             expect(nueva.slug).toBe('asistencia-a-la-lectura');
         });
     });
+
+    /**
+     * El enlace a creyentes (RFC 0025): una tabla cuyas filas salen del
+     * listado y cuyas columnas se rellenan solas desde la ficha. Lo que no
+     * puede probarse con dobles vive aquí: la subconsulta correlacionada del
+     * orden y el filtro `EXISTS` (D12), el dato vivo tras cambiar la ficha
+     * (D5), el valor escrito a mano que vuelve al desvincular (D6) y la fila
+     * que sobrevive a la baja del creyente (D15).
+     */
+    describe('la tabla enlazada a creyentes', () => {
+        let tablaId = '';
+        let keyNombre = '';
+        let keyTelefono = '';
+        let keyExtra = '';
+
+        const crearCreyente = async (datos: {
+            firstName: string;
+            lastName: string;
+            phone?: string;
+        }): Promise<string> => {
+            const res = await post('/api/v1/believers', datos).expect(201);
+            return body<{ id: string }>(res).id;
+        };
+
+        beforeAll(async () => {
+            const tabla = body<CustomTable>(
+                await post('/api/v1/tables', { name: 'Retiro de jóvenes', icon: 'users' }).expect(
+                    201,
+                ),
+            );
+            await patch(`/api/v1/tables/${tabla.id}`, { source: 'believers' }).expect(200);
+
+            const ficha = body<CustomTableWithColumns>(
+                await get(`/api/v1/tables/${tabla.id}`).expect(200),
+            );
+            tablaId = ficha.id;
+            expect(ficha.source).toBe('believers');
+
+            keyNombre = body<CustomTableColumn>(
+                await post(`/api/v1/tables/${tablaId}/columns`, {
+                    label: 'Quién',
+                    type: 'text',
+                    believerField: 'fullName',
+                }).expect(201),
+            ).key;
+            keyTelefono = body<CustomTableColumn>(
+                await post(`/api/v1/tables/${tablaId}/columns`, {
+                    label: 'Móvil',
+                    type: 'phone',
+                    believerField: 'phone',
+                }).expect(201),
+            ).key;
+            keyExtra = body<CustomTableColumn>(
+                await post(`/api/v1/tables/${tablaId}/columns`, {
+                    label: 'Confirmó',
+                    type: 'checkbox',
+                }).expect(201),
+            ).key;
+        });
+
+        it('vincular un par campo-tipo imposible se rechaza (D3, D4)', async () => {
+            await post(`/api/v1/tables/${tablaId}/columns`, {
+                label: 'Venció',
+                type: 'date',
+                believerField: 'phone',
+            }).expect(400);
+        });
+
+        it('añade creyentes en lote, salta a los repetidos y exige los de la iglesia (D7, D9)', async () => {
+            const juan = await crearCreyente({
+                firstName: 'Juan Carlos',
+                lastName: 'Ruiz',
+                phone: '+57 300 111 1111',
+            });
+            const ana = await crearCreyente({ firstName: 'Ana', lastName: 'Molina' });
+
+            const primera = body<{ added: number }>(
+                await post(`/api/v1/tables/${tablaId}/believers`, {
+                    believerIds: [juan, ana, juan],
+                }).expect(201),
+            );
+            expect(primera.added).toBe(2);
+
+            const repetido = body<{ added: number }>(
+                await post(`/api/v1/tables/${tablaId}/believers`, {
+                    believerIds: [juan],
+                }).expect(201),
+            );
+            expect(repetido.added).toBe(0);
+
+            await post(`/api/v1/tables/${tablaId}/believers`, {
+                believerIds: ['00000000-0000-4000-8000-000000000000'],
+            }).expect(400);
+        });
+
+        it('las columnas vinculadas llegan resueltas y una fila trae a su creyente (D11, D14)', async () => {
+            const pagina = body<Paginated<CustomTableRow>>(
+                await get(`/api/v1/tables/${tablaId}/rows`).expect(200),
+            );
+            expect(pagina.total).toBe(2);
+
+            const fila = pagina.items[0];
+            expect(typeof fila.data[keyNombre]).toBe('string');
+            expect(fila.data[keyNombre]).toMatch(/Ruiz|Molina/);
+            expect(fila.data[keyExtra]).toBeUndefined();
+            expect(fila.believer).not.toBeNull();
+            expect(fila.believer?.name.length ?? 0).toBeGreaterThan(0);
+        });
+
+        it('buscar encuentra a alguien por un dato que solo vive en su ficha (D12)', async () => {
+            const pagina = body<Paginated<CustomTableRow>>(
+                await get(`/api/v1/tables/${tablaId}/rows?search=Molina`).expect(200),
+            );
+            expect(pagina.total).toBe(1);
+            expect(pagina.items[0].believer?.name).toContain('Molina');
+        });
+
+        it('el dato es vivo: cambiar la ficha cambia la tabla (D5)', async () => {
+            const pagina = body<Paginated<CustomTableRow>>(
+                await get(`/api/v1/tables/${tablaId}/rows`).expect(200),
+            );
+            const creyente = pagina.items.find((one) => one.believer !== null)?.believer;
+            expect(creyente).toBeTruthy();
+            if (!creyente) return;
+
+            await patch(`/api/v1/believers/${creyente.id}`, { phone: '+57 300 999 9999' }).expect(
+                200,
+            );
+
+            const otra = body<Paginated<CustomTableRow>>(
+                await get(`/api/v1/tables/${tablaId}/rows`).expect(200),
+            );
+            const fila = otra.items.find((one) => one.believer?.id === creyente.id);
+            expect(fila?.data[keyTelefono]).toBe('+57 300 999 9999');
+        });
+
+        it('escribir en una celda vinculada se rechaza (D13)', async () => {
+            const pagina = body<Paginated<CustomTableRow>>(
+                await get(`/api/v1/tables/${tablaId}/rows`).expect(200),
+            );
+            const fila = pagina.items[0];
+
+            await patch(`/api/v1/tables/${tablaId}/rows/${fila.id}`, {
+                data: { [keyTelefono]: 'a mano' },
+            }).expect(400);
+
+            await post(`/api/v1/tables/${tablaId}/rows`, { data: {} }).expect(400);
+
+            await post(`/api/v1/tables/${tablaId}/rows`, {
+                data: {},
+                believerId: fila.believer?.id,
+            }).expect(400);
+        });
+
+        it('ordenar y filtrar por una columna vinculada resuelve contra believers (D12)', async () => {
+            const ordenada = body<Paginated<CustomTableRow>>(
+                await get(`/api/v1/tables/${tablaId}/rows?sort=${keyTelefono}&order=asc`).expect(
+                    200,
+                ),
+            );
+            const telefonos = ordenada.items.map((one) => one.data[keyTelefono]);
+            const conDatos = telefonos.filter((one) => typeof one === 'string');
+            expect(conDatos.length).toBeGreaterThan(0);
+            expect([...conDatos].sort()).toEqual(conDatos);
+
+            const filtrada = body<Paginated<CustomTableRow>>(
+                await get(
+                    `/api/v1/tables/${tablaId}/rows?filters=${encodeURIComponent(
+                        JSON.stringify([
+                            { columnKey: keyNombre, operator: 'contains', value: 'Ana' },
+                        ]),
+                    )}`,
+                ).expect(200),
+            );
+            expect(filtrada.total).toBe(1);
+
+            const buscada = body<Paginated<CustomTableRow>>(
+                await get(`/api/v1/tables/${tablaId}/rows?search=Molina`).expect(200),
+            );
+            expect(buscada.total).toBe(1);
+        });
+
+        it('desvincular una columna devuelve el valor escrito a mano (D6)', async () => {
+            const ficha = body<CustomTableWithColumns>(
+                await get(`/api/v1/tables/${tablaId}`).expect(200),
+            );
+            const movil = ficha.columns.find((one) => one.key === keyTelefono);
+            if (!movil) return;
+
+            await patch(`/api/v1/tables/${tablaId}/columns/${movil.id}`, {
+                believerField: null,
+            }).expect(200);
+
+            const pagina = body<Paginated<CustomTableRow>>(
+                await get(`/api/v1/tables/${tablaId}/rows`).expect(200),
+            );
+            expect(pagina.items.every((one) => !(keyTelefono in one.data))).toBe(true);
+
+            await patch(`/api/v1/tables/${tablaId}/columns/${movil.id}`, {
+                believerField: 'phone',
+            }).expect(200);
+
+            const resuelta = body<Paginated<CustomTableRow>>(
+                await get(`/api/v1/tables/${tablaId}/rows`).expect(200),
+            );
+            expect(resuelta.items.some((one) => typeof one.data[keyTelefono] === 'string')).toBe(
+                true,
+            );
+        });
+
+        it('la fila sobrevive a la baja del creyente, marcada (D15)', async () => {
+            const pagina = body<Paginated<CustomTableRow>>(
+                await get(`/api/v1/tables/${tablaId}/rows`).expect(200),
+            );
+            const deAna = pagina.items.find((one) => one.believer?.name.includes('Ana'));
+            expect(deAna?.believer).toBeTruthy();
+            if (!deAna?.believer) return;
+
+            await del(`/api/v1/believers/${deAna.believer.id}`).expect(200);
+
+            const despues = body<Paginated<CustomTableRow>>(
+                await get(`/api/v1/tables/${tablaId}/rows`).expect(200),
+            );
+            const fila = despues.items.find((one) => one.id === deAna.id);
+            expect(fila).toBeDefined();
+            expect(fila?.believer).toBeNull();
+            // Su celda vinculada queda vacía: no enseña un dato que ya no es de nadie.
+            expect(fila?.data[keyNombre]).toBeNull();
+        });
+
+        // Regresión: una fila hecha a mano antes de enlazar seguía enseñando en la
+        // columna vinculada lo que se había escrito a mano (D7). El valor no se
+        // borra —vuelve al desvincular (D6)—, solo deja de verse.
+        it('una fila anterior al enlace ve vacía la celda vinculada, y el dato vuelve al desvincular (D6, D7)', async () => {
+            const tabla = body<CustomTable>(
+                await post('/api/v1/tables', { name: 'Hecha a mano', icon: 'users' }).expect(201),
+            );
+            const columna = body<CustomTableColumn>(
+                await post(`/api/v1/tables/${tabla.id}/columns`, {
+                    label: 'Quién',
+                    type: 'text',
+                }).expect(201),
+            );
+            await post(`/api/v1/tables/${tabla.id}/rows`, {
+                data: { [columna.key]: 'escrito a mano' },
+            }).expect(201);
+
+            await patch(`/api/v1/tables/${tabla.id}`, { source: 'believers' }).expect(200);
+            await patch(`/api/v1/tables/${tabla.id}/columns/${columna.id}`, {
+                believerField: 'fullName',
+            }).expect(200);
+
+            const vinculada = body<Paginated<CustomTableRow>>(
+                await get(`/api/v1/tables/${tabla.id}/rows`).expect(200),
+            );
+            expect(vinculada.items[0].data[columna.key]).toBeNull();
+
+            await patch(`/api/v1/tables/${tabla.id}/columns/${columna.id}`, {
+                believerField: null,
+            }).expect(200);
+
+            const manual = body<Paginated<CustomTableRow>>(
+                await get(`/api/v1/tables/${tabla.id}/rows`).expect(200),
+            );
+            expect(manual.items[0].data[columna.key]).toBe('escrito a mano');
+        });
+
+        it('exportar trae las columnas vinculadas resueltas (D11)', async () => {
+            const salida = body<ExportResponse<RowData>>(
+                await get(`/api/v1/tables/${tablaId}/export`).expect(200),
+            );
+            expect(salida.rows.some((row) => typeof row[keyNombre] === 'string')).toBe(true);
+        });
+
+        it('desvincular la tabla entera es reversible y no toca filas (D1)', async () => {
+            const antes = body<Paginated<CustomTableRow>>(
+                await get(`/api/v1/tables/${tablaId}/rows`).expect(200),
+            );
+
+            await patch(`/api/v1/tables/${tablaId}`, { source: null }).expect(200);
+            const desconectada = body<CustomTable>(
+                await get(`/api/v1/tables/${tablaId}`).expect(200),
+            );
+            expect(desconectada.source).toBeNull();
+
+            const despues = body<Paginated<CustomTableRow>>(
+                await get(`/api/v1/tables/${tablaId}/rows`).expect(200),
+            );
+            expect(despues.total).toBe(antes.total);
+
+            await patch(`/api/v1/tables/${tablaId}`, { source: 'believers' }).expect(200);
+        });
+    });
 });

@@ -75,15 +75,25 @@ export interface StubTable {
     slug: string;
     icon?: string;
     accent?: string;
+    /** El origen de las filas: `'believers'` enlaza el listado de creyentes (RFC 0025 D1). */
+    source?: 'believers' | null;
     columns: {
         id: string;
         key: string;
         label: string;
         type: string;
         required?: boolean;
+        /** El campo del creyente con el que se rellena (RFC 0025 D2). */
+        believerField?: string | null;
         options?: { value: string; label: string; color?: string }[] | null;
     }[];
-    rows: { id: string; data: Record<string, unknown>; createdAt?: string }[];
+    rows: {
+        id: string;
+        data: Record<string, unknown>;
+        createdAt?: string;
+        /** El creyente enlazado a la fila, ya resuelto como lo resuelve la API (RFC 0025 D11). */
+        believer?: { id: string; name: string; photoKey: string | null } | null;
+    }[];
 }
 
 const COLUMN_TYPE_SETS = {
@@ -178,6 +188,8 @@ function paginaFilas(
             tableId: tabla.id,
             data: row.data,
             mismatches: [],
+            believerId: row.believer?.id ?? null,
+            believer: row.believer ?? null,
             createdBy: 'u1',
             createdAt: row.createdAt ?? '2026-08-01T10:00:00.000Z',
             updatedAt: '2026-08-01T10:00:00.000Z',
@@ -217,6 +229,8 @@ export async function montarApi(
         dashboard?: ReturnType<typeof dashboardSummary>;
         /** Una tabla personalizada, para los e2e de filtros y filas (RFC 0021). */
         tables?: StubTable[];
+        /** Los creyentes ya enlazados a esa tabla, para el selector (RFC 0025 D9). */
+        believerIds?: string[];
         /** Por si un spec necesita simular un tiempo real o una respuesta rara. */
         weather?: unknown;
     },
@@ -224,6 +238,7 @@ export async function montarApi(
     const notes = data.notes ?? [];
     const dashboard = data.dashboard ?? dashboardSummary();
     const tabla = data.tables?.[0];
+    const idsEnTabla = data.believerIds ?? [];
 
     await page.route('**/api/auth/get-session', (route) =>
         json(route, {
@@ -296,6 +311,7 @@ export async function montarApi(
                         accent: tabla.accent ?? 'primary',
                         position: 0,
                         isActive: true,
+                        source: tabla.source ?? null,
                     },
                 ]);
             }
@@ -312,6 +328,7 @@ export async function montarApi(
                 accent: tabla.accent ?? 'primary',
                 position: 0,
                 isActive: true,
+                source: tabla.source ?? null,
                 columns: tabla.columns.map((column, index) => ({
                     id: column.id,
                     tableId: tabla.id,
@@ -323,8 +340,21 @@ export async function montarApi(
                     options: column.options ?? null,
                     config: null,
                     isActive: true,
+                    believerField: column.believerField ?? null,
                 })),
             });
+        }
+
+        // Los creyentes ya enlazados: los que el spec declare (RFC 0025 D9 —
+        // el selector marca a quien ya está dentro, no lo esconde).
+        if (tabla && path === `/tables/${tabla.id}/believers`) {
+            if (route.request().method() === 'POST') {
+                // El lote se salta a los repetidos; para la pantalla basta con
+                // cuántos entraron (el refetch trae las filas nuevas).
+                const cuerpo = route.request().postDataJSON() as { believerIds?: string[] };
+                return json(route, { added: cuerpo.believerIds?.length ?? 0 });
+            }
+            return json(route, { ids: idsEnTabla });
         }
 
         if (tabla && path === `/tables/${tabla.id}/rows`) {
@@ -422,16 +452,23 @@ export async function montarApi(
 
         if (path === '/believers') {
             const only = url.searchParams.get('attention') === 'true';
-            const items = only
+            const catalogo = only
                 ? data.believers.filter((one) => one.needsAttention)
                 : data.believers;
 
+            // Paginación de verdad (RFC 0025 D8): el «Ver más» del selector pide
+            // la página siguiente, y un stub que siempre devuelva lo mismo la
+            // cargaría infinito.
+            const page = Number(url.searchParams.get('page') ?? 1);
+            const limit = Number(url.searchParams.get('limit') ?? 20);
+            const slice = catalogo.slice((page - 1) * limit, page * limit);
+
             return json(route, {
-                items,
-                total: items.length,
-                page: 1,
-                limit: 20,
-                totalPages: 1,
+                items: slice,
+                total: catalogo.length,
+                page,
+                limit,
+                totalPages: Math.max(1, Math.ceil(catalogo.length / limit)),
             });
         }
 

@@ -1,4 +1,9 @@
-import type { CreateTableRowInput, CustomTableRow, UpdateTableRowInput } from '@navis/shared';
+import type {
+    AddTableBelieversInput,
+    CreateTableRowInput,
+    CustomTableRow,
+    UpdateTableRowInput,
+} from '@navis/shared';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import type { ApiClient } from './client';
@@ -6,6 +11,23 @@ import { queryKeys } from './query-keys';
 
 function refreshRows(client: ReturnType<typeof useQueryClient>, tableId: string) {
     return client.invalidateQueries({ queryKey: [...queryKeys.tables.all, 'rows', tableId] });
+}
+
+/**
+ * Añadir creyentes en lote (RFC 0025 D7): una fila por creyente, y quien ya
+ * está dentro se salta sin fallar el lote. Refresca también la ficha, porque
+ * las columnas vinculadas nacen llenas con la nueva fila.
+ */
+export function useAddTableBelievers(api: ApiClient) {
+    const client = useQueryClient();
+    return useMutation({
+        mutationFn: ({ tableId, ...input }: AddTableBelieversInput & { tableId: string }) =>
+            api.post<{ added: number }>(`/tables/${tableId}/believers`, { ...input }),
+        onSuccess: (_data, { tableId }) => {
+            void refreshRows(client, tableId);
+            void client.invalidateQueries({ queryKey: queryKeys.tables.one(tableId) });
+        },
+    });
 }
 
 export function useCreateTableRow(api: ApiClient) {

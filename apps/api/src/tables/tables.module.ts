@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
+import { Believer } from '../believers/believer.entity';
+import { Congregation } from '../calendar/congregation.entity';
 import { ChurchesModule } from '../churches/churches.module';
 import { CustomTableColumn } from './custom-table-column.entity';
 import { CustomTableRow } from './custom-table-row.entity';
@@ -9,6 +11,7 @@ import { CustomTable } from './custom-table.entity';
 import { TableColumnsController } from './table-columns.controller';
 import { TableColumnsService } from './table-columns.service';
 import { TableExportController } from './table-export.controller';
+import { TableBelieversResolver } from './table-believers-resolver.service';
 import { TableRowsController } from './table-rows.controller';
 import { TableRowsExportService } from './table-rows-export.service';
 import { TableRowsPageService } from './table-rows-page.service';
@@ -21,7 +24,16 @@ import { TablesService } from './tables.service';
 /** Las tablas personalizadas de la iglesia (RFC 0021). */
 @Module({
     imports: [
-        TypeOrmModule.forFeature([CustomTable, CustomTableColumn, CustomTableRow, CustomTableView]),
+        // Believer y Congregation: el enlace de filas a creyentes (RFC 0025)
+        // resuelve sus valores contra esas dos tablas.
+        TypeOrmModule.forFeature([
+            CustomTable,
+            CustomTableColumn,
+            CustomTableRow,
+            CustomTableView,
+            Believer,
+            Congregation,
+        ]),
         ChurchesModule,
     ],
     controllers: [
@@ -37,6 +49,7 @@ import { TablesService } from './tables.service';
         TableRowsService,
         TableRowsPageService,
         TableRowsExportService,
+        TableBelieversResolver,
         TableViewsService,
     ],
 })

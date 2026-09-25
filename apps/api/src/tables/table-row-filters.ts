@@ -1,12 +1,13 @@
 import { BadRequestException } from '@nestjs/common';
-import type { RowFilter } from '@navis/shared';
+import { isTableBelieverField, type RowFilter } from '@navis/shared';
 import { Brackets, type SelectQueryBuilder } from 'typeorm';
 
+import { believerFieldExists, believerFieldExpr } from '../database/believer-field-sql';
 import { jsonFieldExpr, jsonFieldNumericExpr } from '../database/json-field-sql';
 import { asDateRange, asNumericRange, asStringArray } from './table-row-filter-values';
 import type { CustomTableRow } from './custom-table-row.entity';
 
-type ColumnLike = { key: string; type: string };
+type ColumnLike = { key: string; type: string; believerField?: string | null };
 
 const TEXT_LIKE = new Set(['text', 'long_text', 'email', 'phone', 'url']);
 const NUMERIC = new Set(['number', 'currency']);
@@ -100,5 +101,53 @@ export function applyRowFilter(
 
     throw new BadRequestException(
         `El operador «${filter.operator}» no corresponde al tipo de «${filter.columnKey}»`,
+    );
+}
+
+/**
+ * Un filtro sobre una columna vinculada: la condición se traduce contra
+ * `believers` dentro de un `EXISTS` (RFC 0025 D12) — los valores no están en
+ * el JSON de la fila, así que el `LIKE` de `applyRowFilter` no los vería.
+ * Los operadores son los mismos que los de su tipo de columna, y las filas
+ * sin creyente —o con el creyente ya fuera del catálogo— no encajan, igual
+ * que una celda vacía no encaja en los filtros del JSON.
+ */
+export function applyBelieverRowFilter(
+    qb: SelectQueryBuilder<CustomTableRow>,
+    column: ColumnLike,
+    filter: RowFilter,
+    index: number,
+): void {
+    if (!column.believerField || !isTableBelieverField(column.believerField)) {
+        throw new BadRequestException(`La columna «${column.key}» no está vinculada`);
+    }
+    const field = believerFieldExpr(column.believerField);
+    const p = `f${String(index)}`;
+
+    if (filter.operator === 'contains' && TEXT_LIKE.has(column.type)) {
+        qb.andWhere(believerFieldExists(`LOWER(${field}) LIKE LOWER(:${p})`), {
+            [p]: `%${String(filter.value)}%`,
+        });
+        return;
+    }
+
+    if (filter.operator === 'between' && NUMERIC.has(column.type)) {
+        const { min, max } = asNumericRange(filter.value);
+        if (min !== undefined)
+            qb.andWhere(believerFieldExists(`${field} >= :${p}min`), { [`${p}min`]: min });
+        if (max !== undefined)
+            qb.andWhere(believerFieldExists(`${field} <= :${p}max`), { [`${p}max`]: max });
+        return;
+    }
+
+    if (filter.operator === 'between' && column.type === 'date') {
+        const { from, to } = asDateRange(filter.value);
+        if (from) qb.andWhere(believerFieldExists(`${field} >= :${p}from`), { [`${p}from`]: from });
+        if (to) qb.andWhere(believerFieldExists(`${field} <= :${p}to`), { [`${p}to`]: to });
+        return;
+    }
+
+    throw new BadRequestException(
+        `El operador «${filter.operator}» no corresponde al tipo de «${column.key}»`,
     );
 }

@@ -72,6 +72,7 @@ export function TableDialogs({
                 onClose={() => setGestionandoColumnas(false)}
                 tableId={tableId}
                 columns={table.columns}
+                linked={table.source === 'believers'}
             />
 
             {/* Montado solo al abrirse: sus valores por defecto (tipo, columna) se

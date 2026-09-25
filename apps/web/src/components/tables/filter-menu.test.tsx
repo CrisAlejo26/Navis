@@ -19,6 +19,7 @@ const COLUMNS: CustomTableColumn[] = [
         options: [{ value: 'nuevo', label: 'Nuevo' }],
         config: null,
         isActive: true,
+        believerField: null,
     },
     {
         id: 'c2',
@@ -31,6 +32,7 @@ const COLUMNS: CustomTableColumn[] = [
         options: null,
         config: null,
         isActive: true,
+        believerField: null,
     },
     {
         id: 'c3',
@@ -43,6 +45,7 @@ const COLUMNS: CustomTableColumn[] = [
         options: null,
         config: null,
         isActive: true,
+        believerField: null,
     },
 ];
 

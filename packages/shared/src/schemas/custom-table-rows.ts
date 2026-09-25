@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import { paginationQuerySchema } from './common';
+import { tableRowBelieverSchema } from './table-believer-fields';
 
 /**
  * El valor de una fila: una clave de columna por cada valor (RFC 0021 D13).
@@ -21,13 +22,20 @@ export const customTableRowSchema = z.object({
     data: rowDataSchema,
     /** Las claves de columna cuyo valor no encaja con el tipo actual (D9). */
     mismatches: z.array(z.string()),
+    /** El creyente enlazado, si lo hay (RFC 0025 D14). */
+    believerId: z.uuid().nullable(),
+    believer: tableRowBelieverSchema.nullable(),
     createdBy: z.string().nullable(),
     createdAt: z.string(),
     updatedAt: z.string(),
 });
 export type CustomTableRow = z.infer<typeof customTableRowSchema>;
 
-export const createTableRowSchema = z.object({ data: rowDataSchema });
+export const createTableRowSchema = z.object({
+    data: rowDataSchema,
+    /** Exigido por el servidor si la tabla está enlazada (RFC 0025 D13). */
+    believerId: z.uuid().optional(),
+});
 export type CreateTableRowInput = z.infer<typeof createTableRowSchema>;
 
 export const updateTableRowSchema = z.object({ data: rowDataSchema });

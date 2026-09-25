@@ -3,6 +3,7 @@ import {
     ACCENT_PATTERN,
     MAX_SELECT_OPTIONS,
     MAX_TABLE_COLUMNS,
+    TABLE_BELIEVER_FIELDS,
     TABLE_COLUMN_TYPES,
     type TableColumnType,
 } from '@navis/shared';
@@ -95,6 +96,14 @@ export class CreateTableColumnDto {
     @ValidateNested()
     @Type(() => ColumnConfigDto)
     config?: ColumnConfigDto;
+
+    @ApiPropertyOptional({
+        description: 'El campo del creyente con el que se rellena, o nulo = a mano (RFC 0025 D2)',
+        enum: [...TABLE_BELIEVER_FIELDS, null],
+    })
+    @IsOptional()
+    @IsIn([...TABLE_BELIEVER_FIELDS, null])
+    believerField?: (typeof TABLE_BELIEVER_FIELDS)[number] | null;
 }
 
 export class UpdateTableColumnDto extends PartialType(CreateTableColumnDto) {}

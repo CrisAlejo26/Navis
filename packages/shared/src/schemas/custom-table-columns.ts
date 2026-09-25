@@ -6,6 +6,7 @@ import {
     TABLE_COLUMN_TYPES,
 } from '../constants/table-column-types';
 import { accentSchema } from './congregations';
+import { tableBelieverFieldSchema } from './table-believer-fields';
 
 /** Uno de los doce tipos de columna. `z.enum` y no `refine`: así el tipo queda
  * la unión literal y no `string` a secas, y quien lo use no necesita un `as`. */
@@ -47,6 +48,8 @@ export const customTableColumnSchema = z.object({
     options: z.array(columnOptionSchema).nullable(),
     config: columnConfigSchema.nullable(),
     isActive: z.boolean(),
+    /** El campo del creyente con el que se rellena, o nulo = a mano (RFC 0025 D2). */
+    believerField: tableBelieverFieldSchema.nullable(),
 });
 export type CustomTableColumn = z.infer<typeof customTableColumnSchema>;
 
@@ -62,6 +65,8 @@ export const createTableColumnSchema = z.object({
     required: z.boolean().optional(),
     options: z.array(optionInputSchema).max(MAX_SELECT_OPTIONS).optional(),
     config: columnConfigSchema.optional(),
+    /** Solo tiene efecto si la tabla está enlazada; el servidor valida el par campo-tipo (RFC 0025 D4). */
+    believerField: tableBelieverFieldSchema.nullable().optional(),
 });
 export type CreateTableColumnInput = z.infer<typeof createTableColumnSchema>;
 

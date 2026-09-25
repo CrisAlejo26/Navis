@@ -46,6 +46,10 @@ export function toRowView(
         tableId: row.tableId,
         data,
         mismatches,
+        // El overlay del enlace a creyentes rellena `believer` si la fila lo
+        // trae (RFC 0025 D11); aquí viaja el identificador y el nulo.
+        believerId: row.believerId,
+        believer: null,
         createdBy: row.createdBy,
         createdAt: row.createdAt.toISOString(),
         updatedAt: row.updatedAt.toISOString(),

@@ -24,6 +24,7 @@ export function RowsGridToolbar({
     filters,
     onFilters,
     onAdd,
+    addLabel,
     onSaveView,
 }: {
     columns: readonly CustomTableColumn[];
@@ -35,6 +36,8 @@ export function RowsGridToolbar({
     filters: RowFilter[];
     onFilters: (filters: RowFilter[]) => void;
     onAdd?: () => void;
+    /** Lo que dice el botón de añadir: «Nueva fila» o «Añadir creyentes» (RFC 0025 D7). */
+    addLabel?: string;
     /** Con `tables.manage`, guardar los filtros y el orden como vista (D5). */
     onSaveView?: () => void;
 }) {
@@ -88,7 +91,7 @@ export function RowsGridToolbar({
                 {onAdd && (
                     <Button size="md" onClick={onAdd}>
                         <Plus size={16} aria-hidden />
-                        {t('tables.newRow')}
+                        {addLabel ?? t('tables.newRow')}
                     </Button>
                 )}
             </div>

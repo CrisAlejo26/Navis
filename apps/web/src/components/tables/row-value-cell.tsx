@@ -61,6 +61,13 @@ export function RowValueCell({ column, value }: { column: CustomTableColumn; val
     // esta rama, pero si lo hiciera, `String()` lo convertiría en
     // «[object Object]» sin avisar (Regla 10).
     const texto = typeof value === 'string' || typeof value === 'number' ? String(value) : '';
+
+    // El estado del creyente viaja como clave (`activo`), y aquí es donde se
+    // traduce: el cliente es quien habla, no el servidor (RFC 0025 D17).
+    if (column.believerField === 'status' && typeof value === 'string') {
+        return <span className="truncate">{t(`believers.status.${texto}`)}</span>;
+    }
+
     return <span className="truncate">{texto}</span>;
 }
 

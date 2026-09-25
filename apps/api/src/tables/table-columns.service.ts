@@ -1,6 +1,9 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
+    believerFieldMatchesType,
+    isTableBelieverField,
+    isTableColumnType,
     MAX_TABLE_COLUMNS,
     toSlug,
     type CreateTableColumnInput,
@@ -8,6 +11,7 @@ import {
 } from '@navis/shared';
 import { In, Repository } from 'typeorm';
 
+import { CustomTable } from './custom-table.entity';
 import { CustomTableColumn } from './custom-table-column.entity';
 import { freeOptionValues } from './table-column-options';
 
@@ -22,6 +26,7 @@ export class TableColumnsService {
     constructor(
         @InjectRepository(CustomTableColumn)
         private readonly columns: Repository<CustomTableColumn>,
+        @InjectRepository(CustomTable) private readonly tables: Repository<CustomTable>,
     ) {}
 
     listActive(tableId: string): Promise<CustomTableColumn[]> {
@@ -38,6 +43,7 @@ export class TableColumnsService {
                 `Una tabla no lleva más de ${String(MAX_TABLE_COLUMNS)} columnas`,
             );
         }
+        await this.validateBelieverField(tableId, input.type, input.believerField, null);
 
         return this.columns.save(
             this.columns.create({
@@ -50,6 +56,7 @@ export class TableColumnsService {
                 config: input.config ? JSON.stringify(input.config) : null,
                 position: activas.length,
                 isActive: true,
+                believerField: input.believerField ?? null,
             }),
         );
     }
@@ -68,6 +75,14 @@ export class TableColumnsService {
         if (input.options !== undefined)
             column.options = JSON.stringify(freeOptionValues(input.options));
         if (input.config !== undefined) column.config = JSON.stringify(input.config);
+        await this.validateBelieverField(
+            tableId,
+            column.type,
+            input.believerField,
+            // El campo vigente, para validar también un cambio de tipo contra él.
+            input.believerField !== undefined ? null : column.believerField,
+        );
+        if (input.believerField !== undefined) column.believerField = input.believerField;
 
         return this.columns.save(column);
     }
@@ -89,6 +104,36 @@ export class TableColumnsService {
         );
 
         return this.listActive(tableId);
+    }
+
+    /**
+     * El par campo-tipo se valida en el servidor, no se fía del cliente (RFC
+     * 0025 D4): vincular exige tabla enlazada y compatibilidad de tipos, y
+     * cambiar el tipo de una columna vinculada a algo incompatible se
+     * rechaza — no se desvincula en silencio.
+     */
+    private async validateBelieverField(
+        tableId: string,
+        type: string,
+        field: string | null | undefined,
+        previous: string | null,
+    ): Promise<void> {
+        const aComprobar = field ?? previous;
+        if (!aComprobar) return;
+
+        const table = await this.tables.findOne({ where: { id: tableId } });
+        if (field != null && table?.source !== 'believers') {
+            throw new BadRequestException('La tabla no está enlazada al listado de creyentes');
+        }
+        if (
+            !isTableBelieverField(aComprobar) ||
+            !isTableColumnType(type) ||
+            !believerFieldMatchesType(aComprobar, type)
+        ) {
+            throw new BadRequestException(
+                'Ese campo del creyente no encaja con el tipo de la columna',
+            );
+        }
     }
 
     async require(tableId: string, id: string): Promise<CustomTableColumn> {

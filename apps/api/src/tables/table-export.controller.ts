@@ -27,6 +27,6 @@ export class TableExportController {
         @Query() query: TableExportQueryDto,
     ): Promise<ExportResponse<RowData>> {
         await this.tables.require(churchId, id);
-        return this.exports.export(id, query, query.includePasswords === 'true');
+        return this.exports.export(id, churchId, query, query.includePasswords === 'true');
     }
 }

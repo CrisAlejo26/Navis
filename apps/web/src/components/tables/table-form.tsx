@@ -12,6 +12,7 @@ import { useNavigate } from 'react-router';
 import { IconPicker } from '@/components/tasks/icon-picker';
 import { FormError } from '@/components/auth/form-error';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import { ColorPicker } from '@/components/ui/color-picker';
 import { Dialog } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -24,6 +25,10 @@ import { toast } from '@/lib/toast';
  *
  * Nace vacía: solo pide nombre, icono y color. Las columnas se añaden después,
  * desde la ficha.
+ *
+ * En edición, además el origen de sus filas (RFC 0025 D1): enlazada al
+ * listado de creyentes o a mano, como siempre. Es reversible — desvincular no
+ * toca filas ni valores.
  */
 export function TableForm({
     open,
@@ -42,6 +47,7 @@ export function TableForm({
     const [error, setError] = useState<string | null>(null);
     const [icon, setIcon] = useState(table?.icon ?? DEFAULT_TASK_ICON);
     const [accent, setAccent] = useState(table?.accent ?? ACCENT_PALETTE[0]);
+    const [linked, setLinked] = useState(table?.source === 'believers');
 
     const submit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -65,7 +71,7 @@ export function TableForm({
 
         if (table) {
             updateTable.mutate(
-                { id: table.id, ...parsed.data },
+                { id: table.id, ...parsed.data, source: linked ? 'believers' : null },
                 {
                     onSuccess: (guardada) => {
                         toast.success(t('tables.saved', { name: guardada.name }));
@@ -98,6 +104,21 @@ export function TableForm({
 
                 <IconPicker value={icon} onChange={setIcon} />
                 <ColorPicker value={accent} onChange={setAccent} label={t('tables.color')} />
+
+                {table && (
+                    <div className="gap-1 flex flex-col">
+                        <Checkbox
+                            checked={linked}
+                            label={t('tables.linkBelievers')}
+                            onChange={(event) => {
+                                setLinked(event.target.checked);
+                            }}
+                        />
+                        <p className="text-xs text-muted-foreground">
+                            {t('tables.linkBelieversHint')}
+                        </p>
+                    </div>
+                )}
 
                 <FormError message={error} />
 

@@ -1,5 +1,11 @@
 import type { BelieverListItem, BelieversQuery, BelieversSummary, Paginated } from '@navis/shared';
-import { useQuery, type UseQueryResult } from '@tanstack/react-query';
+import {
+    useInfiniteQuery,
+    useQuery,
+    type InfiniteData,
+    type UseInfiniteQueryResult,
+    type UseQueryResult,
+} from '@tanstack/react-query';
 
 import type { ApiClient } from './client';
 import { queryKeys } from './query-keys';
@@ -55,6 +61,29 @@ export function useBelievers(
         enabled,
         staleTime: 30_000,
         placeholderData: (previous) => previous,
+    });
+}
+
+/**
+ * El listado hojable: páginas acumuladas con «Ver más» (RFC 0025 D8). Es el
+ * hook del selector de creyentes de tablas, y el único sitio con paginación
+ * acumulativa del proyecto — el resto navega de página en página.
+ */
+export function useBelieversInfinite(
+    api: ApiClient,
+    query: Omit<BelieversQuery, 'page'>,
+    enabled = true,
+): UseInfiniteQueryResult<InfiniteData<Paginated<BelieverListItem>>> {
+    return useInfiniteQuery({
+        queryKey: queryKeys.believers.list({ ...keyOf(query), page: 'acumulada' }),
+        queryFn: ({ pageParam }) =>
+            api.get<Paginated<BelieverListItem>>(
+                `/believers?${toBelieverSearch({ ...query, page: pageParam })}`,
+            ),
+        initialPageParam: 1,
+        getNextPageParam: (last) => (last.page < last.totalPages ? last.page + 1 : undefined),
+        enabled,
+        staleTime: 30_000,
     });
 }
 

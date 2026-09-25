@@ -4,6 +4,7 @@ import {
     ACCENT_PATTERN,
     CONGREGATION_ACCENTS,
     TASK_ICON_CATALOG,
+    TABLE_SOURCES,
 } from '@navis/shared';
 import { Transform } from 'class-transformer';
 import {
@@ -53,4 +54,13 @@ export class UpdateCustomTableDto extends PartialType(CreateCustomTableDto) {
     @IsInt()
     @Min(0)
     position?: number;
+
+    @ApiPropertyOptional({
+        description:
+            'De dónde salen sus filas: believers enlaza el listado, nulo desvincula (RFC 0025 D1)',
+        enum: [...TABLE_SOURCES, null],
+    })
+    @IsOptional()
+    @IsIn([...TABLE_SOURCES, null])
+    source?: (typeof TABLE_SOURCES)[number] | null;
 }

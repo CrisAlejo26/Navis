@@ -1,5 +1,13 @@
 import { useCreateTableColumn, useUpdateTableColumn } from '@navis/api-client';
-import { isTableColumnType, type CustomTableColumn, type TableColumnType } from '@navis/shared';
+import {
+    BELIEVER_FIELD_COLUMN_TYPES,
+    isTableBelieverField,
+    isTableColumnType,
+    TABLE_BELIEVER_FIELDS,
+    type CustomTableColumn,
+    type TableBelieverField,
+    type TableColumnType,
+} from '@navis/shared';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -19,14 +27,21 @@ import { toast } from '@/lib/toast';
  * Cambiar el tipo o las opciones nunca borra nada (D9): la única señal de que
  * pueda haber datos que dejen de encajar es el texto de ayuda, no un aviso
  * bloqueante.
+ *
+ * Con la tabla enlazada a creyentes (RFC 0025 D2), además decide **«Rellenar
+ * con»**: un campo del creyente compatible con el tipo (D3), o «A mano» como
+ * siempre. Cambiar el tipo reasienta el campo si deja de encajar con él (D4).
  */
 export function ColumnForm({
     tableId,
     column,
+    linked,
     onSaved,
 }: {
     tableId: string;
     column?: CustomTableColumn;
+    /** La tabla está enlazada al listado de creyentes: el selector aparece. */
+    linked?: boolean;
     onSaved: () => void;
 }) {
     const { t } = useTranslation();
@@ -37,9 +52,27 @@ export function ColumnForm({
     const [type, setType] = useState<TableColumnType>(column?.type ?? 'text');
     const [required, setRequired] = useState(column?.required ?? false);
     const [options, setOptions] = useState<OptionDraft[]>(column?.options ?? []);
+    const [believerField, setBelieverField] = useState<TableBelieverField | null>(
+        column?.believerField ?? null,
+    );
     const [error, setError] = useState<string | null>(null);
 
     const isPending = create.isPending || update.isPending;
+    const compatibles = linked
+        ? TABLE_BELIEVER_FIELDS.filter((field) => BELIEVER_FIELD_COLUMN_TYPES[field].includes(type))
+        : [];
+
+    const cambiarTipo = (value: string) => {
+        if (!isTableColumnType(value)) return;
+        setType(value);
+        if (
+            linked &&
+            believerField &&
+            !BELIEVER_FIELD_COLUMN_TYPES[believerField].includes(value)
+        ) {
+            setBelieverField(null);
+        }
+    };
 
     const submit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -54,6 +87,7 @@ export function ColumnForm({
             type,
             required,
             options: needsOptions(type) ? options.filter((one) => one.label.trim()) : undefined,
+            believerField: linked ? believerField : undefined,
         };
 
         const onError = () => {
@@ -86,7 +120,7 @@ export function ColumnForm({
                 label={t('tables.columnTypeLabel')}
                 value={type}
                 onChange={(event) => {
-                    if (isTableColumnType(event.target.value)) setType(event.target.value);
+                    cambiarTipo(event.target.value);
                 }}
             >
                 {TABLE_COLUMN_TYPES.map((one) => (
@@ -96,7 +130,31 @@ export function ColumnForm({
                 ))}
             </Select>
 
-            {column && (
+            {linked && (
+                <Select
+                    label={t('tables.boundTo')}
+                    value={believerField ?? ''}
+                    onChange={(event) => {
+                        const value = event.target.value;
+                        setBelieverField(isTableBelieverField(value) ? value : null);
+                    }}
+                >
+                    <option value="">{t('tables.boundManual')}</option>
+                    {compatibles.map((field) => (
+                        <option key={field} value={field}>
+                            {t(`tables.boundField.${field}`)}
+                        </option>
+                    ))}
+                </Select>
+            )}
+
+            {linked && (
+                <p className="text-xs text-muted-foreground">
+                    {believerField ? t('tables.bindOverwriteHint') : t('tables.boundManualHint')}
+                </p>
+            )}
+
+            {column && !linked && (
                 <p className="text-xs text-muted-foreground">{t('tables.typeChangeHint')}</p>
             )}
 

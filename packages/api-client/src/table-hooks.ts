@@ -80,3 +80,17 @@ export function useTableViews(
         staleTime: 30_000,
     });
 }
+
+/** Los identificadores de los creyentes ya enlazados, para marcarlos en el selector (RFC 0025 D9). */
+export function useTableBelieverIds(
+    api: ApiClient,
+    tableId: string,
+    enabled = true,
+): UseQueryResult<{ ids: string[] }> {
+    return useQuery({
+        queryKey: queryKeys.tables.believerIds(tableId),
+        queryFn: () => api.get<{ ids: string[] }>(`/tables/${tableId}/believers`),
+        enabled: enabled && Boolean(tableId),
+        staleTime: 10_000,
+    });
+}

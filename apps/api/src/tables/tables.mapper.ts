@@ -2,6 +2,8 @@ import {
     columnConfigSchema,
     columnOptionSchema,
     columnTypeSchema,
+    tableBelieverFieldSchema,
+    tableSourceSchema,
     type CustomTable as CustomTableView,
     type CustomTableColumn as CustomTableColumnView,
 } from '@navis/shared';
@@ -22,6 +24,7 @@ export function toCustomTableView(table: CustomTable): CustomTableView {
         accent: table.accent,
         position: table.position,
         isActive: table.isActive,
+        source: tableSourceSchema.nullable().catch(null).parse(table.source),
     };
 }
 
@@ -43,6 +46,9 @@ export function toColumnView(column: CustomTableColumn): CustomTableColumnView {
         options: parseJson(column.options, optionsSchema),
         config: parseJson(column.config, columnConfigSchema),
         isActive: column.isActive,
+        // Nulo si el texto en la base no es una clave del catálogo: se comporta
+        // como «a mano» y no como un error de lectura (Regla 10).
+        believerField: tableBelieverFieldSchema.nullable().catch(null).parse(column.believerField),
     };
 }
 

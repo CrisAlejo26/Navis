@@ -16,7 +16,7 @@ import { CurrentChurch } from '../common/decorators/current-church.decorator';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { RequirePermissions } from '../common/decorators/permissions.decorator';
 import { ActiveChurchGuard } from '../common/guards/active-church.guard';
-import { CreateTableRowDto, UpdateTableRowDto } from './dto/table-row.dto';
+import { CreateTableRowDto, AddTableBelieversDto, UpdateTableRowDto } from './dto/table-row.dto';
 import { TableRowsQueryDto } from './dto/table-rows-query.dto';
 import { TableRowsService } from './table-rows.service';
 import { TablesService } from './tables.service';
@@ -46,7 +46,30 @@ export class TableRowsController {
         @Query() query: TableRowsQueryDto,
     ): Promise<Paginated<CustomTableRowView>> {
         await this.tables.require(churchId, id);
-        return this.rows.findPage(id, query);
+        return this.rows.findPage(id, churchId, query);
+    }
+
+    @Get(':id/believers')
+    @RequirePermissions('tables.view')
+    @ApiOperation({ summary: 'Los identificadores de los creyentes ya enlazados (RFC 0025 D9)' })
+    async believerIds(
+        @CurrentChurch() churchId: string,
+        @Param('id') id: string,
+    ): Promise<{ ids: string[] }> {
+        await this.tables.require(churchId, id);
+        return { ids: await this.rows.listBelieverIds(id, churchId) };
+    }
+
+    @Post(':id/believers')
+    @RequirePermissions('tables.edit')
+    @ApiOperation({ summary: 'Añade creyentes en lote: una fila por creyente (RFC 0025 D7)' })
+    async addBelievers(
+        @CurrentChurch() churchId: string,
+        @CurrentUser('id') userId: string,
+        @Param('id') id: string,
+        @Body() dto: AddTableBelieversDto,
+    ): Promise<{ added: number }> {
+        return { added: await this.rows.addBelievers(id, churchId, userId, dto) };
     }
 
     @Post(':id/rows')
@@ -59,7 +82,7 @@ export class TableRowsController {
         @Body() dto: CreateTableRowDto,
     ): Promise<CustomTableRowView> {
         await this.tables.require(churchId, id);
-        return this.rows.create(id, userId, dto);
+        return this.rows.create(id, churchId, userId, dto);
     }
 
     @Patch(':id/rows/:rid')
@@ -72,7 +95,7 @@ export class TableRowsController {
         @Body() dto: UpdateTableRowDto,
     ): Promise<CustomTableRowView> {
         await this.tables.require(churchId, id);
-        return this.rows.update(id, rid, dto);
+        return this.rows.update(id, churchId, rid, dto);
     }
 
     @Delete(':id/rows/:rid')

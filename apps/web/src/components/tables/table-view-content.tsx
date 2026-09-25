@@ -14,6 +14,7 @@ export function TableViewContent({
     columns,
     editable,
     canManage,
+    linked,
 }: {
     tableId: string;
     accent: string;
@@ -23,6 +24,8 @@ export function TableViewContent({
     editable: boolean;
     /** `tables.manage`: crear vistas y guardarles los filtros (D5). */
     canManage: boolean;
+    /** La tabla enlazada a creyentes (RFC 0025 D7). */
+    linked?: boolean;
 }) {
     if (activeId !== GRID_VIEW && active?.type === 'kanban') {
         return (
@@ -57,6 +60,7 @@ export function TableViewContent({
             columns={columns}
             editable={editable}
             canManage={canManage}
+            linked={linked}
         />
     );
 }

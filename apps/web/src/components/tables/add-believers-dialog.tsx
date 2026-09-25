@@ -1,4 +1,4 @@
-import { useAddListMembers, useBelievers } from '@navis/api-client';
+import { useAddTableBelievers, useBelieversInfinite, useTableBelieverIds } from '@navis/api-client';
 import { believerName, type BelieversQuery } from '@navis/shared';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -12,31 +12,35 @@ import { api } from '@/lib/api';
 import { toast } from '@/lib/toast';
 
 /**
- * Añadir personas a una lista **desde el listado de creyentes**, marcándolas
- * (RFC 0010 D5).
+ * Añadir creyentes a una tabla enlazada, marcándolos en el listado (RFC 0025
+ * D7). Es el mismo gesto que `AddMembersDialog` de las listas —el filtro es la
+ * herramienta, la pertenencia es la decisión— con una diferencia: aquí la
+ * página se hojea en veinte y «Ver más» (D8) acumula la siguiente, porque el
+ * catálogo no cabe en una lista interminable.
  *
- * El filtro es la herramienta y la pertenencia es la decisión: se filtra por
- * labor, sede, don o estado, se marca a quien interese y se añade. Lo que **no**
- * hay es una lista que se rellene sola con un filtro, porque eso reescribe a
- * espaldas de quien colgó el cartel.
+ * Quien ya está en la tabla sale marcado y deshabilitado, no escondido (D9).
  */
-export function AddMembersDialog({
+export function AddBelieversDialog({
     open,
     onClose,
-    listId,
-    already,
+    tableId,
+    onAdded,
 }: {
     open: boolean;
     onClose: () => void;
-    listId: string;
-    /** Quién está ya dentro: sale marcado y deshabilitado, no escondido. */
-    already: ReadonlySet<string>;
+    tableId: string;
+    /** Se llama cuando el lote creó filas nuevas, para animar su llegada (D16). */
+    onAdded?: () => void;
 }) {
     const { t } = useTranslation();
-    const [query, setQuery] = useState<BelieversQuery>({ limit: 100 });
+    const [query, setQuery] = useState<BelieversQuery>({ limit: 20 });
     const [marcados, setMarcados] = useState<string[]>([]);
-    const { data: page, isLoading } = useBelievers(api, query, open);
-    const add = useAddListMembers(api);
+    const list = useBelieversInfinite(api, query, open);
+    const { data: dentro } = useTableBelieverIds(api, tableId, open);
+    const add = useAddTableBelievers(api);
+
+    const yaDentro = new Set(dentro?.ids ?? []);
+    const personas = list.data?.pages.flatMap((page) => page.items) ?? [];
 
     const cerrar = () => {
         setMarcados([]);
@@ -45,11 +49,19 @@ export function AddMembersDialog({
 
     const guardar = () => {
         add.mutate(
-            { listId, believerIds: marcados },
+            { tableId, believerIds: marcados },
             {
-                onSuccess: () => {
-                    toast.success(t('lists.membersAdded', { count: marcados.length }));
+                onSuccess: ({ added }) => {
+                    if (added > 0) {
+                        onAdded?.();
+                        toast.success(t('tables.believersAdded', { count: added }));
+                    } else {
+                        toast.info(t('tables.believersAlreadyIn'));
+                    }
                     cerrar();
+                },
+                onError: () => {
+                    toast.error(t('errors.generic'));
                 },
             },
         );
@@ -59,19 +71,19 @@ export function AddMembersDialog({
         <Dialog
             open={open}
             onClose={cerrar}
-            title={t('lists.addPeople')}
+            title={t('tables.addBelievers')}
             width="min(44rem, calc(100vw - 2rem))"
         >
             <div className="gap-4 flex flex-col">
                 <AddMembersFilters query={query} onChange={setQuery} />
 
-                <ul className="min-h-40 max-h-[50dvh] overflow-y-auto rounded-lg border">
-                    {isLoading && (
+                <ul className="min-h-40 max-h-[45dvh] overflow-y-auto rounded-lg border">
+                    {list.isLoading && (
                         <li className="p-4 text-sm text-muted-foreground">{t('common.loading')}</li>
                     )}
 
-                    {page?.items.map((person) => {
-                        const dentro = already.has(person.id);
+                    {personas.map((person) => {
+                        const ya = yaDentro.has(person.id);
 
                         return (
                             <li
@@ -81,9 +93,12 @@ export function AddMembersDialog({
                                 <BelieverPhoto believer={person} />
                                 <Checkbox
                                     className="order-first"
-                                    disabled={dentro}
-                                    checked={dentro || marcados.includes(person.id)}
-                                    label={`${believerName(person)}${dentro ? ` · ${t('lists.alreadyIn')}` : ''}`}
+                                    disabled={ya}
+                                    checked={ya || marcados.includes(person.id)}
+                                    label={
+                                        believerName(person) +
+                                        (ya ? ` · ${t('tables.alreadyInTable')}` : '')
+                                    }
                                     onChange={(event) => {
                                         setMarcados((current) =>
                                             event.target.checked
@@ -96,12 +111,23 @@ export function AddMembersDialog({
                         );
                     })}
 
-                    {page?.items.length === 0 && (
+                    {!list.isLoading && personas.length === 0 && (
                         <li className="p-4 text-sm text-muted-foreground">
                             {t('believers.noResults')}
                         </li>
                     )}
                 </ul>
+
+                {list.hasNextPage && (
+                    <Button
+                        variant="ghost"
+                        className="w-full"
+                        isLoading={list.isFetchingNextPage}
+                        onClick={() => void list.fetchNextPage()}
+                    >
+                        {t('tables.seeMore')}
+                    </Button>
+                )}
 
                 <Button
                     size="lg"
@@ -110,7 +136,7 @@ export function AddMembersDialog({
                     isLoading={add.isPending}
                     onClick={guardar}
                 >
-                    {t('lists.addSelected', { count: marcados.length })}
+                    {t('tables.addSelected', { count: marcados.length })}
                 </Button>
             </div>
         </Dialog>

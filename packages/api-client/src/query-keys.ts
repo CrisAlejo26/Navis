@@ -105,6 +105,7 @@ export const queryKeys = {
         rows: (tableId: string, query: object) =>
             [...queryKeys.tables.all, 'rows', tableId, query] as const,
         views: (tableId: string) => [...queryKeys.tables.all, 'views', tableId] as const,
+        believerIds: (tableId: string) => [...queryKeys.tables.all, 'believers', tableId] as const,
     },
     /**
      * Las profecías de quien ha entrado (RFC 0004).

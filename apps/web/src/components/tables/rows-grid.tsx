@@ -5,10 +5,12 @@ import {
     type CustomTableRow,
     type RowFilter,
 } from '@navis/shared';
-import { ListFilter, Table2 } from 'lucide-react';
+import { AlertTriangle, ListFilter, Table2 } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { AddBelieversDialog } from '@/components/tables/add-believers-dialog';
+import { BoundCell } from '@/components/tables/bound-cell';
 import { RowActions } from '@/components/tables/row-actions';
 import { RowForm } from '@/components/tables/row-form';
 import { RowsGridToolbar } from '@/components/tables/rows-grid-toolbar';
@@ -23,6 +25,7 @@ import { accentVars } from '@/lib/accents';
 import { api } from '@/lib/api';
 import { announceFilterChange } from '@/lib/tables/filter-announce';
 import { encodeFilters, withFilter, filterFor } from '@/lib/tables/filters';
+import { useRowArrivals } from '@/components/tables/use-row-arrivals';
 import { useTableFilters } from '@/lib/tables/filters-url';
 import { toast } from '@/lib/toast';
 import { cn } from '@/lib/cn';
@@ -42,6 +45,7 @@ export function RowsGrid({
     columns,
     editable,
     canManage,
+    linked,
 }: {
     tableId: string;
     accent: string;
@@ -49,6 +53,8 @@ export function RowsGrid({
     editable: boolean;
     /** `tables.manage`: puede guardar los filtros como vista (D5). */
     canManage: boolean;
+    /** La tabla enlazada al listado de creyentes: añadir abre el selector (RFC 0025 D7). */
+    linked?: boolean;
 }) {
     const { t } = useTranslation();
     const remove = useDeleteTableRow(api);
@@ -61,6 +67,7 @@ export function RowsGrid({
     const [editando, setEditando] = useState<CustomTableRow | 'new' | null>(null);
     const [borrando, setBorrando] = useState<CustomTableRow | null>(null);
     const [guardandoVista, setGuardandoVista] = useState(false);
+    const [anadiendo, setAnadiendo] = useState(false);
 
     const visibles = columns.filter((one) => one.isActive);
     const { filters, setFilters } = useTableFilters(visibles);
@@ -73,6 +80,8 @@ export function RowsGrid({
         search: search || undefined,
         filters: encodeFilters(filters),
     });
+
+    const arrivals = useRowArrivals((data?.items ?? []).map((one) => one.id));
 
     const abrirFila = (row: CustomTableRow | 'new') => {
         setEditando(row);
@@ -114,10 +123,12 @@ export function RowsGrid({
                 onAdd={
                     editable
                         ? () => {
-                              abrirFila('new');
+                              if (linked) setAnadiendo(true);
+                              else abrirFila('new');
                           }
                         : undefined
                 }
+                addLabel={linked ? t('tables.addBelievers') : undefined}
                 onSaveView={canManage ? () => setGuardandoVista(true) : undefined}
             />
 
@@ -168,13 +179,27 @@ export function RowsGrid({
                 }
                 renderRow={(row) => (
                     <>
-                        {visibles.map((column) => (
+                        {visibles.map((column, index) => (
                             <TableCell key={column.key}>
-                                <RowValueCell column={column} value={row.data[column.key]} />
+                                <BoundCell
+                                    column={column}
+                                    row={row}
+                                    linked={linked}
+                                    arrival={arrivals.isNew(row.id) ? index : undefined}
+                                />
                             </TableCell>
                         ))}
                         {editable && (
                             <TableCell>
+                                {linked && !row.believer && (
+                                    <span
+                                        title={t('tables.believerGone')}
+                                        className="mr-1 inline-flex align-middle text-warning"
+                                    >
+                                        <AlertTriangle size={14} aria-hidden />
+                                        <span className="sr-only">{t('tables.believerGone')}</span>
+                                    </span>
+                                )}
                                 <RowActions
                                     compact
                                     onEdit={() => {
@@ -190,13 +215,18 @@ export function RowsGrid({
                 )}
                 renderCard={(row) => (
                     <div className="gap-2 flex flex-col">
-                        {visibles.map((column) => (
+                        {visibles.map((column, index) => (
                             <p
                                 key={column.key}
                                 className="gap-1 text-sm flex items-baseline justify-between"
                             >
                                 <span className="text-muted-foreground">{column.label}</span>
-                                <RowValueCell column={column} value={row.data[column.key]} />
+                                <BoundCell
+                                    column={column}
+                                    row={row}
+                                    linked={linked}
+                                    arrival={arrivals.isNew(row.id) ? index : undefined}
+                                />
                             </p>
                         ))}
                         {editable && (
@@ -239,6 +269,17 @@ export function RowsGrid({
                     tableId={tableId}
                     columns={visibles}
                     row={editando === 'new' ? undefined : editando}
+                    linked={linked}
+                />
+            )}
+
+            {anadiendo && (
+                <AddBelieversDialog
+                    open
+                    onClose={() => {
+                        setAnadiendo(false);
+                    }}
+                    tableId={tableId}
                 />
             )}
 

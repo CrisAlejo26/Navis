@@ -56,6 +56,13 @@ export class CustomTable extends BaseEntity {
     @Column({ name: 'is_active', type: 'boolean', default: true })
     isActive: boolean;
 
+    @ApiPropertyOptional({
+        description:
+            'De dónde salen sus filas: nulo = a mano, believers = el listado (RFC 0025 D1)',
+    })
+    @Column({ type: 'text', nullable: true })
+    source: string | null;
+
     @ApiPropertyOptional()
     @Column({ name: 'created_by', type: 'text', nullable: true })
     createdBy: string | null;
