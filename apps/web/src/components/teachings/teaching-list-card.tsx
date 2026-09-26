@@ -1,11 +1,20 @@
+import type { TeachingListItem } from '@navis/shared';
 import { Link } from 'react-router';
 
-import { TeachingActions } from '@/components/teachings/teaching-actions';
+import {
+    TeachingActions,
+    type TeachingActionHandlers,
+} from '@/components/teachings/teaching-actions';
 import { TeachingChecklistBadge } from '@/components/teachings/teaching-checklist-badge';
-import type { TeachingCells } from '@/components/teachings/teaching-row';
 import { cn } from '@/lib/cn';
 import { formatDay } from '@/lib/format';
 import { checklistBorder } from '@/lib/teachings/checklist-border';
+
+/** Lo que necesita la ficha de móvil de una enseñanza. */
+export interface TeachingCells extends TeachingActionHandlers {
+    teaching: TeachingListItem;
+    index: number;
+}
 
 /**
  * La misma enseñanza como ficha, por debajo de `md` (Regla 5).

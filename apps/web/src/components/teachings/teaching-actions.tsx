@@ -1,7 +1,7 @@
 import { Pencil, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-import { Button } from '@/components/ui/button';
+import { IconAction, type IconActionTone } from '@/components/ui/icon-action';
 
 export interface TeachingActionHandlers {
     onEdit: () => void;
@@ -17,26 +17,27 @@ export function TeachingActions({
     const { t } = useTranslation();
 
     const actions = [
-        { icon: Pencil, label: t('teachings.edit'), onClick: onEdit, danger: false },
-        { icon: Trash2, label: t('common.delete'), onClick: onDelete, danger: true },
-    ] as const;
+        { icon: Pencil, label: t('teachings.edit'), onClick: onEdit, tone: 'primary' },
+        { icon: Trash2, label: t('common.delete'), onClick: onDelete, tone: 'destructive' },
+    ] satisfies {
+        icon: typeof Trash2;
+        label: string;
+        onClick: () => void;
+        tone: IconActionTone;
+    }[];
 
     return (
         <span className="gap-0.5 flex justify-end">
-            {actions.map(({ icon: Icon, label, onClick, danger }) => (
-                <Button
+            {actions.map(({ icon: Icon, label, onClick, tone }) => (
+                <IconAction
                     key={label}
-                    variant="ghost"
-                    size="icon"
+                    tone={tone}
                     title={label}
                     aria-label={title ? `${label}: ${title}` : label}
                     onClick={onClick}
-                    className={
-                        danger ? 'hover:bg-destructive/10 hover:text-destructive' : undefined
-                    }
                 >
                     <Icon size={16} aria-hidden />
-                </Button>
+                </IconAction>
             ))}
         </span>
     );
