@@ -939,6 +939,9 @@ export const it = {
         errorFulfillmentEmpty: 'Scrivi quale parte si è compiuta',
     },
     dreams: {
+        filterDreamedHelp: "Mostra solo i sogni delle notti comprese in quell'intervallo di date.",
+        filterStateHelp: 'Mostra solo i sogni che si trovano in uno degli stati selezionati.',
+        filterEmotionHelp: 'Mostra solo i sogni che hanno una delle emozioni selezionate.',
         title: 'Sogni',
         lead: '{{total}} sogni · {{month}} questo mese · {{fulfilled}} avverati',
         add: 'Annotare un sogno',
@@ -994,6 +997,7 @@ export const it = {
             cumplido: 'Avverato',
         },
         columns: {
+            fulfilled: 'Avverato',
             dream: 'Sogno',
             dreamed: 'Notte',
             emotions: 'Emozioni',

@@ -944,6 +944,9 @@ export const fr = {
         errorFulfillmentEmpty: 'Écris quelle partie s’est accomplie',
     },
     dreams: {
+        filterDreamedHelp: 'Ne garde que les rêves des nuits comprises dans cette période.',
+        filterStateHelp: "Ne garde que les rêves qui sont dans l'un des états cochés.",
+        filterEmotionHelp: "Ne garde que les rêves qui portent l'une des émotions cochées.",
         title: 'Rêves',
         lead: '{{total}} rêves · {{month}} ce mois-ci · {{fulfilled}} accomplis',
         add: 'Noter un rêve',
@@ -1000,6 +1003,7 @@ export const fr = {
             cumplido: 'Accompli',
         },
         columns: {
+            fulfilled: 'Accompli',
             dream: 'Rêve',
             dreamed: 'Nuit',
             emotions: 'Émotions',

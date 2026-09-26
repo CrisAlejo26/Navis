@@ -50,7 +50,9 @@ export function ColumnsMenu<TItem extends TableRowData>({
         const column = hideable.find((one) => one.id === id);
         return column ? [column] : [];
     });
-    const hiddenCount = hideable.filter((column) => columnVisibility[column.id] === false).length;
+    const hiddenCount = hideable.filter(
+        (column) => column.defaultVisible !== false && columnVisibility[column.id] === false,
+    ).length;
 
     const move = (id: string, delta: -1 | 1) => {
         const target = ordered[ordered.findIndex((one) => one.id === id) + delta];

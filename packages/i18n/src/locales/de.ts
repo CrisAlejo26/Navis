@@ -951,6 +951,10 @@ export const de = {
         errorFulfillmentEmpty: 'Schreibe, welcher Teil sich erfüllt hat',
     },
     dreams: {
+        filterDreamedHelp: 'Zeigt nur die Träume aus Nächten innerhalb dieses Zeitraums.',
+        filterStateHelp:
+            'Zeigt nur die Träume, die sich in einem der markierten Zustände befinden.',
+        filterEmotionHelp: 'Zeigt nur die Träume mit einer der markierten Emotionen.',
         title: 'Träume',
         lead: '{{total}} Träume · {{month}} diesen Monat · {{fulfilled}} eingetroffen',
         add: 'Traum festhalten',
@@ -1007,6 +1011,7 @@ export const de = {
             cumplido: 'Eingetroffen',
         },
         columns: {
+            fulfilled: 'Erfüllt',
             dream: 'Traum',
             dreamed: 'Nacht',
             emotions: 'Gefühle',

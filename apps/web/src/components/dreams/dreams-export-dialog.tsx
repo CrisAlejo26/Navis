@@ -23,23 +23,23 @@ export function DreamsExportDialog({
 }: {
     open: boolean;
     onClose: () => void;
-    screen: DreamsScreen;
+    screen: Pick<DreamsScreen, 'query' | 'emotions'>;
 }) {
     const { t } = useTranslation();
     const columns = useDreamExportColumns();
     const emotionLabel = useEmotionLabel();
-    const filters = screen.filters;
+    const query = screen.query;
 
     const { data, isFetching } = useDreamsExport(
         api,
         {
-            search: screen.query.search || undefined,
-            state: filters.state,
-            emotion: filters.emotion,
-            from: filters.from || undefined,
-            to: filters.to || undefined,
-            sort: screen.query.sort,
-            order: screen.query.order,
+            search: query.search,
+            state: query.state,
+            emotion: query.emotion,
+            from: query.from,
+            to: query.to,
+            sort: query.sort,
+            order: query.order,
         },
         open,
     );
@@ -48,21 +48,21 @@ export function DreamsExportDialog({
         if (!data) return null;
 
         const label = t('dreams.title');
-        const emociones = filters.emotion
+        const emociones = (query.emotion ?? [])
             .map((id) => screen.emotions.find((one) => one.id === id))
             .filter((one) => one !== undefined)
             .map(emotionLabel);
 
         const partes = [
             t('export.rows', { count: data.returned, total: data.total }),
-            screen.query.search ? `${t('dreams.search')}: ${screen.query.search}` : '',
-            filters.state.length > 0
-                ? `${t('export.state')}: ${filters.state.map((one) => t(`dreams.state.${one}`)).join(', ')}`
+            query.search ? `${t('dreams.search')}: ${query.search}` : '',
+            query.state && query.state.length > 0
+                ? `${t('export.state')}: ${query.state.map((one) => t(`dreams.state.${one}`)).join(', ')}`
                 : '',
             emociones.length > 0 ? `${t('dreams.columns.emotions')}: ${emociones.join(', ')}` : '',
-            filters.from || filters.to
-                ? [filters.from, filters.to]
-                      .filter(Boolean)
+            query.from || query.to
+                ? [query.from, query.to]
+                      .filter((day): day is string => Boolean(day))
                       .map((day) => formatDay(day))
                       .join(' – ')
                 : '',
@@ -75,7 +75,7 @@ export function DreamsExportDialog({
             columns,
             rows: data.rows,
         });
-    }, [data, columns, emotionLabel, filters, screen.emotions, screen.query.search, t]);
+    }, [data, columns, emotionLabel, query, screen.emotions, t]);
 
     return (
         <ExportSheet

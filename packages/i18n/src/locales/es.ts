@@ -948,6 +948,10 @@ export const es = {
         errorFulfillmentEmpty: 'Escribe qué parte se ha cumplido',
     },
     dreams: {
+        filterDreamedHelp:
+            'Deja solo los sueños de las noches que caen dentro de ese tramo de fechas.',
+        filterStateHelp: 'Deja solo los sueños que están en alguno de los estados marcados.',
+        filterEmotionHelp: 'Deja solo los sueños que llevan alguna de las emociones marcadas.',
         title: 'Sueños',
         lead: '{{total}} sueños · {{month}} este mes · {{fulfilled}} cumplidos',
         add: 'Apuntar un sueño',
@@ -1003,6 +1007,7 @@ export const es = {
             cumplido: 'Cumplido',
         },
         columns: {
+            fulfilled: 'Cumplido',
             dream: 'Sueño',
             dreamed: 'Noche',
             emotions: 'Emociones',

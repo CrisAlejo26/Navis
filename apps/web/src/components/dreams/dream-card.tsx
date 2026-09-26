@@ -1,13 +1,21 @@
+import type { DreamListItem } from '@navis/shared';
 import { Mic } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 
 import { DreamActions } from '@/components/dreams/dream-actions';
 import { EmotionChip } from '@/components/dreams/emotion-chip';
-import type { DreamCells } from '@/components/dreams/dream-row';
 import { DreamStateBadge } from '@/components/dreams/state-badge';
 import { accentVars } from '@/lib/accents';
 import { formatDay } from '@/lib/format';
+
+/** Lo que necesita la ficha de móvil de un sueño (§7.5). */
+export interface DreamCells {
+    dream: DreamListItem;
+    index: number;
+    onEdit: () => void;
+    onDelete: () => void;
+}
 
 /**
  * El mismo sueño como ficha: es lo que se ve por debajo de `md` (§7.5).

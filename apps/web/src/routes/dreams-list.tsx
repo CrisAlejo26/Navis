@@ -1,16 +1,17 @@
 import { useDreamsStats } from '@navis/api-client';
 import type { DreamListItem } from '@navis/shared';
+import { Download, MoonStar } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { DeleteDreamDialog } from '@/components/dreams/delete-dream-dialog';
+import { DreamCard } from '@/components/dreams/dream-card';
 import { DreamForm } from '@/components/dreams/dream-form';
 import { DreamsExportDialog } from '@/components/dreams/dreams-export-dialog';
 import { DreamsHeader } from '@/components/dreams/dreams-header';
-import { DreamsTable } from '@/components/dreams/dreams-table';
-import { DreamsToolbar } from '@/components/dreams/dreams-toolbar';
-import type { DreamCells } from '@/components/dreams/dream-row';
+import { DataTable } from '@/components/data-table/data-table';
 import { BackLink } from '@/components/ui/back-link';
+import { Button } from '@/components/ui/button';
 import { DateRangeButton } from '@/components/ui/date-range-button';
 import { api } from '@/lib/api';
 import { useDreamsScreen } from '@/lib/dreams/use-dreams-screen';
@@ -24,7 +25,6 @@ import { useDreamsScreen } from '@/lib/dreams/use-dreams-screen';
  */
 export function DreamsListPage() {
     const { t } = useTranslation();
-    const screen = useDreamsScreen();
     const { data: stats } = useDreamsStats(api);
 
     const [creating, setCreating] = useState(false);
@@ -32,17 +32,9 @@ export function DreamsListPage() {
     const [deleting, setDeleting] = useState<DreamListItem | null>(null);
     const [exporting, setExporting] = useState(false);
 
-    /** Lo mismo alimenta la fila de la tabla y la ficha de móvil (§7.5). */
-    const cells = (dream: DreamListItem, index: number): DreamCells => ({
-        dream,
-        index,
-        onEdit: () => {
-            setEditing(dream);
-        },
-        onDelete: () => {
-            setDeleting(dream);
-        },
-    });
+    const screen = useDreamsScreen({ onEdit: setEditing, onDelete: setDeleting });
+    const { state, range, setRange } = screen;
+    const searching = state.request.filters.length > 0 || state.request.search !== '';
 
     return (
         <section className="gap-4 animate-page-in flex flex-col">
@@ -54,23 +46,50 @@ export function DreamsListPage() {
                     setCreating(true);
                 }}
             >
-                <DateRangeButton
-                    from={screen.filters.from}
-                    to={screen.filters.to}
-                    onChange={screen.filters.setRange}
-                />
+                <DateRangeButton from={range.from} to={range.to} onChange={setRange} />
             </DreamsHeader>
 
-            <DreamsTable
-                screen={screen}
-                cells={cells}
-                toolbar={
-                    <DreamsToolbar
-                        screen={screen}
-                        onExport={() => {
-                            setExporting(true);
+            <DataTable
+                columns={screen.columns}
+                state={state}
+                source={screen.source}
+                getKey={(dream) => dream.id}
+                emptyIcon={MoonStar}
+                emptyTitle={searching ? t('dreams.noResults') : t('dreams.emptyTitle')}
+                searchLabel={t('dreams.search')}
+                // Las filas entran escalonadas, y solo las doce primeras: más allá, la
+                // cascada solo hace esperar (§7.8).
+                rowClassName={() => 'animate-rise-in'}
+                rowStyle={(_dream, index) => ({
+                    animationDelay: `${String(Math.min(index, 12) * 35)}ms`,
+                })}
+                renderCard={(dream, index) => (
+                    <DreamCard
+                        dream={dream}
+                        index={index}
+                        onEdit={() => {
+                            setEditing(dream);
+                        }}
+                        onDelete={() => {
+                            setDeleting(dream);
                         }}
                     />
+                )}
+                // El fichero de sueños trae más que la fila del listado (el cuerpo
+                // entero, la interpretación…), así que exporta con su propio diálogo
+                // y no con el genérico de la tabla (RFC 0009 §7.1).
+                toolbarExtra={
+                    <Button
+                        variant="outline"
+                        className="max-sm:h-11"
+                        aria-label={t('export.title')}
+                        onClick={() => {
+                            setExporting(true);
+                        }}
+                    >
+                        <Download size={16} aria-hidden className="text-primary" />
+                        <span className="max-sm:sr-only">{t('export.title')}</span>
+                    </Button>
                 }
             />
 

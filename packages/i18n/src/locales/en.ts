@@ -937,6 +937,9 @@ export const en = {
         errorFulfillmentEmpty: 'Write which part has been fulfilled',
     },
     dreams: {
+        filterDreamedHelp: 'Keeps only the dreams from nights inside that date range.',
+        filterStateHelp: 'Keeps only the dreams that are in any of the ticked states.',
+        filterEmotionHelp: 'Keeps only the dreams that carry any of the ticked emotions.',
         title: 'Dreams',
         lead: '{{total}} dreams · {{month}} this month · {{fulfilled}} fulfilled',
         add: 'Write down a dream',
@@ -992,6 +995,7 @@ export const en = {
             cumplido: 'Fulfilled',
         },
         columns: {
+            fulfilled: 'Fulfilled',
             dream: 'Dream',
             dreamed: 'Night',
             emotions: 'Emotions',

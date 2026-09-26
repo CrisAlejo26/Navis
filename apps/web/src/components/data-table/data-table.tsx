@@ -104,6 +104,9 @@ export function DataTable<TItem extends TableRowData>({
         (column) =>
             column.hideable !== false &&
             !column.filterOnly &&
+            // Una columna que ya nace oculta no es «una que se ha ocultado»: solo se
+            // cuentan las que la persona ha quitado.
+            column.defaultVisible !== false &&
             columnVisibility[column.id] === false,
     ).length;
     // Lo que se ve, en su orden: las fichas genéricas y la exportación siguen lo mismo.
