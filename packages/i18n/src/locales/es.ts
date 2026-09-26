@@ -1716,6 +1716,7 @@ export const es = {
     /* Tablas personalizadas (RFC 0021): cada iglesia define su propia rejilla
      de columnas y filas. */
     tables: {
+        noRowsMatch: 'Ninguna fila con esos filtros',
         title: 'Tablas',
         subtitle: 'Lo que se lleva en una hoja de cálculo, aquí dentro',
         newTable: 'Nueva tabla',

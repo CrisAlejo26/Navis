@@ -1703,6 +1703,7 @@ export const fr = {
         createAccessFor: 'Créer un accès pour {{name}}',
     },
     tables: {
+        noRowsMatch: 'Aucune ligne avec ces filtres',
         title: 'Tableaux',
         subtitle: 'Ce que vous suivriez dans un tableur, ici même',
         newTable: 'Nouveau tableau',

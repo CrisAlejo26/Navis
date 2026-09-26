@@ -63,22 +63,21 @@ function fila(page: Page, texto: string): ReturnType<Page['getByText']> {
 test.describe('La cuadrícula sin filtros', () => {
     test.use({ viewport: { width: 1280, height: 800 } });
 
-    test('enseña las filas y ningún control de filtro ocupando la pantalla', async ({ page }) => {
+    test('enseña las filas y ningún filtro ocupando la pantalla', async ({ page }) => {
         await abrirTabla(page);
 
         await expect(fila(page, 'Micrófono Shure')).toBeVisible();
         await expect(fila(page, 'Cable XLR')).toBeVisible();
 
         // Sin filtros no hay chips: la tabla queda sola.
-        await expect(page.getByRole('button', { name: 'Filtro' })).toBeVisible();
+        await expect(page.getByRole('button', { name: /Quitar filtros/ })).toHaveCount(0);
     });
 
     test('las cabeceras ordenan al clicar', async ({ page }) => {
         await abrirTabla(page);
 
-        // El orden de la cuadrícula no viaja en la URL, pero la cabecera sí
-        // declara su estado (`aria-sort`), y eso es lo que comprueba este test.
-        await page.getByRole('button', { name: /^Ordenar por: Nombre$/ }).click();
+        // La cabecera declara su estado (`aria-sort`), y eso es lo que comprueba este test.
+        await page.getByRole('button', { name: /^Ordenar por Nombre/ }).click();
         await expect(page.getByRole('columnheader', { name: /Nombre/ })).toHaveAttribute(
             'aria-sort',
             'ascending',
@@ -86,70 +85,49 @@ test.describe('La cuadrícula sin filtros', () => {
     });
 });
 
-test.describe('El popover de filtro por cabecera', () => {
+test.describe('Los filtros de la barra', () => {
     test.use({ viewport: { width: 1280, height: 800 } });
 
-    test('filtra por una columna desde su cabecera y lo confirma con un aviso', async ({
+    test('una columna de selección filtra desde su botón y dice cuántas opciones hay', async ({
         page,
     }) => {
         await abrirTabla(page);
 
-        await page.getByRole('button', { name: 'Filtrar por Estado' }).click();
-        await expect(page.getByRole('dialog', { name: 'Estado' })).toBeVisible();
-
-        await page.getByRole('button', { name: 'Bueno' }).click();
-
-        // El chip nace y el toast confirma la acción (peticiones web: 'Filtro aplicado').
-        await expect(page.getByText('Filtro aplicado')).toBeVisible();
-        await expect(page.getByText('Bueno', { exact: true }).first()).toBeVisible();
+        await page.getByRole('button', { name: /^Estado/ }).click();
+        await page.getByRole('checkbox', { name: 'Bueno' }).check();
 
         // El filtrado se ve: solo quedan las filas buenas (el stub filtra de verdad).
         await expect(fila(page, 'Micrófono Shure')).toBeVisible();
         await expect(fila(page, 'Cable XLR')).toBeHidden();
+        await expect(page.getByRole('button', { name: /^Estado/ })).toContainText('1');
     });
 
-    test('el chip se puede editar al tocarlo y quitar con la X', async ({ page }) => {
+    test('quitar el filtro devuelve las filas', async ({ page }) => {
         await abrirTabla(page);
-
-        await page.getByRole('button', { name: 'Filtrar por Estado' }).click();
-        await page.getByRole('button', { name: 'Bueno' }).click();
-
-        // El panel se queda abierto a propósito (Notion/Airtable); se cierra con
-        // Escape para volver a la tabla y tocar el chip.
-        await page.keyboard.press('Escape');
-        await expect(page.getByRole('dialog', { name: 'Estado' })).toBeHidden();
 
         await page.getByRole('button', { name: /^Estado/ }).click();
-        await expect(page.getByRole('dialog', { name: 'Estado' })).toBeVisible();
-
-        // Quitarlo: desaparece la única opción activa y vuelve la fila rota.
-        await page.getByRole('button', { name: 'Bueno', exact: true }).click();
-        await expect(fila(page, 'Cable XLR')).toBeVisible();
-    });
-});
-
-test.describe('El menú de filtros de la barra', () => {
-    test.use({ viewport: { width: 1280, height: 800 } });
-
-    test('añade un filtro por columna y muestra cuántos hay', async ({ page }) => {
-        await abrirTabla(page);
-
-        await page.getByRole('button', { name: 'Filtro', exact: true }).click();
-        await page.getByRole('button', { name: /^Precio/ }).click();
-
-        await page.getByPlaceholder('Valor mínimo').fill('100');
-
-        await expect(page.getByRole('button', { name: 'Filtro (1)' })).toBeVisible();
-        await expect(fila(page, 'Micrófono Shure')).toBeVisible();
+        await page.getByRole('checkbox', { name: 'Bueno' }).check();
         await expect(fila(page, 'Cable XLR')).toBeHidden();
+
+        // Esperar a que la casilla refleje el filtro antes de quitarlo: la lista se
+        // vuelve a pintar con la respuesta y un clic a mitad de ese cambio se pierde.
+        await expect(page.getByRole('checkbox', { name: 'Bueno' })).toBeChecked();
+        // `click` y no `uncheck`: la casilla es controlada, así que vuelve a su valor
+        // hasta que el filtro cambia en la URL, y `uncheck` lo lee antes de eso.
+        await page.getByRole('checkbox', { name: 'Bueno' }).click();
+        await expect(page.getByRole('checkbox', { name: 'Bueno' })).not.toBeChecked();
+        await expect(fila(page, 'Cable XLR')).toBeVisible();
     });
 
     test('la contraseña no aparece entre las columnas filtrables (D29)', async ({ page }) => {
         await abrirTabla(page);
 
-        await page.getByRole('button', { name: 'Filtro', exact: true }).click();
+        await page.getByRole('button', { name: 'Filtros avanzados' }).click();
 
-        await expect(page.getByRole('button', { name: /^Secreto/ })).toHaveCount(0);
+        // La cabecera de la tabla sí la nombra: se mira solo la lista del panel.
+        const filas = page.locator('ul.divide-y li');
+        await expect(filas.filter({ hasText: 'Precio' })).toHaveCount(1);
+        await expect(filas.filter({ hasText: 'Secreto' })).toHaveCount(0);
     });
 });
 
@@ -159,8 +137,8 @@ test.describe('Los filtros viven en la URL', () => {
     test('recargar conserva el filtrado y compartir por enlace lo reproduce', async ({ page }) => {
         await abrirTabla(page);
 
-        await page.getByRole('button', { name: 'Filtrar por Estado' }).click();
-        await page.getByRole('button', { name: 'Roto' }).click();
+        await page.getByRole('button', { name: /^Estado/ }).click();
+        await page.getByRole('checkbox', { name: 'Roto' }).check();
 
         await expect(page).toHaveURL(/f=/);
 
@@ -176,8 +154,9 @@ test.describe('Guardar los filtros como vista', () => {
     test('el diálogo de vista trae los filtros que había', async ({ page }) => {
         await abrirTabla(page);
 
-        await page.getByRole('button', { name: 'Filtrar por Estado' }).click();
-        await page.getByRole('button', { name: 'Bueno' }).click();
+        await page.getByRole('button', { name: /^Estado/ }).click();
+        await page.getByRole('checkbox', { name: 'Bueno' }).check();
+        await page.keyboard.press('Escape');
 
         await page.getByRole('button', { name: 'Guardar filtros como vista' }).click();
 
@@ -188,12 +167,11 @@ test.describe('Guardar los filtros como vista', () => {
 test.describe('En móvil', () => {
     test.use({ viewport: { width: 375, height: 812 } });
 
-    test('la toolbar es una fila y los filtros se aplican igual', async ({ page }) => {
+    test('la barra cabe y los filtros se aplican igual', async ({ page }) => {
         await abrirTabla(page);
 
-        await page.getByRole('button', { name: 'Filtro', exact: true }).click();
         await page.getByRole('button', { name: /^Estado/ }).click();
-        await page.getByRole('button', { name: 'Bueno' }).click();
+        await page.getByRole('checkbox', { name: 'Bueno' }).check();
 
         await expect(fila(page, 'Micrófono Shure')).toBeVisible();
         await expect(fila(page, 'Cable XLR')).toBeHidden();

@@ -3,7 +3,7 @@ import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { summarizeFilter } from '@/lib/tables/filter-summary';
-import { operatorFor } from '@/lib/tables/filters-url';
+import { operatorFor } from '@/lib/tables/filter-operator';
 import type { CustomTableColumn, RowFilter } from '@navis/shared';
 
 import { ColumnFilterControl } from '@/components/tables/column-filter-control';

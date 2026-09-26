@@ -1690,6 +1690,7 @@ export const pt = {
         createAccessFor: 'Criar um acesso para {{name}}',
     },
     tables: {
+        noRowsMatch: 'Nenhuma linha com esses filtros',
         title: 'Tabelas',
         subtitle: 'O que levarias numa folha de cálculo, aqui mesmo',
         newTable: 'Nova tabela',

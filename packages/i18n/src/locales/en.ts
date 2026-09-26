@@ -1689,6 +1689,7 @@ export const en = {
         createAccessFor: 'Create an access for {{name}}',
     },
     tables: {
+        noRowsMatch: 'No rows match those filters',
         title: 'Tables',
         subtitle: 'What you would track in a spreadsheet, right in here',
         newTable: 'New table',

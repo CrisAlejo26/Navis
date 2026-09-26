@@ -2,6 +2,7 @@ import { Pencil, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import { Button } from '@/components/ui/button';
+import { IconAction } from '@/components/ui/icon-action';
 
 /** Editar y borrar una fila, en fila compacta (tabla) o en botones anchos (ficha). */
 export function RowActions({
@@ -18,17 +19,16 @@ export function RowActions({
     if (compact) {
         return (
             <div className="gap-1 flex justify-end">
-                <Button variant="ghost" size="icon" aria-label={t('common.edit')} onClick={onEdit}>
+                <IconAction tone="primary" aria-label={t('common.edit')} onClick={onEdit}>
                     <Pencil size={14} aria-hidden />
-                </Button>
-                <Button
-                    variant="ghost"
-                    size="icon"
+                </IconAction>
+                <IconAction
+                    tone="destructive"
                     aria-label={t('tables.deleteRow')}
                     onClick={onDelete}
                 >
                     <Trash2 size={14} aria-hidden />
-                </Button>
+                </IconAction>
             </div>
         );
     }

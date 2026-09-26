@@ -1692,6 +1692,7 @@ export const it = {
         createAccessFor: 'Creare un accesso per {{name}}',
     },
     tables: {
+        noRowsMatch: 'Nessuna riga con questi filtri',
         title: 'Tabelle',
         subtitle: 'Quello che terresti in un foglio di calcolo, proprio qui',
         newTable: 'Nuova tabella',

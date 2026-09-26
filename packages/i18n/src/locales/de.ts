@@ -1715,6 +1715,7 @@ export const de = {
         createAccessFor: 'Zugang für {{name}} anlegen',
     },
     tables: {
+        noRowsMatch: 'Keine Zeilen mit diesen Filtern',
         title: 'Tabellen',
         subtitle: 'Was du in einer Tabellenkalkulation führen würdest, gleich hier',
         newTable: 'Neue Tabelle',
