@@ -1,15 +1,22 @@
+import type { ManagedUser, RoleRow, RoleSlug } from '@navis/shared';
 import { useTranslation } from 'react-i18next';
 
 import { RoleBadge } from '@/components/access/role-badge';
-import { UserActions } from '@/components/access/user-actions';
-import type { UserCellsProps } from '@/components/access/user-row';
+import { UserActions, type UserActionHandlers } from '@/components/access/user-actions';
 import { Badge } from '@/components/ui/badge';
 import { accentVars } from '@/lib/accents';
 import { formatDate } from '@/lib/format';
 import { roleAccent } from '@/lib/roles';
 
+export interface UserCellsProps extends UserActionHandlers {
+    user: ManagedUser;
+    isSelf: boolean;
+    /** El catálogo de roles, para poner nombre y nivel al de esta cuenta. */
+    catalog: Map<RoleSlug, RoleRow>;
+}
+
 /**
- * La misma cuenta que pinta `UserRow`, apilada para un teléfono: el nombre y
+ * La misma cuenta que pintan las columnas de `useUserColumns`, apilada para un teléfono: el nombre y
  * las acciones arriba, y debajo lo que acompaña. Lo importante se lee sin
  * desplazarse a lo ancho (Regla 5). El filete izquierdo lleva el color del
  * rol, igual que la fila de la tabla.

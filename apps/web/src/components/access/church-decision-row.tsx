@@ -21,7 +21,7 @@ interface ChurchDecisionRowProps {
  * con **esta** iglesia. Fichero propio porque `DeleteUserDialog` ya tiene su
  * responsabilidad —confirmar y llamar al hook— y esto es una pieza de
  * formulario con su propia validación, el mismo criterio que ya separa
- * `ChurchFilter` en esta carpeta (Regla 6).
+ * el filtro de iglesias (Regla 6).
  */
 export function ChurchDecisionRow({
     church,

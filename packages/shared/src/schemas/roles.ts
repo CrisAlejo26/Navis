@@ -169,6 +169,8 @@ export const managedUsersQuerySchema = paginationQuerySchema.extend({
     /** Busca a la vez en el nombre y en el correo. */
     search: z.string().trim().max(120).optional(),
     role: roleSlugSchema.optional(),
+    /** Deja solo las cuentas con alguno de estos roles. Se suma a `role` (el de siempre, uno solo). */
+    roles: z.array(roleSlugSchema).optional(),
     /**
      * Deja solo las cuentas de esas iglesias. Vacío o ausente, todas las
      * accesibles: el alcance de quien pregunta ya acota por sí solo.

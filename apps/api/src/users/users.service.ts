@@ -139,6 +139,16 @@ export class UsersService {
             conditions.push(`"role" = ${p(params.length)}`);
         }
 
+        // Varios roles a la vez: un `IN` con un marcador por cada uno (en SQLite cada
+        // `?` es un parámetro distinto). Vacío no filtra: `IN ()` no es SQL válido.
+        if (query.roles && query.roles.length > 0) {
+            const marks = query.roles.map((role) => {
+                params.push(role);
+                return p(params.length);
+            });
+            conditions.push(`"role" IN (${marks.join(', ')})`);
+        }
+
         const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
         const totals = await this.dataSource.query<{ total: number | string }[]>(
             `SELECT COUNT(*) AS "total" FROM "user" ${where}`,

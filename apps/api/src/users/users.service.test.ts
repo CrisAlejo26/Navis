@@ -82,4 +82,22 @@ describe('UsersService', () => {
         const [, params] = query.mock.calls[1] as [string, unknown[]];
         expect(params).toEqual([25, 50]);
     });
+
+    it('filtra por varios roles a la vez con un IN, sin dejar el de uno solo', async () => {
+        const { service, query } = fakeDataSource([{ total: 2 }], [ROW]);
+        await service.findPage({ ...PAGE, roles: ['pastor', 'sound'] });
+
+        const [sql, params] = query.mock.calls[0] as [string, unknown[]];
+        expect(sql).toMatch(/"role" IN \(\S+, \S+\)/);
+        expect(params).toEqual(['pastor', 'sound']);
+    });
+
+    it('una lista de roles vacía no añade condición (IN () no es SQL válido)', async () => {
+        const { service, query } = fakeDataSource([{ total: 0 }], []);
+        await service.findPage({ ...PAGE, roles: [] });
+
+        const [sql] = query.mock.calls[0] as [string, unknown[]];
+        expect(sql).not.toContain('IN ()');
+        expect(sql).not.toContain('"role" IN');
+    });
 });
