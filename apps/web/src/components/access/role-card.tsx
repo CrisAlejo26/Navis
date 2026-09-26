@@ -1,15 +1,19 @@
+import type { RoleRow } from '@navis/shared';
 import { useTranslation } from 'react-i18next';
 
-import { RoleActions } from '@/components/access/role-actions';
+import { RoleActions, type RoleActionHandlers } from '@/components/access/role-actions';
 import { RoleBadge } from '@/components/access/role-badge';
-import type { RoleCellsProps } from '@/components/access/role-row';
 import { Badge } from '@/components/ui/badge';
 import { accentVars } from '@/lib/accents';
 import { formatNumber } from '@/lib/format';
 import { roleAccent, useRoleHint } from '@/lib/roles';
 
+export interface RoleCellsProps extends RoleActionHandlers {
+    role: RoleRow;
+}
+
 /**
- * El mismo rol que pinta `RoleRow`, apilado para un teléfono. El filete
+ * El mismo rol que pintan las columnas de `useRoleColumns`, apilado para un teléfono. El filete
  * izquierdo lleva el color de su nivel (`roleAccent`), igual que la fila de
  * la tabla y que ya hace `EntryCard` con el tipo de una anotación.
  */

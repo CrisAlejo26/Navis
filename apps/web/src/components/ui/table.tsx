@@ -1,5 +1,5 @@
 import { ChevronDown } from 'lucide-react';
-import type { HTMLAttributes, ReactNode, ThHTMLAttributes } from 'react';
+import type { HTMLAttributes, MouseEvent, ReactNode, ThHTMLAttributes } from 'react';
 
 import { cn } from '@/lib/cn';
 
@@ -52,10 +52,18 @@ export function TableCell({ className, ...props }: HTMLAttributes<HTMLTableCellE
 interface HeaderProps extends ThHTMLAttributes<HTMLTableCellElement> {
     /** Sentido actual si esta columna es por la que se ordena ahora mismo. */
     sorted?: 'asc' | 'desc' | false;
-    /** Sin él, la cabecera es una etiqueta y no un botón. */
-    onSort?: () => void;
+    /** Sin él, la cabecera es una etiqueta y no un botón. Recibe el clic: Mayús suma criterio. */
+    onSort?: (event: MouseEvent<HTMLButtonElement>) => void;
     /** Texto accesible del botón de ordenar, ya traducido. */
     sortLabel?: string;
+    /** Ayuda al pasar el cursor por el botón (p. ej. «Mayús + clic suma otro criterio»). */
+    sortHint?: string;
+    /** Posición de esta columna entre varios criterios de orden; solo se pinta si hay más de uno. */
+    sortPriority?: number;
+    /** `solid`: sobre el fondo azul de la cabecera de `DataTable` (texto claro). */
+    tone?: 'default' | 'solid';
+    /** A la derecha, para las columnas de números: la cabecera sigue a sus celdas. */
+    align?: 'left' | 'right';
     /** Lo que va pegado a la etiqueta — el botón de filtro de columna (D1). */
     filter?: ReactNode;
 }
@@ -64,13 +72,22 @@ export function TableHeader({
     sorted = false,
     onSort,
     sortLabel,
+    sortHint,
+    sortPriority,
+    align = 'left',
+    tone = 'default',
     filter,
     className,
     children,
     ...props
 }: HeaderProps) {
     const label = (
-        <span className="font-semibold text-[11px] tracking-[0.08em] text-muted-foreground uppercase">
+        <span
+            className={cn(
+                'font-semibold text-[11px] tracking-[0.08em] uppercase',
+                tone === 'solid' ? 'text-primary-foreground' : 'text-muted-foreground',
+            )}
+        >
             {children}
         </span>
     );
@@ -79,16 +96,31 @@ export function TableHeader({
         <th
             scope="col"
             aria-sort={sorted ? (sorted === 'asc' ? 'ascending' : 'descending') : undefined}
-            className={cn('px-4 py-3 font-medium text-left whitespace-nowrap', className)}
+            className={cn(
+                'px-4 py-3 font-medium whitespace-nowrap',
+                align === 'right' ? 'text-right' : 'text-left',
+                className,
+            )}
             {...props}
         >
-            <div className="gap-1 flex items-center">
+            <div className={cn('gap-1 flex items-center', align === 'right' && 'justify-end')}>
                 {onSort ? (
                     <button
                         type="button"
                         onClick={onSort}
                         aria-label={sortLabel}
-                        className="gap-1.5 inline-flex cursor-pointer items-center rounded-sm hover:text-foreground"
+                        title={sortHint}
+                        // Mayús + clic suma criterio, pero el navegador lo lee como «extender la
+                        // selección» y subraya media tabla.
+                        onMouseDown={(event) => {
+                            if (event.shiftKey) event.preventDefault();
+                        }}
+                        className={cn(
+                            'gap-1.5 inline-flex cursor-pointer items-center rounded-sm',
+                            tone === 'solid'
+                                ? 'hover:opacity-80 focus-visible:ring-2 focus-visible:ring-primary-foreground focus-visible:outline-none'
+                                : 'hover:text-foreground',
+                        )}
                     >
                         {label}
                         <ChevronDown
@@ -96,10 +128,24 @@ export function TableHeader({
                             aria-hidden
                             className={cn(
                                 'transition-[transform,opacity] duration-200',
-                                sorted ? 'text-foreground opacity-100' : 'opacity-30',
+                                sorted
+                                    ? tone === 'solid'
+                                        ? 'text-primary-foreground opacity-100'
+                                        : 'text-foreground opacity-100'
+                                    : tone === 'solid'
+                                      ? 'text-primary-foreground opacity-60'
+                                      : 'opacity-30',
                                 sorted === 'asc' && 'rotate-180',
                             )}
                         />
+                        {sortPriority !== undefined && (
+                            <span
+                                aria-hidden
+                                className="h-4 min-w-4 px-1 leading-4 font-semibold inline-block rounded-full bg-primary text-center text-[10px] text-primary-foreground tabular-nums"
+                            >
+                                {sortPriority}
+                            </span>
+                        )}
                     </button>
                 ) : (
                     label

@@ -3,12 +3,13 @@ import type { ButtonHTMLAttributes, ReactNode } from 'react';
 
 import { cn } from '@/lib/cn';
 
-type Variant = 'primary' | 'secondary' | 'ghost' | 'destructive';
+type Variant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'destructive';
 type Size = 'sm' | 'md' | 'lg' | 'icon';
 
 const variants: Record<Variant, string> = {
     primary: 'bg-primary text-primary-foreground hover:opacity-90',
     secondary: 'bg-secondary text-secondary-foreground hover:opacity-90',
+    outline: 'border bg-card text-foreground hover:bg-muted',
     ghost: 'bg-transparent text-foreground hover:bg-muted',
     destructive: 'bg-destructive text-destructive-foreground hover:opacity-90',
 };

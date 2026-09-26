@@ -21,9 +21,11 @@ export const STYLE = {
     dateAlt: 9,
     /** El rótulo de un bloque de la hoja «Resumen». */
     blockHeader: 10,
+    /** El encabezado de una columna de números: a la derecha, sobre sus cifras. */
+    headerRight: 11,
 } as const;
 
-const FIRST_TAG_STYLE = 11;
+const FIRST_TAG_STYLE = 12;
 
 export interface XlsxStyles {
     xml: string;
@@ -80,6 +82,7 @@ export function buildStyles(accents: readonly string[]): XlsxStyles {
         xf({ font: 0, border: 1, vertical: 'top', numFmt: 14 }),
         xf({ font: 0, fill: 4, border: 1, vertical: 'top', numFmt: 14 }),
         xf({ font: 4, border: 1, vertical: 'center' }),
+        xf({ font: 3, fill: 2, vertical: 'center', wrap: true, horizontal: 'right' }),
         ...accents.map((_accent, index) =>
             xf({ font: 5 + index, fill: 5 + index, border: 1, vertical: 'top', wrap: true }),
         ),

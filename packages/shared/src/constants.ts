@@ -102,8 +102,8 @@ export function toRoleSlug(name: string): string {
     return toSlug(name, 40);
 }
 
-/** Cinco por defecto: es la que menos scroll pide al abrir cualquier tabla. */
-export const DEFAULT_PAGE_SIZE = 5;
+/** Diez por defecto: el mínimo de lo que la industria considera una página útil (10–25). */
+export const DEFAULT_PAGE_SIZE = 10;
 export const MAX_PAGE_SIZE = 100;
 
 /** Tamaños de página que ofrece la interfaz. El último no pasa de MAX_PAGE_SIZE. */

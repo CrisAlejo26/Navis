@@ -32,7 +32,7 @@ export function buildDataSheet(doc: ExportDocument, styles: XlsxStyles): string 
         fila(
             HEADER_ROW,
             doc.headers.map((header) => ({ kind: 'text', text: header }) satisfies ExportCell),
-            () => STYLE.header,
+            (_cell, index) => (doc.aligns[index] === 'right' ? STYLE.headerRight : STYLE.header),
             28,
         ),
         ...doc.rows.map((row, index) =>
@@ -89,11 +89,11 @@ function banda(row: number, columns: number, text: string, style: number, height
 function fila(
     row: number,
     cells: readonly ExportCell[],
-    styleOf: (cell: ExportCell) => number,
+    styleOf: (cell: ExportCell, index: number) => number,
     height?: number,
 ): string {
     const contenido = cells
-        .map((cell, index) => cellXml(cellRef(index + 1, row), styleOf(cell), cell))
+        .map((cell, index) => cellXml(cellRef(index + 1, row), styleOf(cell, index), cell))
         .join('');
     const alto = height === undefined ? '' : ` ht="${String(height)}" customHeight="1"`;
 

@@ -2,16 +2,17 @@
 
 Cada carpeta responde a una pregunta distinta:
 
-| Carpeta                            | Qué contiene                                                                                                                               | Cuándo se escribe                                         |
-| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------- |
-| [`adr/`](./adr)                    | **Decisiones técnicas** (formato Nygard): qué se eligió y por qué. Inmutables: si una decisión cambia, un ADR nuevo supersede al anterior. | Al elegir una tecnología o un patrón                      |
-| [`rfcs/`](./rfcs)                  | **Propuestas de funcionalidad**: problema, modelo de datos, API e interfaz antes de escribir código.                                       | Antes de implementar cada feature                         |
-| [`planes/`](./planes)              | **Planes de implementación** que amplían un RFC sin llegar a serlo (una app concreta, un rediseño, una mejora). Separados por estado.      | Cuando un RFC necesita un documento propio para una parte |
-| [`referencias/`](./referencias)    | Material de consulta que no es una decisión: inventario de pantallas de la web, referencias de diseño móvil.                               | Al investigar                                             |
-| [`pruebas/`](./pruebas)            | Guiones de pruebas manuales, para quien tenga que mirar lo que solo se ve mirando.                                                         | Al cerrar una funcionalidad visual                        |
-| [`historico/`](./historico)        | Documentos archivados que ya no se mantienen.                                                                                              | Al retirar un documento                                   |
-| [`DESPLIEGUE.md`](./DESPLIEGUE.md) | Cómo llega el código a producción y qué se configura una sola vez.                                                                         | Al cambiar el flujo de despliegue                         |
-| [`RELEASES.md`](./RELEASES.md)     | Cómo publicar una versión (APK, instaladores de escritorio y web).                                                                         | Al cambiar el flujo de releases                           |
+| Carpeta                                                            | Qué contiene                                                                                                                               | Cuándo se escribe                                         |
+| ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------- |
+| [`adr/`](./adr)                                                    | **Decisiones técnicas** (formato Nygard): qué se eligió y por qué. Inmutables: si una decisión cambia, un ADR nuevo supersede al anterior. | Al elegir una tecnología o un patrón                      |
+| [`rfcs/`](./rfcs)                                                  | **Propuestas de funcionalidad**: problema, modelo de datos, API e interfaz antes de escribir código.                                       | Antes de implementar cada feature                         |
+| [`planes/`](./planes)                                              | **Planes de implementación** que amplían un RFC sin llegar a serlo (una app concreta, un rediseño, una mejora). Separados por estado.      | Cuando un RFC necesita un documento propio para una parte |
+| [`referencias/`](./referencias)                                    | Material de consulta que no es una decisión: inventario de pantallas de la web, referencias de diseño móvil.                               | Al investigar                                             |
+| [`referencias/tabla-de-datos.md`](./referencias/tabla-de-datos.md) | Cómo usar y ampliar la tabla de datos reutilizable (acciones masivas, exportar).                                                           | Al cambiar la tabla                                       |
+| [`pruebas/`](./pruebas)                                            | Guiones de pruebas manuales, para quien tenga que mirar lo que solo se ve mirando.                                                         | Al cerrar una funcionalidad visual                        |
+| [`historico/`](./historico)                                        | Documentos archivados que ya no se mantienen.                                                                                              | Al retirar un documento                                   |
+| [`DESPLIEGUE.md`](./DESPLIEGUE.md)                                 | Cómo llega el código a producción y qué se configura una sola vez.                                                                         | Al cambiar el flujo de despliegue                         |
+| [`RELEASES.md`](./RELEASES.md)                                     | Cómo publicar una versión (APK, instaladores de escritorio y web).                                                                         | Al cambiar el flujo de releases                           |
 
 ## Convenciones
 
@@ -67,17 +68,18 @@ Cada carpeta responde a una pregunta distinta:
 
 ## Planes
 
-| Plan                                                                                                                  | Estado       |
-| --------------------------------------------------------------------------------------------------------------------- | ------------ |
-| [Calendario de programaciones en móvil (amplía 0002 y 0011)](./planes/implementados/calendario-movil-plan.md)         | Implementado |
-| [Creyentes en móvil (adapta 0003)](./planes/implementados/creyentes-movil-plan.md)                                    | Implementado |
-| [Filtros de tablas: popover por columna, chips y vistas (mejora 0021)](./planes/implementados/filtros-tablas-plan.md) | Implementado |
-| [Navegación y estructura de la app móvil](./planes/implementados/navegacion-movil-plan.md)                            | Implementado |
-| [Profecías en móvil (enmienda a 0004 §7.10)](./planes/implementados/profecias-movil-plan.md)                          | Implementado |
-| [PWA instalable por lista compartida (amplía 0010)](./planes/implementados/pwa-instalable-por-lista.md)               | Implementado |
-| [Selector geográfico en cascada (amplía 0011)](./planes/implementados/selector-geografico-plan.md)                    | Implementado |
-| [Sistema de componentes de `apps/mobile`](./planes/implementados/sistema-componentes-movil-plan.md)                   | Implementado |
-| [Tarjetas de creyentes en móvil: altura uniforme y gestos](./planes/implementados/tarjetas-creyentes-plan.md)         | Implementado |
+| Plan                                                                                                                   | Estado       |
+| ---------------------------------------------------------------------------------------------------------------------- | ------------ |
+| [DataTable reutilizable: paginación, filtros, columnas y preferencias](./planes/pendientes/tabla-reutilizable-plan.md) | Propuesto    |
+| [Calendario de programaciones en móvil (amplía 0002 y 0011)](./planes/implementados/calendario-movil-plan.md)          | Implementado |
+| [Creyentes en móvil (adapta 0003)](./planes/implementados/creyentes-movil-plan.md)                                     | Implementado |
+| [Filtros de tablas: popover por columna, chips y vistas (mejora 0021)](./planes/implementados/filtros-tablas-plan.md)  | Implementado |
+| [Navegación y estructura de la app móvil](./planes/implementados/navegacion-movil-plan.md)                             | Implementado |
+| [Profecías en móvil (enmienda a 0004 §7.10)](./planes/implementados/profecias-movil-plan.md)                           | Implementado |
+| [PWA instalable por lista compartida (amplía 0010)](./planes/implementados/pwa-instalable-por-lista.md)                | Implementado |
+| [Selector geográfico en cascada (amplía 0011)](./planes/implementados/selector-geografico-plan.md)                     | Implementado |
+| [Sistema de componentes de `apps/mobile`](./planes/implementados/sistema-componentes-movil-plan.md)                    | Implementado |
+| [Tarjetas de creyentes en móvil: altura uniforme y gestos](./planes/implementados/tarjetas-creyentes-plan.md)          | Implementado |
 
 ## Índice de ADRs
 

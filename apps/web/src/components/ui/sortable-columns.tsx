@@ -37,7 +37,7 @@ export function SortableColumns<TField extends string>({
                     key={column.field}
                     sorted={sort === column.field && order}
                     sortLabel={t('roles.sortBy', { column: column.label })}
-                    className={column.align === 'right' ? 'text-right' : undefined}
+                    align={column.align}
                     onSort={() => {
                         onToggle(column.field);
                     }}

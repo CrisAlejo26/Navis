@@ -25,3 +25,18 @@ beforeAll(() => {
 afterEach(() => {
     cleanup();
 });
+
+// jsdom no implementa `<dialog>` modal: `Dialog` y `Drawer` llaman a `showModal()`.
+// Con esto se «abren» poniendo el atributo `open`, que es lo que comprueban los tests.
+beforeAll(() => {
+    const proto = HTMLDialogElement.prototype as Partial<
+        Record<'showModal' | 'close', (this: HTMLDialogElement) => void>
+    >;
+    proto.showModal ??= function showModal(this: HTMLDialogElement) {
+        this.setAttribute('open', '');
+    };
+    proto.close ??= function close(this: HTMLDialogElement) {
+        this.removeAttribute('open');
+        this.dispatchEvent(new Event('close'));
+    };
+});

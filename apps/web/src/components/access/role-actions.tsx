@@ -2,7 +2,7 @@ import type { RoleRow } from '@navis/shared';
 import { Pencil, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-import { Button } from '@/components/ui/button';
+import { IconAction } from '@/components/ui/icon-action';
 
 export interface RoleActionHandlers {
     onEdit: () => void;
@@ -19,20 +19,18 @@ export function RoleActions({ role, onEdit, onDelete }: RoleActionHandlers & { r
 
     return (
         <span className="gap-0.5 flex justify-end">
-            <Button variant="ghost" size="icon" aria-label={t('roles.editRole')} onClick={onEdit}>
+            <IconAction tone="primary" aria-label={t('roles.editRole')} onClick={onEdit}>
                 <Pencil size={16} aria-hidden />
-            </Button>
-            <Button
-                variant="ghost"
-                size="icon"
+            </IconAction>
+            <IconAction
+                tone="destructive"
                 disabled={locked}
                 title={role.isSystem ? t('roles.systemRoleLocked') : t('roles.roleInUse')}
                 aria-label={t('roles.deleteRole')}
                 onClick={onDelete}
-                className="hover:bg-destructive/10 hover:text-destructive"
             >
                 <Trash2 size={16} aria-hidden />
-            </Button>
+            </IconAction>
         </span>
     );
 }

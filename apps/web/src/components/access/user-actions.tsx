@@ -1,7 +1,7 @@
 import { KeyRound, Pencil, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-import { Button } from '@/components/ui/button';
+import { IconAction, type IconActionTone } from '@/components/ui/icon-action';
 
 export interface UserActionHandlers {
     onEdit: () => void;
@@ -24,33 +24,29 @@ export function UserActions({
     const { t } = useTranslation();
 
     const actions = [
-        { icon: Pencil, label: t('roles.editUser'), onClick: onEdit, danger: false },
+        { icon: Pencil, label: t('roles.editUser'), onClick: onEdit, tone: 'primary' },
         {
             icon: KeyRound,
             label: t('roles.changePassword'),
             onClick: onChangePassword,
-            danger: false,
+            tone: 'warning',
         },
-        { icon: Trash2, label: t('roles.deleteUser'), onClick: onDelete, danger: true },
-    ] as const;
+        { icon: Trash2, label: t('roles.deleteUser'), onClick: onDelete, tone: 'destructive' },
+    ] satisfies { icon: typeof Pencil; label: string; onClick: () => void; tone: IconActionTone }[];
 
     return (
         <span className="gap-0.5 flex justify-end">
-            {actions.map(({ icon: Icon, label, onClick, danger }) => (
-                <Button
+            {actions.map(({ icon: Icon, label, onClick, tone }) => (
+                <IconAction
                     key={label}
-                    variant="ghost"
-                    size="icon"
+                    tone={tone}
                     disabled={isSelf}
                     title={isSelf ? t('roles.ownRole') : label}
                     aria-label={label}
                     onClick={onClick}
-                    className={
-                        danger ? 'hover:bg-destructive/10 hover:text-destructive' : undefined
-                    }
                 >
                     <Icon size={16} aria-hidden />
-                </Button>
+                </IconAction>
             ))}
         </span>
     );

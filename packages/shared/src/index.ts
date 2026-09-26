@@ -32,6 +32,8 @@ export * from './schemas/congregations';
 export * from './schemas/custom-table-columns';
 export * from './schemas/custom-table-row-value';
 export * from './schemas/custom-table-rows';
+export * from './schemas/table-state';
+export * from './schemas/table-state-codec';
 export * from './schemas/custom-table-views';
 export * from './schemas/custom-tables';
 export * from './schemas/dashboard';

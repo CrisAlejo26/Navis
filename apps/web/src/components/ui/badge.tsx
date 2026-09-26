@@ -2,10 +2,12 @@ import type { HTMLAttributes, ReactNode } from 'react';
 
 import { cn } from '@/lib/cn';
 
-type Variant = 'brand' | 'accent' | 'muted' | 'outline';
+type Variant = 'brand' | 'primary' | 'accent' | 'muted' | 'outline';
 
 const variants: Record<Variant, string> = {
     brand: 'bg-brand text-brand-foreground',
+    // El azul de la interfaz (un contador, un «activo»); `brand` es el del logo.
+    primary: 'bg-primary text-primary-foreground',
     accent: 'bg-accent text-accent-foreground',
     muted: 'bg-muted text-muted-foreground',
     outline: 'border bg-transparent text-muted-foreground',
