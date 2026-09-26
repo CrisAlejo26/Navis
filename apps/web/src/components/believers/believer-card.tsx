@@ -1,18 +1,46 @@
-import { believerName } from '@navis/shared';
+import {
+    believerName,
+    type BelieverListItem,
+    type IsoDate,
+    type ListSummary,
+    type MinistryCatalog,
+} from '@navis/shared';
 import { Phone } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 
-import { BelieverActions } from '@/components/believers/believer-actions';
+import {
+    BelieverActions,
+    type BelieverActionHandlers,
+} from '@/components/believers/believer-actions';
 import { BelieverPhoto } from '@/components/believers/believer-photo';
 import { BelieverTagPills } from '@/components/believers/believer-tag-pills';
-import type { BelieverCells } from '@/components/believers/believer-row';
 import { GiftTags } from '@/components/believers/gift-tags';
 import { MinistryTags } from '@/components/believers/ministry-tags';
 import { Sonda } from '@/components/believers/sonda';
 import { StatusBadge } from '@/components/believers/status-badge';
 import { ListDots } from '@/components/lists/list-dots';
+import { CheckboxControl } from '@/components/ui/checkbox-control';
 import { cn } from '@/lib/cn';
+
+export interface BelieverCells extends BelieverActionHandlers {
+    believer: BelieverListItem;
+    /** El catálogo de labores: la fila guarda slugs, el nombre y el color están aquí. */
+    ministries: readonly MinistryCatalog[];
+    /** Las listas de la iglesia y en cuáles está esta persona (RFC 0010 §8.7). */
+    lists: readonly ListSummary[];
+    listIds: readonly string[] | undefined;
+    today: IsoDate;
+    canManage: boolean;
+    /** Posición en la página: escalona la entrada y el latido de la sonda. */
+    index: number;
+    /**
+     * La casilla de la propia ficha, solo en la rejilla de fichas. En la tabla y en
+     * la lista de móvil la casilla la pone `DataTable` alrededor de la ficha.
+     */
+    selected?: boolean;
+    onToggleSelected?: () => void;
+}
 
 /**
  * El mismo dato como ficha: es lo que se ve por debajo de `md` y en la vista de
@@ -52,13 +80,11 @@ export function BelieverCard({
         >
             <div className="gap-2 flex items-start justify-between">
                 <div className="gap-2.5 min-w-0 flex items-start">
-                    {canManage && (
-                        <input
-                            type="checkbox"
-                            checked={selected}
+                    {canManage && onToggleSelected && (
+                        <CheckboxControl
+                            checked={selected ?? false}
                             aria-label={t('believers.selectOne', { name })}
                             onChange={onToggleSelected}
-                            className="mt-1 h-4 w-4 rounded shrink-0 cursor-pointer accent-primary focus-visible:ring-2 focus-visible:ring-ring"
                         />
                     )}
 

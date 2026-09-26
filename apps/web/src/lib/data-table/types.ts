@@ -21,6 +21,8 @@ export interface TableColumnSpec {
     filterable?: boolean;
     /** Además tiene su botón propio en la barra (solo columnas de selección con `options`). */
     facet?: boolean;
+    /** Una columna de selección cuya API solo entiende **un** valor: marcar otro sustituye al anterior. */
+    single?: boolean;
     /** Qué condiciones ofrece el filtro. Por defecto, todas las de su tipo; una API que solo entiende «es uno de» lo dice aquí. */
     operators?: readonly TableOperator[];
     /**

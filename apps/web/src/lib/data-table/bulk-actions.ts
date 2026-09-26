@@ -29,6 +29,22 @@ export interface BulkActionConfirm {
     destructive?: boolean;
 }
 
+/**
+ * Una acción que necesita que se elija **algo** antes de correr —una sede, una
+ * lista—: la tabla pregunta con un desplegable y `run` recibe lo elegido.
+ */
+export interface BulkActionChoice {
+    title: string;
+    description: string;
+    /** Nombra el resultado, como en `BulkActionConfirm`. */
+    confirmLabel: string;
+    /** Rótulo del desplegable, para el lector de pantalla. */
+    label: string;
+    options: readonly { value: string; label: string }[];
+    /** Si está, «ninguna» es una respuesta válida (quitar la sede) y este es su texto. */
+    emptyLabel?: string;
+}
+
 export interface BulkAction<TItem> {
     /** Estable: es la clave del botón. */
     id: string;
@@ -44,6 +60,8 @@ export interface BulkAction<TItem> {
      * Puede ser una función de las filas marcadas, para decir cuántas van.
      */
     confirm?: BulkActionConfirm | ((items: readonly TItem[]) => BulkActionConfirm);
+    /** Pide elegir un valor antes de correr; llega a `run` como segundo argumento (`''` si se eligió «ninguna»). */
+    choice?: BulkActionChoice;
     /**
      * Sobre qué filas puede correr. Si devuelve un texto, el botón se
      * deshabilita y ese texto es el porqué; sin él, es que sirve para todas.
@@ -52,7 +70,7 @@ export interface BulkAction<TItem> {
     /** Por defecto la selección se vacía al acabar bien; una acción que solo abre algo (exportar) la conserva. */
     keepSelection?: boolean;
     /** Lo que hace. Si lanza, la tabla avisa del error y conserva la selección. */
-    run: (items: readonly TItem[]) => Promise<void> | void;
+    run: (items: readonly TItem[], choice?: string) => Promise<void> | void;
 }
 
 /** No hace nada: existe para que TypeScript infiera `TItem` al declarar una acción suelta. */

@@ -8,6 +8,7 @@ import { cn } from '@/lib/cn';
 import { ICON_TONE_TEXT } from '@/lib/icon-tones';
 import { Tooltip } from '@/components/ui/tooltip';
 import type { BulkAction, BulkActionConfirm } from '@/lib/data-table/bulk-actions';
+import { BulkChoiceDialog } from '@/components/data-table/bulk-choice-dialog';
 import { toast } from '@/lib/toast';
 
 interface BulkActionsBarProps<TItem> {
@@ -30,23 +31,25 @@ export function BulkActionsBar<TItem>({ items, actions, onClear }: BulkActionsBa
     const [pending, setPending] = useState<BulkAction<TItem> | null>(null);
     const [running, setRunning] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [choosing, setChoosing] = useState<BulkAction<TItem> | null>(null);
     if (items.length === 0) return null;
 
     const confirmOf = (action: BulkAction<TItem> | null): BulkActionConfirm | undefined =>
         typeof action?.confirm === 'function' ? action.confirm(items) : action?.confirm;
     const confirm = confirmOf(pending);
 
-    const execute = async (action: BulkAction<TItem>) => {
+    const execute = async (action: BulkAction<TItem>, picked?: string) => {
         setRunning(true);
         setError(null);
         try {
-            await action.run(items);
+            await action.run(items, picked);
             setPending(null);
+            setChoosing(null);
             if (!action.keepSelection) onClear();
         } catch {
             // La selección se conserva: quien ha marcado cuarenta filas no las
             // vuelve a marcar porque falle una petición.
-            if (confirmOf(action)) setError(t('dataTable.selection.failed'));
+            if (confirmOf(action) || action.choice) setError(t('dataTable.selection.failed'));
             else toast.error(t('dataTable.selection.failed'));
         } finally {
             setRunning(false);
@@ -54,7 +57,10 @@ export function BulkActionsBar<TItem>({ items, actions, onClear }: BulkActionsBa
     };
 
     const choose = (action: BulkAction<TItem>) => {
-        if (action.confirm) {
+        if (action.choice) {
+            setError(null);
+            setChoosing(action);
+        } else if (action.confirm) {
             setError(null);
             setPending(action);
         } else {
@@ -112,6 +118,18 @@ export function BulkActionsBar<TItem>({ items, actions, onClear }: BulkActionsBa
                     <X size={16} aria-hidden />
                 </Button>
             </div>
+
+            <BulkChoiceDialog
+                choice={choosing?.choice}
+                isPending={running}
+                error={error}
+                onClose={() => {
+                    if (!running) setChoosing(null);
+                }}
+                onConfirm={(picked) => {
+                    if (choosing) void execute(choosing, picked);
+                }}
+            />
 
             <ConfirmDialog
                 open={pending !== null}

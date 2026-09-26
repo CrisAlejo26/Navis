@@ -525,6 +525,18 @@ export const es = {
         },
     },
     believers: {
+        filterStatusHelp: 'Deja solo a las personas que están en alguno de los estados marcados.',
+        filterGiftHelp: 'Deja solo a quien tiene ese don. Se elige uno a la vez.',
+        filterTagHelp:
+            'Deja solo a quien tiene esa etiqueta, aunque no sea la que se ve en la fila. Se elige una a la vez.',
+        filterAttentionHelp:
+            'Deja solo a quienes ya han agotado su margen sin que nadie les escriba una nota.',
+        filterCongregationHelp: 'Deja solo a las personas de esa sede. Se elige una a la vez.',
+        filterListHelp: 'Deja solo a quien está en esa lista. Se elige una a la vez.',
+        filterInListsHelp: 'Deja solo a quien está en esa cantidad de listas o más.',
+        inListsColumn: 'Listas (mínimo)',
+        bulkCongregationHelp: 'Pone la misma sede a las personas marcadas, o se la quita.',
+        bulkListHelp: 'Añade a las personas marcadas a la lista que elijas.',
         title: 'Creyentes',
         lead: 'Con quién se ha perdido el hilo',
         total: '{{count}} hermanos',

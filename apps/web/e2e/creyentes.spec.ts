@@ -31,8 +31,16 @@ const PERSONAS = [
 const persona = (page: Page, name: string) =>
     page.getByRole('link', { name }).locator('visible=true');
 
-/** La única pastilla con icono es la de «piden atención» (§7.2). */
-const ATENCION = 'button[aria-pressed]:has(svg)';
+/**
+ * «Piden atención» es un filtro rápido de la tabla: un botón en la barra que abre
+ * un panel con su casilla. El filtro vive en la URL, dentro de `f`.
+ */
+const ATENCION = /piden atención|need attention/i;
+
+async function marcarAtencion(page: Page): Promise<void> {
+    await page.getByRole('button', { name: ATENCION }).locator('visible=true').click();
+    await page.getByRole('checkbox', { name: ATENCION }).check();
+}
 
 test.describe('Creyentes', () => {
     test.beforeEach(async ({ page }) => {
@@ -72,9 +80,9 @@ test.describe('El filtro de atención en escritorio', () => {
         await page.goto('/believers');
         await expect(persona(page, 'Andrés De prueba')).toBeVisible();
 
-        await page.locator(ATENCION).click();
+        await marcarAtencion(page);
 
-        await expect(page).toHaveURL(/attention=true/);
+        await expect(page).toHaveURL(/attention/);
         await expect(persona(page, 'María De prueba')).toBeVisible();
         await expect(persona(page, 'Andrés De prueba')).toHaveCount(0);
 
@@ -84,7 +92,7 @@ test.describe('El filtro de atención en escritorio', () => {
         await expect(page).toHaveURL(/\/believers\/[0-9a-f-]+$/);
 
         await page.goBack();
-        await expect(page).toHaveURL(/attention=true/);
+        await expect(page).toHaveURL(/attention/);
         await expect(persona(page, 'María De prueba')).toBeVisible();
     });
 });
@@ -106,21 +114,18 @@ test.describe('El listado en un teléfono', () => {
         expect(overflow).toBeLessThanOrEqual(0);
     });
 
-    test('los filtros se abren en un panel y dicen cuántos hay puestos', async ({ page }) => {
+    test('los filtros rápidos caben en la barra y dicen cuántos hay puestos', async ({ page }) => {
         await montarApi(page, { believers: PERSONAS });
         await page.goto('/believers');
         await expect(persona(page, 'Andrés De prueba')).toBeVisible();
 
-        // En línea ocuparían media pantalla antes de llegar al primer nombre (§7.7).
-        await expect(page.locator(ATENCION)).toBeHidden();
+        await marcarAtencion(page);
 
-        await page.getByRole('button', { name: /filtros|filters|filtre|filter/i }).click();
-        // Con el panel abierto hay dos juegos de pastillas en el DOM —el de la
-        // barra y el del panel—; se pulsa el que se está viendo.
-        await page.locator(ATENCION).locator('visible=true').click();
-
-        await expect(page).toHaveURL(/attention=true/);
-        await expect(page.getByRole('button', { name: /\(1\)/ })).toBeVisible();
+        await expect(page).toHaveURL(/attention/);
+        // El botón del filtro lleva la cuenta de lo marcado.
+        await expect(
+            page.locator('button[aria-haspopup="dialog"]', { hasText: ATENCION }),
+        ).toContainText('1');
     });
 });
 

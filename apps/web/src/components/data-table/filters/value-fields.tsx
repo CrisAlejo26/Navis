@@ -24,11 +24,21 @@ interface ValueFieldsProps {
     options: readonly { value: string; label: string; hint?: string }[];
     /** Nombre de la columna, para el lector de pantalla. */
     label: string;
+    /** Solo una opción a la vez (la API de la pantalla no entiende más). */
+    single?: boolean;
     onChange: (draft: FilterDraft) => void;
 }
 
 /** Los campos que pide una condición: uno, dos (un rango), una lista de opciones o ninguno. */
-export function ValueFields({ kind, operator, draft, options, label, onChange }: ValueFieldsProps) {
+export function ValueFields({
+    kind,
+    operator,
+    draft,
+    options,
+    label,
+    single = false,
+    onChange,
+}: ValueFieldsProps) {
     const { t } = useTranslation();
     if (!needsValue(operator)) return null;
 
@@ -66,7 +76,9 @@ export function ValueFields({ kind, operator, draft, options, label, onChange }:
                         checked={draft.list.includes(option.value)}
                         onChange={(event) => {
                             const list = event.target.checked
-                                ? [...draft.list, option.value]
+                                ? single
+                                    ? [option.value]
+                                    : [...draft.list, option.value]
                                 : draft.list.filter((one) => one !== option.value);
                             onChange({ ...draft, list });
                         }}

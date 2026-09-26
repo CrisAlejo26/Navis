@@ -519,6 +519,21 @@ export const fr = {
         },
     },
     believers: {
+        filterStatusHelp: "Ne garde que les personnes dans l'un des statuts cochés.",
+        filterGiftHelp: 'Ne garde que les personnes qui ont ce don. On en choisit un à la fois.',
+        filterTagHelp:
+            "Ne garde que les personnes avec cette étiquette, même si ce n'est pas celle affichée sur la ligne. On en choisit une à la fois.",
+        filterAttentionHelp:
+            "Ne garde que les personnes dont la marge est épuisée sans qu'aucune note ait été écrite.",
+        filterCongregationHelp:
+            'Ne garde que les personnes de cette assemblée. On en choisit une à la fois.',
+        filterListHelp:
+            'Ne garde que les personnes qui figurent sur cette liste. On en choisit une à la fois.',
+        filterInListsHelp:
+            'Ne garde que les personnes qui figurent sur au moins ce nombre de listes.',
+        inListsColumn: 'Listes (minimum)',
+        bulkCongregationHelp: 'Attribue la même assemblée aux personnes cochées, ou la retire.',
+        bulkListHelp: 'Ajoute les personnes cochées à la liste choisie.',
         title: 'Personnes',
         lead: 'Avec qui le lien s’est perdu',
         total: '{{count}} personnes',

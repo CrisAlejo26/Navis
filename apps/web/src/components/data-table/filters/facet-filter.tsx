@@ -40,7 +40,8 @@ export function FacetFilter<TItem extends TableRowData>({
             : [];
 
     const toggle = (value: string, checked: boolean) => {
-        const list = checked ? [...selected, value] : selected.filter((one) => one !== value);
+        const rest = selected.filter((one) => one !== value);
+        const list = checked ? (column.single ? [value] : [...selected, value]) : rest;
         onChange(list.length > 0 ? { columnId: column.id, operator: 'in', value: list } : null);
     };
 

@@ -117,6 +117,7 @@ export function AdvancedRow<TItem extends TableRowData>({
                 draft={draft}
                 options={column.options ?? []}
                 label={column.label}
+                single={column.single}
                 onChange={setDraft}
             />
         </li>

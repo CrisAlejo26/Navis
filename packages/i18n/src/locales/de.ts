@@ -526,6 +526,21 @@ export const de = {
         },
     },
     believers: {
+        filterStatusHelp: 'Zeigt nur Personen mit einem der markierten Status.',
+        filterGiftHelp: 'Zeigt nur Personen mit dieser Gabe. Es kann jeweils eine gewählt werden.',
+        filterTagHelp:
+            'Zeigt nur Personen mit diesem Etikett, auch wenn es nicht das in der Zeile angezeigte ist. Es kann jeweils eines gewählt werden.',
+        filterAttentionHelp:
+            'Zeigt nur Personen, deren Spielraum aufgebraucht ist, ohne dass eine Notiz geschrieben wurde.',
+        filterCongregationHelp:
+            'Zeigt nur die Personen dieser Gemeinde. Es kann jeweils eine gewählt werden.',
+        filterListHelp:
+            'Zeigt nur Personen, die auf dieser Liste stehen. Es kann jeweils eine gewählt werden.',
+        filterInListsHelp: 'Zeigt nur Personen, die auf mindestens so vielen Listen stehen.',
+        inListsColumn: 'Listen (mindestens)',
+        bulkCongregationHelp:
+            'Setzt für die markierten Personen dieselbe Gemeinde oder entfernt sie.',
+        bulkListHelp: 'Fügt die markierten Personen der gewählten Liste hinzu.',
         title: 'Personen',
         lead: 'Zu wem der Faden gerissen ist',
         total: '{{count}} Personen',

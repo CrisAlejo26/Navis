@@ -514,6 +514,18 @@ export const en = {
         },
     },
     believers: {
+        filterStatusHelp: 'Keeps only the people in any of the ticked statuses.',
+        filterGiftHelp: 'Keeps only people who have that gift. Pick one at a time.',
+        filterTagHelp:
+            'Keeps only people with that tag, even if it is not the one shown on the row. Pick one at a time.',
+        filterAttentionHelp:
+            'Keeps only people whose margin has run out with no note written about them.',
+        filterCongregationHelp: 'Keeps only the people of that congregation. Pick one at a time.',
+        filterListHelp: 'Keeps only people who are on that list. Pick one at a time.',
+        filterInListsHelp: 'Keeps only people who are on that many lists or more.',
+        inListsColumn: 'Lists (minimum)',
+        bulkCongregationHelp: 'Sets the same congregation for the ticked people, or clears it.',
+        bulkListHelp: 'Adds the ticked people to the list you choose.',
         title: 'People',
         lead: 'Who you have lost touch with',
         total: '{{count}} people',

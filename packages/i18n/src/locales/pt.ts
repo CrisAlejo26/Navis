@@ -514,6 +514,18 @@ export const pt = {
         },
     },
     believers: {
+        filterStatusHelp: 'Deixa apenas as pessoas que estão em algum dos estados marcados.',
+        filterGiftHelp: 'Deixa apenas quem tem esse dom. Escolhe-se um de cada vez.',
+        filterTagHelp:
+            'Deixa apenas quem tem essa etiqueta, mesmo que não seja a que aparece na linha. Escolhe-se uma de cada vez.',
+        filterAttentionHelp:
+            'Deixa apenas quem já esgotou a sua margem sem que ninguém escrevesse uma nota.',
+        filterCongregationHelp: 'Deixa apenas as pessoas dessa sede. Escolhe-se uma de cada vez.',
+        filterListHelp: 'Deixa apenas quem está nessa lista. Escolhe-se uma de cada vez.',
+        filterInListsHelp: 'Deixa apenas quem está nessa quantidade de listas ou mais.',
+        inListsColumn: 'Listas (mínimo)',
+        bulkCongregationHelp: 'Atribui a mesma sede às pessoas marcadas, ou retira-a.',
+        bulkListHelp: 'Adiciona as pessoas marcadas à lista que escolher.',
         title: 'Pessoas',
         lead: 'Com quem se perdeu o fio',
         total: '{{count}} pessoas',

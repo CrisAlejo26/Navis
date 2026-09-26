@@ -517,6 +517,19 @@ export const it = {
         },
     },
     believers: {
+        filterStatusHelp: 'Mostra solo le persone in uno degli stati selezionati.',
+        filterGiftHelp: 'Mostra solo chi ha quel dono. Se ne sceglie uno alla volta.',
+        filterTagHelp:
+            "Mostra solo chi ha quell'etichetta, anche se non è quella visibile nella riga. Se ne sceglie una alla volta.",
+        filterAttentionHelp:
+            'Mostra solo chi ha esaurito il proprio margine senza che nessuno scrivesse una nota.',
+        filterCongregationHelp:
+            'Mostra solo le persone di quella sede. Se ne sceglie una alla volta.',
+        filterListHelp: 'Mostra solo chi è in quella lista. Se ne sceglie una alla volta.',
+        filterInListsHelp: 'Mostra solo chi è in almeno quel numero di liste.',
+        inListsColumn: 'Liste (minimo)',
+        bulkCongregationHelp: 'Assegna la stessa sede alle persone selezionate, oppure la toglie.',
+        bulkListHelp: 'Aggiunge le persone selezionate alla lista scelta.',
         title: 'Persone',
         lead: 'Con chi si è perso il filo',
         total: '{{count}} persone',
