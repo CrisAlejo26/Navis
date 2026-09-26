@@ -834,6 +834,8 @@ export const en = {
         },
     },
     prophecies: {
+        filterReceivedHelp: 'Keeps only the prophecies received within that date range.',
+        filterStateHelp: 'Keeps only the prophecies that are in any of the ticked states.',
         title: 'Prophecies',
         lead: '{{total}} prophecies · {{waiting}} waiting · {{fulfilled}} fulfilled',
         add: 'Write down a prophecy',
@@ -883,6 +885,7 @@ export const en = {
             all: 'All',
         },
         columns: {
+            lastMovement: 'Last movement',
             title: 'Prophecy',
             received: 'Received',
             state: 'State',

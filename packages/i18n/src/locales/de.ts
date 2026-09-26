@@ -848,6 +848,10 @@ export const de = {
         },
     },
     prophecies: {
+        filterReceivedHelp:
+            'Zeigt nur die Prophezeiungen, die in diesem Zeitraum empfangen wurden.',
+        filterStateHelp:
+            'Zeigt nur die Prophezeiungen, die sich in einem der markierten Zustände befinden.',
         title: 'Prophetien',
         lead: '{{total}} Prophetien · {{waiting}} offen · {{fulfilled}} erfüllt',
         add: 'Eine Prophetie festhalten',
@@ -897,6 +901,7 @@ export const de = {
             all: 'Alles',
         },
         columns: {
+            lastMovement: 'Letzte Bewegung',
             title: 'Prophetie',
             received: 'Empfangen',
             state: 'Status',

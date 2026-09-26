@@ -1,6 +1,6 @@
 import type { RowData as TableRowData } from '@tanstack/react-table';
 import { Download, type LucideIcon } from 'lucide-react';
-import { useEffect, useMemo, useState, type CSSProperties, type ReactNode } from 'react';
+import { useEffect, useState, type CSSProperties, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { BulkActionsBar } from '@/components/data-table/bulk-actions-bar';
@@ -10,6 +10,7 @@ import { PaginationBar } from '@/components/data-table/pagination-bar';
 import { StatusLine } from '@/components/data-table/status-line';
 import { TableExportDialog } from '@/components/data-table/table-export-dialog';
 import { TableNotice } from '@/components/data-table/table-notice';
+import { Skeleton } from '@/components/ui/skeleton';
 import { TableView } from '@/components/data-table/table-view';
 import { DataTableToolbar } from '@/components/data-table/toolbar';
 import { cn } from '@/lib/cn';
@@ -38,6 +39,13 @@ interface DataTableProps<TItem extends TableRowData> {
     searchLabel?: string;
     /** Lo que la pantalla añade a la barra: crear, cambiar de vista… */
     toolbarExtra?: ReactNode;
+    /**
+     * Otra forma de pintar las filas de la página en lugar de la tabla y las fichas
+     * (una travesía, un calendario anual…). Todo lo demás —barra, filtros, chips,
+     * carga, error, vacío y paginación— sigue siendo de la tabla, así que cada vista
+     * comparte los mismos filtros y no tiene que reescribirlos.
+     */
+    body?: (items: readonly TItem[]) => ReactNode;
     /**
      * Acciones sobre las filas marcadas. **Es el punto de extensión**: la pantalla
      * declara las suyas (`defineBulkAction`) y la tabla pinta las casillas y la
@@ -75,6 +83,7 @@ export function DataTable<TItem extends TableRowData>({
     rowStyle,
     searchLabel,
     toolbarExtra,
+    body,
     bulkActions = NO_ACTIONS,
     selectable,
     isSelectable = ALL_SELECTABLE,
@@ -125,21 +134,20 @@ export function DataTable<TItem extends TableRowData>({
         selection,
     });
 
-    const actions = useMemo(() => {
-        if (!exportConfig) return bulkActions;
-        const exportSelection = defineBulkAction<TItem>({
-            id: 'export',
-            label: t('dataTable.export.selection'),
-            description: t('dataTable.export.selectionHelp'),
-            icon: Download,
-            tone: 'success',
-            keepSelection: true,
-            run: () => {
-                setExportScope('selection');
-            },
-        });
-        return [exportSelection, ...bulkActions];
-    }, [bulkActions, exportConfig, t]);
+    // Con exportación, «Exportar selección» va siempre la primera. El compilador de
+    // React memoiza esto solo: un `useMemo` a mano no encaja con lo que infiere.
+    const exportSelection = defineBulkAction<TItem>({
+        id: 'export',
+        label: t('dataTable.export.selection'),
+        description: t('dataTable.export.selectionHelp'),
+        icon: Download,
+        tone: 'success',
+        keepSelection: true,
+        run: () => {
+            setExportScope('selection');
+        },
+    });
+    const actions = exportConfig ? [exportSelection, ...bulkActions] : bulkActions;
 
     const hasSelection = selectable ?? actions.length > 0;
     const selectionProps = hasSelection
@@ -198,24 +206,38 @@ export function DataTable<TItem extends TableRowData>({
                 aria-busy={isLoading || isRefreshing}
                 className={cn('transition-opacity duration-200', isRefreshing && 'opacity-60')}
             >
-                <TableView
-                    table={table}
-                    columns={columns}
-                    state={state}
-                    isLoading={isLoading}
-                    isError={isError}
-                    rowClassName={rowClassName}
-                    rowStyle={rowStyle}
-                    selection={selectionProps}
-                />
-                <CardsView
-                    items={isError ? [] : items}
-                    columns={visibleColumns}
-                    getKey={getKey}
-                    isLoading={isLoading}
-                    renderCard={renderCard}
-                    selection={selectionProps}
-                />
+                {body ? (
+                    isLoading ? (
+                        <div className="gap-3 flex flex-col" aria-hidden>
+                            {Array.from({ length: 3 }, (_, row) => (
+                                <Skeleton key={row} className="h-16 w-full rounded-xl" />
+                            ))}
+                        </div>
+                    ) : isError ? null : (
+                        body(items)
+                    )
+                ) : (
+                    <>
+                        <TableView
+                            table={table}
+                            columns={columns}
+                            state={state}
+                            isLoading={isLoading}
+                            isError={isError}
+                            rowClassName={rowClassName}
+                            rowStyle={rowStyle}
+                            selection={selectionProps}
+                        />
+                        <CardsView
+                            items={isError ? [] : items}
+                            columns={visibleColumns}
+                            getKey={getKey}
+                            isLoading={isLoading}
+                            renderCard={renderCard}
+                            selection={selectionProps}
+                        />
+                    </>
+                )}
                 <TableNotice
                     isError={isError}
                     isEmpty={!isLoading && total === 0}

@@ -841,6 +841,8 @@ export const fr = {
         },
     },
     prophecies: {
+        filterReceivedHelp: 'Ne garde que les prophéties reçues dans cette période.',
+        filterStateHelp: "Ne garde que les prophéties qui sont dans l'un des états cochés.",
         title: 'Prophéties',
         lead: '{{total}} prophéties · {{waiting}} en attente · {{fulfilled}} accomplies',
         add: 'Noter une prophétie',
@@ -890,6 +892,7 @@ export const fr = {
             all: 'Tout',
         },
         columns: {
+            lastMovement: 'Dernier mouvement',
             title: 'Prophétie',
             received: 'Reçue',
             state: 'État',

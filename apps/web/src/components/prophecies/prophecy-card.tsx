@@ -1,10 +1,19 @@
+import type { ProphecyListItem } from '@navis/shared';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 
 import { ProphecyActions } from '@/components/prophecies/prophecy-actions';
-import type { ProphecyCells } from '@/components/prophecies/prophecy-row';
 import { StateBadge } from '@/components/prophecies/state-badge';
 import { formatDay, formatNumber } from '@/lib/format';
+
+/** Lo que necesita la ficha de una profecía (§7.5). */
+export interface ProphecyCells {
+    prophecy: ProphecyListItem;
+    index: number;
+    onEdit: () => void;
+    onFulfill: () => void;
+    onDelete: () => void;
+}
 
 /**
  * La misma profecía como ficha: es lo que se ve por debajo de `md` y también en
