@@ -22,7 +22,7 @@ import { defaultPreferences } from '@/lib/data-table/table-preferences';
 import { useDataTable } from '@/lib/data-table/use-data-table';
 import type { DataTableState } from '@/lib/data-table/use-data-table-state';
 import { useExportRows, type ExportScope } from '@/lib/data-table/use-export-rows';
-import { useRowSelection } from '@/lib/data-table/use-row-selection';
+import { useRowSelection, type RowSelection } from '@/lib/data-table/use-row-selection';
 
 interface DataTableProps<TItem extends TableRowData> {
     /** Estables (un `useMemo`): de ellas cuelga la reconciliación de preferencias. */
@@ -45,7 +45,7 @@ interface DataTableProps<TItem extends TableRowData> {
      * carga, error, vacío y paginación— sigue siendo de la tabla, así que cada vista
      * comparte los mismos filtros y no tiene que reescribirlos.
      */
-    body?: (items: readonly TItem[]) => ReactNode;
+    body?: (items: readonly TItem[], selection: RowSelection<TItem> | undefined) => ReactNode;
     /**
      * Acciones sobre las filas marcadas. **Es el punto de extensión**: la pantalla
      * declara las suyas (`defineBulkAction`) y la tabla pinta las casillas y la
@@ -214,7 +214,7 @@ export function DataTable<TItem extends TableRowData>({
                             ))}
                         </div>
                     ) : isError ? null : (
-                        body(items)
+                        body(items, hasSelection ? selection : undefined)
                     )
                 ) : (
                     <>

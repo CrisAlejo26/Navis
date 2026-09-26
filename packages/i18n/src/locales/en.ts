@@ -1110,6 +1110,13 @@ export const en = {
         errorEmpty: 'Write something in the notes',
     },
     journal: {
+        filterKindHelp: 'Keeps only the entries of any of the ticked types.',
+        filterDateHelp: 'Keeps only the entries written within that date range.',
+        filterReminderHelp:
+            'Choose “Yes” to see only entries with a reminder that has not been dealt with.',
+        bulkExport: 'Export to Markdown',
+        bulkExportHelp:
+            'Downloads the ticked entries as a ZIP of Markdown files, ready for minutes or an email.',
         title: 'The journal',
         lead: '{{total}} entries · {{pending}} pending reminders',
         add: 'Add entry',

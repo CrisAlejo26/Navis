@@ -1,41 +1,57 @@
 import type { JournalEntryListItem } from '@navis/shared';
+import { Download, NotebookPen } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { DataTable } from '@/components/data-table/data-table';
 import { DeleteEntryDialog } from '@/components/journal/delete-entry-dialog';
 import { EntryForm } from '@/components/journal/entry-form';
-import type { EntryCells } from '@/components/journal/entry-row';
+import { EntryCard, type EntryCells } from '@/components/journal/entry-card';
 import { JournalCalendar } from '@/components/journal/journal-calendar';
-import { JournalCards } from '@/components/journal/journal-cards';
-import { JournalTable } from '@/components/journal/journal-table';
-import { JournalToolbar } from '@/components/journal/journal-toolbar';
+import { JournalCardGrid } from '@/components/journal/journal-card-grid';
+import { JournalViewSwitch } from '@/components/journal/journal-view-switch';
 import { Oleaje } from '@/components/journal/oleaje';
 import { BackLink } from '@/components/ui/back-link';
 import { Button } from '@/components/ui/button';
-import { SelectionBar } from '@/components/ui/selection-bar';
+import { defineBulkAction } from '@/lib/data-table/bulk-actions';
+import { accentVars } from '@/lib/accents';
+import { ENTRY_KIND_STYLES } from '@/lib/journal/entry-kind';
 import { useBatchMarkdownExport } from '@/lib/journal/use-batch-export';
 import { useJournalScreen } from '@/lib/journal/use-journal-screen';
 import { useJournalViewStore } from '@/lib/journal/view';
-import { useSelection } from '@/lib/use-selection';
 
 /**
  * El listado del cuaderno, con sus tres formas de verlo (RFC 0017 §7.4).
  *
- * Se apoya en `useJournalScreen`, que junta la consulta paginada, los
- * filtros de la URL y las cuentas de la portada (Regla 6 §2).
+ * Las tres vistas comparten la misma tabla de datos —barra, filtros, chips y
+ * paginación—: la tabla y las fichas por defecto, y la rejilla de fichas y el
+ * calendario entran por el `body` de `DataTable`. La única acción en lote es
+ * exportar a Markdown (D12); nunca un borrado masivo.
  */
 export function JournalListPage() {
     const { t } = useTranslation();
-    const screen = useJournalScreen();
     const view = useJournalViewStore((state) => state.view);
 
     const [creating, setCreating] = useState(false);
     const [editing, setEditing] = useState<JournalEntryListItem | null>(null);
     const [deleting, setDeleting] = useState<JournalEntryListItem | null>(null);
-    const selection = useSelection();
     const batchExport = useBatchMarkdownExport();
 
-    /** Lo mismo alimenta la fila de la tabla y la ficha de fuera (§7.5). */
+    const screen = useJournalScreen({ onEdit: setEditing, onDelete: setDeleting });
+    const searching = screen.state.request.filters.length > 0 || screen.state.request.search !== '';
+
+    // La selección **manda** sobre los filtros (D1): se piden los identificadores
+    // marcados y nada más. Es una acción de la tabla, declarada aquí (defineBulkAction).
+    const exportMarkdown = defineBulkAction<JournalEntryListItem>({
+        id: 'markdown',
+        label: t('journal.bulkExport'),
+        description: t('journal.bulkExportHelp'),
+        icon: Download,
+        tone: 'success',
+        run: (entries) => batchExport.exportSelection(entries.map((entry) => entry.id)),
+    });
+
+    /** Lo mismo alimenta la fila de la tabla y la ficha (§7.5). */
     const cells = (entry: JournalEntryListItem, index: number): EntryCells => ({
         entry,
         index,
@@ -45,13 +61,7 @@ export function JournalListPage() {
         onDelete: () => {
             setDeleting(entry);
         },
-        selected: selection.selected.has(entry.id),
-        onToggleSelect: () => {
-            selection.toggle(entry.id);
-        },
     });
-
-    const toolbar = <JournalToolbar screen={screen} />;
 
     return (
         <section className="gap-4 flex flex-col">
@@ -72,33 +82,54 @@ export function JournalListPage() {
 
             <Oleaje />
 
-            <SelectionBar
-                count={selection.count}
-                isExporting={batchExport.pending}
-                onExport={() => {
-                    void batchExport.exportSelection([...selection.selected]).then(() => {
-                        selection.clear();
-                    });
-                }}
-                onClear={selection.clear}
-            />
-
             {/* Cambiar de vista es un fundido, sin desplazamiento: no se está yendo a
           otro sitio. La clave hace que React remonte y la animación vuelva a
           lanzarse (mismo criterio que profecías §7.8). */}
-            <div key={view} className="gap-3 animate-page-in flex flex-col">
-                {view === 'table' && (
-                    <JournalTable screen={screen} cells={cells} toolbar={toolbar} />
-                )}
-                {view === 'cards' && (
-                    <JournalCards screen={screen} cells={cells} toolbar={toolbar} />
-                )}
-                {view === 'calendar' && (
-                    <>
-                        <div className="p-3 rounded-xl border bg-card">{toolbar}</div>
-                        <JournalCalendar items={screen.page?.items ?? []} />
-                    </>
-                )}
+            <div key={view} className="animate-page-in">
+                <DataTable
+                    columns={screen.columns}
+                    state={screen.state}
+                    source={screen.source}
+                    getKey={(entry) => entry.id}
+                    emptyIcon={NotebookPen}
+                    emptyTitle={searching ? t('journal.noResults') : t('journal.emptyTitle')}
+                    searchLabel={t('journal.search')}
+                    bulkActions={[exportMarkdown]}
+                    rowLabel={(entry) => t('journal.selectOne', { title: entry.title })}
+                    // El mismo filete que ya lleva `EntryCard` en la ficha de móvil (D15):
+                    // el color del tipo, también en el borde de la fila de escritorio.
+                    rowClassName={() => 'animate-rise-in border-l-[var(--acento)]'}
+                    rowStyle={(entry, index) => ({
+                        ...accentVars(ENTRY_KIND_STYLES[entry.kind].accent),
+                        animationDelay: `${String(Math.min(index, 12) * 35)}ms`,
+                    })}
+                    renderCard={(entry, index) => <EntryCard {...cells(entry, index)} />}
+                    toolbarExtra={<JournalViewSwitch />}
+                    body={
+                        view === 'table'
+                            ? undefined
+                            : (items, selection) => {
+                                  // Sin filas la tabla ya dice por qué.
+                                  if (items.length === 0) return null;
+                                  if (view === 'calendar') {
+                                      return <JournalCalendar items={[...items]} />;
+                                  }
+                                  return (
+                                      <JournalCardGrid
+                                          items={items}
+                                          cells={(entry, index) => ({
+                                              ...cells(entry, index),
+                                              // En la rejilla la casilla es de la propia ficha.
+                                              selected: selection?.has(entry.id) ?? false,
+                                              onToggleSelect: () => {
+                                                  selection?.toggle(entry);
+                                              },
+                                          })}
+                                      />
+                                  );
+                              }
+                    }
+                />
             </div>
 
             {/* Al editar viaja el identificador y el formulario carga la entrada

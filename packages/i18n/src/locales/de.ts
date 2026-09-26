@@ -1129,6 +1129,13 @@ export const de = {
         errorEmpty: 'Schreib etwas in die Anmerkungen',
     },
     journal: {
+        filterKindHelp: 'Zeigt nur die Einträge eines der markierten Typen.',
+        filterDateHelp: 'Zeigt nur die Einträge, die in diesem Zeitraum verfasst wurden.',
+        filterReminderHelp:
+            'Wähle „Ja“, um nur Einträge mit einer unerledigten Erinnerung zu sehen.',
+        bulkExport: 'Als Markdown exportieren',
+        bulkExportHelp:
+            'Lädt die markierten Einträge als ZIP mit Markdown-Dateien herunter, bereit für ein Protokoll oder eine E-Mail.',
         title: 'Das Notizbuch',
         lead: '{{total}} Einträge · {{pending}} ausstehende Erinnerungen',
         add: 'Eintrag hinzufügen',

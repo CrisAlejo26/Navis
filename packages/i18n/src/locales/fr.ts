@@ -1118,6 +1118,13 @@ export const fr = {
         errorEmpty: 'Écris quelque chose dans les observations',
     },
     journal: {
+        filterKindHelp: "Ne garde que les entrées de l'un des types cochés.",
+        filterDateHelp: 'Ne garde que les entrées écrites dans cette période.',
+        filterReminderHelp:
+            "Choisissez « Oui » pour ne voir que les entrées dont le rappel n'a pas été traité.",
+        bulkExport: 'Exporter en Markdown',
+        bulkExportHelp:
+            'Télécharge les entrées cochées dans un ZIP de fichiers Markdown, prêts pour un compte rendu ou un e-mail.',
         title: 'Le cahier',
         lead: '{{total}} entrées · {{pending}} rappels en attente',
         add: 'Ajouter une entrée',

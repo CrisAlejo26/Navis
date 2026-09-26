@@ -2,13 +2,13 @@ import {
     DEFAULT_PROPHECY_SORT,
     PROPHECY_SORT_FIELDS,
     isProphecyState,
-    isProphecyWindow,
     type PropheciesQuery,
     type ProphecySortField,
     type ProphecyState,
     type TableFilter,
 } from '@navis/shared';
 
+import { legacyWindowStart } from '@/lib/data-table/legacy-window';
 import type { TableRequest } from '@/lib/data-table/types';
 
 /** Los parámetros sueltos de los enlaces de la portada (RFC 0004 D12). */
@@ -18,9 +18,6 @@ const strings = (value: unknown): string[] =>
     Array.isArray(value)
         ? (value as unknown[]).filter((one): one is string => typeof one === 'string')
         : [];
-
-const dayOf = (date: Date): string =>
-    `${String(date.getFullYear())}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 
 /** El tramo de fechas de recepción: el filtro «entre» de la columna. */
 export function prophecyRange(filters: readonly TableFilter[]): { from: string; to: string } {
@@ -73,15 +70,7 @@ export function prophecyFiltersFromLegacy(
     const to = params.get('to') ?? '';
 
     // El tramo a medida manda sobre la ventana rápida, igual que mandaba en el servidor.
-    const window = params.get('window') ?? '';
-    if (!from && !to && isProphecyWindow(window) && window !== 'all') {
-        if (window === 'year') from = `${String(now.getFullYear())}-01-01`;
-        else {
-            const start = new Date(now);
-            start.setDate(start.getDate() - (window === '7d' ? 6 : 29));
-            from = dayOf(start);
-        }
-    }
+    if (!from && !to) from = legacyWindowStart(params.get('window') ?? '', now);
 
     return [
         ...(state.length > 0 ? [{ columnId: 'state', operator: 'in' as const, value: state }] : []),

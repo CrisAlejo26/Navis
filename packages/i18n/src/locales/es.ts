@@ -1130,6 +1130,13 @@ export const es = {
     /* El cuaderno de la iglesia (RFC 0017). Vive bajo `journal.*` para no chocar
      con `notes.*`, que ya es la bitácora de un creyente. */
     journal: {
+        filterKindHelp: 'Deja solo las entradas de alguno de los tipos marcados.',
+        filterDateHelp: 'Deja solo las entradas anotadas dentro de ese tramo de fechas.',
+        filterReminderHelp:
+            'Elige «Sí» para ver solo las entradas con un recordatorio sin atender.',
+        bulkExport: 'Exportar a Markdown',
+        bulkExportHelp:
+            'Descarga las entradas marcadas en un ZIP de ficheros Markdown, listos para un acta o un correo.',
         title: 'El cuaderno',
         lead: '{{total}} entradas · {{pending}} recordatorios pendientes',
         add: 'Añadir entrada',

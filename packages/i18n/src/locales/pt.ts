@@ -1110,6 +1110,12 @@ export const pt = {
         errorEmpty: 'Escreve algo nas observações',
     },
     journal: {
+        filterKindHelp: 'Deixa apenas as entradas de algum dos tipos marcados.',
+        filterDateHelp: 'Deixa apenas as entradas escritas dentro desse intervalo de datas.',
+        filterReminderHelp: 'Escolha «Sim» para ver só as entradas com um lembrete por atender.',
+        bulkExport: 'Exportar para Markdown',
+        bulkExportHelp:
+            'Descarrega as entradas marcadas num ZIP de ficheiros Markdown, prontos para uma ata ou um e-mail.',
         title: 'O caderno',
         lead: '{{total}} entradas · {{pending}} lembretes pendentes',
         add: 'Adicionar entrada',

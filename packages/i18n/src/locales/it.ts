@@ -1112,6 +1112,13 @@ export const it = {
         errorEmpty: 'Scrivi qualcosa nelle osservazioni',
     },
     journal: {
+        filterKindHelp: 'Mostra solo le voci di uno dei tipi selezionati.',
+        filterDateHelp: "Mostra solo le voci scritte in quell'intervallo di date.",
+        filterReminderHelp:
+            'Scegli «Sì» per vedere solo le voci con un promemoria non ancora gestito.',
+        bulkExport: 'Esporta in Markdown',
+        bulkExportHelp:
+            "Scarica le voci selezionate in uno ZIP di file Markdown, pronti per un verbale o un'e-mail.",
         title: 'Il quaderno',
         lead: '{{total}} voci · {{pending}} promemoria in sospeso',
         add: 'Aggiungi una voce',

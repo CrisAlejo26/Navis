@@ -1,75 +1,47 @@
-import { useJournal, useJournalStats } from '@navis/api-client';
-import {
-    DEFAULT_JOURNAL_SORT,
-    JOURNAL_SORT_FIELDS,
-    todayIn,
-    type IsoDate,
-    type JournalEntryListItem,
-    type JournalStats,
-    type Paginated,
-} from '@navis/shared';
+import { useJournal } from '@navis/api-client';
+import type { JournalEntryListItem, TableSort } from '@navis/shared';
 
+import { useEntryColumns } from '@/components/journal/use-entry-columns';
 import { api } from '@/lib/api';
-import { useJournalFilters, type JournalFilters } from '@/lib/journal/filters';
-import { useTableQuery, type TableQuery } from '@/lib/use-table-query';
+import type { DataTableColumn } from '@/lib/data-table/columns';
+import { serverSource, type DataTableSource } from '@/lib/data-table/source';
+import { useDataTableState, type DataTableState } from '@/lib/data-table/use-data-table-state';
+import { useLegacyFilterLinks } from '@/lib/data-table/use-legacy-filter-links';
+import {
+    LEGACY_JOURNAL_PARAMS,
+    journalFiltersFromLegacy,
+    toJournalQuery,
+} from '@/lib/journal/journal-query';
+
+const DEFAULT_SORTS: readonly TableSort[] = [{ columnId: 'date', dir: 'desc' }];
+/** La API ordena por una sola columna. */
+const TABLE_OPTIONS = { singleSort: true };
 
 export interface JournalScreen {
-    query: TableQuery<(typeof JOURNAL_SORT_FIELDS)[number]>;
-    filters: JournalFilters;
-    page: Paginated<JournalEntryListItem> | undefined;
-    /** Las cuentas que llevan dentro las pastillas de tipo (§7.4). */
-    stats: JournalStats | undefined;
-    today: IsoDate;
-    isLoading: boolean;
-    isError: boolean;
-    refetch: () => void;
+    columns: DataTableColumn<JournalEntryListItem>[];
+    state: DataTableState;
+    source: DataTableSource<JournalEntryListItem>;
 }
 
 /**
  * Todo lo que necesita el listado del cuaderno, en un sitio.
  *
- * Se separa de la vista porque son dos cosas distintas: aquí están la
- * consulta, los filtros de la URL y el día de hoy; en el componente, cómo se
- * pinta (Regla 6 §2). Es de la iglesia activa (D1): sin comprobar permisos
- * aquí, porque el guard de la ruta ya exige `journal.view`.
+ * Se separa de la vista porque son dos cosas distintas: aquí están la consulta y el
+ * estado de la tabla; en el componente, cómo se pinta (Regla 6 §2). Es de la iglesia
+ * activa (D1): sin comprobar permisos aquí, porque el guard de la ruta ya exige
+ * `journal.view`.
  */
-export function useJournalScreen(): JournalScreen {
-    const query = useTableQuery({
-        fields: JOURNAL_SORT_FIELDS,
-        sort: DEFAULT_JOURNAL_SORT,
-        order: 'desc',
-    });
-    const filters = useJournalFilters();
+export function useJournalScreen(handlers: {
+    onEdit: (entry: JournalEntryListItem) => void;
+    onDelete: (entry: JournalEntryListItem) => void;
+}): JournalScreen {
+    const columns = useEntryColumns(handlers);
+    const state = useDataTableState('journal', columns, DEFAULT_SORTS, TABLE_OPTIONS);
+    // Las tarjetas de la portada enlazan con parámetros sueltos (`?kind=…`,
+    // `?pendingReminder=true`…): se traducen una vez a los filtros de la tabla.
+    useLegacyFilterLinks(state, LEGACY_JOURNAL_PARAMS, journalFiltersFromLegacy);
 
-    const list = useJournal(api, {
-        page: query.page,
-        limit: query.limit,
-        search: query.search || undefined,
-        kind: filters.kind,
-        window: filters.window,
-        // El tramo a medida manda sobre la ventana rápida: el servidor usa `from`
-        // en cuanto llega y deja de calcularlo desde `window` (§6.1).
-        from: filters.from || undefined,
-        to: filters.to || undefined,
-        pendingReminder: filters.pendingReminder || undefined,
-        sort: query.sort,
-        order: query.order,
-    });
+    const result = useJournal(api, toJournalQuery(state.request));
 
-    const stats = useJournalStats(api);
-
-    return {
-        query,
-        filters,
-        page: list.data,
-        stats: stats.data,
-        // El día de quien mira: el del servidor y el del cliente pueden discrepar
-        // en el cambio de día, y el que se está viendo es este.
-        today: todayIn(Intl.DateTimeFormat().resolvedOptions().timeZone),
-        isLoading: list.isFetching && !list.data,
-        isError: list.isError,
-        refetch: () => {
-            void list.refetch();
-        },
-    };
+    return { columns, state, source: serverSource(result) };
 }

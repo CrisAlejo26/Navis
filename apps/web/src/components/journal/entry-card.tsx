@@ -1,14 +1,27 @@
+import type { JournalEntryListItem } from '@navis/shared';
 import { AudioLines } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 
-import type { EntryCells } from '@/components/journal/entry-row';
-import { EntryActions } from '@/components/journal/entry-actions';
+import { EntryActions, type EntryActionHandlers } from '@/components/journal/entry-actions';
 import { EntryKindBadge } from '@/components/journal/entry-kind-badge';
 import { ReminderIndicator } from '@/components/journal/reminder-indicator';
+import { CheckboxControl } from '@/components/ui/checkbox-control';
 import { accentVars } from '@/lib/accents';
 import { ENTRY_KIND_STYLES } from '@/lib/journal/entry-kind';
 import { formatDay } from '@/lib/format';
+
+/** Lo mismo alimenta la ficha de móvil de la tabla y la rejilla de fichas (§7.5). */
+export interface EntryCells extends EntryActionHandlers {
+    entry: JournalEntryListItem;
+    index: number;
+    /**
+     * La casilla de la propia ficha, solo en la rejilla. En la tabla, la casilla la
+     * pone `DataTable` alrededor de la ficha y esta no se pinta dos veces.
+     */
+    selected?: boolean;
+    onToggleSelect?: () => void;
+}
 
 /**
  * La misma entrada como ficha: la vista de serie, y donde más se nota el
@@ -33,13 +46,13 @@ export function EntryCard({
         >
             <div className="gap-2 flex items-start justify-between">
                 <EntryKindBadge kind={entry.kind} />
-                <input
-                    type="checkbox"
-                    checked={selected}
-                    onChange={onToggleSelect}
-                    aria-label={t('journal.selectOne', { title: entry.title })}
-                    className="h-4 w-4 rounded shrink-0 cursor-pointer accent-primary"
-                />
+                {onToggleSelect && (
+                    <CheckboxControl
+                        checked={selected ?? false}
+                        onChange={onToggleSelect}
+                        aria-label={t('journal.selectOne', { title: entry.title })}
+                    />
+                )}
             </div>
 
             <Link
