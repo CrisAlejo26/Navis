@@ -4,6 +4,7 @@ export * from './constants/table-column-types';
 export * from './constants/task-icons';
 export * from './dates';
 export * from './dream-state';
+export * from './dream-stats';
 export * from './env';
 export * from './excerpt';
 export * from './greeting';

@@ -68,6 +68,10 @@ const ALL_TABLES = [
     'task_occurrences',
     'prophecies',
     'prophecy_fulfillments',
+    'dreams',
+    'emotions',
+    'dream_emotions',
+    'dream_audios',
     'local_user',
 ];
 

@@ -1,9 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import type { DreamEmotionCount, DreamsStats } from '@navis/shared';
+import {
+    summarizeDreams,
+    type DreamEmotionCount,
+    type DreamStatsRow,
+    type DreamsStats,
+} from '@navis/shared';
 
 import { toIsoDay } from '../database/iso-day';
 import { DreamEmotionsRepository } from './dream-emotions.repository';
-import { summarize, type DreamStatsRow } from './dream-stats';
 import { toEmotionView } from './dreams.mapper';
 import { DreamsRepository } from './dreams.repository';
 import { EmotionsRepository } from './emotions.repository';
@@ -35,7 +39,7 @@ export class DreamStatsService {
             rows.map((row) => row.id),
         );
 
-        return summarize(rows.map(toStatsRow), toIsoDay(new Date()), byEmotion);
+        return summarizeDreams(rows.map(toStatsRow), toIsoDay(new Date()), byEmotion);
     }
 
     /** El mapa de emociones: solo las que se han usado, con su color (§7.3). */

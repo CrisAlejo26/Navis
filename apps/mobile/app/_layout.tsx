@@ -17,7 +17,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import { I18nextProvider, useTranslation } from 'react-i18next';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { SafeAreaProvider, initialWindowMetrics } from 'react-native-safe-area-context';
 
 // Importar este módulo inicializa i18next; tiene que ocurrir antes del primer
 // render para que no se vea un parpadeo con las claves sin traducir.
@@ -69,7 +69,8 @@ function RootNavigator() {
                         key={name}
                         name={name}
                         options={{
-                            headerShown: true,
+                            // Profecías y sueños pintan su propia `AppBar`, como su listado y su ficha.
+                            headerShown: name !== 'prophecies' && name !== 'dreams',
                             title: t(titleKey),
                             animation: PUSHED_SCREEN_ANIMATION,
                         }}
@@ -105,6 +106,14 @@ function RootNavigator() {
                 />
                 <Stack.Screen
                     name="prophecies/[id]"
+                    options={{ headerShown: false, animation: PUSHED_SCREEN_ANIMATION }}
+                />
+                <Stack.Screen
+                    name="dreams/list"
+                    options={{ headerShown: false, animation: PUSHED_SCREEN_ANIMATION }}
+                />
+                <Stack.Screen
+                    name="dreams/[id]"
                     options={{ headerShown: false, animation: PUSHED_SCREEN_ANIMATION }}
                 />
                 <Stack.Screen
@@ -146,7 +155,7 @@ export default function RootLayout() {
 
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
-            <SafeAreaProvider>
+            <SafeAreaProvider initialMetrics={initialWindowMetrics}>
                 <I18nextProvider i18n={i18n}>
                     <QueryClientProvider client={queryClient}>
                         <RootNavigator />

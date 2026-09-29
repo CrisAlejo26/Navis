@@ -10,6 +10,7 @@ import {
 import * as SQLite from 'expo-sqlite';
 
 import { seedCalendarScaffold } from './repos/calendar-seed';
+import { seedSystemEmotions } from './repos/emotions-seed';
 
 /**
  * La base de datos **local del teléfono** (RFC 0024, Fase 1).
@@ -105,7 +106,7 @@ export function setDbForTests(fake: LocalDb | null): void {
 }
 
 /** Versión actual del esquema local. Cada cambio añade un caso a `migrations`. */
-const SCHEMA_VERSION = 7;
+const SCHEMA_VERSION = 8;
 
 type Migration = (db: LocalDb) => Promise<void>;
 
@@ -344,6 +345,35 @@ const migrations: Record<number, Migration> = {
             await db.execAsync('DROP INDEX IF EXISTS "IDX_meeting_slots_believer"');
             await db.execAsync('ALTER TABLE meeting_slots DROP COLUMN "believer_id"');
         }
+    },
+    // Sueños en móvil (docs/planes/pendientes/suenos-movil-plan.md §3.2): cuatro
+    // tablas nuevas y las doce emociones de serie. En una base **nueva** la
+    // migración 1 ya crea las tablas; aquí solo lo que falte, y los índices por
+    // su nombre con `IF NOT EXISTS`. La siembra es idempotente.
+    8: async (db) => {
+        const DREAM_TABLES = ['dreams', 'emotions', 'dream_emotions', 'dream_audios'];
+
+        const existing = new Set(
+            (
+                await db.getAllAsync<{ name: string }>(
+                    "SELECT name FROM sqlite_master WHERE type = 'table'",
+                )
+            ).map((row) => row.name),
+        );
+        for (const one of ALL_LOCAL_TABLES) {
+            if (!DREAM_TABLES.includes(one.name) || existing.has(one.name)) continue;
+            await db.execAsync(createTableSql(one));
+        }
+        for (const one of LOCAL_INDEXES) {
+            if (!DREAM_TABLES.includes(one.table)) continue;
+            await db.execAsync(
+                createIndexSql(one).replace(
+                    /^CREATE (UNIQUE )?INDEX/,
+                    'CREATE $1INDEX IF NOT EXISTS',
+                ),
+            );
+        }
+        await seedSystemEmotions(db);
     },
 };
 

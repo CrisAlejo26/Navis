@@ -6,14 +6,16 @@ import {
     startOfMonth,
     startOfWeek,
     weekdayOf,
-    type DreamEmotionCount,
-    type DreamMonth,
-    type DreamNight,
-    type DreamWeek,
-    type DreamWeekdayCount,
-    type DreamsStats,
     type IsoDate,
-} from '@navis/shared';
+} from './dates';
+import type {
+    DreamEmotionCount,
+    DreamMonth,
+    DreamNight,
+    DreamWeek,
+    DreamWeekdayCount,
+    DreamsStats,
+} from './schemas/dream-queries';
 
 /** Lo justo para las cuentas: ni el cuerpo ni el texto de búsqueda (§6.2). */
 export interface DreamStatsRow {
@@ -32,10 +34,11 @@ const MONTHS = 12;
 /**
  * Las cuentas de la portada, sobre las filas ya traídas.
  *
- * Función pura y con «hoy» por parámetro para poder probarla sin base de datos
+ * Compartida entre la API y el repositorio local del móvil
+ * (docs/planes/pendientes/suenos-movil-plan.md §3.1). Función pura y con «hoy» por parámetro para poder probarla sin base de datos
  * y sin depender del día en que se ejecute la suite.
  */
-export function summarize(
+export function summarizeDreams(
     rows: readonly DreamStatsRow[],
     today: IsoDate,
     byEmotion: readonly DreamEmotionCount[],

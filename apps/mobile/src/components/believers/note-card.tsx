@@ -1,12 +1,11 @@
 import { Ionicons } from '@expo/vector-icons';
 import { NOTE_KIND_ACCENTS, isReminderDue } from '@navis/shared';
 import { themeColorsHex } from '@navis/theme';
-import { useAudioPlayer } from 'expo-audio';
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
 import type { LocalNote } from '@/data/repos/notes-repo';
+import { AudioLine } from '@/components/audio-line';
 import { NOTE_KIND_ICONS } from '@/components/believers/note-kind-icons';
 import { formatDay } from '@/lib/format';
 import { useThemeStore } from '@/lib/theme';
@@ -176,57 +175,6 @@ function ReminderLine({
                 <Text className="text-xs font-sans-medium" style={{ color: palette.primary }}>
                     {t('notes.reminder.markDone')}
                 </Text>
-            </Pressable>
-        </View>
-    );
-}
-
-function AudioLine({
-    audio,
-    onDelete,
-}: {
-    audio: { uri: string; durationSeconds: number | null; recorded: boolean };
-    onDelete: () => void;
-}) {
-    const { t } = useTranslation();
-    const palette = themeColorsHex[useThemeStore((state) => state.resolvedTheme)];
-    const player = useAudioPlayer(audio.uri);
-    const [playing, setPlaying] = useState(false);
-
-    function toggle() {
-        if (playing) {
-            player.pause();
-            setPlaying(false);
-        } else {
-            player.play();
-            setPlaying(true);
-        }
-    }
-
-    return (
-        <View className="gap-2 flex-row items-center">
-            <Pressable
-                accessibilityRole="button"
-                accessibilityLabel={t('common.audio.title')}
-                onPress={toggle}
-                className="h-8 w-8 items-center justify-center rounded-full"
-                style={{ backgroundColor: hexAlpha(palette.primary, 0.12) }}
-            >
-                <Ionicons name={playing ? 'pause' : 'play'} size={14} color={palette.primary} />
-            </Pressable>
-            <Text className="text-xs flex-1 text-muted-foreground tabular-nums">
-                {audio.durationSeconds
-                    ? `${Math.floor(audio.durationSeconds / 60)}:${String(audio.durationSeconds % 60).padStart(2, '0')}`
-                    : '—'}
-                {audio.recorded ? ` · ${t('common.audio.recorded')}` : ''}
-            </Text>
-            <Pressable
-                accessibilityRole="button"
-                accessibilityLabel={t('common.audio.remove')}
-                onPress={onDelete}
-                className="h-8 w-8 items-center justify-center rounded-full"
-            >
-                <Ionicons name="trash-outline" size={14} color={palette.mutedForeground} />
             </Pressable>
         </View>
     );

@@ -24,6 +24,10 @@ import { Church } from '../churches/church.entity';
 import { MeetingSlot } from '../calendar/meeting-slot.entity';
 import { MeetingSlotBeliever } from '../calendar/meeting-slot-believer.entity';
 import { NoteAudio } from '../believers/note-audio.entity';
+import { DreamAudio } from '../dreams/dream-audio.entity';
+import { DreamEmotion } from '../dreams/dream-emotion.entity';
+import { Dream } from '../dreams/dream.entity';
+import { Emotion } from '../dreams/emotion.entity';
 import { Prophecy } from '../prophecies/prophecy.entity';
 import { ProphecyFulfillment } from '../prophecies/prophecy-fulfillment.entity';
 import { Task } from '../tasks/task.entity';
@@ -67,6 +71,10 @@ const ENTITIES = [
     TaskOccurrence,
     Prophecy,
     ProphecyFulfillment,
+    Dream,
+    Emotion,
+    DreamEmotion,
+    DreamAudio,
     // Objetivos de relación: TypeORM las exige en el registro de entidades para
     // poder construir los metadatos, aunque no se comparen.
     NoteAudio,

@@ -249,6 +249,40 @@ export const LOCAL_TABLES: LocalTable[] = [
         { name: 'text', type: 'text' },
         { name: 'occurred_at', type: 'text' },
     ]),
+    // Sueños (docs/planes/pendientes/suenos-movil-plan.md §1): cuatro tablas con las
+    // columnas de las entidades de la API. Como profecías, `dreams` no lleva
+    // `church_id` (RFC 0005 D1). `emotions.owner_id` nulo es una de las doce de
+    // serie (D6), y en `dream_audios.storage_key` va la URI del fichero del
+    // teléfono, como en `note_audios`.
+    table('dreams', 'Dream', [
+        { name: 'owner_id', type: 'text' },
+        { name: 'title', type: 'text', nullable: true },
+        { name: 'body', type: 'text' },
+        { name: 'search_text', type: 'text' },
+        { name: 'dreamed_at', type: 'text' },
+        { name: 'interpretation', type: 'text', nullable: true },
+        { name: 'fulfilled_at', type: 'text', nullable: true },
+        { name: 'fulfillment_meaning', type: 'text', nullable: true },
+    ]),
+    table('emotions', 'Emotion', [
+        { name: 'owner_id', type: 'text', nullable: true },
+        { name: 'slug', type: 'text', nullable: true },
+        { name: 'name', type: 'text', nullable: true },
+        { name: 'accent', type: 'text' },
+        { name: 'position', type: 'int', default: 0 },
+    ]),
+    table('dream_emotions', 'DreamEmotion', [
+        { name: 'dream_id', type: 'text' },
+        { name: 'emotion_id', type: 'text' },
+    ]),
+    table('dream_audios', 'DreamAudio', [
+        { name: 'dream_id', type: 'text' },
+        { name: 'storage_key', type: 'text' },
+        { name: 'mime_type', type: 'text' },
+        { name: 'size_bytes', type: 'int' },
+        { name: 'duration_seconds', type: 'int', nullable: true },
+        { name: 'recorded', type: 'bool', default: false },
+    ]),
 ];
 
 /**
@@ -381,6 +415,40 @@ export const LOCAL_INDEXES: {
         table: 'prophecy_fulfillments',
         columns: ['prophecy_id', 'occurred_at'],
     },
+    {
+        name: 'IDX_dreams_owner_dreamed',
+        table: 'dreams',
+        columns: ['owner_id', 'dreamed_at'],
+    },
+    {
+        name: 'IDX_dreams_owner_fulfilled',
+        table: 'dreams',
+        columns: ['owner_id', 'fulfilled_at'],
+    },
+    { name: 'IDX_dreams_owner_search', table: 'dreams', columns: ['owner_id', 'search_text'] },
+    // Los dos únicos de `emotions` son parciales, como en la API: sin el WHERE
+    // las de serie (sin nombre) y las propias (sin slug) chocarían entre sí.
+    {
+        name: 'UQ_emotions_slug',
+        table: 'emotions',
+        columns: ['slug'],
+        unique: true,
+        where: '"slug" IS NOT NULL AND "deleted_at" IS NULL',
+    },
+    {
+        name: 'UQ_emotions_owner_name',
+        table: 'emotions',
+        columns: ['owner_id', 'name'],
+        unique: true,
+        where: '"name" IS NOT NULL AND "deleted_at" IS NULL',
+    },
+    {
+        name: 'UQ_dream_emotions',
+        table: 'dream_emotions',
+        columns: ['dream_id', 'emotion_id'],
+        unique: true,
+    },
+    { name: 'IDX_dream_audios_dream', table: 'dream_audios', columns: ['dream_id'] },
 ];
 
 const DDL_TYPE: Record<LocalColumnType, string> = {

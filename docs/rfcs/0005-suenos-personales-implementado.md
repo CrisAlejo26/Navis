@@ -1,11 +1,12 @@
 # RFC 0005: Sueños personales
 
-- **Estado**: **Implementado** (API y web). Reescrito el 2026-08-05 sobre el
+- **Estado**: **Implementado** (API y web; móvil, ver `docs/planes/implementados/suenos-movil-plan.md`). Reescrito el 2026-08-05 sobre el
   borrador del 3 de agosto, que proponía otra cosa: una lista cronológica con
   nube de símbolos y sin ninguna métrica.
 - **Fecha**: 2026-08-03 · reescrito e implementado el 2026-08-05
 - **Apps afectadas**: **api y web** (escritorio la hereda: es la misma web
-  dentro de Tauri). Móvil, no: ver «Fuera de alcance».
+  dentro de Tauri). Móvil, después, con su propia base local: ver la enmienda
+  de `docs/planes/implementados/suenos-movil-plan.md` §0.
 - **Depende de**: 0004 en lo de fondo —es de una persona, no de una iglesia— y
   0003 en lo práctico: los audios de las notas ya existen y se reaprovechan.
 
