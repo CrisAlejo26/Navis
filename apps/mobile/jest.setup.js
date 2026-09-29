@@ -20,6 +20,29 @@ jest.mock('expo-secure-store', () => ({
     setItemAsync: jest.fn(),
 }));
 
+// `expo-notifications` es nativo: en Jest no hay sistema que programe nada. El
+// mock deja la programación en una lista en memoria y el permiso sin decidir;
+// los tests de comportamiento inyectan su propio doble (`NotificationScheduler`).
+jest.mock('expo-notifications', () => ({
+    SchedulableTriggerInputTypes: { DATE: 'date', TIME_INTERVAL: 'timeInterval' },
+    AndroidImportance: { HIGH: 4 },
+    AndroidNotificationVisibility: { PUBLIC: 1 },
+    getPermissionsAsync: jest.fn(() =>
+        Promise.resolve({ granted: false, canAskAgain: true, status: 'undetermined' }),
+    ),
+    requestPermissionsAsync: jest.fn(() =>
+        Promise.resolve({ granted: false, canAskAgain: false, status: 'denied' }),
+    ),
+    getAllScheduledNotificationsAsync: jest.fn(() => Promise.resolve([])),
+    scheduleNotificationAsync: jest.fn(() => Promise.resolve('id')),
+    cancelScheduledNotificationAsync: jest.fn(() => Promise.resolve()),
+    setNotificationChannelAsync: jest.fn(() => Promise.resolve(null)),
+    setNotificationHandler: jest.fn(),
+    addNotificationResponseReceivedListener: jest.fn(() => ({ remove: jest.fn() })),
+    getLastNotificationResponse: jest.fn(() => null),
+    clearLastNotificationResponse: jest.fn(),
+}));
+
 // Reanimated corre con worklets en el hilo de UI. Su mock oficial arrastra el
 // módulo nativo de react-native-worklets y revienta en Jest («loadUnpackers»),
 // así que se sustituye por un stub que resuelve las animaciones al instante:
@@ -102,3 +125,12 @@ jest.mock('react-native-gesture-handler', () => {
 // i18next se inicializa una vez para toda la suite: sin esto los componentes
 // renderizan las claves («theme.system») en vez del texto traducido.
 require('./src/lib/i18n');
+
+// El mock de `TextInput` de React Native no trae `setSelection`, que el editor de
+// enseñanzas usa para colocar el cursor tras un Enter o una fusión de bloques.
+// Va en el prototipo: no hay nada que comprobar del cursor en Jest, solo que la
+// llamada existe (los tests del editor miran el documento, no la selección).
+const { TextInput: MockedTextInput } = require('react-native');
+if (typeof MockedTextInput.prototype.setSelection !== 'function') {
+    MockedTextInput.prototype.setSelection = () => undefined;
+}

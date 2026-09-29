@@ -1,12 +1,11 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import {
-    extractTeachingBodyText,
+    parseTeachingBody,
     teachingBodySchema,
-    toSearchName,
+    toTeachingSearchText,
     type TeachingBody,
 } from '@navis/shared';
 
-import { parseTeachingBody } from './teachings.mapper';
 import { TeachingsRepository } from './teachings.repository';
 import type { Teaching } from './teaching.entity';
 
@@ -46,7 +45,7 @@ export class TeachingsService {
             this.teachings.create(ownerId, {
                 title: input.title,
                 bodyJson: JSON.stringify(body),
-                searchText: toSearchText(input.title, body),
+                searchText: toTeachingSearchText(input.title, body),
                 receivedAt: input.receivedAt,
             }),
         );
@@ -58,7 +57,7 @@ export class TeachingsService {
         if (input.title !== undefined) teaching.title = input.title;
         if (input.body !== undefined) teaching.bodyJson = JSON.stringify(parseBody(input.body));
         if (input.title !== undefined || input.body !== undefined) {
-            teaching.searchText = toSearchText(
+            teaching.searchText = toTeachingSearchText(
                 teaching.title,
                 parseTeachingBody(teaching.bodyJson),
             );
@@ -83,12 +82,4 @@ function parseBody(raw: Record<string, unknown>): TeachingBody {
         throw new BadRequestException(parsed.error.issues[0]?.message ?? 'El texto no es válido');
     }
     return parsed.data;
-}
-
-/** Lo que se guarda en `search_text`: título y texto plano del cuerpo, normalizados. */
-export function toSearchText(title: string, body: TeachingBody): string {
-    // La misma normalización que `search_name` de creyentes y `search_text` de
-    // profecías, y a propósito: si divergieran, una de las búsquedas dejaría de
-    // encontrar acentos.
-    return toSearchName(`${title} ${extractTeachingBodyText(body).text}`);
 }

@@ -2,9 +2,11 @@ import '@/global.css';
 
 import {
     Roboto_400Regular,
+    Roboto_400Regular_Italic,
     Roboto_500Medium,
     Roboto_600SemiBold,
     Roboto_700Bold,
+    Roboto_700Bold_Italic,
 } from '@expo-google-fonts/roboto';
 import { themeColorsHex } from '@navis/theme';
 import { AppBackdrop } from '@/components/navigation/app-backdrop';
@@ -23,6 +25,8 @@ import { SafeAreaProvider, initialWindowMetrics } from 'react-native-safe-area-c
 // render para que no se vea un parpadeo con las claves sin traducir.
 import { i18n } from '@/lib/i18n';
 import { initializeTestUser } from '@/data/demo-data';
+import { useNotificationSync } from '@/hooks/use-notification-sync';
+import { useNotificationTap } from '@/hooks/use-notification-tap';
 import { useNavigationTheme } from '@/lib/navigation-theme';
 import { PUSHED_SCREEN_ANIMATION } from '@/lib/pushed-screens';
 import { queryClient } from '@/lib/query-client';
@@ -46,6 +50,8 @@ function RootNavigator() {
     // creyentes, ficha); sin reclamante, el del tema. Las pantallas con fondo
     // propio en la zona segura reclaman vía `useStatusBarClaim`.
     const reclamado = useStatusBarStore((state) => state.style);
+    useNotificationSync();
+    useNotificationTap();
 
     return (
         <ThemeProvider value={navigationTheme}>
@@ -69,8 +75,9 @@ function RootNavigator() {
                         key={name}
                         name={name}
                         options={{
-                            // Profecías y sueños pintan su propia `AppBar`, como su listado y su ficha.
-                            headerShown: name !== 'prophecies' && name !== 'dreams',
+                            // Profecías, sueños y enseñanzas pintan su propia `AppBar`, como su listado y su ficha.
+                            headerShown:
+                                name !== 'prophecies' && name !== 'dreams' && name !== 'teachings',
                             title: t(titleKey),
                             animation: PUSHED_SCREEN_ANIMATION,
                         }}
@@ -117,6 +124,18 @@ function RootNavigator() {
                     options={{ headerShown: false, animation: PUSHED_SCREEN_ANIMATION }}
                 />
                 <Stack.Screen
+                    name="teachings/list"
+                    options={{ headerShown: false, animation: PUSHED_SCREEN_ANIMATION }}
+                />
+                <Stack.Screen
+                    name="teachings/[id]"
+                    options={{ headerShown: false, animation: PUSHED_SCREEN_ANIMATION }}
+                />
+                <Stack.Screen
+                    name="teachings/edit"
+                    options={{ headerShown: false, animation: PUSHED_SCREEN_ANIMATION }}
+                />
+                <Stack.Screen
                     name="+not-found"
                     options={{ headerShown: true, title: t('errors.notFound') }}
                 />
@@ -132,9 +151,11 @@ export default function RootLayout() {
     // saldría con la fuente del sistema y se vería el salto al llegar la real.
     const [fontsLoaded] = useFonts({
         Roboto_400Regular,
+        Roboto_400Regular_Italic,
         Roboto_500Medium,
         Roboto_600SemiBold,
         Roboto_700Bold,
+        Roboto_700Bold_Italic,
     });
 
     useEffect(() => {

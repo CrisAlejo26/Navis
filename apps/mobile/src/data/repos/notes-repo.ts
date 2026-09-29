@@ -151,6 +151,18 @@ export async function listNotes(
     };
 }
 
+/** Una nota por su id: el aviso de un recordatorio la abre aunque no esté en la primera página. */
+export async function findNote(noteId: string, churchId: string): Promise<LocalNote | null> {
+    const db = await getDb();
+    const row = await db.getFirstAsync<NoteRow>(
+        `SELECT ${NOTE_COLUMNS}, g.name AS gift_name, u.name AS author_name ${NOTE_FROM}
+     WHERE n.id = ? AND n.church_id = ? AND n.deleted_at IS NULL`,
+        noteId,
+        churchId,
+    );
+    return row ? toNote(row) : null;
+}
+
 /** Las pastillas de tipo con su cuenta (§7.5). */
 export async function noteCounts(believerId: string): Promise<NoteCounts> {
     const db = await getDb();

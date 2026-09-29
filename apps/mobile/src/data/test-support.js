@@ -72,6 +72,7 @@ const ALL_TABLES = [
     'emotions',
     'dream_emotions',
     'dream_audios',
+    'teachings',
     'local_user',
 ];
 

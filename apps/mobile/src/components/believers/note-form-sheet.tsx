@@ -10,6 +10,7 @@ import { NOTE_KIND_ICONS } from '@/components/believers/note-kind-icons';
 import {
     emptyNoteForm,
     noteFormFrom,
+    remindAtOf,
     toNoteInput,
     type NoteFormValues,
 } from '@/components/believers/note-form-values';
@@ -22,6 +23,7 @@ import { Select } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { TextField } from '@/components/ui/text-field';
 import { useGifts } from '@/hooks/use-catalog';
+import type { WriteNoteInput } from '@/data/repos/notes-repo';
 import { useThemeStore } from '@/lib/theme';
 import { useSheetBodyMaxHeight } from '@/lib/ui/keyboard';
 
@@ -35,7 +37,8 @@ interface NoteFormSheetProps {
     /** Audios grabados mientras el formulario estaba abierto: suben al guardar. */
     pendingAudios: { uri: string; durationSeconds: number | null }[];
     onRecorded: (audio: { uri: string; durationSeconds: number | null }) => void;
-    onSave: (values: NoteFormValues) => Promise<void>;
+    /** Ya validado y con el recordatorio como instante (`remindAt`). */
+    onSave: (input: WriteNoteInput) => Promise<void>;
     /** Solo al editar: el borrado es una decisión, no un gesto. */
     onDelete?: () => void;
 }
@@ -81,9 +84,16 @@ function NoteFormBody({
             setError(t(input.error === 'gift' ? 'notes.giftRequired' : 'notes.reminder.needsWhen'));
             return;
         }
+        // Un recordatorio nuevo (o movido) que ya pasó nunca sonaría: se avisa
+        // en vez de guardarlo mudo. El que ya estaba así no se toca al editar.
+        const remindAt = remindAtOf(values);
+        if (remindAt && remindAt !== note?.remindAt && new Date(remindAt) <= new Date()) {
+            setError(t('notes.reminder.inPast'));
+            return;
+        }
         setSaving(true);
         try {
-            await onSave(values);
+            await onSave(input);
             onClose();
         } catch {
             setError(t('errors.generic'));

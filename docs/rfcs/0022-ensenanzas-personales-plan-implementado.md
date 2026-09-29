@@ -14,6 +14,9 @@
   tomaron las RFC 0004 §7.10 y 0017 §7.10, y por el mismo motivo: la forma se
   asienta primero en web antes de duplicar el JSX en React Native, y aquí hay
   además un problema propio (§2, «texto enriquecido cruzado»).
+- **Enmienda (2026-09-29)**: la app móvil **ya no queda fuera**. Se implementó con un
+  editor propio en React Native puro, sin dependencias, sobre el mismo whitelist:
+  ver [`ensenanzas-movil-plan.md`](../planes/implementados/ensenanzas-movil-plan.md).
 - **Depende de**: nada estructuralmente. Reutiliza infraestructura de
   RFC 0004 (patrón de repositorio con dueño), RFC 0009/0017 (exportar Markdown
   e imagen) y RFC 0021 (columna JSON dual-motor).

@@ -172,6 +172,34 @@ export const de = {
         label: 'Sprache',
         changed: 'Sprache auf {{language}} geändert',
     },
+    notifications: {
+        title: 'Benachrichtigungen',
+        master: 'Benachrichtigungen erhalten',
+        masterHint: 'Navis erinnert dich zur gewählten Zeit, auch wenn die App geschlossen ist.',
+        noteReminders: 'Notiz-Erinnerungen',
+        noteRemindersHint:
+            'Sie erklingen zur Zeit, die du in der Notiz eines Bruders festgelegt hast.',
+        test: 'Testbenachrichtigung senden',
+        testTitle: 'Testbenachrichtigung',
+        testBody: 'Wenn du das liest, funktionieren die Benachrichtigungen.',
+        testSent: 'Benachrichtigung gesendet: Sie kommt gleich an',
+        testFailed: 'Die Testbenachrichtigung konnte nicht gesendet werden',
+        unsupported:
+            'Benachrichtigungen funktionieren nicht in Expo Go: Nutze die installierte App.',
+        channel: {
+            name: 'Notiz-Erinnerungen',
+            description: 'Hinweise zu Notizen deiner Brüder mit Erinnerung.',
+        },
+        noteReminder: {
+            title: 'Erinnerung: {{name}}',
+            body: 'Du hast eine Notiz mit einer Erinnerung für jetzt.',
+        },
+        denied: {
+            title: 'Benachrichtigungen sind ausgeschaltet',
+            body: 'Ohne Erlaubnis kann Navis dich bei geschlossener App nicht erinnern. Schalte sie in den Einstellungen des Telefons ein.',
+            openSettings: 'Einstellungen öffnen',
+        },
+    },
     settings: {
         saved: 'Einstellungen gespeichert',
         title: 'Einstellungen',
@@ -701,6 +729,7 @@ export const de = {
             what: 'Woran erinnern',
             whatHint: 'Was du lesen willst, wenn der Tag kommt.',
             needsWhen: 'Eine Erinnerung braucht Tag und Uhrzeit',
+            inPast: 'Wähle einen Zeitpunkt, der noch nicht vorbei ist',
             pending: 'Erinnerung am {{when}}',
             due: 'Heute fällig: {{what}}',
             overdue: 'War am {{when}} fällig',
@@ -1132,6 +1161,7 @@ export const de = {
             markdown: 'Als Markdown herunterladen',
             image: 'Als Bild teilen',
             continuesInNavis: '— geht weiter in Navis',
+            share: 'Als Text teilen',
         },
         stats: {
             total: 'Alle',
@@ -1140,6 +1170,8 @@ export const de = {
             checklist: 'Checkliste erledigt',
             checklistValue: '{{checked}} / {{total}}',
             noData: 'Noch keine Daten',
+            totalLabel: 'Erfasste Lehren',
+            thisYearLabel: 'Dieses Jahr erfasst',
         },
         created: 'Lehre festgehalten',
         updated: 'Lehre gespeichert',
@@ -1147,6 +1179,15 @@ export const de = {
         deleteTitle: '„{{title}}“ löschen',
         deleteBody: 'Der Titel und der gesamte Text der Lehre werden gelöscht.',
         errorEmpty: 'Schreib etwas in die Anmerkungen',
+        loadMore: 'Mehr anzeigen',
+        sortLabel: 'Reihenfolge',
+        sort: {
+            newest: 'Neueste zuerst',
+            oldest: 'Älteste zuerst',
+            byTitle: 'Nach Titel',
+        },
+        receivedOn: 'Erhalten am {{date}}',
+        noNotes: 'Keine Notizen',
     },
     journal: {
         filterKindHelp: 'Zeigt nur die Einträge eines der markierten Typen.',

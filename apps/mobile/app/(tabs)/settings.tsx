@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { ScrollView, Text, View } from 'react-native';
 
 import { LanguageSelect } from '@/components/language-select';
+import { NotificationsCard } from '@/components/settings/notifications-card';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -74,6 +75,8 @@ export default function SettingsScreen() {
                     </View>
                 </View>
             </Card>
+
+            <NotificationsCard />
 
             <Card title={t('settings.profile')} description={user?.email}>
                 <Button

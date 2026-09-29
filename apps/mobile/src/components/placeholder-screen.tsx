@@ -11,7 +11,6 @@ export type NavKey =
     | 'nav.prophecies'
     | 'nav.dreams'
     | 'nav.teachings'
-    | 'nav.communications'
     | 'nav.lists'
     | 'nav.tables'
     | 'nav.journal'

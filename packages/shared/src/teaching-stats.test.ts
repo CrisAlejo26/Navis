@@ -1,7 +1,7 @@
-import type { TeachingBody, TeachingParagraph } from '@navis/shared';
 import { describe, expect, it } from 'vitest';
 
-import { summarizeTeachings, type StatsRow } from './teaching-stats';
+import type { TeachingBody, TeachingParagraph } from './schemas/teachings';
+import { summarizeTeachings, type TeachingStatsRow } from './teaching-stats';
 
 const HOY = '2026-08-05';
 
@@ -26,7 +26,7 @@ const conChecklist = (checked: number, total: number): TeachingBody => ({
     ],
 });
 
-const fila = (overrides: Partial<StatsRow> = {}): StatsRow => ({
+const fila = (overrides: Partial<TeachingStatsRow> = {}): TeachingStatsRow => ({
     receivedAt: '2026-03-14',
     bodyJson: JSON.stringify(sinChecklist),
     ...overrides,

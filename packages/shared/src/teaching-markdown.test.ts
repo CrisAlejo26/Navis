@@ -1,7 +1,7 @@
-import type { TeachingBody } from '@navis/shared';
+import type { TeachingBody } from './schemas/teachings';
 import { describe, expect, it } from 'vitest';
 
-import { toTeachingMarkdown } from '@/lib/teachings/body-to-markdown';
+import { toTeachingMarkdown } from './teaching-markdown';
 
 const parrafo = (texto: string, opts: { bold?: boolean; italic?: boolean } = {}) => ({
     type: 'paragraph' as const,

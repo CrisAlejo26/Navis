@@ -23,6 +23,7 @@ import {
     createNote,
     deleteAudio,
     deleteNote,
+    findNote,
     listNotes,
     noteCounts,
     noteDays,
@@ -30,6 +31,7 @@ import {
     type LocalNote,
     type WriteNoteInput,
 } from '@/data/repos/notes-repo';
+import { syncNotifications } from '@/lib/notifications/sync';
 import { useLocalSession } from '@/stores/local-session';
 
 /**
@@ -120,6 +122,16 @@ export function useBelieverNotes(believerId: string, query: { search?: string; k
     });
 }
 
+/** Una nota concreta, para abrirla desde el aviso de su recordatorio. */
+export function useNote(noteId: string | undefined) {
+    const churchId = useLocalSession((state) => state.session?.churchId);
+    return useQuery({
+        queryKey: ['believers', churchId, 'note', noteId],
+        queryFn: () => findNote(noteId ?? '', churchId ?? ''),
+        enabled: Boolean(churchId && noteId),
+    });
+}
+
 export function useNoteCounts(believerId: string) {
     return useQuery({
         queryKey: ['believers', 'noteCounts', believerId],
@@ -134,9 +146,17 @@ export function useNoteDays(believerId: string, from: string, to: string) {
     });
 }
 
+/**
+ * Tras cualquier cambio de hermanos o notas: refresca las consultas y pone los
+ * avisos del teléfono al día (un recordatorio nuevo, movido, borrado o de un
+ * hermano que cambió de nombre). La sincronización es idempotente y barata.
+ */
 function useInvalidate() {
     const client = useQueryClient();
-    return () => client.invalidateQueries({ queryKey: ['believers'] });
+    return () => {
+        void syncNotifications();
+        return client.invalidateQueries({ queryKey: ['believers'] });
+    };
 }
 
 export function useCreateBeliever() {

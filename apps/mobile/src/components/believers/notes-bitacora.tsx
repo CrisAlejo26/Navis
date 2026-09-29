@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { FlatList, Pressable, ScrollView, SectionList, Text, View } from 'react-native';
 
 import { NoteFormSheet } from '@/components/believers/note-form-sheet';
+import { toUpdateInput } from '@/components/believers/note-form-values';
 import { NotesCalendarView } from '@/components/believers/notes-calendar-view';
 import { NoteCard } from '@/components/believers/note-card';
 import { Button } from '@/components/ui/button';
@@ -19,10 +20,12 @@ import {
     useCreateNote,
     useDeleteAudio,
     useDeleteNote,
+    useNote,
     useNoteCounts,
     useUpdateNote,
 } from '@/hooks/use-believers';
 import { useDebouncedValue } from '@/hooks/use-debounced-value';
+import { useAfterReminderSaved } from '@/hooks/use-reminder-prompt';
 
 type BitacoraView = 'log' | 'list' | 'calendar';
 
@@ -35,9 +38,12 @@ type BitacoraView = 'log' | 'list' | 'calendar';
 export function NotesBitacora({
     believerId,
     believerName,
+    openNoteId,
 }: {
     believerId: string;
     believerName: string;
+    /** La nota que abre el aviso de su recordatorio, si se llegó por él. */
+    openNoteId?: string;
 }) {
     const { t } = useTranslation();
     const [view, setView] = useState<BitacoraView>('log');
@@ -45,6 +51,9 @@ export function NotesBitacora({
     const [kind, setKind] = useState<NoteKind | undefined>(undefined);
     const [formOpen, setFormOpen] = useState(false);
     const [editing, setEditing] = useState<LocalNote | null>(null);
+    // La nota del aviso se abre sola, una vez: al cerrarla se anota como vista
+    // (derivado, sin efecto que copie props a estado).
+    const [dismissedNoteId, setDismissedNoteId] = useState<string | null>(null);
     const [pendingAudios, setPendingAudios] = useState<
         { uri: string; durationSeconds: number | null }[]
     >([]);
@@ -62,6 +71,9 @@ export function NotesBitacora({
     const deleteNote = useDeleteNote(believerId);
     const addAudio = useAddAudio(believerId);
     const deleteAudio = useDeleteAudio(believerId);
+    const afterReminderSaved = useAfterReminderSaved();
+    const linked = useNote(openNoteId && openNoteId !== dismissedNoteId ? openNoteId : undefined);
+    const sheetNote = editing ?? linked.data ?? null;
 
     const flat = notes.data?.pages.flatMap((page) => page.items) ?? [];
     const sections = groupByMonth(flat);
@@ -180,28 +192,34 @@ export function NotesBitacora({
             ) : null}
 
             <NoteFormSheet
-                visible={formOpen}
+                visible={formOpen || sheetNote !== null}
                 onClose={() => {
                     setFormOpen(false);
+                    setEditing(null);
                     setPendingAudios([]);
+                    if (openNoteId) setDismissedNoteId(openNoteId);
                 }}
-                note={editing}
+                note={sheetNote}
                 pendingAudios={pendingAudios}
                 onRecorded={(audio) => setPendingAudios((previous) => [...previous, audio])}
                 onDelete={
-                    editing
+                    sheetNote
                         ? () => {
-                              void deleteNote.mutateAsync(editing.id);
+                              void deleteNote.mutateAsync(sheetNote.id);
                               setFormOpen(false);
                           }
                         : undefined
                 }
-                onSave={async (values) => {
-                    if (editing) {
-                        await updateNote.mutateAsync({ id: editing.id, input: values });
+                onSave={async (input) => {
+                    if (sheetNote) {
+                        await updateNote.mutateAsync({
+                            id: sheetNote.id,
+                            input: toUpdateInput(input, sheetNote),
+                        });
+                        if (input.remindAt) await afterReminderSaved();
                         return;
                     }
-                    const noteId = await createNote.mutateAsync(values);
+                    const noteId = await createNote.mutateAsync(input);
                     for (const audio of pendingAudios) {
                         await addAudio.mutateAsync({
                             noteId,
@@ -214,6 +232,7 @@ export function NotesBitacora({
                             },
                         });
                     }
+                    if (input.remindAt) await afterReminderSaved();
                 }}
             />
         </View>

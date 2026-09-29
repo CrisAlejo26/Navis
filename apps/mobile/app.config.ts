@@ -64,6 +64,18 @@ const config: ExpoConfig = {
             },
         ],
         [
+            // Los avisos de recordatorio son **locales** (sin servidor de push).
+            // El plugin declara el permiso POST_NOTIFICATIONS en el manifest y
+            // fija el icono pequeño de la barra —el barco en blanco sobre
+            // transparente que genera `pnpm icons`— y el azul de marca.
+            'expo-notifications',
+            {
+                icon: './assets/notification-icon.png',
+                color: '#2140cf',
+                defaultChannel: 'note-reminders-v1',
+            },
+        ],
+        [
             'expo-splash-screen',
             {
                 image: './assets/splash-icon.png',

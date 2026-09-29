@@ -178,6 +178,32 @@ export const es = {
         label: 'Idioma',
         changed: 'Idioma cambiado a {{language}}',
     },
+    notifications: {
+        title: 'Avisos',
+        master: 'Recibir avisos',
+        masterHint: 'Navis te avisa a la hora que elijas, aunque la app esté cerrada.',
+        noteReminders: 'Recordatorios de notas',
+        noteRemindersHint: 'Suenan a la hora que fijaste en la nota de un hermano.',
+        test: 'Enviar un aviso de prueba',
+        testTitle: 'Prueba de aviso',
+        testBody: 'Si lees esto, los avisos funcionan.',
+        testSent: 'Aviso enviado: llega en un momento',
+        testFailed: 'No se pudo enviar el aviso de prueba',
+        unsupported: 'Los avisos no funcionan en Expo Go: usa la app instalada.',
+        channel: {
+            name: 'Recordatorios de notas',
+            description: 'Avisos de las notas de tus hermanos con recordatorio.',
+        },
+        noteReminder: {
+            title: 'Recordatorio: {{name}}',
+            body: 'Tienes una nota con recordatorio para ahora.',
+        },
+        denied: {
+            title: 'Los avisos están desactivados',
+            body: 'Sin permiso, Navis no puede avisarte con la app cerrada. Actívalo en los ajustes del teléfono.',
+            openSettings: 'Abrir ajustes',
+        },
+    },
     settings: {
         title: 'Ajustes',
         saved: 'Ajustes guardados',
@@ -695,6 +721,7 @@ export const es = {
             what: 'De qué acordarme',
             whatHint: 'Lo que quieres leer cuando llegue el día.',
             needsWhen: 'El recordatorio necesita día y hora',
+            inPast: 'Elige un momento que aún no haya pasado',
             pending: 'Recordatorio el {{when}}',
             due: 'Toca hoy: {{what}}',
             overdue: 'Se pasó el {{when}}',
@@ -1128,6 +1155,7 @@ export const es = {
             markdown: 'Descargar como Markdown',
             image: 'Compartir como imagen',
             continuesInNavis: '— sigue en Navis',
+            share: 'Compartir como texto',
         },
         stats: {
             total: 'Todas',
@@ -1136,6 +1164,8 @@ export const es = {
             checklist: 'Checklist completada',
             checklistValue: '{{checked}} / {{total}}',
             noData: 'Sin datos todavía',
+            totalLabel: 'Enseñanzas anotadas',
+            thisYearLabel: 'Anotadas este año',
         },
         created: 'Enseñanza anotada',
         updated: 'Enseñanza guardada',
@@ -1143,6 +1173,15 @@ export const es = {
         deleteTitle: 'Eliminar «{{title}}»',
         deleteBody: 'Se borra el título y todo el texto de la enseñanza.',
         errorEmpty: 'Escribe algo en las observaciones',
+        loadMore: 'Ver más',
+        sortLabel: 'Orden',
+        sort: {
+            newest: 'Más recientes',
+            oldest: 'Más antiguas',
+            byTitle: 'Por título',
+        },
+        receivedOn: 'Recibida el {{date}}',
+        noNotes: 'Sin observaciones',
     },
     /* El cuaderno de la iglesia (RFC 0017). Vive bajo `journal.*` para no chocar
      con `notes.*`, que ya es la bitácora de un creyente. */

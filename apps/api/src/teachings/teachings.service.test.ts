@@ -1,8 +1,8 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common';
-import type { TeachingBody } from '@navis/shared';
+import { toTeachingSearchText, type TeachingBody } from '@navis/shared';
 import { describe, expect, it, vi } from 'vitest';
 
-import { toSearchText, TeachingsService } from './teachings.service';
+import { TeachingsService } from './teachings.service';
 import type { TeachingsRepository } from './teachings.repository';
 import type { Teaching } from './teaching.entity';
 
@@ -83,7 +83,7 @@ describe('editar una enseñanza', () => {
         });
 
         expect(editada.searchText).toBe(
-            toSearchText('Sobre la paciencia (revisado)', cuerpo('Lo que aprendí')),
+            toTeachingSearchText('Sobre la paciencia (revisado)', cuerpo('Lo que aprendí')),
         );
     });
 });

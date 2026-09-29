@@ -95,13 +95,6 @@ export const MORE_MENU_ENTRIES = [
         rfc: '0018-tareas-y-habitos-implementado.md',
     },
     {
-        name: 'communications',
-        labelKey: 'nav.communications',
-        icon: 'chatbubbles-outline',
-        group: 'church',
-        rfc: '0006-comunicaciones-implementado.md',
-    },
-    {
         name: 'users',
         labelKey: 'nav.users',
         icon: 'shield-checkmark-outline',

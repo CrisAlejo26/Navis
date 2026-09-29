@@ -1,4 +1,9 @@
-import type { Teaching, TeachingBlock, TeachingParagraph, TeachingTextNode } from '@navis/shared';
+import type {
+    Teaching,
+    TeachingBlock,
+    TeachingParagraph,
+    TeachingTextNode,
+} from './schemas/teachings';
 
 /**
  * El cuerpo de una enseñanza, a Markdown (RFC 0022 §4.5).
@@ -84,13 +89,4 @@ export function toTeachingMarkdown(
     const cuerpo = teaching.body.content.map(block).join('\n\n');
 
     return `${cabecera}\n\n${cuerpo}\n`;
-}
-
-export function toTeachingMarkdownBlob(
-    teaching: Pick<Teaching, 'title' | 'body' | 'receivedAt'>,
-    labels: { frontmatterTitle: string; frontmatterDate: string },
-): Blob {
-    return new Blob([toTeachingMarkdown(teaching, labels)], {
-        type: 'text/markdown;charset=utf-8',
-    });
 }

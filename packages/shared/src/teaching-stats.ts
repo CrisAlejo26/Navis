@@ -1,14 +1,10 @@
-import {
-    addMonths,
-    extractTeachingBodyText,
-    type TeachingMonth,
-    type TeachingsStats,
-} from '@navis/shared';
-
-import { parseTeachingBody } from './teachings.mapper';
+import { addMonths } from './dates';
+import type { TeachingMonth, TeachingsStats } from './schemas/teaching-queries';
+import { parseTeachingBody } from './teaching-body';
+import { extractTeachingBodyText } from './teaching-body-text';
 
 /** Lo mínimo que hace falta de cada fila para las cuentas. Sin excerpt ni búsqueda. */
-export interface StatsRow {
+export interface TeachingStatsRow {
     receivedAt: string;
     bodyJson: string;
 }
@@ -25,7 +21,10 @@ const MONTHS = 12;
  * `checklistRate` recorre el JSON de cada fila, cosa que SQL no sabe hacer
  * igual en los dos motores.
  */
-export function summarizeTeachings(rows: readonly StatsRow[], today: string): TeachingsStats {
+export function summarizeTeachings(
+    rows: readonly TeachingStatsRow[],
+    today: string,
+): TeachingsStats {
     const year = today.slice(0, 4);
     let thisYear = 0;
     let checked = 0;
@@ -44,7 +43,7 @@ export function summarizeTeachings(rows: readonly StatsRow[], today: string): Te
     return {
         total: rows.length,
         thisYear,
-        monthly: monthlyGrid(rows, today),
+        monthly: teachingMonthlyGrid(rows, today),
         // `null` y no `0`: cero por ciento y «todavía no hay ninguna checklist»
         // son cosas distintas, y la portada las pinta distinto.
         checklistRate: total === 0 ? null : checked / total,
@@ -58,7 +57,10 @@ export function summarizeTeachings(rows: readonly StatsRow[], today: string): Te
  * al que le faltan meses sin datos junta dos meses separados por un año y los
  * pinta como si fueran seguidos.
  */
-export function monthlyGrid(rows: readonly StatsRow[], today: string): TeachingMonth[] {
+export function teachingMonthlyGrid(
+    rows: readonly TeachingStatsRow[],
+    today: string,
+): TeachingMonth[] {
     const months = Array.from({ length: MONTHS }, (_, index) =>
         addMonths(`${today.slice(0, 7)}-01`, index - (MONTHS - 1)).slice(0, 7),
     );

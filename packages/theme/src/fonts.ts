@@ -29,6 +29,10 @@ export const FONT_FAMILIES = {
     sansMedium: { native: 'Roboto_500Medium' },
     sansSemiBold: { native: 'Roboto_600SemiBold' },
     sansBold: { native: 'Roboto_700Bold' },
+    // Solo para el texto con formato del editor de enseñanzas: iOS no inclina
+    // una familia personalizada que no trae cursiva, así que se cargan de verdad.
+    sansItalic: { native: 'Roboto_400Regular_Italic' },
+    sansBoldItalic: { native: 'Roboto_700Bold_Italic' },
 } as const;
 
 export type FontToken = keyof typeof FONT_FAMILIES;

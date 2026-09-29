@@ -29,7 +29,7 @@ describe('MoreMenuContent', () => {
         for (const label of ['Profecías', 'Sueños', 'Enseñanzas']) {
             expect(screen.getByText(label)).toBeTruthy();
         }
-        for (const label of ['Listas', 'Tablas', 'Notas', 'Tareas', 'Comunicaciones', 'Usuarios']) {
+        for (const label of ['Listas', 'Tablas', 'Notas', 'Tareas', 'Usuarios']) {
             expect(screen.getByText(label)).toBeTruthy();
         }
     });

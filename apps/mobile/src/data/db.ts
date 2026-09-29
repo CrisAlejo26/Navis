@@ -106,7 +106,7 @@ export function setDbForTests(fake: LocalDb | null): void {
 }
 
 /** Versión actual del esquema local. Cada cambio añade un caso a `migrations`. */
-const SCHEMA_VERSION = 8;
+const SCHEMA_VERSION = 9;
 
 type Migration = (db: LocalDb) => Promise<void>;
 
@@ -374,6 +374,25 @@ const migrations: Record<number, Migration> = {
             );
         }
         await seedSystemEmotions(db);
+    },
+    // Enseñanzas en móvil (docs/planes/pendientes/ensenanzas-movil-plan.md §4.2): una
+    // tabla nueva. En una base **nueva** la migración 1 ya la crea; aquí solo si
+    // falta, y sus índices con `IF NOT EXISTS`. Sin siembra.
+    9: async (db) => {
+        const existing = await db.getFirstAsync<{ name: string }>(
+            "SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'teachings'",
+        );
+        const teachings = ALL_LOCAL_TABLES.find((one) => one.name === 'teachings');
+        if (!existing && teachings) await db.execAsync(createTableSql(teachings));
+        for (const one of LOCAL_INDEXES) {
+            if (one.table !== 'teachings') continue;
+            await db.execAsync(
+                createIndexSql(one).replace(
+                    /^CREATE (UNIQUE )?INDEX/,
+                    'CREATE $1INDEX IF NOT EXISTS',
+                ),
+            );
+        }
     },
 };
 

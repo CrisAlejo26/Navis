@@ -283,6 +283,16 @@ export const LOCAL_TABLES: LocalTable[] = [
         { name: 'duration_seconds', type: 'int', nullable: true },
         { name: 'recorded', type: 'bool', default: false },
     ]),
+    // Enseñanzas (docs/planes/pendientes/ensenanzas-movil-plan.md §1): una tabla,
+    // sin `church_id` como profecías (RFC 0022 / 0004 D1). `body_json` es el
+    // documento del editor con `JSON.stringify`, validado con `teachingBodySchema`.
+    table('teachings', 'Teaching', [
+        { name: 'owner_id', type: 'text' },
+        { name: 'title', type: 'text' },
+        { name: 'body_json', type: 'text' },
+        { name: 'search_text', type: 'text', default: '' },
+        { name: 'received_at', type: 'text' },
+    ]),
 ];
 
 /**
@@ -449,6 +459,16 @@ export const LOCAL_INDEXES: {
         unique: true,
     },
     { name: 'IDX_dream_audios_dream', table: 'dream_audios', columns: ['dream_id'] },
+    {
+        name: 'IDX_teachings_owner_received',
+        table: 'teachings',
+        columns: ['owner_id', 'received_at'],
+    },
+    {
+        name: 'IDX_teachings_owner_search',
+        table: 'teachings',
+        columns: ['owner_id', 'search_text'],
+    },
 ];
 
 const DDL_TYPE: Record<LocalColumnType, string> = {

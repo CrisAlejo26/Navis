@@ -30,6 +30,7 @@ import { Dream } from '../dreams/dream.entity';
 import { Emotion } from '../dreams/emotion.entity';
 import { Prophecy } from '../prophecies/prophecy.entity';
 import { ProphecyFulfillment } from '../prophecies/prophecy-fulfillment.entity';
+import { Teaching } from '../teachings/teaching.entity';
 import { Task } from '../tasks/task.entity';
 import { Tag } from '../tasks/tag.entity';
 import { TaskOccurrence } from '../tasks/task-occurrence.entity';
@@ -75,6 +76,7 @@ const ENTITIES = [
     Emotion,
     DreamEmotion,
     DreamAudio,
+    Teaching,
     // Objetivos de relación: TypeORM las exige en el registro de entidades para
     // poder construir los metadatos, aunque no se comparen.
     NoteAudio,
