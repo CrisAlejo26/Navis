@@ -1,7 +1,7 @@
 import type { BelieverNote } from '@navis/shared';
 import { NOTE_KINDS } from '@navis/shared';
 import { themeColorsHex } from '@navis/theme';
-import { ScrollView, Text, View, useWindowDimensions } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -23,6 +23,7 @@ import { Switch } from '@/components/ui/switch';
 import { TextField } from '@/components/ui/text-field';
 import { useGifts } from '@/hooks/use-catalog';
 import { useThemeStore } from '@/lib/theme';
+import { useSheetBodyMaxHeight } from '@/lib/ui/keyboard';
 
 const KIND_ICONS = NOTE_KIND_ICONS;
 
@@ -61,7 +62,7 @@ function NoteFormBody({
     onDelete,
 }: NoteFormSheetProps) {
     const { t } = useTranslation();
-    const { height } = useWindowDimensions();
+    const bodyMaxHeight = useSheetBodyMaxHeight(0.68);
     const palette = themeColorsHex[useThemeStore((state) => state.resolvedTheme)];
     const gifts = useGifts();
     const [values, setValues] = useState<NoteFormValues>(() =>
@@ -94,7 +95,7 @@ function NoteFormBody({
     return (
         <BottomSheet visible onClose={onClose} title={note ? t('notes.edit') : t('notes.add')}>
             <ScrollView
-                style={{ maxHeight: height * 0.68 }}
+                style={{ maxHeight: bodyMaxHeight }}
                 contentContainerClassName="gap-4"
                 showsVerticalScrollIndicator={false}
             >

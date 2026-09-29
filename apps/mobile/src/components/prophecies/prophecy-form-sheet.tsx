@@ -1,6 +1,6 @@
 import { todayIn, type CreateProphecyInput, type Prophecy } from '@navis/shared';
 import { useState } from 'react';
-import { ScrollView, useWindowDimensions } from 'react-native';
+import { ScrollView } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { BottomSheet } from '@/components/ui/bottom-sheet';
@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { DatePicker } from '@/components/ui/date-picker';
 import { TextField } from '@/components/ui/text-field';
 import { ProphecyFulfillmentToggle } from '@/components/prophecies/prophecy-fulfillment-toggle';
+import { useSheetBodyMaxHeight } from '@/lib/ui/keyboard';
 
 interface ProphecyFormValues {
     title: string;
@@ -60,7 +61,7 @@ export function ProphecyFormSheet(props: ProphecyFormSheetProps) {
 
 function ProphecyFormBody({ onClose, prophecy, onSave, onDelete }: ProphecyFormSheetProps) {
     const { t } = useTranslation();
-    const { height } = useWindowDimensions();
+    const bodyMaxHeight = useSheetBodyMaxHeight(0.68);
     const [values, setValues] = useState<ProphecyFormValues>(() =>
         prophecy ? formFrom(prophecy) : emptyForm(),
     );
@@ -90,7 +91,7 @@ function ProphecyFormBody({ onClose, prophecy, onSave, onDelete }: ProphecyFormS
             title={prophecy ? t('prophecies.edit') : t('prophecies.add')}
         >
             <ScrollView
-                style={{ maxHeight: height * 0.68 }}
+                style={{ maxHeight: bodyMaxHeight }}
                 contentContainerClassName="gap-4"
                 showsVerticalScrollIndicator={false}
             >

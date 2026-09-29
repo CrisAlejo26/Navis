@@ -1,5 +1,5 @@
-import { fireEvent, render, screen } from '@testing-library/react-native';
-import { Text } from 'react-native';
+import { act, fireEvent, render, screen } from '@testing-library/react-native';
+import { Keyboard, Text } from 'react-native';
 
 import { BottomSheet } from '@/components/ui/bottom-sheet';
 
@@ -28,5 +28,29 @@ describe('BottomSheet', () => {
         await fireEvent.press(screen.getByRole('button', { name: 'Cerrar' }));
 
         expect(onClose).toHaveBeenCalledTimes(1);
+    });
+
+    it('sube con el teclado para que el campo enfocado no quede tapado', async () => {
+        // Regresión: dentro de un `<Modal>` `KeyboardAvoidingView` no recolocaba la
+        // hoja y el teclado tapaba lo que se escribía. Se sigue el evento del teclado.
+        let emit: (event: { endCoordinates: { height: number } }) => void = () => undefined;
+        jest.spyOn(Keyboard, 'addListener').mockImplementation(((
+            name: string,
+            listener: typeof emit,
+        ) => {
+            if (name.endsWith('Show')) emit = listener;
+            return { remove: jest.fn() };
+        }) as never);
+        await render(
+            <BottomSheet visible onClose={jest.fn()} title="Cumplido">
+                <Text>Contenido</Text>
+            </BottomSheet>,
+        );
+
+        await act(() => {
+            emit({ endCoordinates: { height: 300 } });
+        });
+
+        expect(JSON.stringify(screen.toJSON())).toContain('"bottom":300');
     });
 });

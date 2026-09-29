@@ -1,18 +1,12 @@
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-    KeyboardAvoidingView,
-    Modal,
-    Pressable,
-    ScrollView,
-    View,
-    useWindowDimensions,
-} from 'react-native';
+import { Modal, Pressable, ScrollView, View, useWindowDimensions } from 'react-native';
 import Animated, { FadeInDown, useReducedMotion } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { IconButton } from '@/components/ui/icon-button';
 import { Title } from '@/components/ui/title';
+import { useKeyboardHeight } from '@/lib/ui/keyboard';
 
 interface BottomSheetProps {
     visible: boolean;
@@ -36,24 +30,22 @@ interface BottomSheetProps {
  * que se estaba haciendo — y los dos translúcidos hacen que el oscurecido
  * cubra también la barra de estado y la de gestos.
  *
- * El formulario vive en `KeyboardAvoidingView` + `ScrollView` (Regla 5 §5):
- * el `<Modal>` abre su **propia ventana nativa** y el `adjustResize` de la
- * Activity no le llega — con `statusBarTranslucent` y
- * `navigationBarTranslucent` menos —, así que sin él el campo enfocado
- * queda tapado por el teclado y no se ve lo que se escribe. El
- * `behavior="padding"` va explícito **en los dos sistemas**: en una pantalla
- * normal Android redimensiona solo y en iOS basta el padding, pero aquí
- * ninguno lo tiene gratis (CLAUDE.md, «BottomSheet y teclado»). El `ScrollView`
- * lleva el límite de alto — la hoja no puede crecer más que la pantalla
- * menos el aire superior — para que un formulario largo haga scroll en vez
- * de salirse, y `keyboardShouldPersistTaps` para que los toques sobre los
- * campos y el botón no se los coma el cierre del teclado.
+ * El teclado se sigue con sus propios eventos (`useKeyboardHeight`): el
+ * `<Modal>` abre su **propia ventana nativa**, el `adjustResize` de la Activity
+ * no le llega —con `statusBarTranslucent` y `navigationBarTranslucent` menos— y
+ * `KeyboardAvoidingView` calculaba mal su marco dentro de ella, así que el campo
+ * enfocado quedaba tapado. La hoja se apoya en el teclado (`bottom`) y su cuerpo
+ * desplazable se limita a lo que queda libre. Las hojas con un `ScrollView`
+ * propio piden su alto a `useSheetBodyMaxHeight`, nunca a una fracción de la
+ * pantalla entera (CLAUDE.md, «BottomSheet y teclado»). `keyboardShouldPersistTaps`
+ * evita que el cierre del teclado se coma los toques sobre campos y botón.
  */
 export function BottomSheet({ visible, onClose, title, children }: BottomSheetProps) {
     const { t } = useTranslation();
     const insets = useSafeAreaInsets();
     const reducedMotion = useReducedMotion();
     const { height } = useWindowDimensions();
+    const keyboard = useKeyboardHeight();
 
     return (
         <Modal
@@ -75,7 +67,12 @@ export function BottomSheet({ visible, onClose, title, children }: BottomSheetPr
                         reducedMotion ? undefined : FadeInDown.duration(120).springify().damping(30)
                     }
                     className="inset-x-0 bottom-0 gap-3 px-4 pt-4 rounded-t-3xl absolute bg-card"
-                    style={{ paddingBottom: insets.bottom + 16 }}
+                    // Con el teclado abierto la hoja se apoya en él, no en el borde de la
+                    // pantalla, y ya no hay barra de gestos debajo.
+                    style={{
+                        bottom: keyboard,
+                        paddingBottom: keyboard > 0 ? 16 : insets.bottom + 16,
+                    }}
                 >
                     {title ? (
                         <View className="flex-row items-center justify-between">
@@ -87,14 +84,13 @@ export function BottomSheet({ visible, onClose, title, children }: BottomSheetPr
                             />
                         </View>
                     ) : null}
-                    <KeyboardAvoidingView behavior="padding" style={{ maxHeight: height - 96 }}>
-                        <ScrollView
-                            keyboardShouldPersistTaps="handled"
-                            showsVerticalScrollIndicator={false}
-                        >
-                            {children}
-                        </ScrollView>
-                    </KeyboardAvoidingView>
+                    <ScrollView
+                        style={{ maxHeight: height - keyboard - 96 }}
+                        keyboardShouldPersistTaps="handled"
+                        showsVerticalScrollIndicator={false}
+                    >
+                        {children}
+                    </ScrollView>
                 </Animated.View>
             </View>
         </Modal>

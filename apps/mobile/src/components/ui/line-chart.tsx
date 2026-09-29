@@ -1,8 +1,10 @@
 import { themeColorsHex } from '@navis/theme';
+import { View } from 'react-native';
 import { LineChart as GiftedLineChart } from 'react-native-gifted-charts';
 
 import { hexAlpha } from '@/lib/color';
 import { useThemeStore } from '@/lib/theme';
+import { useChartWidth } from '@/lib/ui/chart-width';
 import { chartTheme } from '@/lib/ui/chart-theme';
 
 export interface LineChartPoint {
@@ -40,33 +42,37 @@ export function LineChart({
 }: LineChartProps) {
     const palette = themeColorsHex[useThemeStore((state) => state.resolvedTheme)];
     const theme = chartTheme(palette);
+    const chart = useChartWidth();
 
     return (
-        <GiftedLineChart
-            data={data.map((point) => (sparkline ? { value: point.value } : point))}
-            width={100}
-            height={height}
-            adjustToWidth
-            disableScroll
-            curved
-            thickness={sparkline ? 2 : 2.5}
-            color={theme.line}
-            areaChart={area}
-            startFillColor={hexAlpha(theme.line, 0.18)}
-            endFillColor={hexAlpha(theme.line, 0.02)}
-            dataPointsRadius={showDataPoints ? 3 : undefined}
-            dataPointsColor={theme.line}
-            hideAxesAndRules={sparkline}
-            hideYAxisText={sparkline}
-            noOfSections={3}
-            rulesColor={theme.axis}
-            rulesType="solid"
-            yAxisColor={theme.axis}
-            xAxisColor={theme.axis}
-            yAxisTextStyle={{ color: theme.label, fontSize: 10, fontFamily: theme.font }}
-            xAxisLabelTextStyle={{ color: theme.label, fontSize: 11, fontFamily: theme.font }}
-            formatYLabel={(label) => Math.round(Number(label)).toString()}
-            maxValue={maxValue}
-        />
+        <View onLayout={chart.onLayout}>
+            <GiftedLineChart
+                data={data.map((point) => (sparkline ? { value: point.value } : point))}
+                width={chart.width}
+                parentWidth={chart.parentWidth}
+                height={height}
+                adjustToWidth
+                disableScroll
+                curved
+                thickness={sparkline ? 2 : 2.5}
+                color={theme.line}
+                areaChart={area}
+                startFillColor={hexAlpha(theme.line, 0.18)}
+                endFillColor={hexAlpha(theme.line, 0.02)}
+                dataPointsRadius={showDataPoints ? 3 : undefined}
+                dataPointsColor={theme.line}
+                hideAxesAndRules={sparkline}
+                hideYAxisText={sparkline}
+                noOfSections={3}
+                rulesColor={theme.axis}
+                rulesType="solid"
+                yAxisColor={theme.axis}
+                xAxisColor={theme.axis}
+                yAxisTextStyle={{ color: theme.label, fontSize: 10, fontFamily: theme.font }}
+                xAxisLabelTextStyle={{ color: theme.label, fontSize: 11, fontFamily: theme.font }}
+                formatYLabel={(label) => Math.round(Number(label)).toString()}
+                maxValue={maxValue}
+            />
+        </View>
     );
 }

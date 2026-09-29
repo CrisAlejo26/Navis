@@ -1,9 +1,10 @@
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ScrollView, View, useWindowDimensions } from 'react-native';
+import { ScrollView, View } from 'react-native';
 
 import { BottomSheet } from '@/components/ui/bottom-sheet';
 import { Button } from '@/components/ui/button';
+import { useSheetBodyMaxHeight } from '@/lib/ui/keyboard';
 
 interface FilterSheetProps {
     visible: boolean;
@@ -39,13 +40,13 @@ export function FilterSheet({
     children,
 }: FilterSheetProps) {
     const { t } = useTranslation();
-    const { height } = useWindowDimensions();
+    const bodyMaxHeight = useSheetBodyMaxHeight(0.55);
     const hasActive = Boolean(onClear) && (activeCount ?? 0) > 0;
 
     return (
         <BottomSheet visible={visible} onClose={onClose} title={title}>
             <ScrollView
-                style={{ maxHeight: height * 0.55 }}
+                style={{ maxHeight: bodyMaxHeight }}
                 contentContainerClassName="gap-4"
                 showsVerticalScrollIndicator={false}
             >

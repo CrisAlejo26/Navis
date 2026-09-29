@@ -1,6 +1,6 @@
 import type { BelieverStatus, BelieverListItem } from '@navis/shared';
 import { themeColorsHex } from '@navis/theme';
-import { ScrollView, Text, View, useWindowDimensions } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -20,6 +20,7 @@ import { Switch } from '@/components/ui/switch';
 import { TextField } from '@/components/ui/text-field';
 import { useCongregations, useGifts, useMinistries, useTags } from '@/hooks/use-catalog';
 import { useThemeStore } from '@/lib/theme';
+import { useSheetBodyMaxHeight } from '@/lib/ui/keyboard';
 
 const STATUSES: BelieverStatus[] = ['activo', 'nuevo', 'inactivo', 'trasladado'];
 
@@ -140,7 +141,7 @@ export function BelieverFormSheet(props: BelieverFormSheetProps) {
 
 function BelieverFormBody({ onClose, believer, onSave }: BelieverFormSheetProps) {
     const { t } = useTranslation();
-    const { height } = useWindowDimensions();
+    const bodyMaxHeight = useSheetBodyMaxHeight(0.62);
     const congregations = useCongregations();
     const ministries = useMinistries();
     const gifts = useGifts();
@@ -179,7 +180,7 @@ function BelieverFormBody({ onClose, believer, onSave }: BelieverFormSheetProps)
             title={believer ? t('believers.editPerson') : t('believers.add')}
         >
             <ScrollView
-                style={{ maxHeight: height * 0.62 }}
+                style={{ maxHeight: bodyMaxHeight }}
                 contentContainerClassName="gap-4 pb-2"
                 showsVerticalScrollIndicator={false}
                 keyboardShouldPersistTaps="handled"
