@@ -13,6 +13,9 @@ const TONE_KEY: Record<RingTone, keyof ThemeColors> = {
     destructive: 'destructive',
 };
 
+/** El arco sobre la escena azul: menta claro, que se separa del azul mejor que el blanco. */
+const SCENE_ARC = '#7df0b4';
+
 interface ProgressRingProps {
     /** 0–1. */
     progress: number;
@@ -21,6 +24,8 @@ interface ProgressRingProps {
     tone?: RingTone;
     /** El valor que se pinta en el centro (un «76%», la «sonda» de una racha…). */
     label?: string;
+    /** Sobre una escena azul: pista y arco claros, número blanco. */
+    onScene?: boolean;
 }
 
 /**
@@ -36,6 +41,7 @@ export function ProgressRing({
     strokeWidth = 8,
     tone = 'primary',
     label,
+    onScene = false,
 }: ProgressRingProps) {
     const palette = themeColorsHex[useThemeStore((state) => state.resolvedTheme)];
     const radius = (size - strokeWidth) / 2;
@@ -51,7 +57,7 @@ export function ProgressRing({
                     cx={center}
                     cy={center}
                     r={radius}
-                    stroke={palette.muted}
+                    stroke={onScene ? 'rgba(255, 255, 255, 0.25)' : palette.muted}
                     strokeWidth={strokeWidth}
                     fill="none"
                 />
@@ -59,7 +65,7 @@ export function ProgressRing({
                     cx={center}
                     cy={center}
                     r={radius}
-                    stroke={palette[TONE_KEY[tone]]}
+                    stroke={onScene ? SCENE_ARC : palette[TONE_KEY[tone]]}
                     strokeWidth={strokeWidth}
                     strokeLinecap="round"
                     strokeDasharray={`${circumference} ${circumference}`}
@@ -70,7 +76,9 @@ export function ProgressRing({
             </Svg>
             {label ? (
                 <View className="inset-0 absolute items-center justify-center">
-                    <Text className="text-lg font-sans-semibold text-foreground tabular-nums">
+                    <Text
+                        className={`text-lg font-sans-semibold tabular-nums ${onScene ? 'text-white' : 'text-foreground'}`}
+                    >
                         {label}
                     </Text>
                 </View>

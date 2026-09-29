@@ -25,6 +25,8 @@ interface AppBarProps {
      * y glifos claros — los del tema se pierden contra el degradado.
      */
     onScene?: boolean;
+    /** Sin fondo propio y con los glifos del tema: para ir sobre un panel teñido. */
+    transparent?: boolean;
 }
 
 const ACTION_HIT = 44;
@@ -40,7 +42,13 @@ const ACTION_HIT = 44;
  * es el de la pantalla (`bg-background`), la flecha vuelve de verdad y las
  * acciones son `IconButton` de 44 px. Va pegada arriba con su safe area.
  */
-export function AppBar({ title, backLabel, actions = [], onScene = false }: AppBarProps) {
+export function AppBar({
+    title,
+    backLabel,
+    actions = [],
+    onScene = false,
+    transparent = false,
+}: AppBarProps) {
     const { t } = useTranslation();
     const palette = themeColorsHex[useThemeStore((state) => state.resolvedTheme)];
     const claro = palette.primaryForeground;
@@ -48,7 +56,7 @@ export function AppBar({ title, backLabel, actions = [], onScene = false }: AppB
 
     return (
         <View
-            className={`gap-1 px-1.5 pb-2 ${onScene ? '' : 'bg-background'}`}
+            className={`gap-1 px-1.5 pb-2 ${onScene || transparent ? '' : 'bg-background'}`}
             style={{ paddingTop: insets.top + 4 }}
             accessibilityRole="header"
         >
@@ -67,7 +75,8 @@ export function AppBar({ title, backLabel, actions = [], onScene = false }: AppB
                 </Pressable>
 
                 <Text
-                    className="text-base font-sans-semibold flex-1 text-center text-foreground"
+                    className="text-base font-sans-semibold flex-1 text-center"
+                    style={{ color: onScene ? claro : palette.foreground }}
                     numberOfLines={1}
                 >
                     {title}

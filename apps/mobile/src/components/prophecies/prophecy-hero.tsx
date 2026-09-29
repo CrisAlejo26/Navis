@@ -20,24 +20,24 @@ export function ProphecyHero({ stats }: ProphecyHeroProps) {
     const waiting = stats.byState.espera + stats.byState.camino;
 
     return (
-        <View className="gap-3 py-4 items-center">
+        <View className="gap-3 px-4 pt-2 pb-10 items-center">
             <ProgressRing
                 progress={stats.fulfillmentRate ?? 0}
                 size={140}
                 strokeWidth={12}
-                tone="success"
+                onScene
                 label={
                     stats.fulfillmentRate === null
                         ? '—'
                         : `${Math.round(stats.fulfillmentRate * 100)}%`
                 }
             />
-            <Text className="text-sm text-center text-muted-foreground">
+            <Text className="text-sm text-center" style={{ color: 'rgba(255, 255, 255, 0.85)' }}>
                 {stats.fulfillmentRate === null
                     ? t('prophecies.stats.noRate')
                     : t('prophecies.stats.rate')}
             </Text>
-            <Text className="text-base font-sans-medium text-center text-foreground">
+            <Text className="text-base font-sans-medium text-center" style={{ color: '#ffffff' }}>
                 {t('prophecies.lead', {
                     total: formatNumber(stats.total),
                     waiting: formatNumber(waiting),

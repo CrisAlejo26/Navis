@@ -96,7 +96,14 @@ function Card({
 }) {
     return (
         <Pressable className="flex-grow basis-[48%] active:opacity-80" onPress={onPress}>
-            <StatCard label={label} value={value} icon={icon} tone={tone} />
+            <StatCard
+                label={label}
+                value={value}
+                icon={icon}
+                tone={tone}
+                tinted
+                className="flex-1"
+            />
         </Pressable>
     );
 }

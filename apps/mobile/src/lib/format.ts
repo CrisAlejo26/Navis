@@ -35,6 +35,23 @@ export function formatShortDate(value: Date): string {
     return new Intl.DateTimeFormat(getLocale(), { day: 'numeric', month: 'short' }).format(value);
 }
 
+/**
+ * La inicial de un día o de un mes, en el idioma activo. Sale de la forma
+ * **corta** (`lun`, `ene`) y no de `narrow`: en Hermes el `narrow` no trae los
+ * datos de todos los idiomas y devolvía las letras en inglés.
+ */
+export function initialOf(date: Date, part: 'weekday' | 'month'): string {
+    const short = new Intl.DateTimeFormat(getLocale(), { [part]: 'short', timeZone: 'UTC' }).format(
+        date,
+    );
+    return short.charAt(0).toLocaleUpperCase(getLocale());
+}
+
+/** «ene», «feb»… el mes con tres letras, en el idioma activo, para el eje de una gráfica. */
+export function formatMonthShort(date: Date): string {
+    return new Intl.DateTimeFormat(getLocale(), { month: 'short', timeZone: 'UTC' }).format(date);
+}
+
 export function formatNumber(value: number): string {
     return new Intl.NumberFormat(getLocale()).format(value);
 }

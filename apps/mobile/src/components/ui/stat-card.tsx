@@ -2,6 +2,7 @@ import { themeColorsHex, type ThemeColors } from '@navis/theme';
 import { Text, View } from 'react-native';
 
 import { Icon } from '@/components/ui/icon';
+import { hexAlpha } from '@/lib/color';
 import { cn } from '@/lib/cn';
 import type { IoniconName } from '@/lib/nav-mobile';
 import { useThemeStore } from '@/lib/theme';
@@ -38,6 +39,8 @@ interface StatCardProps {
     tone?: StatTone;
     /** Indicador de cambio: dirección + texto. Nunca solo color (Regla 3 §7). */
     change?: { direction: ChangeDirection; text: string };
+    /** Fondo y filo teñidos con el tono, en vez del blanco de `bg-card`. */
+    tinted?: boolean;
     className?: string;
 }
 
@@ -54,12 +57,30 @@ export function StatCard({
     icon,
     tone = 'default',
     change,
+    tinted = false,
     className,
 }: StatCardProps) {
-    const palette = themeColorsHex[useThemeStore((state) => state.resolvedTheme)];
+    const resolvedTheme = useThemeStore((state) => state.resolvedTheme);
+    const palette = themeColorsHex[resolvedTheme];
+    const toneHex = tone === 'default' ? palette.mutedForeground : palette[tone];
+    // Más cuerpo en oscuro: el mismo tinte sobre un fondo casi negro se pierde.
+    const dark = resolvedTheme === 'dark';
+    const tint = tinted
+        ? {
+              backgroundColor: hexAlpha(toneHex, dark ? 0.16 : 0.1),
+              borderColor: hexAlpha(toneHex, dark ? 0.35 : 0.28),
+          }
+        : undefined;
 
     return (
-        <View className={cn('gap-2 p-4 rounded-xl border border-border bg-card', className)}>
+        <View
+            className={cn(
+                'gap-2 p-4 rounded-xl border',
+                !tinted && 'border-border bg-card',
+                className,
+            )}
+            style={tint}
+        >
             <View className="gap-2 flex-row items-center">
                 {icon ? <Icon name={icon} size="sm" tone={tone} background="soft" /> : null}
                 <Text className="text-sm font-sans text-muted-foreground" numberOfLines={1}>
@@ -67,7 +88,14 @@ export function StatCard({
                 </Text>
             </View>
 
-            <Text className="text-3xl font-sans-semibold text-foreground tabular-nums">
+            {/* Una sola línea y, si no cabe, se encoge: un valor largo ensanchaba la tarjeta
+          hacia abajo y la dejaba más alta que la de al lado. */}
+            <Text
+                className="text-2xl font-sans-semibold text-foreground tabular-nums"
+                numberOfLines={1}
+                adjustsFontSizeToFit
+                minimumFontScale={0.7}
+            >
                 {value}
             </Text>
 

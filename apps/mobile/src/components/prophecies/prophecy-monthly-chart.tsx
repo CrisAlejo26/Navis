@@ -5,14 +5,13 @@ import { Text, View, type LayoutChangeEvent } from 'react-native';
 import { BarChart as GiftedBarChart } from 'react-native-gifted-charts';
 import { useTranslation } from 'react-i18next';
 
+import { formatMonthShort } from '@/lib/format';
 import { useThemeStore } from '@/lib/theme';
 import { chartTheme } from '@/lib/ui/chart-theme';
 
 interface ProphecyMonthlyChartProps {
     monthly: readonly ProphecyMonth[];
 }
-
-const MONTH_FORMATTER = new Intl.DateTimeFormat(undefined, { month: 'short', timeZone: 'UTC' });
 
 /**
  * Con dos barras por mes (recibidas, cumplidas), doce meses son 24 barras: el
@@ -62,7 +61,7 @@ export function ProphecyMonthlyChart({ monthly }: ProphecyMonthlyChartProps) {
             value: month.fulfilled,
             frontColor: palette.success,
             spacing: GROUP_SPACING,
-            label: MONTH_FORMATTER.format(new Date(`${month.month}-01T00:00:00Z`)),
+            label: formatMonthShort(new Date(`${month.month}-01T00:00:00Z`)),
         },
     ]);
 

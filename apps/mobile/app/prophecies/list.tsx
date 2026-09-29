@@ -1,4 +1,5 @@
 import type { PropheciesQuery, ProphecyState, ProphecyWindow } from '@navis/shared';
+import { themeColorsHex } from '@navis/theme';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -22,6 +23,8 @@ import {
     useUpdateProphecy,
 } from '@/hooks/use-prophecies';
 import { useDebouncedValue } from '@/hooks/use-debounced-value';
+import { hexAlpha } from '@/lib/color';
+import { useThemeStore } from '@/lib/theme';
 
 /**
  * El listado (§4.5): buscador, pastillas de estado y una tarjeta por
@@ -32,6 +35,9 @@ import { useDebouncedValue } from '@/hooks/use-debounced-value';
  */
 export default function PropheciesListScreen() {
     const { t } = useTranslation();
+    const resolvedTheme = useThemeStore((state) => state.resolvedTheme);
+    const palette = themeColorsHex[resolvedTheme];
+    const dark = resolvedTheme === 'dark';
     const params = useLocalSearchParams<{ state?: ProphecyState; window?: ProphecyWindow }>();
     const [search, setSearch] = useState('');
     // El filtro inicial llega una sola vez, con la navegación desde la portada
@@ -63,19 +69,29 @@ export default function PropheciesListScreen() {
 
     return (
         <View className="flex-1 bg-background">
-            <AppBar
-                title={t('prophecies.title')}
-                actions={[
-                    { icon: 'add', label: t('prophecies.add'), onPress: () => setFormOpen(true) },
-                ]}
-            />
-            <View className="gap-3 px-4 pb-2">
-                <SearchField
-                    value={search}
-                    onChangeText={setSearch}
-                    placeholder={t('prophecies.search')}
+            <View
+                className="mb-3 rounded-b-3xl"
+                style={{ backgroundColor: hexAlpha(palette.primary, dark ? 0.16 : 0.08) }}
+            >
+                <AppBar
+                    transparent
+                    title={t('prophecies.title')}
+                    actions={[
+                        {
+                            icon: 'add',
+                            label: t('prophecies.add'),
+                            onPress: () => setFormOpen(true),
+                        },
+                    ]}
                 />
-                <ProphecyFilters query={query} onChange={setQuery} stats={stats.data} />
+                <View className="gap-3 px-4 pb-4">
+                    <SearchField
+                        value={search}
+                        onChangeText={setSearch}
+                        placeholder={t('prophecies.search')}
+                    />
+                    <ProphecyFilters query={query} onChange={setQuery} stats={stats.data} />
+                </View>
             </View>
 
             {isPending ? (
