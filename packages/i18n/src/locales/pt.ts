@@ -169,6 +169,9 @@ export const pt = {
         changed: 'Idioma alterado para {{language}}',
     },
     notifications: {
+        stateOn: 'Ativados',
+        stateOff: 'Desativados',
+        stateDenied: 'Sem permissão',
         title: 'Avisos',
         master: 'Receber avisos',
         masterHint: 'O Navis avisa-te à hora que escolheres, mesmo com a app fechada.',
@@ -194,6 +197,29 @@ export const pt = {
             openSettings: 'Abrir definições',
         },
     },
+    backup: {
+        title: 'Cópia de segurança',
+        intro: 'Os teus dados vivem só neste telemóvel. Uma cópia guarda-os num ficheiro que podes pôr a salvo.',
+        rowHint: 'Os teus dados num ficheiro a salvo',
+        exportTitle: 'Guardar uma cópia',
+        exportBody:
+            'Inclui crentes, notas, calendário, sonhos, profecias, ensinos, e também os áudios e as fotos.',
+        exportButton: 'Exportar cópia',
+        exportFailed: 'Não foi possível criar a cópia. Tenta de novo.',
+        restoreTitle: 'Restaurar uma cópia',
+        restoreBody:
+            'Substitui tudo o que está agora na app pelo que vem no ficheiro. Serve neste mesmo telemóvel: a palavra-passe não viaja para outro aparelho.',
+        restoreButton: 'Escolher uma cópia',
+        restoreConfirmTitle: 'Restaurar esta cópia?',
+        restoreConfirmBody:
+            'O que está agora no Navis é apagado e substituído pela cópia. Não se pode desfazer.',
+        restoreConfirmAction: 'Restaurar',
+        restored: 'Cópia restaurada',
+        errorInvalid: 'Esse ficheiro não é uma cópia do Navis.',
+        errorNewer:
+            'A cópia é de uma versão mais recente do Navis. Atualiza a app e tenta de novo.',
+        errorGeneric: 'Não foi possível restaurar. Nada foi alterado.',
+    },
     settings: {
         saved: 'Definições guardadas',
         title: 'Definições',
@@ -214,6 +240,18 @@ export const pt = {
         profile: 'Perfil',
         connection: 'Ligação',
         localMode: 'Modo local: os teus dados vivem neste telemóvel',
+        groupData: 'Dados',
+        about: 'Sobre',
+        version: 'Versão {{version}}',
+        devOnly: 'Só para desenvolvimento',
+        signOutTitle: 'Terminar sessão?',
+        signOutBody:
+            'Os teus dados continuam neste telemóvel. Vais precisar da tua palavra-passe para voltares a entrar.',
+        choose: 'Escolher',
+        believersCatalog: 'Catálogos de crentes',
+        believersCatalogHint: 'Dons, labores e etiquetas',
+        preferences: 'Preferências',
+        churchData: 'Dados da igreja',
         demoTitle: 'Dados de demonstração',
         demoDescription: 'Doze crentes com notas e etiquetas, para ver a interface cheia.',
         demoSeed: 'Semear dados de demonstração',

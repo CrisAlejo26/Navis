@@ -1,115 +1,111 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import Constants from 'expo-constants';
 import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { ScrollView, Text, View } from 'react-native';
+import { ScrollView, Text } from 'react-native';
 
-import { LanguageSelect } from '@/components/language-select';
-import { NotificationsCard } from '@/components/settings/notifications-card';
-import { ThemeToggle } from '@/components/theme-toggle';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { CardGroup } from '@/components/ui/card-group';
-import { Icon } from '@/components/ui/icon';
-import { ListRow } from '@/components/ui/list-row';
-import { hasDemoData, seedDemoData } from '@/data/demo-data';
-import { findUser } from '@/data/repos/account-repo';
+import { AccountCard } from '@/components/settings/account-card';
+import { DevToolsGroup } from '@/components/settings/dev-tools-group';
+import { PreferencesGroup } from '@/components/settings/preferences-group';
+import { SettingsGroup } from '@/components/settings/settings-group';
+import { SettingsRow } from '@/components/settings/settings-row';
+import { SignOutButton } from '@/components/settings/sign-out-button';
+import { ThemePills } from '@/components/settings/theme-pills';
+import { useLocalChurch, useLocalUser } from '@/hooks/use-settings';
 import { useLocalSession } from '@/stores/local-session';
 
 /**
- * Los ajustes, con la sesión **local** (RFC 0024, Fase 1): cerrar sesión
- * borra solo la sesión — la cuenta y los datos siguen en el teléfono.
- *
- * Mientras la app está en desarrollo, aquí vive el botón de **datos de
- * prueba** (Regla 11): siembra doce hermanos con notas y etiquetas para ver
- * la interfaz llena. Desaparece en cuanto hay creyentes en la base.
+ * El concentrador de ajustes: tarjetas de filas como las de Taskia, de lo más
+ * cercano a la persona —apariencia y preferencias— a lo de toda la iglesia y
+ * los datos. Sin formularios: cada uno vive en su pantalla. Cerrar sesión borra
+ * solo la sesión; la cuenta y los datos siguen en el teléfono.
  */
 export default function SettingsScreen() {
     const { t } = useTranslation();
     const session = useLocalSession((state) => state.session);
     const clear = useLocalSession((state) => state.clear);
-    const client = useQueryClient();
-
-    const { data: user } = useQuery({
-        queryKey: ['local-user', session?.userId],
-        queryFn: () => findUser(session!.userId),
-        enabled: Boolean(session),
-    });
-
-    const { data: seeded } = useQuery({
-        queryKey: ['demo-data', session?.churchId],
-        queryFn: () => hasDemoData(session!.churchId!),
-        enabled: Boolean(session?.churchId),
-    });
-
-    const seed = useMutation({
-        mutationFn: () => {
-            if (!session?.churchId) throw new Error('Sin iglesia activa no se siembra');
-            return seedDemoData(session.churchId, session.userId);
-        },
-        onSuccess: () => {
-            void client.invalidateQueries({ queryKey: ['demo-data'] });
-            void client.invalidateQueries({ queryKey: ['believers'] });
-            void client.invalidateQueries({ queryKey: ['dashboard'] });
-            void client.invalidateQueries({ queryKey: ['catalog'] });
-        },
-    });
-
-    function onSignOut(): void {
-        clear();
-        router.replace('/(auth)/welcome');
-    }
+    const { data: user } = useLocalUser();
+    const { data: church } = useLocalChurch();
 
     return (
-        <ScrollView className="flex-1 bg-background" contentContainerClassName="gap-4 p-4 pt-16">
+        <ScrollView
+            className="flex-1 bg-background"
+            contentContainerClassName="gap-5 px-5 pb-32 pt-16"
+            showsVerticalScrollIndicator={false}
+        >
             <Text className="text-2xl font-semibold text-foreground">{t('settings.title')}</Text>
 
-            <Card title={t('settings.appearance')}>
-                <View className="gap-4 pt-2">
-                    <View className="gap-2">
-                        <Text className="text-sm text-muted-foreground">{t('theme.label')}</Text>
-                        <ThemeToggle />
-                    </View>
-                    <View className="gap-2">
-                        <Text className="text-sm text-muted-foreground">{t('language.label')}</Text>
-                        <LanguageSelect />
-                    </View>
-                </View>
-            </Card>
+            <AccountCard
+                name={user?.name ?? ''}
+                email={user?.email ?? ''}
+                churchName={church?.name}
+            />
 
-            <NotificationsCard />
+            <SettingsGroup label={t('settings.appearance')}>
+                <ThemePills />
+            </SettingsGroup>
 
-            <Card title={t('settings.profile')} description={user?.email}>
-                <Button
-                    title={t('auth.signOut')}
-                    variant="secondary"
-                    className="mt-2"
-                    onPress={onSignOut}
-                />
-            </Card>
+            <PreferencesGroup />
 
-            {/* El modo local guarda todo en el teléfono; la conexión al servidor
-          llega con la Fase 3 del RFC 0024. */}
-            <Card title={t('settings.connection')} description={t('settings.localMode')} />
-
-            {seeded ? null : (
-                <Card title={t('settings.demoTitle')} description={t('settings.demoDescription')}>
-                    <Button
-                        title={t('settings.demoSeed')}
-                        loading={seed.isPending}
-                        className="mt-2"
-                        onPress={() => seed.mutate()}
+            {session?.churchId ? (
+                <SettingsGroup label={t('settings.church')}>
+                    <SettingsRow
+                        icon="boat-outline"
+                        title={t('settings.churchData')}
+                        subtitle={church?.name}
+                        onPress={() => router.push('/settings/church')}
                     />
-                </Card>
-            )}
+                    <SettingsRow
+                        icon="calendar-outline"
+                        title={t('calendar.settings')}
+                        onPress={() => router.push('/calendar/settings')}
+                    />
+                    <SettingsRow
+                        icon="pricetags-outline"
+                        title={t('settings.believersCatalog')}
+                        subtitle={t('settings.believersCatalogHint')}
+                        onPress={() => router.push('/believers/catalog')}
+                    />
+                </SettingsGroup>
+            ) : null}
 
-            <CardGroup>
-                <ListRow
-                    leading={<Icon name="grid" tone="primary" background="soft" />}
-                    title={t('catalog.title')}
-                    subtitle={t('catalog.subtitle')}
-                    onPress={() => router.push('/components')}
+            <SettingsGroup label={t('settings.scopeYou')}>
+                <SettingsRow
+                    icon="person-outline"
+                    title={t('profile.title')}
+                    subtitle={t('profile.description')}
+                    onPress={() => router.push('/settings/profile')}
                 />
-            </CardGroup>
+            </SettingsGroup>
+
+            <SettingsGroup label={t('settings.groupData')}>
+                <SettingsRow
+                    icon="save-outline"
+                    title={t('backup.title')}
+                    subtitle={t('backup.rowHint')}
+                    onPress={() => router.push('/settings/backup')}
+                />
+                <SettingsRow
+                    icon="phone-portrait-outline"
+                    title={t('settings.connection')}
+                    subtitle={t('settings.localMode')}
+                />
+            </SettingsGroup>
+
+            <SettingsGroup label={t('settings.about')}>
+                <SettingsRow
+                    icon="information-circle-outline"
+                    title={t('settings.version', { version: Constants.expoConfig?.version ?? '' })}
+                />
+            </SettingsGroup>
+
+            <SignOutButton
+                onConfirm={() => {
+                    clear();
+                    router.replace('/(auth)/welcome');
+                }}
+            />
+
+            <DevToolsGroup />
         </ScrollView>
     );
 }

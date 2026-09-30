@@ -179,6 +179,9 @@ export const es = {
         changed: 'Idioma cambiado a {{language}}',
     },
     notifications: {
+        stateOn: 'Activados',
+        stateOff: 'Desactivados',
+        stateDenied: 'Sin permiso',
         title: 'Avisos',
         master: 'Recibir avisos',
         masterHint: 'Navis te avisa a la hora que elijas, aunque la app esté cerrada.',
@@ -204,6 +207,29 @@ export const es = {
             openSettings: 'Abrir ajustes',
         },
     },
+    backup: {
+        title: 'Copia de seguridad',
+        intro: 'Tus datos viven solo en este teléfono. Una copia los guarda en un fichero que puedes poner a salvo.',
+        rowHint: 'Tus datos en un fichero a salvo',
+        exportTitle: 'Guardar una copia',
+        exportBody:
+            'Incluye creyentes, notas, calendario, sueños, profecías, enseñanzas, y también los audios y las fotos.',
+        exportButton: 'Exportar copia',
+        exportFailed: 'No se pudo crear la copia. Inténtalo de nuevo.',
+        restoreTitle: 'Restaurar una copia',
+        restoreBody:
+            'Sustituye todo lo que hay ahora por lo que trae el fichero. Sirve en este mismo teléfono: la contraseña no viaja a otro aparato.',
+        restoreButton: 'Elegir una copia',
+        restoreConfirmTitle: '¿Restaurar esta copia?',
+        restoreConfirmBody:
+            'Se borra lo que hay ahora en Navis y se reemplaza por la copia. No se puede deshacer.',
+        restoreConfirmAction: 'Restaurar',
+        restored: 'Copia restaurada',
+        errorInvalid: 'Ese fichero no es una copia de Navis.',
+        errorNewer:
+            'La copia es de una versión más nueva de Navis. Actualiza la app y vuelve a probar.',
+        errorGeneric: 'No se pudo restaurar. No se ha cambiado nada.',
+    },
     settings: {
         title: 'Ajustes',
         saved: 'Ajustes guardados',
@@ -224,6 +250,18 @@ export const es = {
         profile: 'Perfil',
         connection: 'Conexión',
         localMode: 'Modo local: los datos viven en este teléfono',
+        groupData: 'Datos',
+        about: 'Acerca de',
+        version: 'Versión {{version}}',
+        devOnly: 'Solo desarrollo',
+        signOutTitle: '¿Cerrar sesión?',
+        signOutBody:
+            'Tus datos siguen en este teléfono. Para volver a entrar necesitarás tu contraseña.',
+        choose: 'Elegir',
+        believersCatalog: 'Catálogos de creyentes',
+        believersCatalogHint: 'Dones, labores y etiquetas',
+        preferences: 'Preferencias',
+        churchData: 'Datos de la iglesia',
         demoTitle: 'Datos de prueba',
         demoDescription: 'Doce hermanos con notas y etiquetas, para ver la interfaz llena.',
         demoSeed: 'Sembrar datos de prueba',

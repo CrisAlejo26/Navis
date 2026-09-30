@@ -306,6 +306,11 @@ export const LOCAL_USER_TABLE: LocalTable = {
         { name: 'name', type: 'text' },
         { name: 'email', type: 'text' },
         { name: 'password_hash', type: 'text' },
+        // El perfil (mismos nombres que `profiles` en la API): en local vive aquí.
+        { name: 'phone', type: 'text', nullable: true },
+        { name: 'city', type: 'text', nullable: true },
+        { name: 'bio', type: 'text', nullable: true },
+        { name: 'timezone', type: 'text', default: 'Europe/Madrid' },
         { name: 'created_at', type: 'text' },
         { name: 'updated_at', type: 'text' },
     ],

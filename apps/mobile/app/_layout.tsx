@@ -103,6 +103,22 @@ function RootNavigator() {
                     options={{ headerShown: false, animation: PUSHED_SCREEN_ANIMATION }}
                 />
                 <Stack.Screen
+                    name="settings/profile"
+                    options={{ headerShown: false, animation: PUSHED_SCREEN_ANIMATION }}
+                />
+                <Stack.Screen
+                    name="settings/notifications"
+                    options={{ headerShown: false, animation: PUSHED_SCREEN_ANIMATION }}
+                />
+                <Stack.Screen
+                    name="settings/backup"
+                    options={{ headerShown: false, animation: PUSHED_SCREEN_ANIMATION }}
+                />
+                <Stack.Screen
+                    name="settings/church"
+                    options={{ headerShown: false, animation: PUSHED_SCREEN_ANIMATION }}
+                />
+                <Stack.Screen
                     name="calendar/settings"
                     options={{ headerShown: false, animation: PUSHED_SCREEN_ANIMATION }}
                 />

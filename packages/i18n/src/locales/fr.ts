@@ -172,6 +172,9 @@ export const fr = {
         changed: 'Langue changée en {{language}}',
     },
     notifications: {
+        stateOn: 'Activés',
+        stateOff: 'Désactivés',
+        stateDenied: 'Sans autorisation',
         title: 'Alertes',
         master: 'Recevoir des alertes',
         masterHint: "Navis te prévient à l'heure que tu choisis, même quand l'appli est fermée.",
@@ -197,6 +200,29 @@ export const fr = {
             openSettings: 'Ouvrir les réglages',
         },
     },
+    backup: {
+        title: 'Sauvegarde',
+        intro: 'Tes données vivent uniquement sur ce téléphone. Une sauvegarde les range dans un fichier que tu peux mettre à l’abri.',
+        rowHint: 'Tes données dans un fichier à l’abri',
+        exportTitle: 'Enregistrer une sauvegarde',
+        exportBody:
+            'Elle contient les fidèles, les notes, le calendrier, les rêves, les prophéties, les enseignements, ainsi que les audios et les photos.',
+        exportButton: 'Exporter la sauvegarde',
+        exportFailed: 'La sauvegarde n’a pas pu être créée. Réessaie.',
+        restoreTitle: 'Restaurer une sauvegarde',
+        restoreBody:
+            'Remplace tout ce qui est dans l’app par le contenu du fichier. Ça marche sur ce même téléphone : le mot de passe ne voyage pas vers un autre appareil.',
+        restoreButton: 'Choisir une sauvegarde',
+        restoreConfirmTitle: 'Restaurer cette sauvegarde ?',
+        restoreConfirmBody:
+            'Ce qui est dans Navis est effacé et remplacé par la sauvegarde. Action irréversible.',
+        restoreConfirmAction: 'Restaurer',
+        restored: 'Sauvegarde restaurée',
+        errorInvalid: 'Ce fichier n’est pas une sauvegarde de Navis.',
+        errorNewer:
+            'Cette sauvegarde vient d’une version plus récente de Navis. Mets l’app à jour et réessaie.',
+        errorGeneric: 'Restauration impossible. Rien n’a été modifié.',
+    },
     settings: {
         saved: 'Réglages enregistrés',
         title: 'Paramètres',
@@ -217,6 +243,18 @@ export const fr = {
         profile: 'Profil',
         connection: 'Connexion',
         localMode: 'Mode local : tes données vivent sur ce téléphone',
+        groupData: 'Données',
+        about: 'À propos',
+        version: 'Version {{version}}',
+        devOnly: 'Développement uniquement',
+        signOutTitle: 'Se déconnecter ?',
+        signOutBody:
+            'Tes données restent sur ce téléphone. Il te faudra ton mot de passe pour te reconnecter.',
+        choose: 'Choisir',
+        believersCatalog: 'Catalogues des fidèles',
+        believersCatalogHint: 'Dons, ministères et étiquettes',
+        preferences: 'Préférences',
+        churchData: 'Infos de l’église',
         demoTitle: 'Données de démo',
         demoDescription: 'Douze fidèles avec notes et étiquettes, pour voir l’interface remplie.',
         demoSeed: 'Semer les données de démo',

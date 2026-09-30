@@ -106,7 +106,7 @@ export function setDbForTests(fake: LocalDb | null): void {
 }
 
 /** Versión actual del esquema local. Cada cambio añade un caso a `migrations`. */
-const SCHEMA_VERSION = 9;
+export const SCHEMA_VERSION = 10;
 
 type Migration = (db: LocalDb) => Promise<void>;
 
@@ -392,6 +392,22 @@ const migrations: Record<number, Migration> = {
                     'CREATE $1INDEX IF NOT EXISTS',
                 ),
             );
+        }
+    },
+    // Ajustes del móvil, Fase 1 (docs/planes/pendientes/ajustes-movil-plan.md): el
+    // perfil de la cuenta local. En una base **nueva** la migración 1 ya crea
+    // `local_user` con estas columnas; aquí solo se añaden las que falten. La
+    // zona horaria de las cuentas que ya existían es la del dispositivo.
+    10: async (db) => {
+        const additions: [string, string][] = [
+            ['phone', 'TEXT'],
+            ['city', 'TEXT'],
+            ['bio', 'TEXT'],
+            ['timezone', "TEXT NOT NULL DEFAULT 'Europe/Madrid'"],
+        ];
+        for (const [column, definition] of additions) {
+            if (await columnOf('local_user', column, db)) continue;
+            await db.execAsync(`ALTER TABLE local_user ADD COLUMN "${column}" ${definition}`);
         }
     },
 };

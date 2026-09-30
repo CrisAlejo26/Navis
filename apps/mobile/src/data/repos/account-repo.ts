@@ -2,6 +2,7 @@ import { CryptoDigestAlgorithm, digestStringAsync, getRandomBytesAsync } from 'e
 import * as SecureStore from 'expo-secure-store';
 
 import { getDb, newId, nowIso } from '../db';
+import { deviceTimezone } from '../device-timezone';
 
 /**
  * La cuenta **local** (RFC 0024, Fase 1): sin Better Auth, porque no hay
@@ -18,6 +19,10 @@ export interface LocalUser {
     name: string;
     email: string;
     passwordHash: string;
+    phone: string | null;
+    city: string | null;
+    bio: string | null;
+    timezone: string;
     createdAt: string;
     updatedAt: string;
 }
@@ -27,6 +32,10 @@ interface LocalUserRow {
     name: string;
     email: string;
     password_hash: string;
+    phone: string | null;
+    city: string | null;
+    bio: string | null;
+    timezone: string;
     created_at: string;
     updated_at: string;
 }
@@ -37,6 +46,10 @@ function toUser(row: LocalUserRow): LocalUser {
         name: row.name,
         email: row.email,
         passwordHash: row.password_hash,
+        phone: row.phone,
+        city: row.city,
+        bio: row.bio,
+        timezone: row.timezone,
         createdAt: row.created_at,
         updatedAt: row.updated_at,
     };
@@ -79,16 +92,21 @@ export async function createAccount(input: {
         name: input.name,
         email,
         passwordHash: await hashPassword(email, input.password),
+        phone: null,
+        city: null,
+        bio: null,
+        timezone: deviceTimezone(),
         createdAt: nowIso(),
         updatedAt: nowIso(),
     };
 
     await db.runAsync(
-        'INSERT INTO local_user (id, name, email, password_hash, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)',
+        'INSERT INTO local_user (id, name, email, password_hash, timezone, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)',
         user.id,
         user.name,
         user.email,
         user.passwordHash,
+        user.timezone,
         user.createdAt,
         user.updatedAt,
     );

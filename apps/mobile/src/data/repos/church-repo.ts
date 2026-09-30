@@ -7,6 +7,7 @@ import {
 } from '@navis/shared';
 
 import { getDb, newId, nowIso } from '../db';
+import { deviceTimezone } from '../device-timezone';
 import { seedCalendarScaffold } from './calendar-seed';
 
 /**
@@ -21,6 +22,7 @@ export interface LocalChurch {
     slug: string;
     city: string | null;
     timezone: string;
+    country: string;
     ownerId: string;
 }
 
@@ -49,15 +51,6 @@ async function freeSlug(name: string): Promise<string> {
     return `${base}-${attempt}`;
 }
 
-/** La zona horaria del dispositivo: en local, es la de quien usa la app. */
-function deviceTimezone(): string {
-    try {
-        return Intl.DateTimeFormat().resolvedOptions().timeZone || 'Europe/Madrid';
-    } catch {
-        return 'Europe/Madrid';
-    }
-}
-
 export async function createChurch(input: {
     name: string;
     city: string;
@@ -72,6 +65,7 @@ export async function createChurch(input: {
         slug: await freeSlug(input.name),
         city: input.city || null,
         timezone: deviceTimezone(),
+        country: 'ES',
         ownerId: input.ownerId,
     };
 
@@ -85,7 +79,7 @@ export async function createChurch(input: {
             church.slug,
             church.city,
             church.timezone,
-            'ES',
+            church.country,
             church.ownerId,
         );
 
@@ -148,9 +142,10 @@ export async function findChurch(id: string): Promise<LocalChurch | null> {
         slug: string;
         city: string | null;
         timezone: string;
+        country: string;
         owner_id: string;
     }>(
-        'SELECT id, name, slug, city, timezone, owner_id FROM churches WHERE id = ? AND deleted_at IS NULL',
+        'SELECT id, name, slug, city, timezone, country, owner_id FROM churches WHERE id = ? AND deleted_at IS NULL',
         id,
     );
 
@@ -161,6 +156,7 @@ export async function findChurch(id: string): Promise<LocalChurch | null> {
         slug: row.slug,
         city: row.city,
         timezone: row.timezone,
+        country: row.country,
         ownerId: row.owner_id,
     };
 }
@@ -174,9 +170,10 @@ export async function findChurchByOwner(ownerId: string): Promise<LocalChurch | 
         slug: string;
         city: string | null;
         timezone: string;
+        country: string;
         owner_id: string;
     }>(
-        'SELECT id, name, slug, city, timezone, owner_id FROM churches WHERE owner_id = ? AND deleted_at IS NULL ORDER BY created_at ASC',
+        'SELECT id, name, slug, city, timezone, country, owner_id FROM churches WHERE owner_id = ? AND deleted_at IS NULL ORDER BY created_at ASC',
         ownerId,
     );
 
@@ -187,6 +184,7 @@ export async function findChurchByOwner(ownerId: string): Promise<LocalChurch | 
         slug: row.slug,
         city: row.city,
         timezone: row.timezone,
+        country: row.country,
         ownerId: row.owner_id,
     };
 }

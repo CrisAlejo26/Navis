@@ -169,6 +169,9 @@ export const it = {
         changed: 'Lingua cambiata in {{language}}',
     },
     notifications: {
+        stateOn: 'Attivi',
+        stateOff: 'Disattivati',
+        stateDenied: 'Senza permesso',
         title: 'Avvisi',
         master: 'Ricevere avvisi',
         masterHint: "Navis ti avvisa all'ora che scegli, anche con l'app chiusa.",
@@ -194,6 +197,29 @@ export const it = {
             openSettings: 'Apri impostazioni',
         },
     },
+    backup: {
+        title: 'Copia di sicurezza',
+        intro: 'I tuoi dati vivono solo su questo telefono. Una copia li salva in un file che puoi mettere al sicuro.',
+        rowHint: 'I tuoi dati in un file al sicuro',
+        exportTitle: 'Salva una copia',
+        exportBody:
+            'Include fedeli, note, calendario, sogni, profezie, insegnamenti, e anche gli audio e le foto.',
+        exportButton: 'Esporta la copia',
+        exportFailed: 'Impossibile creare la copia. Riprova.',
+        restoreTitle: 'Ripristina una copia',
+        restoreBody:
+            'Sostituisce tutto ciò che c’è nell’app con il contenuto del file. Funziona su questo stesso telefono: la password non viaggia su un altro dispositivo.',
+        restoreButton: 'Scegli una copia',
+        restoreConfirmTitle: 'Ripristinare questa copia?',
+        restoreConfirmBody:
+            'Ciò che c’è ora in Navis viene cancellato e sostituito dalla copia. Non si può annullare.',
+        restoreConfirmAction: 'Ripristina',
+        restored: 'Copia ripristinata',
+        errorInvalid: 'Quel file non è una copia di Navis.',
+        errorNewer:
+            'La copia viene da una versione più recente di Navis. Aggiorna l’app e riprova.',
+        errorGeneric: 'Impossibile ripristinare. Non è cambiato nulla.',
+    },
     settings: {
         saved: 'Impostazioni salvate',
         title: 'Impostazioni',
@@ -215,6 +241,18 @@ export const it = {
         profile: 'Profilo',
         connection: 'Connessione',
         localMode: 'Modalità locale: i tuoi dati vivono su questo telefono',
+        groupData: 'Dati',
+        about: 'Informazioni',
+        version: 'Versione {{version}}',
+        devOnly: 'Solo sviluppo',
+        signOutTitle: 'Uscire?',
+        signOutBody:
+            'I tuoi dati restano su questo telefono. Per rientrare ti servirà la password.',
+        choose: 'Scegli',
+        believersCatalog: 'Cataloghi dei fedeli',
+        believersCatalogHint: 'Doni, ministeri ed etichette',
+        preferences: 'Preferenze',
+        churchData: 'Dati della chiesa',
         demoTitle: 'Dati dimostrativi',
         demoDescription: 'Dodici credenti con note ed etichette, per vedere l’interfaccia piena.',
         demoSeed: 'Inserire dati dimostrativi',

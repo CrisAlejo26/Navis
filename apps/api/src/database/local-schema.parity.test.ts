@@ -173,6 +173,10 @@ describe('la cuenta local', () => {
             'name',
             'email',
             'password_hash',
+            'phone',
+            'city',
+            'bio',
+            'timezone',
             'created_at',
             'updated_at',
         ]);

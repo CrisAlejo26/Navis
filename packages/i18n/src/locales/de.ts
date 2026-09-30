@@ -173,6 +173,9 @@ export const de = {
         changed: 'Sprache auf {{language}} geändert',
     },
     notifications: {
+        stateOn: 'An',
+        stateOff: 'Aus',
+        stateDenied: 'Keine Berechtigung',
         title: 'Benachrichtigungen',
         master: 'Benachrichtigungen erhalten',
         masterHint: 'Navis erinnert dich zur gewählten Zeit, auch wenn die App geschlossen ist.',
@@ -200,6 +203,29 @@ export const de = {
             openSettings: 'Einstellungen öffnen',
         },
     },
+    backup: {
+        title: 'Datensicherung',
+        intro: 'Deine Daten liegen nur auf diesem Telefon. Eine Sicherung legt sie in einer Datei ab, die du in Sicherheit bringen kannst.',
+        rowHint: 'Deine Daten in einer sicheren Datei',
+        exportTitle: 'Sicherung speichern',
+        exportBody:
+            'Enthält Gläubige, Notizen, Kalender, Träume, Prophetien, Lehren sowie die Audios und Fotos.',
+        exportButton: 'Sicherung exportieren',
+        exportFailed: 'Die Sicherung konnte nicht erstellt werden. Versuche es erneut.',
+        restoreTitle: 'Sicherung wiederherstellen',
+        restoreBody:
+            'Ersetzt alles in der App durch den Inhalt der Datei. Das funktioniert auf demselben Telefon: Das Passwort wandert nicht auf ein anderes Gerät.',
+        restoreButton: 'Sicherung auswählen',
+        restoreConfirmTitle: 'Diese Sicherung wiederherstellen?',
+        restoreConfirmBody:
+            'Was jetzt in Navis ist, wird gelöscht und durch die Sicherung ersetzt. Das lässt sich nicht rückgängig machen.',
+        restoreConfirmAction: 'Wiederherstellen',
+        restored: 'Sicherung wiederhergestellt',
+        errorInvalid: 'Diese Datei ist keine Navis-Sicherung.',
+        errorNewer:
+            'Die Sicherung stammt aus einer neueren Navis-Version. Aktualisiere die App und versuche es erneut.',
+        errorGeneric: 'Wiederherstellung fehlgeschlagen. Es wurde nichts geändert.',
+    },
     settings: {
         saved: 'Einstellungen gespeichert',
         title: 'Einstellungen',
@@ -221,6 +247,18 @@ export const de = {
         profile: 'Profil',
         connection: 'Verbindung',
         localMode: 'Lokaler Modus: Deine Daten leben auf diesem Handy',
+        groupData: 'Daten',
+        about: 'Über die App',
+        version: 'Version {{version}}',
+        devOnly: 'Nur für die Entwicklung',
+        signOutTitle: 'Abmelden?',
+        signOutBody:
+            'Deine Daten bleiben auf diesem Telefon. Zum erneuten Anmelden brauchst du dein Passwort.',
+        choose: 'Auswählen',
+        believersCatalog: 'Kataloge der Gläubigen',
+        believersCatalogHint: 'Gaben, Dienste und Labels',
+        preferences: 'Präferenzen',
+        churchData: 'Kirchendaten',
         demoTitle: 'Beispieldaten',
         demoDescription:
             'Zwölf Gläubige mit Notizen und Etiketten, um die Oberfläche gefüllt zu sehen.',

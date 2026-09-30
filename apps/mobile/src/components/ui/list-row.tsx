@@ -13,6 +13,8 @@ interface ListRowProps {
     trailing?: ReactNode;
     onPress?: () => void;
     disabled?: boolean;
+    /** El chevron avisa de que la fila abre otra pantalla; en una opción de una hoja sobra. */
+    showChevron?: boolean;
     /** Sin él, se anuncia el título (Regla 2). */
     accessibilityLabel?: string;
 }
@@ -34,6 +36,7 @@ export function ListRow({
     trailing,
     onPress,
     disabled = false,
+    showChevron = true,
     accessibilityLabel,
 }: ListRowProps) {
     const content = (
@@ -46,7 +49,7 @@ export function ListRow({
                 ) : null}
             </View>
             {trailing}
-            {onPress ? <Icon name="chevron-forward" size="sm" /> : null}
+            {onPress && showChevron ? <Icon name="chevron-forward" size="sm" /> : null}
         </>
     );
 
