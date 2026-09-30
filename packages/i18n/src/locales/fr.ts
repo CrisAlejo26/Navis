@@ -680,6 +680,7 @@ export const fr = {
         title: 'Journal de bord',
         add: 'Ajouter une note',
         edit: 'Modifier la note',
+        detail: 'Note',
         saved: 'Note enregistrée',
         deleted: 'Note supprimée',
         deleteTitle: 'Supprimer cette note',

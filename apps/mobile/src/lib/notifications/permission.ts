@@ -9,13 +9,15 @@ interface PermissionResult {
 }
 
 /**
- * Los tres estados que le importan a la interfaz. `canAskAgain === false`
- * cuenta como denegado: en Android, dos «no» seguidos cierran la puerta y el
- * único camino que queda son los ajustes del sistema.
+ * Los tres estados que le importan a la interfaz. Manda `canAskAgain`, no
+ * `status`: en Android un permiso **nunca pedido** llega como
+ * `status: 'denied'` con `canAskAgain: true`, y tratarlo como denegado
+ * impedía que saliera el diálogo del sistema. Sin poder preguntar de nuevo
+ * (dos «no» seguidos) el único camino son los ajustes del teléfono.
  */
 export function resolvePermission(result: PermissionResult): PermissionStatus {
     if (result.granted || result.status === 'granted') return 'granted';
-    if (!result.canAskAgain || result.status === 'denied') return 'denied';
+    if (!result.canAskAgain) return 'denied';
     return 'undetermined';
 }
 

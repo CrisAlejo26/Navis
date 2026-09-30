@@ -673,6 +673,7 @@ export const it = {
         title: 'Diario di bordo',
         add: 'Aggiungi nota',
         edit: 'Modifica la nota',
+        detail: 'Nota',
         saved: 'Nota salvata',
         deleted: 'Nota eliminata',
         deleteTitle: 'Eliminare questa nota',

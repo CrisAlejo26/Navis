@@ -670,6 +670,7 @@ export const en = {
         title: 'Log',
         add: 'Add note',
         edit: 'Edit note',
+        detail: 'Note',
         saved: 'Note saved',
         deleted: 'Note deleted',
         deleteTitle: 'Delete this note',

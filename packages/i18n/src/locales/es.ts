@@ -681,6 +681,7 @@ export const es = {
         title: 'Bitácora',
         add: 'Añadir nota',
         edit: 'Editar la nota',
+        detail: 'Nota',
         saved: 'Nota guardada',
         deleted: 'Nota eliminada',
         deleteTitle: 'Eliminar esta nota',

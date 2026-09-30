@@ -17,6 +17,9 @@ import { createCatalogEntry } from './repos/catalog-repo';
 import { listCalendars, createCongregation, listCongregations } from './repos/calendar-repo';
 import { listPatterns } from './repos/calendar-settings';
 import { assignSlot } from './repos/calendar-assignments';
+import { seedDemoProphecies } from './demo-prophecies';
+import { seedDemoDreams } from './demo-dreams';
+import { seedDemoTeachings } from './demo-teachings';
 
 /**
  * Datos de **prueba** para ver la aplicación llena (Regla 11): una iglesia,
@@ -311,6 +314,10 @@ const NOTAS: { kind: NoteKind; told: string; advice: string | null }[] = [
  * listado se quedaría vacío sin decir por qué.
  */
 export async function seedDemoData(churchId: string, userId: string): Promise<boolean> {
+    // Lo personal va antes del `return` de abajo: una instalación que ya tenía
+    // hermanos sembrados también tiene que recibir profecías, sueños y enseñanzas.
+    await seedPersonalDemo(userId);
+
     const db = await getDb();
     const existing = await db.getFirstAsync<{ total: number }>(
         'SELECT COUNT(*) AS total FROM believers WHERE church_id = ? AND deleted_at IS NULL',
@@ -448,6 +455,16 @@ export async function seedDemoData(churchId: string, userId: string): Promise<bo
     return true;
 }
 
+/**
+ * Profecías, sueños y enseñanzas: son del usuario y no de una iglesia (RFC 0004
+ * D1), así que se siembran por dueño y cada una se salta sola si ya tiene datos.
+ */
+export async function seedPersonalDemo(userId: string): Promise<void> {
+    await seedDemoProphecies(userId);
+    await seedDemoDreams(userId);
+    await seedDemoTeachings(userId);
+}
+
 /** Cuántos creyentes hay **en esa iglesia**: para saber si el botón aún sirve. */
 export async function hasDemoData(churchId: string): Promise<boolean> {
     const db = await getDb();
@@ -520,7 +537,11 @@ export async function initializeTestUser(): Promise<void> {
             'SELECT id FROM local_user WHERE email = ?',
             DEMO_EMAIL,
         );
-        if (existing) return;
+        if (existing) {
+            // La cuenta es de antes de que hubiera sueños y enseñanzas de prueba.
+            await seedPersonalDemo(existing.id);
+            return;
+        }
         await prepareDemoSession();
     } catch {
         // En silencio: que la demo fallida no tape el arranque de verdad.

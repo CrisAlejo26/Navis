@@ -163,12 +163,19 @@ describe('resolvePermission: los tres estados del permiso', () => {
         expect(resolvePermission({ granted: true, canAskAgain: true, status: 'granted' })).toBe(
             'granted',
         );
-        expect(resolvePermission({ granted: false, canAskAgain: true, status: 'denied' })).toBe(
+        expect(resolvePermission({ granted: false, canAskAgain: false, status: 'denied' })).toBe(
             'denied',
         );
         expect(
             resolvePermission({ granted: false, canAskAgain: true, status: 'undetermined' }),
         ).toBe('undetermined');
+    });
+
+    // Regresión: Android informa «denied» de un permiso que aún no se ha pedido.
+    it('un «denied» que todavía se puede preguntar es sin decidir', () => {
+        expect(resolvePermission({ granted: false, canAskAgain: true, status: 'denied' })).toBe(
+            'undetermined',
+        );
     });
 
     it('si ya no se puede volver a preguntar, cuenta como denegado', () => {

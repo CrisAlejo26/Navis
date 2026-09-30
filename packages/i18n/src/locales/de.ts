@@ -688,6 +688,7 @@ export const de = {
         title: 'Logbuch',
         add: 'Notiz hinzufügen',
         edit: 'Notiz bearbeiten',
+        detail: 'Notiz',
         saved: 'Notiz gespeichert',
         deleted: 'Notiz gelöscht',
         deleteTitle: 'Diese Notiz löschen',

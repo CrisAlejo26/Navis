@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FlatList, Pressable, ScrollView, SectionList, Text, View } from 'react-native';
 
+import { NoteDetailSheet } from '@/components/believers/note-detail-sheet';
 import { NoteFormSheet } from '@/components/believers/note-form-sheet';
 import { toUpdateInput } from '@/components/believers/note-form-values';
 import { NotesCalendarView } from '@/components/believers/notes-calendar-view';
@@ -51,6 +52,9 @@ export function NotesBitacora({
     const [kind, setKind] = useState<NoteKind | undefined>(undefined);
     const [formOpen, setFormOpen] = useState(false);
     const [editing, setEditing] = useState<LocalNote | null>(null);
+    // La nota que se está leyendo. Tocar una nota abre su vista previa, no el
+    // formulario: editar es un paso más, y es lo que pide la persona.
+    const [viewingId, setViewingId] = useState<string | null>(null);
     // La nota del aviso se abre sola, una vez: al cerrarla se anota como vista
     // (derivado, sin efecto que copie props a estado).
     const [dismissedNoteId, setDismissedNoteId] = useState<string | null>(null);
@@ -72,10 +76,19 @@ export function NotesBitacora({
     const addAudio = useAddAudio(believerId);
     const deleteAudio = useDeleteAudio(believerId);
     const afterReminderSaved = useAfterReminderSaved();
-    const linked = useNote(openNoteId && openNoteId !== dismissedNoteId ? openNoteId : undefined);
-    const sheetNote = editing ?? linked.data ?? null;
+    const previewId = viewingId ?? (openNoteId !== dismissedNoteId ? openNoteId : undefined);
+    const linked = useNote(previewId);
 
     const flat = notes.data?.pages.flatMap((page) => page.items) ?? [];
+    const preview = previewId
+        ? (flat.find((note) => note.id === previewId) ?? linked.data ?? null)
+        : null;
+    const closePreview = () => {
+        setViewingId(null);
+        if (openNoteId) setDismissedNoteId(openNoteId);
+    };
+    const toggleReminder = (note: LocalNote, done: boolean) =>
+        void updateNote.mutateAsync({ id: note.id, input: { remindDone: done } });
     const sections = groupByMonth(flat);
 
     return (
@@ -129,20 +142,10 @@ export function NotesBitacora({
                     scrollEnabled={false}
                     contentContainerClassName="gap-3"
                     renderItem={({ item }) => (
-                        <Pressable
-                            onPress={() => {
-                                setEditing(item);
-                                setFormOpen(true);
-                            }}
-                        >
+                        <Pressable accessibilityRole="button" onPress={() => setViewingId(item.id)}>
                             <NoteCard
                                 note={item}
-                                onToggleReminder={(note, done) =>
-                                    void updateNote.mutateAsync({
-                                        id: note.id,
-                                        input: { remindDone: done },
-                                    })
-                                }
+                                onToggleReminder={toggleReminder}
                                 onDeleteAudio={(audioId) => void deleteAudio.mutateAsync(audioId)}
                             />
                         </Pressable>
@@ -160,20 +163,10 @@ export function NotesBitacora({
                         </Text>
                     )}
                     renderItem={({ item }) => (
-                        <Pressable
-                            onPress={() => {
-                                setEditing(item);
-                                setFormOpen(true);
-                            }}
-                        >
+                        <Pressable accessibilityRole="button" onPress={() => setViewingId(item.id)}>
                             <NoteCard
                                 note={item}
-                                onToggleReminder={(note, done) =>
-                                    void updateNote.mutateAsync({
-                                        id: note.id,
-                                        input: { remindDone: done },
-                                    })
-                                }
+                                onToggleReminder={toggleReminder}
                                 onDeleteAudio={(audioId) => void deleteAudio.mutateAsync(audioId)}
                             />
                         </Pressable>
@@ -191,30 +184,41 @@ export function NotesBitacora({
                 />
             ) : null}
 
+            <NoteDetailSheet
+                note={preview}
+                onClose={closePreview}
+                onEdit={(note) => {
+                    closePreview();
+                    setEditing(note);
+                    setFormOpen(true);
+                }}
+                onToggleReminder={toggleReminder}
+                onDeleteAudio={(audioId) => void deleteAudio.mutateAsync(audioId)}
+            />
+
             <NoteFormSheet
-                visible={formOpen || sheetNote !== null}
+                visible={formOpen}
                 onClose={() => {
                     setFormOpen(false);
                     setEditing(null);
                     setPendingAudios([]);
-                    if (openNoteId) setDismissedNoteId(openNoteId);
                 }}
-                note={sheetNote}
+                note={editing}
                 pendingAudios={pendingAudios}
                 onRecorded={(audio) => setPendingAudios((previous) => [...previous, audio])}
                 onDelete={
-                    sheetNote
+                    editing
                         ? () => {
-                              void deleteNote.mutateAsync(sheetNote.id);
+                              void deleteNote.mutateAsync(editing.id);
                               setFormOpen(false);
                           }
                         : undefined
                 }
                 onSave={async (input) => {
-                    if (sheetNote) {
+                    if (editing) {
                         await updateNote.mutateAsync({
-                            id: sheetNote.id,
-                            input: toUpdateInput(input, sheetNote),
+                            id: editing.id,
+                            input: toUpdateInput(input, editing),
                         });
                         if (input.remindAt) await afterReminderSaved();
                         return;

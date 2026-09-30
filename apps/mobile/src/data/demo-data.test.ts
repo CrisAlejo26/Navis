@@ -3,8 +3,11 @@
 // devuelven lo sembrado. No es un test de unidad más: es el volcado que se
 // mira para saber qué va a enseñar la pantalla.
 import { setupLocalDb } from '@/data/test-support';
-import { setDbForTests } from '@/data/db';
-import { seedDemoData, hasDemoData } from '@/data/demo-data';
+import { getDb, setDbForTests } from '@/data/db';
+import { seedDemoData, seedPersonalDemo, hasDemoData } from '@/data/demo-data';
+import { listProphecies, prophecyStats } from '@/data/repos/prophecies-repo';
+import { listTeachings } from '@/data/repos/teachings-repo';
+import { listEmotions } from '@/data/repos/emotions-repo';
 import { createAccount } from '@/data/repos/account-repo';
 import { createChurch } from '@/data/repos/church-repo';
 import { believersSummary, listBelievers, findBeliever } from '@/data/repos/believers-repo';
@@ -87,6 +90,37 @@ describe('los datos de prueba, sembrados de verdad', () => {
         expect(await listGifts(church.id)).toHaveLength(7);
         expect(await listMinistries(church.id)).toHaveLength(10);
         expect(await listTags(church.id)).toHaveLength(3);
+    });
+
+    it('siembra profecías, sueños y enseñanzas del usuario, una sola vez', async () => {
+        const account = await createAccount({
+            name: 'Cristian Tres',
+            email: 'demo3@navis.app',
+            password: 'contrasena-larga-123',
+        });
+        if ('error' in account) throw new Error('no se pudo crear la tercera cuenta');
+        const ownerId = account.user.id;
+
+        await seedPersonalDemo(ownerId);
+        await seedPersonalDemo(ownerId);
+
+        const prophecies = await listProphecies(ownerId, {});
+        expect(prophecies.total).toBe(7);
+        expect((await prophecyStats(ownerId)).total).toBe(7);
+
+        const teachings = await listTeachings(ownerId, {});
+        expect(teachings.total).toBe(6);
+
+        const emotions = await listEmotions(ownerId);
+        const dreamsWithEmotion = emotions.reduce((sum, one) => sum + one.count, 0);
+        expect(dreamsWithEmotion).toBeGreaterThan(0);
+        const dbRows = await (
+            await getDb()
+        ).getFirstAsync<{ total: number }>(
+            'SELECT COUNT(*) AS total FROM dreams WHERE owner_id = ? AND deleted_at IS NULL',
+            ownerId,
+        );
+        expect(dbRows?.total).toBe(7);
     });
 
     it('sembrar en una iglesia no se salta por tener creyentes en otra', async () => {

@@ -22,17 +22,19 @@ import { hexAlpha } from '@/lib/color';
  * **Toda la tarjeta se tiñe con el color del tipo** — fondo al 8 % y borde
  * al 30 % de su acento, la pastilla un paso más cargada encima (§7.5: el
  * color nunca informa solo, junto a él va siempre el tipo escrito). El
- * cuerpo se recorta a tres líneas — la tarjeta abre el formulario completo
- * al tocarla.
+ * cuerpo se recorta a tres líneas — la tarjeta abre su vista previa al
+ * tocarla (`NoteDetailSheet`), que la pinta `expanded`, sin recortes.
  */
 export function NoteCard({
     note,
     onToggleReminder,
     onDeleteAudio,
+    expanded = false,
 }: {
     note: LocalNote;
     onToggleReminder: (note: LocalNote, done: boolean) => void;
     onDeleteAudio: (audioId: string) => void;
+    expanded?: boolean;
 }) {
     const { t } = useTranslation();
     const palette = themeColorsHex[useThemeStore((state) => state.resolvedTheme)];
@@ -92,7 +94,10 @@ export function NoteCard({
                 </View>
             </View>
 
-            <Text className="text-sm leading-relaxed text-foreground" numberOfLines={3}>
+            <Text
+                className="text-sm leading-relaxed text-foreground"
+                numberOfLines={expanded ? undefined : 3}
+            >
                 {note.told}
             </Text>
 
@@ -109,7 +114,7 @@ export function NoteCard({
                     />
                     <Text
                         className="min-w-0 text-xs leading-relaxed flex-1 text-muted-foreground"
-                        numberOfLines={2}
+                        numberOfLines={expanded ? undefined : 2}
                     >
                         {note.advice}
                     </Text>
