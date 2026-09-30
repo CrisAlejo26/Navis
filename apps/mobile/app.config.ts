@@ -79,9 +79,14 @@ const config: ExpoConfig = {
             'expo-splash-screen',
             {
                 image: './assets/splash-icon.png',
+                // El mismo lado que `SPLASH_BOAT_SIZE`: el splash animado de JS
+                // relevará a este sin que el barco cambie de tamaño.
+                imageWidth: 200,
                 resizeMode: 'contain',
-                backgroundColor: '#fcfcfa',
-                dark: { backgroundColor: '#0d0f15' },
+                // El azul de la marca a pantalla completa, en claro y en oscuro: la
+                // marca no cambia con el tema (Reglas 3 y 7).
+                backgroundColor: '#2140cf',
+                dark: { backgroundColor: '#2140cf' },
             },
         ],
     ],

@@ -94,10 +94,7 @@ export const DESTINOS = [
     // silueta, así que tiene que ser blanco sobre transparente (con fondo, sale
     // un cuadrado liso).
     ['apps/mobile/assets/notification-icon.png', { variante: 'blanco', ocupacion: 0.8, size: 96 }],
-    [
-        'apps/mobile/assets/splash-icon.png',
-        { variante: 'blanco', ocupacion: 0.62, fondo: AZUL, radio: 0.22, size: 512 },
-    ],
+    ['apps/mobile/assets/splash-icon.png', { variante: 'blanco', ocupacion: 0.62, size: 512 }],
     [
         'apps/mobile/assets/favicon.png',
         { variante: 'blanco', ocupacion: 0.8, fondo: AZUL, size: 48 },

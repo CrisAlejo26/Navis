@@ -10,6 +10,7 @@ import {
 } from '@expo-google-fonts/roboto';
 import { themeColorsHex } from '@navis/theme';
 import { AppBackdrop } from '@/components/navigation/app-backdrop';
+import { BootSplash } from '@/components/splash/boot-splash';
 import { MORE_MENU_ENTRIES } from '@/lib/nav-mobile';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { useFonts } from 'expo-font';
@@ -33,6 +34,8 @@ import { queryClient } from '@/lib/query-client';
 import { useStatusBarStore } from '@/lib/status-bar';
 import { useThemeStore } from '@/lib/theme';
 
+// El splash nativo se queda hasta que `BootSplash` (el animado, con el barco
+// navegando) está maquetado: él lo oculta, para que el relevo no deje hueco.
 void SplashScreen.preventAutoHideAsync();
 
 /** Pantallas que viven fuera de las pestañas y se abren desde el menú «Más». */
@@ -163,11 +166,7 @@ export default function RootLayout() {
     });
 
     useEffect(() => {
-        // El store de tema rehidrata desde AsyncStorage de forma asíncrona; se
-        // oculta el splash cuando ya sabemos qué tema pintar y ya está la fuente.
-        if (fontsLoaded) {
-            void SplashScreen.hideAsync();
-        }
+        if (fontsLoaded) void SplashScreen.hideAsync();
         // El usuario de prueba se siembra **al arrancar**, como en Dreamkeeper:
         // `demo@navis.app` con sus veinte registros, si no estaba ya. No espera ni
         // lanza: cuando termine, la cuenta simplemente estará en el login.
