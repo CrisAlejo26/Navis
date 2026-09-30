@@ -1,8 +1,14 @@
 # Notificaciones en la app móvil — plan de implementación
 
 - **Estado**: Fases 0-5 implementadas para el **recordatorio de notas de
-  creyentes** (primer aviso real). Falta probarlo en un dispositivo Android
-  (`pnpm android:rebuild`) y decidir los demás avisos (§7).
+  creyentes** (primer aviso real) y **probadas en el emulador de Android el
+  2026-09-30**: permiso (diálogo del sistema), aviso de prueba, recordatorio de
+  una nota y su toque con la app en segundo plano y en primer plano. Al tocar
+  el aviso se abre la **página de la nota** (`/believers/notes/[id]`), no el
+  formulario. Falta decidir los demás avisos (§7).
+- **Bug encontrado al probar**: en Android un permiso nunca pedido llega como
+  `status: 'denied'` con `canAskAgain: true`; `resolvePermission` lo daba por
+  denegado y el diálogo del sistema no salía nunca. Manda `canAskAgain`.
 - **Fecha**: 2026-09-29
 - **Referencia**: la app Dreamkeeper (`D:\Proyectos_personales\Dreamkeeper`),
   cuyo sistema se ha revisado entero (§1).

@@ -22,9 +22,6 @@ export type NoticeData = z.infer<typeof noticeDataSchema>;
 export function hrefForNotice(data: unknown): Href | null {
     const parsed = noticeDataSchema.safeParse(data);
     if (!parsed.success) return null;
-    // La ficha del hermano abre la nota que se le pasa: `noteId`.
-    return {
-        pathname: '/believers/[id]',
-        params: { id: parsed.data.believerId, noteId: parsed.data.noteId },
-    };
+    // La página de la nota: se llega a **leerla**, no al formulario de edición.
+    return { pathname: '/believers/notes/[id]', params: { id: parsed.data.noteId } };
 }

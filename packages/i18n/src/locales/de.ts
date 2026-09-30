@@ -689,6 +689,8 @@ export const de = {
         add: 'Notiz hinzufügen',
         edit: 'Notiz bearbeiten',
         detail: 'Notiz',
+        notFound: 'Diese Notiz gibt es nicht',
+        reminderTitle: 'Erinnerung',
         saved: 'Notiz gespeichert',
         deleted: 'Notiz gelöscht',
         deleteTitle: 'Diese Notiz löschen',

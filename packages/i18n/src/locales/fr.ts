@@ -681,6 +681,8 @@ export const fr = {
         add: 'Ajouter une note',
         edit: 'Modifier la note',
         detail: 'Note',
+        notFound: 'Cette note est introuvable',
+        reminderTitle: 'Rappel',
         saved: 'Note enregistrée',
         deleted: 'Note supprimée',
         deleteTitle: 'Supprimer cette note',

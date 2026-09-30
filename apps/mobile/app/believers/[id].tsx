@@ -21,8 +21,7 @@ import { useStatusBarClaim } from '@/lib/status-bar';
  */
 export default function BelieverDetailScreen() {
     const { t } = useTranslation();
-    // `noteId` llega cuando se entra por el aviso del recordatorio de una nota.
-    const { id, noteId } = useLocalSearchParams<{ id: string; noteId?: string }>();
+    const { id } = useLocalSearchParams<{ id: string }>();
     const { data: believer, isPending, isError, refetch } = useBeliever(id);
     const congregations = useCongregations();
     const updateBeliever = useUpdateBeliever();
@@ -90,11 +89,7 @@ export default function BelieverDetailScreen() {
                 />
 
                 <View className="px-4">
-                    <NotesBitacora
-                        believerId={believerId}
-                        believerName={name}
-                        openNoteId={noteId}
-                    />
+                    <NotesBitacora believerId={believerId} believerName={name} />
                 </View>
             </ScrollView>
 

@@ -14,3 +14,12 @@ export function hexAlpha(hex: string, alpha: number): string {
     const b = Number.parseInt(value.slice(4, 6), 16);
     return `rgba(${String(r)}, ${String(g)}, ${String(b)}, ${String(alpha)})`;
 }
+
+/** Oscurece un hex de seis dígitos (`factor` < 1): el fondo hondo de un degradado de acento. */
+export function hexShade(hex: string, factor: number): string {
+    const channel = (start: number): string =>
+        Math.round(Number.parseInt(hex.replace('#', '').slice(start, start + 2), 16) * factor)
+            .toString(16)
+            .padStart(2, '0');
+    return `#${channel(0)}${channel(2)}${channel(4)}`;
+}

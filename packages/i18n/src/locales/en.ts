@@ -671,6 +671,8 @@ export const en = {
         add: 'Add note',
         edit: 'Edit note',
         detail: 'Note',
+        notFound: 'That note is not here',
+        reminderTitle: 'Reminder',
         saved: 'Note saved',
         deleted: 'Note deleted',
         deleteTitle: 'Delete this note',

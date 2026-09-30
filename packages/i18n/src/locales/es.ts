@@ -682,6 +682,8 @@ export const es = {
         add: 'Añadir nota',
         edit: 'Editar la nota',
         detail: 'Nota',
+        notFound: 'No encuentro esa nota',
+        reminderTitle: 'Recordatorio',
         saved: 'Nota guardada',
         deleted: 'Nota eliminada',
         deleteTitle: 'Eliminar esta nota',

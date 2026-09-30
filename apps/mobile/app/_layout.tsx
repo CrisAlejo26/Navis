@@ -96,6 +96,10 @@ function RootNavigator() {
                     options={{ headerShown: false, animation: PUSHED_SCREEN_ANIMATION }}
                 />
                 <Stack.Screen
+                    name="believers/notes/[id]"
+                    options={{ headerShown: false, animation: PUSHED_SCREEN_ANIMATION }}
+                />
+                <Stack.Screen
                     name="calendar/settings"
                     options={{ headerShown: false, animation: PUSHED_SCREEN_ANIMATION }}
                 />

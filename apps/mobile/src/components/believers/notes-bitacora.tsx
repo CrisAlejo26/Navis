@@ -1,11 +1,11 @@
 import { NOTE_KINDS, type NoteKind } from '@navis/shared';
 
 import type { LocalNote } from '@/data/repos/notes-repo';
+import { router } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FlatList, Pressable, ScrollView, SectionList, Text, View } from 'react-native';
 
-import { NoteDetailSheet } from '@/components/believers/note-detail-sheet';
 import { NoteFormSheet } from '@/components/believers/note-form-sheet';
 import { toUpdateInput } from '@/components/believers/note-form-values';
 import { NotesCalendarView } from '@/components/believers/notes-calendar-view';
@@ -21,7 +21,6 @@ import {
     useCreateNote,
     useDeleteAudio,
     useDeleteNote,
-    useNote,
     useNoteCounts,
     useUpdateNote,
 } from '@/hooks/use-believers';
@@ -39,12 +38,9 @@ type BitacoraView = 'log' | 'list' | 'calendar';
 export function NotesBitacora({
     believerId,
     believerName,
-    openNoteId,
 }: {
     believerId: string;
     believerName: string;
-    /** La nota que abre el aviso de su recordatorio, si se llegó por él. */
-    openNoteId?: string;
 }) {
     const { t } = useTranslation();
     const [view, setView] = useState<BitacoraView>('log');
@@ -52,12 +48,6 @@ export function NotesBitacora({
     const [kind, setKind] = useState<NoteKind | undefined>(undefined);
     const [formOpen, setFormOpen] = useState(false);
     const [editing, setEditing] = useState<LocalNote | null>(null);
-    // La nota que se está leyendo. Tocar una nota abre su vista previa, no el
-    // formulario: editar es un paso más, y es lo que pide la persona.
-    const [viewingId, setViewingId] = useState<string | null>(null);
-    // La nota del aviso se abre sola, una vez: al cerrarla se anota como vista
-    // (derivado, sin efecto que copie props a estado).
-    const [dismissedNoteId, setDismissedNoteId] = useState<string | null>(null);
     const [pendingAudios, setPendingAudios] = useState<
         { uri: string; durationSeconds: number | null }[]
     >([]);
@@ -76,17 +66,10 @@ export function NotesBitacora({
     const addAudio = useAddAudio(believerId);
     const deleteAudio = useDeleteAudio(believerId);
     const afterReminderSaved = useAfterReminderSaved();
-    const previewId = viewingId ?? (openNoteId !== dismissedNoteId ? openNoteId : undefined);
-    const linked = useNote(previewId);
-
     const flat = notes.data?.pages.flatMap((page) => page.items) ?? [];
-    const preview = previewId
-        ? (flat.find((note) => note.id === previewId) ?? linked.data ?? null)
-        : null;
-    const closePreview = () => {
-        setViewingId(null);
-        if (openNoteId) setDismissedNoteId(openNoteId);
-    };
+    // Tocar una nota lleva a su página: se lee primero, y editar es un botón allí.
+    const openNote = (id: string) =>
+        router.push({ pathname: '/believers/notes/[id]', params: { id } });
     const toggleReminder = (note: LocalNote, done: boolean) =>
         void updateNote.mutateAsync({ id: note.id, input: { remindDone: done } });
     const sections = groupByMonth(flat);
@@ -142,7 +125,7 @@ export function NotesBitacora({
                     scrollEnabled={false}
                     contentContainerClassName="gap-3"
                     renderItem={({ item }) => (
-                        <Pressable accessibilityRole="button" onPress={() => setViewingId(item.id)}>
+                        <Pressable accessibilityRole="button" onPress={() => openNote(item.id)}>
                             <NoteCard
                                 note={item}
                                 onToggleReminder={toggleReminder}
@@ -163,7 +146,7 @@ export function NotesBitacora({
                         </Text>
                     )}
                     renderItem={({ item }) => (
-                        <Pressable accessibilityRole="button" onPress={() => setViewingId(item.id)}>
+                        <Pressable accessibilityRole="button" onPress={() => openNote(item.id)}>
                             <NoteCard
                                 note={item}
                                 onToggleReminder={toggleReminder}
@@ -183,18 +166,6 @@ export function NotesBitacora({
                     onPress={() => void notes.fetchNextPage()}
                 />
             ) : null}
-
-            <NoteDetailSheet
-                note={preview}
-                onClose={closePreview}
-                onEdit={(note) => {
-                    closePreview();
-                    setEditing(note);
-                    setFormOpen(true);
-                }}
-                onToggleReminder={toggleReminder}
-                onDeleteAudio={(audioId) => void deleteAudio.mutateAsync(audioId)}
-            />
 
             <NoteFormSheet
                 visible={formOpen}

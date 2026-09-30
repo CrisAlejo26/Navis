@@ -145,10 +145,11 @@ describe('reconcile: deja el sistema como dice el plan', () => {
 });
 
 describe('hrefForNotice: a dónde lleva un aviso al tocarlo', () => {
-    it('el recordatorio de una nota lleva a la ficha del hermano con esa nota', () => {
+    // Regresión: llevaba directo al formulario de edición; ahora se llega a leer.
+    it('el recordatorio de una nota lleva a la página de esa nota', () => {
         expect(
             hrefForNotice({ type: 'note-reminder', believerId: 'h-1', noteId: 'n-1', fireAt: 1 }),
-        ).toEqual({ pathname: '/believers/[id]', params: { id: 'h-1', noteId: 'n-1' } });
+        ).toEqual({ pathname: '/believers/notes/[id]', params: { id: 'n-1' } });
     });
 
     it('ignora lo que no es de Navis o viene incompleto', () => {

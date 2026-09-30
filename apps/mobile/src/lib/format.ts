@@ -30,6 +30,19 @@ export function formatDay(iso: string, style: 'short' | 'medium' = 'medium'): st
     }).format(date);
 }
 
+/**
+ * Un instante con su hora, en el idioma activo y en la hora **local**: un
+ * recordatorio suena a la hora del reloj de quien lo puso. Si no se puede
+ * leer, cae al día solo.
+ */
+export function formatMoment(iso: string): string {
+    const date = new Date(iso);
+    if (Number.isNaN(date.getTime())) return formatDay(iso);
+    return new Intl.DateTimeFormat(getLocale(), { dateStyle: 'medium', timeStyle: 'short' }).format(
+        date,
+    );
+}
+
 /** «10 sept.» para la pastilla de la fecha en el hero del panel. */
 export function formatShortDate(value: Date): string {
     return new Intl.DateTimeFormat(getLocale(), { day: 'numeric', month: 'short' }).format(value);
