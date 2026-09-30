@@ -4,6 +4,7 @@ import {
     BACKUP_FORMAT,
     BACKUP_TABLES,
     BACKUP_VERSION,
+    backupColumns,
     type Backup,
     type BackupFiles,
     type BackupRow,
@@ -26,10 +27,11 @@ export async function buildBackup(files: BackupFiles): Promise<Backup> {
     const db = await getDb();
     const tables: Backup['tables'] = {};
     for (const table of BACKUP_TABLES) {
-        // Solo las columnas del esquema, no `SELECT *`: una base que viene de
-        // migraciones antiguas arrastra columnas que ya no existen en él
-        // (`believers.featured_tag_id`) y la restauración las rechazaría.
-        const columns = table.columns.map((column) => `"${column.name}"`).join(', ');
+        // Las columnas conocidas, no `SELECT *`: una base que viene de migraciones
+        // antiguas puede arrastrar columnas muertas y la restauración las rechazaría.
+        const columns = backupColumns(table)
+            .map((name) => `"${name}"`)
+            .join(', ');
         tables[table.name] = await db.getAllAsync<BackupRow>(
             `SELECT ${columns} FROM "${table.name}"`,
         );

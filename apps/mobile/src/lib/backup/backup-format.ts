@@ -38,3 +38,19 @@ export interface BackupFiles {
 
 /** Las tablas en orden de dependencia: se borra al revés y se inserta así. */
 export const BACKUP_TABLES: readonly LocalTable[] = ALL_LOCAL_TABLES;
+
+/**
+ * Columnas que el esquema compartido ya no declara pero que el código del móvil
+ * **todavía lee y escribe**: `believers.featured_tag_id` es donde vive la
+ * etiqueta destacada (`believer_tag_links.featured` existe y nadie la escribe).
+ * Si la copia las dejara fuera, restaurar borraría el destacado. Cuando el
+ * código pase a `believer_tag_links.featured`, esta lista se vacía.
+ */
+export const LEGACY_COLUMNS: Readonly<Record<string, readonly string[]>> = {
+    believers: ['featured_tag_id'],
+};
+
+/** Las columnas de una tabla que entran en la copia: las del esquema y las heredadas. */
+export function backupColumns(table: LocalTable): string[] {
+    return [...table.columns.map((column) => column.name), ...(LEGACY_COLUMNS[table.name] ?? [])];
+}

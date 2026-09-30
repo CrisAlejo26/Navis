@@ -2,6 +2,7 @@ import { getDb, SCHEMA_VERSION } from '@/data/db';
 
 import {
     BACKUP_TABLES,
+    backupColumns,
     backupSchema,
     type Backup,
     type BackupFiles,
@@ -35,9 +36,7 @@ function parse(text: string): Backup {
  * los nombres acaban dentro de un `INSERT`, así que un fichero ajeno no se fía.
  */
 function validateShape(backup: Backup): void {
-    const known = new Map(
-        BACKUP_TABLES.map((t) => [t.name, new Set(t.columns.map((c) => c.name))]),
-    );
+    const known = new Map(BACKUP_TABLES.map((t) => [t.name, new Set(backupColumns(t))]));
     for (const [name, rows] of Object.entries(backup.tables)) {
         const columns = known.get(name);
         if (!columns) throw new RestoreError('invalid');

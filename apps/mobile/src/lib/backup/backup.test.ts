@@ -72,10 +72,10 @@ describe('copia de seguridad', () => {
         expect(user?.email).toBe('ana@iglesia.es');
     });
 
-    // Regresión: en el teléfono la exportación salía con `believers.featured_tag_id`
-    // (columna de la migración 2 que el esquema ya no declara) y restaurarla daba
-    // «no es una copia de Navis». El test usa una fila real de creyentes.
-    it('restaura una copia de una base con columnas antiguas y filas de creyentes', async () => {
+    // Regresión, dos veces: `SELECT *` sacaba columnas muertas y restaurar daba «no
+    // es una copia de Navis»; y al quitarlas todas se perdía `believers.featured_tag_id`,
+    // que el código todavía lee (la etiqueta destacada). Con una fila real de creyentes.
+    it('restaura una copia con filas de creyentes y conserva su etiqueta destacada', async () => {
         const churchId = await seed();
         const dbConn = await getDb();
         await dbConn.runAsync(
@@ -85,15 +85,15 @@ describe('copia de seguridad', () => {
         const files = memoryFiles();
 
         const backup = await buildBackup(files);
-        expect(Object.keys(backup.tables.believers[0] ?? {})).not.toContain('featured_tag_id');
         await db.clear();
         await restoreBackup(JSON.stringify(backup), files);
 
-        const believer = await dbConn.getFirstAsync<{ first_name: string }>(
-            'SELECT first_name FROM believers WHERE id = ?',
-            'b1',
-        );
+        const believer = await dbConn.getFirstAsync<{
+            first_name: string;
+            featured_tag_id: string | null;
+        }>('SELECT first_name, featured_tag_id FROM believers WHERE id = ?', 'b1');
         expect(believer?.first_name).toBe('Luis');
+        expect(believer?.featured_tag_id).toBe('x');
     });
 
     it('rechaza un fichero que no es una copia de Navis sin tocar nada', async () => {
