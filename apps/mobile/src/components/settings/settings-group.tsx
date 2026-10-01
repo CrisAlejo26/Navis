@@ -7,9 +7,7 @@ interface SettingsGroupProps {
 }
 
 /**
- * Un apartado del concentrador: su etiqueta en mayúsculas y una tarjeta blanca
- * muy redondeada, sin borde, con un filete entre filas — el gesto de las
- * pantallas de ajustes de las apps hermanas (Taskia).
+ * Apartado compacto con superficie diferenciada y separadores entre filas.
  */
 export function SettingsGroup({ label, children }: SettingsGroupProps) {
     return (
@@ -20,9 +18,9 @@ export function SettingsGroup({ label, children }: SettingsGroupProps) {
             >
                 {label}
             </Text>
-            <View className="rounded-3xl px-4 bg-card">
+            <View className="px-4 rounded-[26px] bg-card">
                 {Children.toArray(children).map((child, i) => (
-                    <View key={i} className={i > 0 ? 'border-t border-border' : undefined}>
+                    <View key={i} className={i > 0 ? 'border-t border-border/60' : undefined}>
                         {child}
                     </View>
                 ))}

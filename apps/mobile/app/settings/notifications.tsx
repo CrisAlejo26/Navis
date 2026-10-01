@@ -1,3 +1,4 @@
+import { usePageBottomPadding } from '@/hooks/use-page-bottom-padding';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, View } from 'react-native';
 
@@ -9,12 +10,16 @@ import { AppBar } from '@/components/ui/app-bar';
  * «No molestar» llegará con los avisos que la usen (plan de ajustes, Fase 2).
  */
 export default function NotificationsScreen() {
+    const bottomPadding = usePageBottomPadding();
     const { t } = useTranslation();
 
     return (
         <View className="flex-1 bg-background">
             <AppBar title={t('notifications.title')} />
-            <ScrollView contentContainerClassName="gap-4 p-4 pb-8">
+            <ScrollView
+                contentContainerClassName="gap-4 p-4"
+                contentContainerStyle={{ paddingBottom: bottomPadding }}
+            >
                 <NotificationsCard />
             </ScrollView>
         </View>

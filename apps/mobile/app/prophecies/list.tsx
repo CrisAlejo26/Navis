@@ -1,3 +1,4 @@
+import { usePageBottomPadding } from '@/hooks/use-page-bottom-padding';
 import type { PropheciesQuery, ProphecyState, ProphecyWindow } from '@navis/shared';
 import { themeColorsHex } from '@navis/theme';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -34,6 +35,7 @@ import { useThemeStore } from '@/lib/theme';
  * `BelieverCard`: a la derecha, anotar un cumplimiento; a la izquierda, editar.
  */
 export default function PropheciesListScreen() {
+    const bottomPadding = usePageBottomPadding();
     const { t } = useTranslation();
     const resolvedTheme = useThemeStore((state) => state.resolvedTheme);
     const palette = themeColorsHex[resolvedTheme];
@@ -121,7 +123,8 @@ export default function PropheciesListScreen() {
                 <FlatList
                     data={items}
                     keyExtractor={(item) => item.id}
-                    contentContainerClassName="gap-2.5 px-4 pb-24"
+                    contentContainerClassName="gap-2.5 px-4"
+                    contentContainerStyle={{ paddingBottom: bottomPadding }}
                     renderItem={({ item }) => (
                         <ProphecyCard
                             prophecy={item}

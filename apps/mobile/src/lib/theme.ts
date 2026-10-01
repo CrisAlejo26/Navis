@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { ThemeMode } from '@navis/shared';
 import { createThemeStore, themeColorHex, type ResolvedTheme } from '@navis/theme';
 import * as SystemUI from 'expo-system-ui';
+import { colorScheme } from 'react-native-css';
 import { Appearance, type ColorSchemeName } from 'react-native';
 import type { StateStorage } from 'zustand/middleware';
 
@@ -45,6 +46,8 @@ export const useThemeStore = createThemeStore({
     },
     applyTheme: (theme, mode) => {
         currentMode = mode;
+        // CSS y Zustand cambian juntos, sin esperar el evento nativo de Appearance.
+        colorScheme.set(theme);
         // `'unspecified'` devuelve el control al sistema operativo.
         Appearance.setColorScheme(mode === 'system' ? 'unspecified' : theme);
         void SystemUI.setBackgroundColorAsync(themeColorHex[theme]);

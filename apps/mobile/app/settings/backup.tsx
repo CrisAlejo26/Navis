@@ -1,3 +1,4 @@
+import { usePageBottomPadding } from '@/hooks/use-page-bottom-padding';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, ScrollView, Text, View } from 'react-native';
@@ -12,6 +13,7 @@ import { useBackup, type BackupOutcome } from '@/hooks/use-backup';
  * única copia: esta pantalla es la única red de seguridad que hay.
  */
 export default function BackupScreen() {
+    const bottomPadding = usePageBottomPadding();
     const { t } = useTranslation();
     const { busy, exportBackup, pickBackup, restore } = useBackup();
     const [outcome, setOutcome] = useState<BackupOutcome | null>(null);
@@ -44,7 +46,10 @@ export default function BackupScreen() {
     return (
         <View className="flex-1 bg-background">
             <AppBar title={t('backup.title')} />
-            <ScrollView contentContainerClassName="gap-4 p-4 pb-8">
+            <ScrollView
+                contentContainerClassName="gap-4 p-4"
+                contentContainerStyle={{ paddingBottom: bottomPadding }}
+            >
                 <Text className="text-sm text-muted-foreground">{t('backup.intro')}</Text>
                 <Card title={t('backup.exportTitle')} description={t('backup.exportBody')}>
                     <Button

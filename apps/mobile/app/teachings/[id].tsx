@@ -1,3 +1,4 @@
+import { usePageBottomPadding } from '@/hooks/use-page-bottom-padding';
 import { extractTeachingBodyText, toTeachingMarkdown } from '@navis/shared';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Alert, ScrollView, Share, Text, View } from 'react-native';
@@ -17,6 +18,7 @@ import { toggleTaskItem } from '@/lib/teachings/body-ops';
  * entrar en el editor.
  */
 export default function TeachingDetailScreen() {
+    const bottomPadding = usePageBottomPadding();
     const { t } = useTranslation();
     const { id } = useLocalSearchParams<{ id: string }>();
     const { data: teaching, isPending, isError, refetch } = useTeaching(id);
@@ -89,7 +91,10 @@ export default function TeachingDetailScreen() {
                 }
                 onDelete={confirmDelete}
             />
-            <ScrollView contentContainerClassName="p-5 pb-24">
+            <ScrollView
+                contentContainerClassName="p-5"
+                contentContainerStyle={{ paddingBottom: bottomPadding }}
+            >
                 {text === '' && !checklist ? (
                     <Text className="text-muted-foreground">{t('teachings.noNotes')}</Text>
                 ) : null}

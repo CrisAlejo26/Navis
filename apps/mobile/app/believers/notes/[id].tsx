@@ -1,3 +1,4 @@
+import { usePageBottomPadding } from '@/hooks/use-page-bottom-padding';
 import { believerName } from '@navis/shared';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
@@ -28,6 +29,7 @@ import { useStatusBarClaim } from '@/lib/status-bar';
  * es el botón de la fila de acciones, nunca lo que pasa por entrar.
  */
 export default function NoteDetailScreen() {
+    const bottomPadding = usePageBottomPadding();
     const { t } = useTranslation();
     const { id } = useLocalSearchParams<{ id: string }>();
     const { data: note, isPending, isError, refetch } = useNote(id);
@@ -77,7 +79,10 @@ export default function NoteDetailScreen() {
 
     return (
         <View className="flex-1 bg-background">
-            <ScrollView contentContainerClassName="gap-5 pb-16">
+            <ScrollView
+                contentContainerClassName="gap-5"
+                contentContainerStyle={{ paddingBottom: bottomPadding }}
+            >
                 <NoteHero
                     note={note}
                     believerName={believer.data ? believerName(believer.data) : ''}

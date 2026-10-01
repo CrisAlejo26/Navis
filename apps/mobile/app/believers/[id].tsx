@@ -1,3 +1,4 @@
+import { usePageBottomPadding } from '@/hooks/use-page-bottom-padding';
 import { believerName } from '@navis/shared';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
@@ -20,6 +21,7 @@ import { useStatusBarClaim } from '@/lib/status-bar';
  * principal: es lo que más se pulsa y se pulsa de pie.
  */
 export default function BelieverDetailScreen() {
+    const bottomPadding = usePageBottomPadding();
     const { t } = useTranslation();
     const { id } = useLocalSearchParams<{ id: string }>();
     const { data: believer, isPending, isError, refetch } = useBeliever(id);
@@ -77,7 +79,10 @@ export default function BelieverDetailScreen() {
 
     return (
         <View className="flex-1 bg-background">
-            <ScrollView contentContainerClassName="gap-5 pb-16">
+            <ScrollView
+                contentContainerClassName="gap-5"
+                contentContainerStyle={{ paddingBottom: bottomPadding }}
+            >
                 <BelieverHeader
                     believer={believer}
                     congregationName={

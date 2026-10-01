@@ -1,3 +1,4 @@
+import { usePageBottomPadding } from '@/hooks/use-page-bottom-padding';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { KeyboardAvoidingView, Platform, ScrollView, Text, View } from 'react-native';
@@ -7,6 +8,7 @@ import { deviceCountry } from '@/lib/geo/device-country';
 import { ChurchFields } from './church-fields';
 
 export function CreateChurchForm() {
+    const bottomPadding = usePageBottomPadding();
     const { t } = useTranslation();
     const create = useCreateChurch();
     const [name, setName] = useState('');
@@ -19,7 +21,8 @@ export function CreateChurchForm() {
         >
             <ScrollView
                 keyboardShouldPersistTaps="handled"
-                contentContainerClassName="gap-4 p-5 pb-12"
+                contentContainerClassName="gap-4 p-5"
+                contentContainerStyle={{ paddingBottom: bottomPadding }}
             >
                 <Text className="text-sm text-muted-foreground">{t('church.addHint')}</Text>
                 <ChurchFields

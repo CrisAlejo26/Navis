@@ -1,3 +1,4 @@
+import { usePageBottomPadding } from '@/hooks/use-page-bottom-padding';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -12,6 +13,7 @@ import { useTimezoneOptions } from '@/lib/geo/timezones';
 
 /** La ficha de la iglesia: como el de perfil, nace con los datos cargados (`key`). */
 export function ChurchForm({ church }: { church: LocalChurch }) {
+    const bottomPadding = usePageBottomPadding();
     const { t } = useTranslation();
     const update = useUpdateChurch();
     const [name, setName] = useState(church.name);
@@ -38,7 +40,8 @@ export function ChurchForm({ church }: { church: LocalChurch }) {
         >
             <ScrollView
                 keyboardShouldPersistTaps="handled"
-                contentContainerClassName="gap-4 p-4 pb-8"
+                contentContainerClassName="gap-4 p-4"
+                contentContainerStyle={{ paddingBottom: bottomPadding }}
             >
                 <Text className="text-sm text-muted-foreground">{t('settings.churchHint')}</Text>
                 <ChurchFields

@@ -22,6 +22,8 @@ interface IconProps {
     background?: Background;
     shape?: Shape;
     className?: string;
+    /** Optional container size; the glyph retains its standard size. */
+    containerSize?: number;
     /**
      * Color explícito del glifo, para los casos sobre una ilustración de fondo
      * donde ningún tono del tema es el que toca. Con él, el tono se ignora.
@@ -50,6 +52,7 @@ export function Icon({
     background = 'none',
     shape = 'circle',
     className,
+    containerSize,
     color,
     accessibilityLabel,
 }: IconProps) {
@@ -72,7 +75,7 @@ export function Icon({
         return glyph;
     }
 
-    const box = CONTAINER_SIZE[size];
+    const box = containerSize ?? CONTAINER_SIZE[size];
 
     return (
         <View

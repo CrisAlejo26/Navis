@@ -1,3 +1,4 @@
+import { usePageBottomPadding } from '@/hooks/use-page-bottom-padding';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -15,6 +16,7 @@ import { useTimezoneOptions } from '@/lib/geo/timezones';
  * así ningún `refetch` pisa lo que se está escribiendo.
  */
 export function ProfileForm({ user }: { user: LocalUser }) {
+    const bottomPadding = usePageBottomPadding();
     const { t } = useTranslation();
     const update = useUpdateProfile();
     const [name, setName] = useState(user.name);
@@ -42,7 +44,8 @@ export function ProfileForm({ user }: { user: LocalUser }) {
         >
             <ScrollView
                 keyboardShouldPersistTaps="handled"
-                contentContainerClassName="gap-4 p-4 pb-8"
+                contentContainerClassName="gap-4 p-4"
+                contentContainerStyle={{ paddingBottom: bottomPadding }}
             >
                 <Text className="text-sm text-muted-foreground">{t('profile.description')}</Text>
                 <TextField label={t('auth.name')} value={name} onChangeText={setName} />

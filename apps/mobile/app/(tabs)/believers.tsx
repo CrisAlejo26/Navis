@@ -1,3 +1,4 @@
+import { usePageBottomPadding } from '@/hooks/use-page-bottom-padding';
 import { ChurchPlate } from '@/components/church/church-plate';
 import type { BelieversQuery, BelieverListItem } from '@navis/shared';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -60,6 +61,7 @@ const CON_ESCENA = false;
  * lote que existe a propósito: poner sede.
  */
 export default function BelieversScreen() {
+    const bottomPadding = usePageBottomPadding(true);
     const { t } = useTranslation();
     const insets = useSafeAreaInsets();
     // El claro de la escena: sobre el azul pleno, el texto y los glifos de la
@@ -241,7 +243,10 @@ export default function BelieversScreen() {
                 <FlatList
                     data={items}
                     keyExtractor={(item) => item.id}
-                    contentContainerClassName="gap-2.5 px-4 pb-24"
+                    contentContainerClassName="gap-2.5 px-4"
+                    contentContainerStyle={{
+                        paddingBottom: selected.length > 0 ? 128 : bottomPadding,
+                    }}
                     initialNumToRender={12}
                     onScroll={onScroll}
                     scrollEventThrottle={16}

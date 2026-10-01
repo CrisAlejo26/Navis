@@ -1,3 +1,4 @@
+import { usePageBottomPadding } from '@/hooks/use-page-bottom-padding';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
 import { ScrollView, Text, View } from 'react-native';
@@ -22,6 +23,7 @@ import { useCalendars, useCalendarSchedule, useCalendarSummary } from '@/hooks/u
  * altura completa.
  */
 export default function CalendarBalanceScreen() {
+    const bottomPadding = usePageBottomPadding();
     const { t } = useTranslation();
     const calendarId = useActiveCalendarStore((state) => state.calendarId);
     const { data: calendars = [] } = useCalendars();
@@ -34,7 +36,10 @@ export default function CalendarBalanceScreen() {
         <View className="flex-1 bg-background">
             <AppBar title={t('calendar.balance')} backLabel={t('common.back')} />
 
-            <ScrollView contentContainerClassName="gap-4 px-4 pb-12 pt-3">
+            <ScrollView
+                contentContainerClassName="gap-4 px-4 pt-3"
+                contentContainerStyle={{ paddingBottom: bottomPadding }}
+            >
                 <Card title={t('calendar.balance')}>
                     {(summary?.people ?? []).length === 0 ? (
                         <EmptyState

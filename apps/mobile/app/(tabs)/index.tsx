@@ -130,7 +130,7 @@ export default function DashboardScreen() {
                     />
                 </Animated.View>
 
-                <View className="gap-3 -mt-7 px-4 pt-5 pb-10 rounded-t-[28px] bg-background">
+                <View className="gap-3 -mt-7 px-4 pt-5 pb-4 rounded-t-[28px] bg-background">
                     <Animated.View entering={FadeInDown.delay(40).springify()}>
                         <MetricGrid
                             believers={data.believers}

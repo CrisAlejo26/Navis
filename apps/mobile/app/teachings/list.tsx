@@ -1,3 +1,4 @@
+import { usePageBottomPadding } from '@/hooks/use-page-bottom-padding';
 import type { TeachingsQuery } from '@navis/shared';
 import { router } from 'expo-router';
 import { themeColorsHex } from '@navis/theme';
@@ -37,6 +38,7 @@ const SORT_ICONS = {
  * trae un extracto, así que el editor vuelve a pedir la enseñanza entera.
  */
 export default function TeachingsListScreen() {
+    const bottomPadding = usePageBottomPadding();
     const { t } = useTranslation();
     const resolvedTheme = useThemeStore((state) => state.resolvedTheme);
     const palette = themeColorsHex[resolvedTheme];
@@ -116,7 +118,8 @@ export default function TeachingsListScreen() {
                 <FlatList
                     data={items}
                     keyExtractor={(item) => item.id}
-                    contentContainerClassName="gap-2.5 px-4 pb-24"
+                    contentContainerClassName="gap-2.5 px-4"
+                    contentContainerStyle={{ paddingBottom: bottomPadding }}
                     keyboardShouldPersistTaps="handled"
                     renderItem={({ item }) => (
                         <TeachingCard

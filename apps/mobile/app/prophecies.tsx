@@ -1,3 +1,4 @@
+import { usePageBottomPadding } from '@/hooks/use-page-bottom-padding';
 import { themeColorsHex } from '@navis/theme';
 import { router } from 'expo-router';
 import { useState } from 'react';
@@ -23,6 +24,7 @@ import { useThemeStore } from '@/lib/theme';
  * web: aquí las cuentas, en `/prophecies/list` el listado entero.
  */
 export default function PropheciesScreen() {
+    const bottomPadding = usePageBottomPadding();
     const { t } = useTranslation();
     const resolvedTheme = useThemeStore((state) => state.resolvedTheme);
     const palette = themeColorsHex[resolvedTheme];
@@ -66,7 +68,8 @@ export default function PropheciesScreen() {
             <Animated.ScrollView
                 onScroll={onScroll}
                 scrollEventThrottle={16}
-                contentContainerClassName="pb-10"
+                contentContainerClassName=""
+                contentContainerStyle={{ paddingBottom: bottomPadding }}
                 showsVerticalScrollIndicator={false}
             >
                 {onScene ? (

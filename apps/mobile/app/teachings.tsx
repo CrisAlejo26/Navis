@@ -1,3 +1,4 @@
+import { usePageBottomPadding } from '@/hooks/use-page-bottom-padding';
 import { themeColorsHex } from '@navis/theme';
 import { router } from 'expo-router';
 import { ActivityIndicator, ScrollView, View } from 'react-native';
@@ -19,6 +20,7 @@ import { useThemeStore } from '@/lib/theme';
  * gráfica de los últimos doce meses.
  */
 export default function TeachingsScreen() {
+    const bottomPadding = usePageBottomPadding();
     const { t } = useTranslation();
     const palette = themeColorsHex[useThemeStore((state) => state.resolvedTheme)];
     const { data: stats, isPending, isError, refetch } = useTeachingsStats();
@@ -50,7 +52,11 @@ export default function TeachingsScreen() {
 
     return (
         <View className="flex-1 bg-background">
-            <ScrollView contentContainerClassName="pb-10" showsVerticalScrollIndicator={false}>
+            <ScrollView
+                contentContainerClassName=""
+                contentContainerStyle={{ paddingBottom: bottomPadding }}
+                showsVerticalScrollIndicator={false}
+            >
                 <View className="rounded-b-3xl bg-accent/10">
                     <AppBar transparent title={t('teachings.title')} />
                 </View>

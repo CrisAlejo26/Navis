@@ -1,3 +1,4 @@
+import { usePageBottomPadding } from '@/hooks/use-page-bottom-padding';
 import { dreamState } from '@navis/shared';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
@@ -39,6 +40,7 @@ const VIEW_LABEL = {
  * se recuerdan entre sesiones. La cabecera y las acciones no cambian con la vista.
  */
 export default function DreamDetailScreen() {
+    const bottomPadding = usePageBottomPadding();
     const { t } = useTranslation();
     const { id } = useLocalSearchParams<{ id: string }>();
     const { data: dream, isPending, isError, refetch } = useDream(id);
@@ -105,7 +107,10 @@ export default function DreamDetailScreen() {
                 onEdit={() => setEditOpen(true)}
                 onDelete={confirmDelete}
             />
-            <ScrollView contentContainerClassName="gap-4 p-4 pb-24">
+            <ScrollView
+                contentContainerClassName="gap-4 p-4"
+                contentContainerStyle={{ paddingBottom: bottomPadding }}
+            >
                 <ScrollView
                     horizontal
                     showsHorizontalScrollIndicator={false}

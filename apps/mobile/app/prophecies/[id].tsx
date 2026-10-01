@@ -1,3 +1,4 @@
+import { usePageBottomPadding } from '@/hooks/use-page-bottom-padding';
 import type { ProphecyFulfillment, ProphecyState } from '@navis/shared';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
@@ -37,6 +38,7 @@ function stateOf(fulfilledAt: string | null, lastFulfillmentAt: string | null): 
  * al más antiguo.
  */
 export default function ProphecyDetailScreen() {
+    const bottomPadding = usePageBottomPadding();
     const { t } = useTranslation();
     const { id } = useLocalSearchParams<{ id: string }>();
     const { data: prophecy, isPending, isError, refetch } = useProphecy(id);
@@ -117,7 +119,10 @@ export default function ProphecyDetailScreen() {
                 onEdit={() => setEditOpen(true)}
                 onDelete={confirmDelete}
             />
-            <ScrollView contentContainerClassName="gap-4 p-4 pb-24">
+            <ScrollView
+                contentContainerClassName="gap-4 p-4"
+                contentContainerStyle={{ paddingBottom: bottomPadding }}
+            >
                 <Card className="rounded-2xl">
                     <Text className="text-xs text-muted-foreground">
                         {t('prophecies.receivedOn', { date: formatDay(prophecy.receivedAt) })}

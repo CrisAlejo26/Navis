@@ -1,3 +1,4 @@
+import { usePageBottomPadding } from '@/hooks/use-page-bottom-padding';
 import { Redirect } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, View } from 'react-native';
@@ -7,6 +8,7 @@ import { ChurchList } from '@/components/church/church-list';
 import { useLocalSession } from '@/stores/local-session';
 
 export default function MyChurchesScreen() {
+    const bottomPadding = usePageBottomPadding();
     const { t } = useTranslation();
     const session = useLocalSession((state) => state.session);
     const hydrated = useLocalSession((state) => state.hydrated);
@@ -15,7 +17,10 @@ export default function MyChurchesScreen() {
     return (
         <View className="flex-1 bg-background">
             <AppBar title={t('church.mine')} />
-            <ScrollView contentContainerClassName="px-5 pb-12">
+            <ScrollView
+                contentContainerClassName="px-5"
+                contentContainerStyle={{ paddingBottom: bottomPadding }}
+            >
                 <ChurchList />
             </ScrollView>
         </View>

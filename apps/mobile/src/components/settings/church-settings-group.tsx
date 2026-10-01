@@ -1,20 +1,22 @@
 import { router } from 'expo-router';
+import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { SettingsGroup } from './settings-group';
 import { SettingsRow } from './settings-row';
 import { useMyChurches } from '@/hooks/use-my-churches';
 import { ChurchPlate } from '@/components/church/church-plate';
 
-export function ChurchSettingsGroup({ name }: { name?: string }) {
+export function ChurchSettingsGroup() {
     const { t } = useTranslation();
     const { data: churches } = useMyChurches();
     return (
         <SettingsGroup label={t('settings.church')}>
-            <ChurchPlate />
+            <View className="py-3">
+                <ChurchPlate />
+            </View>
             <SettingsRow
                 icon="boat-outline"
                 title={t('settings.churchData')}
-                subtitle={name}
                 onPress={() => router.push('/settings/church')}
             />
             <SettingsRow

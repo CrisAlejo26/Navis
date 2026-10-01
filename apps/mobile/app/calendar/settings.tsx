@@ -1,3 +1,4 @@
+import { usePageBottomPadding } from '@/hooks/use-page-bottom-padding';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, View } from 'react-native';
@@ -37,6 +38,7 @@ import { useActiveCalendarStore } from '@/lib/calendar/active-calendar';
  * acaba de crear con una plantilla— abría siempre los ajustes de Púlpito.
  */
 export default function CalendarSettingsScreen() {
+    const bottomPadding = usePageBottomPadding();
     const { t } = useTranslation();
 
     const { data: calendars = [] } = useCalendars();
@@ -68,7 +70,10 @@ export default function CalendarSettingsScreen() {
         <View className="flex-1 bg-background">
             <AppBar title={calendar.name} backLabel={t('common.back')} />
 
-            <ScrollView contentContainerClassName="gap-4 px-4 pb-12 pt-3">
+            <ScrollView
+                contentContainerClassName="gap-4 px-4 pt-3"
+                contentContainerStyle={{ paddingBottom: bottomPadding }}
+            >
                 {calendars.length > 1 ? (
                     <ScrollView
                         horizontal

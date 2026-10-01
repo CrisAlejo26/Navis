@@ -1,3 +1,4 @@
+import { usePageBottomPadding } from '@/hooks/use-page-bottom-padding';
 import { useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -19,6 +20,7 @@ type CatalogTab = 'gifts' | 'ministries' | 'tags';
  * parámetro, así que el listado puede abrir directo en la que toca.
  */
 export default function CatalogScreen() {
+    const bottomPadding = usePageBottomPadding();
     const { t } = useTranslation();
     const params = useLocalSearchParams<{ tab?: string }>();
     const [tab, setTab] = useState<CatalogTab>(() => {
@@ -71,7 +73,10 @@ export default function CatalogScreen() {
         <View className="flex-1 bg-background">
             {/* El título sigue al segmento: siempre dice qué catálogo se administra. */}
             <AppBar title={t(`${prefix}.title`)} />
-            <ScrollView contentContainerClassName="gap-4 px-4 pb-10">
+            <ScrollView
+                contentContainerClassName="gap-4 px-4"
+                contentContainerStyle={{ paddingBottom: bottomPadding }}
+            >
                 <Text className="text-sm text-muted-foreground">{t(`${prefix}.description`)}</Text>
                 <SegmentedControl
                     value={tab}

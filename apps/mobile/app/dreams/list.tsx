@@ -1,3 +1,4 @@
+import { usePageBottomPadding } from '@/hooks/use-page-bottom-padding';
 import type { DreamState, DreamsQuery } from '@navis/shared';
 import { themeColorsHex } from '@navis/theme';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -28,6 +29,7 @@ import { useThemeStore } from '@/lib/theme';
  * editarlo. Los filtros llegan de la portada (D16) como parámetros de ruta.
  */
 export default function DreamsListScreen() {
+    const bottomPadding = usePageBottomPadding();
     const { t } = useTranslation();
     const resolvedTheme = useThemeStore((state) => state.resolvedTheme);
     const palette = themeColorsHex[resolvedTheme];
@@ -113,7 +115,8 @@ export default function DreamsListScreen() {
                 <FlatList
                     data={items}
                     keyExtractor={(item) => item.id}
-                    contentContainerClassName="gap-2.5 px-4 pb-24"
+                    contentContainerClassName="gap-2.5 px-4"
+                    contentContainerStyle={{ paddingBottom: bottomPadding }}
                     renderItem={({ item }) => (
                         <DreamCard
                             dream={item}

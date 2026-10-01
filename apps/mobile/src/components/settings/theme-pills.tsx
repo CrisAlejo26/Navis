@@ -1,9 +1,12 @@
 import type { ThemeMode } from '@navis/shared';
+import { themeColorsHex } from '@navis/theme';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
+import { Icon } from '@/components/ui/icon';
 import { cn } from '@/lib/cn';
 import { useThemeStore } from '@/lib/theme';
+import { settingsButtonEffect } from './settings-effects';
 
 const OPTIONS: { mode: ThemeMode; labelKey: 'theme.light' | 'theme.dark' | 'theme.system' }[] = [
     { mode: 'light', labelKey: 'theme.light' },
@@ -16,37 +19,62 @@ export function ThemePills() {
     const { t } = useTranslation();
     const mode = useThemeStore((state) => state.mode);
     const setMode = useThemeStore((state) => state.setMode);
+    const palette = themeColorsHex[useThemeStore((state) => state.resolvedTheme)];
 
     return (
-        <View
-            accessibilityRole="radiogroup"
-            accessibilityLabel={t('theme.label')}
-            className="my-3 p-1 flex-row rounded-full bg-muted"
-        >
-            {OPTIONS.map((option) => {
-                const selected = option.mode === mode;
-                return (
-                    <Pressable
-                        key={option.mode}
-                        accessibilityRole="radio"
-                        accessibilityState={{ selected }}
-                        onPress={() => setMode(option.mode)}
-                        className={cn(
-                            'h-10 flex-1 items-center justify-center rounded-full',
-                            selected && 'bg-primary',
-                        )}
-                    >
-                        <Text
+        <View className="py-4 gap-3">
+            <Text className="font-sans-semibold text-[15px] text-foreground">
+                {t('theme.label')}
+            </Text>
+            <View
+                accessibilityRole="radiogroup"
+                accessibilityLabel={t('theme.label')}
+                className="p-1 flex-row rounded-[16px] bg-muted"
+            >
+                {OPTIONS.map((option) => {
+                    const selected = option.mode === mode;
+                    return (
+                        <Pressable
+                            key={option.mode}
+                            accessibilityRole="radio"
+                            accessibilityLabel={t(option.labelKey)}
+                            accessibilityState={{ selected }}
+                            onPress={() => setMode(option.mode)}
                             className={cn(
-                                'text-sm font-sans-semibold',
-                                selected ? 'text-primary-foreground' : 'text-muted-foreground',
+                                'min-h-12 gap-1.5 px-1 py-2 flex-1 items-center justify-center rounded-[12px]',
+                                selected && 'bg-primary',
                             )}
+                            style={({ pressed }) =>
+                                selected
+                                    ? settingsButtonEffect(palette.primary, pressed)
+                                    : { opacity: pressed ? 0.7 : 1 }
+                            }
                         >
-                            {t(option.labelKey)}
-                        </Text>
-                    </Pressable>
-                );
-            })}
+                            <Icon
+                                name={
+                                    option.mode === 'light'
+                                        ? 'sunny-outline'
+                                        : option.mode === 'dark'
+                                          ? 'moon-outline'
+                                          : 'phone-portrait-outline'
+                                }
+                                size="sm"
+                                color={
+                                    selected ? palette.primaryForeground : palette.mutedForeground
+                                }
+                            />
+                            <Text
+                                className={cn(
+                                    'text-sm font-sans-semibold',
+                                    selected ? 'text-primary-foreground' : 'text-muted-foreground',
+                                )}
+                            >
+                                {t(option.labelKey)}
+                            </Text>
+                        </Pressable>
+                    );
+                })}
+            </View>
         </View>
     );
 }

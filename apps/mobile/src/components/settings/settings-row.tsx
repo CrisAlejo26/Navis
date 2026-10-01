@@ -32,15 +32,25 @@ export function SettingsRow({
 }: SettingsRowProps) {
     const content = (
         <>
-            <Icon name={icon} tone="primary" background="soft" shape="square" />
+            <Icon
+                name={icon}
+                tone="primary"
+                background="soft"
+                shape="square"
+                containerSize={38}
+                className="shrink-0 rounded-[12px]"
+            />
             <View className="min-w-0 gap-0.5 flex-1">
-                <Text className="text-base font-sans-semibold text-foreground">{title}</Text>
+                <Text className="font-sans-semibold text-[15px] text-foreground">{title}</Text>
                 {subtitle ? (
                     <Text className="text-xs font-sans text-muted-foreground">{subtitle}</Text>
                 ) : null}
             </View>
             {value ? (
-                <Text className="text-sm font-sans shrink text-muted-foreground" numberOfLines={1}>
+                <Text
+                    className="font-sans max-w-[34%] shrink text-[13px] text-muted-foreground"
+                    numberOfLines={1}
+                >
                     {value}
                 </Text>
             ) : null}
@@ -48,7 +58,7 @@ export function SettingsRow({
         </>
     );
 
-    const layout = 'min-h-14 flex-row items-center gap-3.5 py-3';
+    const layout = 'min-h-16 flex-row items-center gap-3.5 py-3.5';
     if (!onPress) return <View className={layout}>{content}</View>;
 
     return (

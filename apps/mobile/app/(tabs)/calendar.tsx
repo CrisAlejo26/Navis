@@ -1,3 +1,4 @@
+import { usePageBottomPadding } from '@/hooks/use-page-bottom-padding';
 import { ChurchPlate } from '@/components/church/church-plate';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -55,6 +56,7 @@ function tituloDeMes(ancla: string): string {
  * está la decisión.
  */
 export default function CalendarScreen() {
+    const bottomPadding = usePageBottomPadding(true);
     const { t } = useTranslation();
     const insets = useSafeAreaInsets();
     const resolvedTheme = useThemeStore((state) => state.resolvedTheme);
@@ -274,7 +276,11 @@ export default function CalendarScreen() {
             ) : null}
 
             {isError ? (
-                <ScrollView className="flex-1" contentContainerClassName="gap-3 px-4 pb-10">
+                <ScrollView
+                    className="flex-1"
+                    contentContainerClassName="gap-3 px-4"
+                    contentContainerStyle={{ paddingBottom: bottomPadding }}
+                >
                     <EmptyState
                         icon="cloud-offline-outline"
                         title={t('calendar.saveFailed')}
@@ -297,7 +303,11 @@ export default function CalendarScreen() {
                         />
                     </View>
                 ) : (
-                    <ScrollView className="flex-1" contentContainerClassName="gap-3 px-4 pb-10">
+                    <ScrollView
+                        className="flex-1"
+                        contentContainerClassName="gap-3 px-4"
+                        contentContainerStyle={{ paddingBottom: bottomPadding }}
+                    >
                         <AgendaList
                             range={{ ...schedule, days: diasFiltrados }}
                             today={hoy}
