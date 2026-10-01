@@ -22,8 +22,6 @@ import { I18nextProvider, useTranslation } from 'react-i18next';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider, initialWindowMetrics } from 'react-native-safe-area-context';
 
-// Importar este módulo inicializa i18next; tiene que ocurrir antes del primer
-// render para que no se vea un parpadeo con las claves sin traducir.
 import { i18n } from '@/lib/i18n';
 import { initializeTestUser } from '@/data/demo-data';
 import { useNotificationSync } from '@/hooks/use-notification-sync';
@@ -34,8 +32,7 @@ import { queryClient } from '@/lib/query-client';
 import { useStatusBarStore } from '@/lib/status-bar';
 import { useThemeStore } from '@/lib/theme';
 
-// El splash nativo se queda hasta que `BootSplash` (el animado, con el barco
-// navegando) está maquetado: él lo oculta, para que el relevo no deje hueco.
+// BootSplash oculta el splash nativo una vez maquetado.
 void SplashScreen.preventAutoHideAsync();
 
 /** Pantallas que viven fuera de las pestañas y se abren desde el menú «Más». */
@@ -49,9 +46,6 @@ function RootNavigator() {
     const resolvedTheme = useThemeStore((state) => state.resolvedTheme);
     const palette = themeColorsHex[resolvedTheme];
     const navigationTheme = useNavigationTheme();
-    // El estilo que pide la pantalla enfocada (hero del panel, escena de
-    // creyentes, ficha); sin reclamante, el del tema. Las pantallas con fondo
-    // propio en la zona segura reclaman vía `useStatusBarClaim`.
     const reclamado = useStatusBarStore((state) => state.style);
     useNotificationSync();
     useNotificationTap();
@@ -65,8 +59,6 @@ function RootNavigator() {
                     headerShown: false,
                     headerStyle: { backgroundColor: palette.card },
                     headerTintColor: palette.foreground,
-                    // Transparente a propósito: el fondo lo pinta `AppBackdrop`, montado
-                    // una sola vez detrás del Stack (como en Dreamkeeper).
                     contentStyle: { backgroundColor: 'transparent' },
                 }}
             >
@@ -156,6 +148,14 @@ function RootNavigator() {
                 />
                 <Stack.Screen
                     name="teachings/edit"
+                    options={{ headerShown: false, animation: PUSHED_SCREEN_ANIMATION }}
+                />
+                <Stack.Screen
+                    name="church/new"
+                    options={{ headerShown: false, animation: PUSHED_SCREEN_ANIMATION }}
+                />
+                <Stack.Screen
+                    name="settings/churches"
                     options={{ headerShown: false, animation: PUSHED_SCREEN_ANIMATION }}
                 />
                 <Stack.Screen

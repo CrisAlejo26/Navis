@@ -1,3 +1,4 @@
+import { ChurchPlate } from '@/components/church/church-plate';
 import type { BelieversQuery, BelieverListItem } from '@navis/shared';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -64,8 +65,6 @@ export default function BelieversScreen() {
     // El claro de la escena: sobre el azul pleno, el texto y los glifos de la
     // cabecera van en blanco — el del tema no se leería.
     const claro = themeColorsHex[useThemeStore((state) => state.resolvedTheme)].primaryForeground;
-    // La entrada animada de las tarjetas corre una sola vez por sesión: al
-    // volver de una ficha, las tarjetas que se remontan no vuelven a bailar.
     const primeraCarga = useRef(true);
     useEffect(() => {
         primeraCarga.current = false;
@@ -151,6 +150,7 @@ export default function BelieversScreen() {
         <View className="flex-1 bg-background" style={{ paddingTop: insets.top + 8 }}>
             {CON_ESCENA ? <BelieversScene scrollY={scrollY} /> : null}
             <View className="gap-3 px-4 pb-2">
+                <ChurchPlate />
                 <TopBar
                     onScene={CON_ESCENA}
                     title={t('believers.title')}

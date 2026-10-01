@@ -94,7 +94,8 @@ describe('el panel de inicio en local', () => {
         await insertBeliever({
             id: 'b-nuevo',
             firstName: 'María',
-            createdDaysAgo: 3,
+            // Hoy pertenece al mes actual también el día 1.
+            createdDaysAgo: 0,
             alertAfterDays: null,
         });
         // Sin nota hace 40 días con aviso a 30: pide atención.

@@ -1,3 +1,4 @@
+import { listMeetingSlots } from './calendar-slot-reads';
 import { eachDay, weekdayOf, MAX_CALENDAR_RANGE_DAYS, type CalendarRange } from '@navis/shared';
 
 import { getDb } from '../db';
@@ -133,10 +134,7 @@ export async function calendarRange(
     );
     const slotsByMeeting = new Map<string, SlotRow[]>();
     for (const meeting of meetings) {
-        const slots = await db.getAllAsync<Omit<SlotRow, 'believerIds'>>(
-            'SELECT id, name, position, note FROM meeting_slots WHERE meeting_id = ? ORDER BY position ASC',
-            meeting.id,
-        );
+        const slots = await listMeetingSlots(db, churchId, meeting.id);
         const people = await peopleBySlot(
             db,
             slots.map((slot) => slot.id),

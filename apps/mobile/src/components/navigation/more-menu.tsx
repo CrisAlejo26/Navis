@@ -1,3 +1,4 @@
+import { ChurchPlate } from '@/components/church/church-plate';
 import { Ionicons } from '@expo/vector-icons';
 import { themeColorsHex } from '@navis/theme';
 import * as Haptics from 'expo-haptics';
@@ -74,9 +75,6 @@ export function MoreMenu({ open, onClose }: MoreMenuProps) {
 
     return (
         <View style={StyleSheet.absoluteFill} className="z-50">
-            {/* El velo va en el `Pressable` y no en el `Animated.View` del fundido: la
-                transparencia por clase (`bg-black/40`) no se pintaba ahí y la hoja, casi
-                blanca, se fundía con la pantalla blanca de detrás. */}
             <Animated.View style={[StyleSheet.absoluteFill, veil]}>
                 <Pressable
                     accessibilityRole="button"
@@ -95,7 +93,6 @@ export function MoreMenu({ open, onClose }: MoreMenuProps) {
                     sheet,
                     {
                         paddingBottom: Math.max(insets.bottom, 20),
-                        // La sombra hacia arriba despega la hoja de lo que hay detrás.
                         elevation: 24,
                         shadowColor: '#000000',
                         shadowOpacity: 0.25,
@@ -122,6 +119,9 @@ export function MoreMenu({ open, onClose }: MoreMenuProps) {
                     </Pressable>
                 </View>
 
+                <View className="mb-3">
+                    <ChurchPlate />
+                </View>
                 <MoreMenuContent />
             </Animated.View>
         </View>

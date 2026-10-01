@@ -330,9 +330,9 @@ async function todayTasksAndStreak(churchId: string, ownerId: string, today: Iso
     for (const taskId of taskIds) {
         const tag = await db.getFirstAsync<{ accent: string }>(
             `SELECT tg.accent FROM task_tags tt JOIN tags tg ON tg.id = tt.tag_id
-       WHERE tt.task_id = ? AND tt.deleted_at IS NULL AND tg.deleted_at IS NULL
-       ORDER BY tt.created_at ASC LIMIT 1`,
+       WHERE tt.task_id = ? AND tt.deleted_at IS NULL AND tg.deleted_at IS NULL AND tt.task_id IN (SELECT id FROM tasks WHERE church_id = ? AND deleted_at IS NULL) ORDER BY tt.created_at ASC LIMIT 1`,
             taskId,
+            churchId,
         );
         if (tag) accents.set(taskId, tag.accent);
     }
@@ -388,19 +388,6 @@ async function streak(churchId: string, ownerId: string, today: IsoDate): Promis
     }
 
     return streak;
-}
-
-/**
- * El total de creyentes registrados en la **aplicación** (todas las iglesias
- * locales, no solo la activa): es la cifra grande del hero. En el modo
- * conectado (Fase 3) la sustituye el dato del servidor.
- */
-export async function registeredBelievers(): Promise<number> {
-    const db = await getDb();
-    const row = await db.getFirstAsync<{ total: number }>(
-        'SELECT COUNT(*) AS total FROM believers WHERE deleted_at IS NULL',
-    );
-    return row?.total ?? 0;
 }
 
 export const localDashboardRepository: DashboardRepository = {

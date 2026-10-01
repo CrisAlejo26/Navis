@@ -5,10 +5,9 @@ import { KeyboardAvoidingView, Platform, ScrollView, Text, View } from 'react-na
 
 import { Button } from '@/components/ui/button';
 import { Select } from '@/components/ui/select';
-import { TextField } from '@/components/ui/text-field';
+import { ChurchFields } from '@/components/church/church-fields';
 import type { LocalChurch } from '@/data/repos/church-repo';
 import { useUpdateChurch } from '@/hooks/use-settings';
-import { useCountryOptions } from '@/lib/geo/countries';
 import { useTimezoneOptions } from '@/lib/geo/timezones';
 
 /** La ficha de la iglesia: como el de perfil, nace con los datos cargados (`key`). */
@@ -20,7 +19,6 @@ export function ChurchForm({ church }: { church: LocalChurch }) {
     const [country, setCountry] = useState(church.country);
     const [timezone, setTimezone] = useState(church.timezone);
     const [failed, setFailed] = useState(false);
-    const countries = useCountryOptions();
     const zones = useTimezoneOptions(church.timezone);
 
     async function save(): Promise<void> {
@@ -43,18 +41,15 @@ export function ChurchForm({ church }: { church: LocalChurch }) {
                 contentContainerClassName="gap-4 p-4 pb-8"
             >
                 <Text className="text-sm text-muted-foreground">{t('settings.churchHint')}</Text>
-                <TextField label={t('church.name')} value={name} onChangeText={setName} />
-                <TextField label={t('church.city')} value={city} onChangeText={setCity} />
-                <Select
-                    label={t('church.country')}
-                    value={country}
-                    options={countries}
-                    placeholder={t('settings.choose')}
-                    onChange={setCountry}
+                <ChurchFields
+                    name={name}
+                    city={city}
+                    country={country}
+                    setName={setName}
+                    setCity={setCity}
+                    setCountry={setCountry}
+                    disabled={update.isPending}
                 />
-                <Text className="-mt-2 text-xs text-muted-foreground">
-                    {t('church.countryHint')}
-                </Text>
                 <Select
                     label={t('profile.timezone')}
                     value={timezone}

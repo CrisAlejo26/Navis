@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { registeredBelievers, localDashboardRepository } from '@/data/repos/dashboard-repo';
+import { localDashboardRepository } from '@/data/repos/dashboard-repo';
+import { useActiveChurchId } from './use-active-church-id';
 import { useLocalSession } from '@/stores/local-session';
 
 /**
@@ -12,27 +13,15 @@ import { useLocalSession } from '@/stores/local-session';
 export function useDashboardSummary() {
     const session = useLocalSession((state) => state.session);
 
+    const churchId = useActiveChurchId();
     return useQuery({
-        queryKey: ['dashboard', session?.churchId, session?.userId],
+        queryKey: ['dashboard', churchId, session?.userId],
         queryFn: () => {
-            if (!session?.churchId || !session.userId) {
+            if (!churchId || !session?.userId) {
                 throw new Error('Sin sesión local no hay panel que calcular');
             }
-            return localDashboardRepository.summary(session.churchId, session.userId);
+            return localDashboardRepository.summary(churchId, session.userId);
         },
-        enabled: Boolean(session?.churchId && session.userId),
-    });
-}
-
-/**
- * El total de creyentes de la **aplicación** (todas las iglesias locales): es
- * la cifra del hero, que no va acotada a la iglesia activa. Va en su consulta
- * aparte para no alargar el contrato `DashboardSummary`, que comparte con la
- * API y con la web.
- */
-export function useRegisteredBelievers() {
-    return useQuery({
-        queryKey: ['dashboard', 'registered-believers'],
-        queryFn: () => registeredBelievers(),
+        enabled: Boolean(churchId && session?.userId),
     });
 }

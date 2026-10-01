@@ -7,20 +7,14 @@ import {
     createIndexSql,
     createTableSql,
 } from '@navis/shared';
+import { migrateChurchAccess } from './church-access-migration';
+import { repairChurchAccess } from './church-access-repair';
 import * as SQLite from 'expo-sqlite';
 
 import { seedCalendarScaffold } from './repos/calendar-seed';
 import { seedSystemEmotions } from './repos/emotions-seed';
 
-/**
- * La base de datos **local del teléfono** (RFC 0024, Fase 1).
- *
- * No es la de la API: es la copia de trabajo del dispositivo, con el esquema
- * espejo de `@navis/shared` (`ALL_LOCAL_TABLES`). Las migraciones van
- * versionadas con `PRAGMA user_version` — SQLite del móvil no pasa por
- * `pnpm db:migrate` — y cada versión aplica lo suyo dentro de una
- * transacción: o entra entera o no entra nada.
- */
+/** Base local: esquema compartido y migraciones transaccionales versionadas. */
 
 // El contrato y las utilidades viven en `local-db.ts`, un módulo sin
 // dependencias: es lo que evita el ciclo de importación que Metro avisaba
@@ -106,7 +100,7 @@ export function setDbForTests(fake: LocalDb | null): void {
 }
 
 /** Versión actual del esquema local. Cada cambio añade un caso a `migrations`. */
-export const SCHEMA_VERSION = 10;
+export const SCHEMA_VERSION = 11;
 
 type Migration = (db: LocalDb) => Promise<void>;
 
@@ -410,6 +404,7 @@ const migrations: Record<number, Migration> = {
             await db.execAsync(`ALTER TABLE local_user ADD COLUMN "${column}" ${definition}`);
         }
     },
+    11: migrateChurchAccess,
 };
 
 async function columnOf(table: string, column: string, db: LocalDb): Promise<boolean> {
@@ -431,6 +426,7 @@ async function openDb(): Promise<LocalDb> {
     }
     await raw.execAsync(`PRAGMA user_version = ${SCHEMA_VERSION}`);
 
+    await raw.withTransactionAsync(() => repairChurchAccess(raw));
     return serialize(raw);
 }
 

@@ -55,6 +55,28 @@ describe('copia de seguridad', () => {
         return church.id;
     }
 
+    // D6: una copia del esquema 10 no trae membresías ni iglesia activa.
+    it('repara una copia antigua sin membresías y anula una activa inaccesible', async () => {
+        const churchId = await seed();
+        const files = memoryFiles();
+        const backup = await buildBackup(files);
+        delete backup.tables.church_members;
+        for (const user of backup.tables.local_user) user.active_church_id = 'inexistente';
+        await restoreBackup(JSON.stringify({ ...backup, schemaVersion: 10 }), files);
+        const dbConn = await getDb();
+        expect(await dbConn.getAllAsync('SELECT church_id FROM church_members')).toEqual([
+            { church_id: churchId },
+        ]);
+        expect(await dbConn.getFirstAsync('SELECT active_church_id FROM local_user')).toEqual({
+            active_church_id: null,
+        });
+        delete backup.tables.local_user[0].active_church_id;
+        await restoreBackup(JSON.stringify({ ...backup, schemaVersion: 10 }), files);
+        expect(await dbConn.getAllAsync('SELECT church_id FROM church_members')).toEqual([
+            { church_id: churchId },
+        ]);
+    });
+
     it('restaura lo que había al hacer la copia y trae de vuelta los audios', async () => {
         await seed();
         const files = memoryFiles();

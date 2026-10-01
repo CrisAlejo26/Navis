@@ -11,7 +11,7 @@ import { ThemeToggle } from '@/components/theme-toggle';
 import { Button } from '@/components/ui/button';
 import { TextField } from '@/components/ui/text-field';
 import { login } from '@/data/repos/account-repo';
-import { findChurchByOwner } from '@/data/repos/church-repo';
+import { resolveActiveChurch } from '@/data/repos/church-access';
 import { useLocalSession } from '@/stores/local-session';
 
 /**
@@ -54,7 +54,7 @@ export default function LoginScreen() {
             return;
         }
 
-        const church = await findChurchByOwner(result.user.id);
+        const church = await resolveActiveChurch(result.user.id);
         setSession({ userId: result.user.id, churchId: church?.id ?? null });
         router.replace(church ? '/(tabs)' : '/(auth)/church-setup');
     }

@@ -1,5 +1,6 @@
 import { ACCENT_PALETTE, SEEDED_CALENDARS, defaultWeekFor } from '@navis/shared';
 
+import { assertInChurch } from '../church-scope';
 import { newId, type LocalDb } from '../local-db';
 
 /**
@@ -7,15 +8,10 @@ import { newId, type LocalDb } from '../local-db';
  * calendarios de serie (RFC 0002 D15) y la semana por defecto de cada pareja
  * calendario–sede (`defaultWeekFor`, RFC 0002 §5.7).
  *
- * Es la versión local del `WeekSeederService` de la API, con la misma regla
- * de **idempotencia**: si la iglesia ya tiene calendarios no se siembran, y si
- * una pareja calendario–sede ya tiene alguna reunión fija, no se toca — quien
- * ya ajustó su semana no quiere que se la vuelvan a llenar.
+ * Como WeekSeederService, no vuelve a sembrar calendarios existentes ni
+ * patrones de una pareja calendario–sede que alguien ya pudo editar.
  *
- * Los que la usan: la migración que trae las tablas a bases **ya existentes**,
- * y `createChurch`, que siembra el catálogo de serie al dar de alta la
- * iglesia. Los dos corren dentro de una transacción y pasan la base por
- * parámetro: no van a la cola, van en línea (ver `db.ts`).
+ * Las migraciones y createChurch pasan la base en transacción; no usan la cola.
  */
 
 export async function ensureCalendars(db: LocalDb, churchId: string, now: string): Promise<void> {
@@ -48,6 +44,8 @@ export async function seedPatternFor(
     churchId: string,
     now: string,
 ): Promise<void> {
+    await assertInChurch(db, 'calendars', calendar.id, churchId);
+    await assertInChurch(db, 'congregations', congregation.id, churchId);
     const yaTiene = await db.getFirstAsync<{ total: number }>(
         'SELECT COUNT(*) AS total FROM meeting_patterns WHERE church_id = ? AND calendar_id = ? AND congregation_id = ? AND deleted_at IS NULL',
         churchId,
@@ -74,13 +72,15 @@ export async function seedPatternFor(
         );
         for (const [position, name] of reunion.phases.entries()) {
             await db.runAsync(
-                'INSERT INTO pattern_phases (id, created_at, updated_at, deleted_at, pattern_id, name, position) VALUES (?, ?, ?, NULL, ?, ?, ?)',
+                'INSERT INTO pattern_phases (id, created_at, updated_at, deleted_at, pattern_id, name, position) SELECT ?, ?, ?, NULL, ?, ?, ? WHERE EXISTS (SELECT id FROM meeting_patterns WHERE id = ? AND church_id = ? AND deleted_at IS NULL)',
                 newId(),
                 now,
                 now,
                 patternId,
                 name,
                 position,
+                patternId,
+                churchId,
             );
         }
     }

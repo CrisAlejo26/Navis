@@ -10,7 +10,8 @@ import {
 
 import { getDb, nowIso } from './db';
 import { createAccount, login } from './repos/account-repo';
-import { createChurch, findChurchByOwner } from './repos/church-repo';
+import { resolveActiveChurch } from './repos/church-access';
+import { createChurch } from './repos/church-repo';
 import { createBeliever, listBelievers, updateBeliever } from './repos/believers-repo';
 import { createNote } from './repos/notes-repo';
 import { createCatalogEntry } from './repos/catalog-repo';
@@ -421,7 +422,7 @@ export async function seedDemoData(churchId: string, userId: string): Promise<bo
             labor ? (one.ministries ?? []).includes(labor) : true,
         );
         if (enLabor.length === 0) continue;
-        const patrones = await listPatterns(calendario.id);
+        const patrones = await listPatterns(calendario.id, churchId);
         let turno = 0;
 
         for (const day of dias) {
@@ -429,7 +430,7 @@ export async function seedDemoData(churchId: string, userId: string): Promise<bo
             const weekday = weekdayOf(day);
             const sede = weekday === 5 ? (sedes[1] ?? sedes[0]) : sedes[0];
             if (!sede) continue;
-            const patron = (await listPatterns(calendario.id)).find(
+            const patron = (await listPatterns(calendario.id, churchId)).find(
                 (one) => one.weekday === weekday && one.congregationId === sede.id && one.isActive,
             );
             if (!patron) continue;
@@ -508,10 +509,9 @@ export function prepareDemoSession(): Promise<{ userId: string; churchId: string
                   })()
                 : created.user;
 
-        // La iglesia demo del dueño, o una nueva si no tiene ninguna. La primera
-        // por fecha de creación vale: este usuario solo tiene (o solo quiere) esta.
+        // Retoma la iglesia activa guardada; crea una solo si no tiene acceso a ninguna.
         const church =
-            (await findChurchByOwner(user.id)) ??
+            (await resolveActiveChurch(user.id)) ??
             (await createChurch({ name: DEMO_CHURCH_NAME, city: 'Elda', ownerId: user.id }));
 
         await seedDemoData(church.id, user.id);

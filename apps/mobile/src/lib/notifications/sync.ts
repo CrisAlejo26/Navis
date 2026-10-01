@@ -1,4 +1,5 @@
 import { listPendingNoteReminders } from '@/data/repos/note-reminders-repo';
+import { listMyChurches } from '@/data/repos/church-access';
 import { i18n } from '@/lib/i18n';
 import { createExpoScheduler } from '@/lib/notifications/expo-scheduler';
 import { getPermissionStatus } from '@/lib/notifications/permission';
@@ -14,18 +15,20 @@ const MAX_PENDING = 50;
 async function planEverything(): Promise<PlannedNotice[]> {
     const settings = useNotificationSettings.getState();
     const session = useLocalSession.getState().session;
-    if (!session?.churchId || !settings.enabled) return [];
+    if (!session || !settings.enabled) return [];
     if ((await getPermissionStatus()) !== 'granted') return [];
 
     const planned: PlannedNotice[] = [];
     if (settings.noteReminders) {
-        const reminders = await listPendingNoteReminders(session.churchId, session.userId);
+        const churches = await listMyChurches(session.userId);
+        const reminders = await listPendingNoteReminders(session.userId);
         planned.push(
             ...planNoteReminders(
                 reminders,
                 (key, vars) => i18n.t(key, vars),
                 new Date(),
                 MAX_PENDING,
+                churches.length > 1,
             ),
         );
     }

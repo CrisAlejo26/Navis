@@ -78,3 +78,4 @@ export * from './schemas/teaching-queries';
 export * from './schemas/teachings';
 export * from './schemas/weather';
 export * from './wake-path';
+export * from './church-emblem';

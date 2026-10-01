@@ -351,7 +351,9 @@ describe('el calendario en local (RFC 0002)', () => {
         const { viernes } = semanaDesde(49);
         const sede = (await listCongregations(churchId)).find((one) => one.name === 'Elda')!;
 
-        await createMeeting(churchId, pulpitoId, {
+        // El caso anterior borra calendarios: la reunión necesita uno accesible.
+        const calendarId = (await listCalendars(churchId))[0].id;
+        await createMeeting(churchId, calendarId, {
             congregationId: sede.id,
             date: viernes,
             startTime: '21:00',
@@ -359,14 +361,14 @@ describe('el calendario en local (RFC 0002)', () => {
             phases: [{ name: 'Introducción' }, { name: 'Cierre' }],
         });
 
-        const rango = await calendarRange(churchId, pulpitoId, viernes, viernes);
+        const rango = await calendarRange(churchId, calendarId, viernes, viernes);
         const puntual = rango.days[0]?.meetings.find((one) => one.name === 'Oración');
         expect(puntual?.slots).toHaveLength(2);
         expect(puntual?.startTime).toBe('21:00');
 
         await updateMeeting(churchId, { id: puntual!.id!, status: 'cancelada' });
         const cancelada = (
-            await calendarRange(churchId, pulpitoId, viernes, viernes)
+            await calendarRange(churchId, calendarId, viernes, viernes)
         ).days[0]?.meetings.find((one) => one.id === puntual?.id);
         expect(cancelada?.status).toBe('cancelada');
     });

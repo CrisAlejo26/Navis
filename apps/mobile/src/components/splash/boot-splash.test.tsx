@@ -40,7 +40,8 @@ describe('BootSplash', () => {
         expect(screen.getByTestId('mar', HIDDEN)).toBeTruthy();
 
         await act(() => {
-            jest.advanceTimersByTime(2000);
+            // La travesía dura 1900 ms y el fundido añade 350 ms.
+            jest.advanceTimersByTime(2250);
         });
 
         expect(screen.queryByTestId('barco', HIDDEN)).toBeNull();

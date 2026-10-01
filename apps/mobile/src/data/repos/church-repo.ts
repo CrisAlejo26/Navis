@@ -10,12 +10,6 @@ import { getDb, newId, nowIso } from '../db';
 import { deviceTimezone } from '../device-timezone';
 import { seedCalendarScaffold } from './calendar-seed';
 
-/**
- * La iglesia **local** (RFC 0024, Fase 1): los mismos datos que crea
- * `ChurchesService.create` en la API —iglesia, miembro dueño, sede por
- * defecto y los catálogos de serie—, pero escritos en SQLite del teléfono.
- */
-
 export interface LocalChurch {
     id: string;
     name: string;
@@ -55,6 +49,7 @@ export async function createChurch(input: {
     name: string;
     city: string;
     ownerId: string;
+    country?: string;
 }): Promise<LocalChurch> {
     const db = await getDb();
     const now = nowIso();
@@ -65,7 +60,7 @@ export async function createChurch(input: {
         slug: await freeSlug(input.name),
         city: input.city || null,
         timezone: deviceTimezone(),
-        country: 'ES',
+        country: input.country ?? 'ES',
         ownerId: input.ownerId,
     };
 
@@ -83,8 +78,20 @@ export async function createChurch(input: {
             church.ownerId,
         );
 
-        // La sede de serie, como hace la API cuando a una iglesia nueva no le
-        // queda ninguna: «Sede principal» y propuesta por defecto.
+        await db.runAsync(
+            'INSERT INTO church_members (id, church_id, user_id, created_at, updated_at, deleted_at) VALUES (?, ?, ?, ?, ?, NULL)',
+            newId(),
+            church.id,
+            church.ownerId,
+            now,
+            now,
+        );
+        await db.runAsync(
+            'UPDATE local_user SET active_church_id = ?, updated_at = ? WHERE id = ?',
+            church.id,
+            now,
+            church.ownerId,
+        );
         await db.runAsync(
             'INSERT INTO congregations (id, created_at, updated_at, deleted_at, church_id, name, city, accent, position, is_default, is_active) VALUES (?, ?, ?, NULL, ?, ?, NULL, ?, 0, 1, 1)',
             newId(),
@@ -95,9 +102,6 @@ export async function createChurch(input: {
             DEFAULT_CONGREGATION_ACCENT,
         );
 
-        // Los catálogos de serie, como `GiftsService.ensureFor()` y el de labores
-        // en la API: una iglesia nueva no nace sin vocabulario, con el mismo
-        // reparto de color de la paleta.
         for (const [index, name] of SYSTEM_GIFTS.entries()) {
             await db.runAsync(
                 'INSERT INTO gifts (id, created_at, updated_at, deleted_at, church_id, name, accent, position, is_system, is_active) VALUES (?, ?, ?, NULL, ?, ?, ?, ?, 1, 1)',
@@ -124,10 +128,6 @@ export async function createChurch(input: {
             );
         }
 
-        // El andamiaje del calendario (RFC 0002 D15): los cuatro calendarios de
-        // serie y la semana de cada uno en la sede recién creada. Sin ella, el
-        // tab de Calendario nacería vacío y habría que escribir siete reuniones
-        // antes de programar la primera.
         await seedCalendarScaffold(db, church.id, now);
     });
 
@@ -161,7 +161,7 @@ export async function findChurch(id: string): Promise<LocalChurch | null> {
     };
 }
 
-/** La iglesia de la cuenta local: una sola en este modo (Fase 1). */
+/** Consulta heredada del dueño; para acceder se usa church-access. */
 export async function findChurchByOwner(ownerId: string): Promise<LocalChurch | null> {
     const db = await getDb();
     const row = await db.getFirstAsync<{

@@ -3,36 +3,8 @@ import { hrefForNotice } from '@/lib/notifications/routes';
 import { resolvePermission } from '@/lib/notifications/permission';
 import { planNoteReminders, noteReminderKey } from '@/lib/notifications/plan-note-reminders';
 import { reconcile } from '@/lib/notifications/reconcile';
-import type {
-    NotificationScheduler,
-    PlannedNotice,
-    ScheduledNotice,
-} from '@/lib/notifications/types';
-
-/** Un sistema de avisos en memoria: lo que el móvil real hace con `expo-notifications`. */
-function memoryScheduler(initial: ScheduledNotice[] = []) {
-    const scheduled = new Map(initial.map((notice) => [notice.key, notice]));
-    const calls = { schedule: [] as string[], cancel: [] as string[] };
-    const scheduler: NotificationScheduler = {
-        list: () => Promise.resolve([...scheduled.values()]),
-        schedule: (notice) => {
-            calls.schedule.push(notice.key);
-            scheduled.set(notice.key, {
-                key: notice.key,
-                fireAt: notice.fireAt.getTime(),
-                title: notice.title,
-                body: notice.body,
-            });
-            return Promise.resolve();
-        },
-        cancel: (key) => {
-            calls.cancel.push(key);
-            scheduled.delete(key);
-            return Promise.resolve();
-        },
-    };
-    return { scheduler, scheduled, calls };
-}
+import type { PlannedNotice } from '@/lib/notifications/types';
+import { memoryScheduler } from './test-support/memory-scheduler';
 
 const t = (key: string, vars: { name: string }) =>
     key === 'notifications.noteReminder.title'
@@ -43,6 +15,8 @@ const NOW = new Date('2026-09-29T10:00:00');
 
 function reminder(overrides: Partial<PendingNoteReminder>): PendingNoteReminder {
     return {
+        churchId: 'iglesia-a',
+        churchName: 'Iglesia A',
         noteId: 'nota-1',
         believerId: 'hermano-1',
         firstName: 'Marta',
@@ -54,6 +28,12 @@ function reminder(overrides: Partial<PendingNoteReminder>): PendingNoteReminder 
 }
 
 describe('planNoteReminders: del recordatorio de una nota al aviso', () => {
+    it('nombra la iglesia en el título y el cuerpo por defecto cuando hay varias', () => {
+        const [notice] = planNoteReminders([reminder({ remindText: null })], t, NOW, 50, true);
+        expect(notice?.title).toBe('Recordatorio: Marta Ruiz — Iglesia A');
+        expect(notice?.body).toBe('Nota de Marta Ruiz — Iglesia A');
+        expect(notice?.data.churchId).toBe('iglesia-a');
+    });
     it('usa el texto del recordatorio de cuerpo y el hermano en el título', () => {
         const [notice] = planNoteReminders([reminder({})], t, NOW, 50);
 
@@ -61,7 +41,12 @@ describe('planNoteReminders: del recordatorio de una nota al aviso', () => {
             key: noteReminderKey('nota-1'),
             title: 'Recordatorio: Marta Ruiz',
             body: 'Preguntarle por su madre',
-            data: { type: 'note-reminder', believerId: 'hermano-1', noteId: 'nota-1' },
+            data: {
+                type: 'note-reminder',
+                churchId: 'iglesia-a',
+                believerId: 'hermano-1',
+                noteId: 'nota-1',
+            },
         });
         // La hora es la local que se eligió, no una convertida por zona.
         expect(notice?.fireAt.getHours()).toBe(19);
@@ -105,7 +90,7 @@ describe('reconcile: deja el sistema como dice el plan', () => {
         title: 'Recordatorio: Marta',
         body: 'Llamarla',
         channelId: 'canal',
-        data: { type: 'note-reminder', believerId: 'h', noteId: 'nota-1' },
+        data: { type: 'note-reminder', churchId: 'iglesia-a', believerId: 'h', noteId: 'nota-1' },
         ...over,
     });
 
@@ -142,20 +127,39 @@ describe('reconcile: deja el sistema como dice el plan', () => {
         expect(calls.cancel).toEqual([noteReminderKey('nota-1')]);
         expect(scheduled.size).toBe(0);
     });
+
+    it('actualiza avisos antiguos sin churchId aunque fecha y texto sean iguales', async () => {
+        const notice = plan();
+        const { scheduler, calls } = memoryScheduler([
+            { ...notice, fireAt: notice.fireAt.getTime(), data: null },
+        ]);
+        await reconcile(scheduler, [notice]);
+        expect(calls.schedule).toEqual([notice.key]);
+        await reconcile(scheduler, [notice]);
+        expect(calls.schedule).toHaveLength(1);
+    });
 });
 
 describe('hrefForNotice: a dónde lleva un aviso al tocarlo', () => {
     // Regresión: llevaba directo al formulario de edición; ahora se llega a leer.
     it('el recordatorio de una nota lleva a la página de esa nota', () => {
         expect(
-            hrefForNotice({ type: 'note-reminder', believerId: 'h-1', noteId: 'n-1', fireAt: 1 }),
+            hrefForNotice({
+                type: 'note-reminder',
+                churchId: 'iglesia-a',
+                believerId: 'h-1',
+                noteId: 'n-1',
+                fireAt: 1,
+            }),
         ).toEqual({ pathname: '/believers/notes/[id]', params: { id: 'n-1' } });
     });
 
     it('ignora lo que no es de Navis o viene incompleto', () => {
         expect(hrefForNotice(undefined)).toBeNull();
         expect(hrefForNotice({ type: 'test' })).toBeNull();
-        expect(hrefForNotice({ type: 'note-reminder', believerId: 'h-1' })).toBeNull();
+        expect(
+            hrefForNotice({ type: 'note-reminder', churchId: 'iglesia-a', believerId: 'h-1' }),
+        ).toBeNull();
     });
 });
 

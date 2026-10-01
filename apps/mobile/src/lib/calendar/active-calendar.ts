@@ -11,11 +11,13 @@ interface ActiveCalendarState {
     anchor: string;
     setCalendar: (calendarId: string) => void;
     setAnchor: (anchor: string) => void;
+    reset: () => void;
 }
 
 export const useActiveCalendarStore = create<ActiveCalendarState>()((set) => ({
     calendarId: null,
     anchor: '',
+    reset: () => set({ calendarId: null, anchor: '' }),
     setCalendar: (calendarId) => set({ calendarId }),
     setAnchor: (anchor) => set({ anchor }),
 }));

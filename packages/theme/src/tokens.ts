@@ -18,6 +18,19 @@ export const brandColorHex = '#2140cf';
 
 export const themeColors = {
     light: {
+        church1: 'oklch(0.85 0.13 20)',
+        church1Foreground: 'oklch(0.28 0.06 20)',
+        church2: 'oklch(0.85 0.13 55)',
+        church2Foreground: 'oklch(0.28 0.06 55)',
+        church3: 'oklch(0.83 0.11 180)',
+        church3Foreground: 'oklch(0.26 0.05 180)',
+        church4: 'oklch(0.82 0.1 215)',
+        church4Foreground: 'oklch(0.26 0.05 215)',
+        church5: 'oklch(0.83 0.12 300)',
+        church5Foreground: 'oklch(0.28 0.06 300)',
+        church6: 'oklch(0.85 0.13 335)',
+        church6Foreground: 'oklch(0.28 0.06 335)',
+
         background: 'oklch(0.99 0.003 106)',
         foreground: 'oklch(0.22 0.01 265)',
         card: 'oklch(1 0 0)',
@@ -32,6 +45,19 @@ export const themeColors = {
         border: 'oklch(0.91 0.008 264)',
     },
     dark: {
+        church1: 'oklch(0.62 0.15 20)',
+        church1Foreground: 'oklch(0.14 0.03 20)',
+        church2: 'oklch(0.62 0.15 55)',
+        church2Foreground: 'oklch(0.14 0.03 55)',
+        church3: 'oklch(0.6 0.12 180)',
+        church3Foreground: 'oklch(0.14 0.03 180)',
+        church4: 'oklch(0.58 0.11 215)',
+        church4Foreground: 'oklch(0.14 0.03 215)',
+        church5: 'oklch(0.6 0.14 300)',
+        church5Foreground: 'oklch(0.14 0.03 300)',
+        church6: 'oklch(0.62 0.15 335)',
+        church6Foreground: 'oklch(0.14 0.03 335)',
+
         background: 'oklch(0.17 0.012 265)',
         foreground: 'oklch(0.96 0.005 264)',
         card: 'oklch(0.21 0.014 265)',
@@ -63,6 +89,19 @@ export const themeColors = {
  */
 export const themeColorsHex = {
     light: {
+        church1: '#ffb4b3',
+        church1Foreground: '#421b1c',
+        church2: '#ffbd90',
+        church2Foreground: '#3f2007',
+        church3: '#6bdfca',
+        church3Foreground: '#002b25',
+        church4: '#70d5ed',
+        church4Foreground: '#002932',
+        church5: '#d2b8ff',
+        church5Foreground: '#2e2142',
+        church6: '#ffafed',
+        church6Foreground: '#3b1c34',
+
         background: '#fcfcfa',
         foreground: '#181b1f',
         card: '#ffffff',
@@ -84,6 +123,19 @@ export const themeColorsHex = {
         border: '#dee1e7',
     },
     dark: {
+        church1: '#d15b60',
+        church1Foreground: '#140505',
+        church2: '#c9690c',
+        church2Foreground: '#120601',
+        church3: '#009683',
+        church3Foreground: '#000d09',
+        church4: '#0089a0',
+        church4Foreground: '#000c10',
+        church5: '#8e6ac7',
+        church5Foreground: '#0b0614',
+        church6: '#bb5faa',
+        church6Foreground: '#10050e',
+
         background: '#0d0f15',
         foreground: '#f0f2f5',
         card: '#15181f',

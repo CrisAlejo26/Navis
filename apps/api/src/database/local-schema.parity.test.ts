@@ -20,6 +20,7 @@ import { Congregation } from '../calendar/congregation.entity';
 import { Meeting } from '../calendar/meeting.entity';
 import { MeetingPattern } from '../calendar/meeting-pattern.entity';
 import { PatternPhase } from '../calendar/pattern-phase.entity';
+import { ChurchMember } from '../churches/church-member.entity';
 import { Church } from '../churches/church.entity';
 import { MeetingSlot } from '../calendar/meeting-slot.entity';
 import { MeetingSlotBeliever } from '../calendar/meeting-slot-believer.entity';
@@ -51,6 +52,7 @@ import { TaskTag } from '../tasks/task-tag.entity';
 /** Las entidades que participan en la comparación, más las que sus relaciones exigen registradas. */
 const ENTITIES = [
     Church,
+    ChurchMember,
     Congregation,
     Calendar,
     MeetingPattern,
@@ -173,6 +175,7 @@ describe('la cuenta local', () => {
             'name',
             'email',
             'password_hash',
+            'active_church_id',
             'phone',
             'city',
             'bio',

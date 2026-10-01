@@ -3,6 +3,18 @@ import { fireEvent, render, screen } from '@testing-library/react-native';
 import { SearchField } from '@/components/ui/search-field';
 
 describe('SearchField', () => {
+    // La búsqueda de países mostró texto nativo, pero el filtro no recibía cambios.
+    it('muestra el valor controlado y comunica lo escrito', async () => {
+        const onChangeText = jest.fn();
+        const { rerender } = await render(
+            <SearchField value="Norte" onChangeText={onChangeText} />,
+        );
+        expect(screen.getByDisplayValue('Norte')).toBeTruthy();
+        await fireEvent.changeText(screen.getByDisplayValue('Norte'), 'Sur');
+        expect(onChangeText).toHaveBeenCalledWith('Sur');
+        await rerender(<SearchField value="Sur" onChangeText={onChangeText} />);
+        expect(screen.getByDisplayValue('Sur')).toBeTruthy();
+    });
     it('no muestra el botón de limpiar sin texto', async () => {
         await render(<SearchField value="" onChangeText={jest.fn()} />);
 

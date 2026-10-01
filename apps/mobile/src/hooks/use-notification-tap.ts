@@ -1,16 +1,11 @@
-import { router, useRootNavigationState, useSegments } from 'expo-router';
+import { useRootNavigationState, useSegments } from 'expo-router';
 import { useEffect, useRef } from 'react';
 
-import { hrefForNotice } from '@/lib/notifications/routes';
+import { useNoticeNavigation } from './use-notice-navigation';
 import { loadNotifications } from '@/lib/notifications/module';
 import { useLocalSession } from '@/stores/local-session';
 
 type Notifications = NonNullable<Awaited<ReturnType<typeof loadNotifications>>>;
-
-function open(response: { notification: { request: { content: { data?: unknown } } } }): void {
-    const href = hrefForNotice(response.notification.request.content.data);
-    if (href) router.push(href);
-}
 
 /**
  * Lo que pasa al tocar un aviso: abrir la pantalla a la que lleva.
@@ -21,6 +16,7 @@ function open(response: { notification: { request: { content: { data?: unknown }
  * en las pestañas — antes, el `Redirect` de la portada pisaría la pantalla.
  */
 export function useNotificationTap(): void {
+    const open = useNoticeNavigation();
     const rootKey = useRootNavigationState()?.key;
     const inTabs = useSegments()[0] === '(tabs)';
     const signedIn = useLocalSession((state) => Boolean(state.session));
@@ -32,13 +28,15 @@ export function useNotificationTap(): void {
         let cancelled = false;
         void loadNotifications().then((Notifications: Notifications | null) => {
             if (!Notifications || cancelled) return;
-            subscription = Notifications.addNotificationResponseReceivedListener(open);
+            subscription = Notifications.addNotificationResponseReceivedListener((response) =>
+                open(response.notification.request.content.data),
+            );
         });
         return () => {
             cancelled = true;
             subscription?.remove();
         };
-    }, [rootKey, signedIn]);
+    }, [rootKey, signedIn, open]);
 
     useEffect(() => {
         if (!rootKey || !signedIn || !inTabs || coldStartHandled.current) return;
@@ -47,7 +45,7 @@ export function useNotificationTap(): void {
             const last = Notifications?.getLastNotificationResponse();
             if (!Notifications || !last) return;
             Notifications.clearLastNotificationResponse();
-            open(last);
+            open(last.notification.request.content.data);
         });
-    }, [rootKey, signedIn, inTabs]);
+    }, [rootKey, signedIn, inTabs, open]);
 }

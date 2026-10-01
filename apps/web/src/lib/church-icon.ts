@@ -1,3 +1,4 @@
+import { churchEmblem, CHURCH_ICONS } from '@navis/shared';
 import {
     Anchor,
     Compass,
@@ -36,30 +37,8 @@ const ICONOS: readonly LucideIcon[] = [
     Route,
 ];
 
-/** Cuántos tintes hay en `tokens.css` (`--church-1` … `--church-6`). */
-const TINTES = 6;
-
-/**
- * Icono y tinte de una iglesia, derivados de su id.
- *
- * Sin columna nueva ni migración: el id ya es estable para siempre, así que
- * el hash lo es igual, y las iglesias que ya existen lo estrenan sin tocar la
- * base de datos. Determinista a propósito —el mismo id siempre da el mismo
- * resultado— para que la insignia no cambie de un render a otro.
- */
+/** Adaptador visual: el cálculo vive en shared para web y móvil. */
 export function churchIcon(id: string): { Icon: LucideIcon; tinte: number } {
-    const hash = hashOf(id);
-    return {
-        Icon: ICONOS[hash % ICONOS.length],
-        tinte: (hash % TINTES) + 1,
-    };
-}
-
-/** Hash simple y estable: no hace falta criptográfico, solo repartir bien. */
-function hashOf(value: string): number {
-    let hash = 0;
-    for (let i = 0; i < value.length; i += 1) {
-        hash = (hash * 31 + value.charCodeAt(i)) | 0;
-    }
-    return Math.abs(hash);
+    const { icon, tint } = churchEmblem(id);
+    return { Icon: ICONOS[CHURCH_ICONS.indexOf(icon)], tinte: tint };
 }

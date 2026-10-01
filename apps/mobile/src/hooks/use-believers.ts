@@ -32,23 +32,14 @@ import {
     type WriteNoteInput,
 } from '@/data/repos/notes-repo';
 import { syncNotifications } from '@/lib/notifications/sync';
+import { useActiveChurchId } from './use-active-church-id';
 import { useLocalSession } from '@/stores/local-session';
 
-/**
- * Los hooks de creyentes **en local**: la pantalla no sabe que los datos
- * vienen de SQLite —esa frontera vive en `src/data/repos/`— y las claves
- * cuelgan todas de `['believers', churchId]` para invalidarlas juntas, como
- * hace `refreshBelievers` en el cliente de la API.
- */
-
+// Hooks locales con claves de caché acotadas por iglesia.
 const listKey = (churchId: string, query: BelieversQuery) =>
     ['believers', churchId, 'list', query] as const;
 
-/**
- * La primera carga trae cincuenta —llena la pantalla de una iglesia mediana
- * de golpe— y el scroll va añadiendo de veinte en veinte: peticiones cortas
- * que SQLite resuelve en milisegundos aunque haya miles de filas.
- */
+/** Primera carga de cincuenta, seguida de páginas de veinte. */
 export const BELIEVERS_FIRST_PAGE = 50;
 export const BELIEVERS_PAGE_SIZE = 20;
 
@@ -63,7 +54,7 @@ function metadatosDePagina(pagina: number) {
 
 /** El listado, paginado en el repositorio: 50 al abrir y de 20 en 20 al hacer scroll. */
 export function useBelievers(query: BelieversQuery) {
-    const churchId = useLocalSession((state) => state.session?.churchId);
+    const churchId = useActiveChurchId();
     return useInfiniteQuery({
         queryKey: listKey(churchId ?? '', query),
         queryFn: ({ pageParam }) => {
@@ -83,7 +74,7 @@ export function useBelievers(query: BelieversQuery) {
 }
 
 export function useBelieversSummary() {
-    const churchId = useLocalSession((state) => state.session?.churchId);
+    const churchId = useActiveChurchId();
     return useQuery({
         queryKey: ['believers', churchId, 'summary'],
         queryFn: () => {
@@ -95,7 +86,7 @@ export function useBelieversSummary() {
 }
 
 export function useBeliever(id: string) {
-    const churchId = useLocalSession((state) => state.session?.churchId);
+    const churchId = useActiveChurchId();
     return useQuery({
         queryKey: ['believers', churchId, 'one', id],
         queryFn: () => {
@@ -108,7 +99,7 @@ export function useBeliever(id: string) {
 
 /** La bitácora, de veinte en veinte con `useInfiniteQuery` (D11). */
 export function useBelieverNotes(believerId: string, query: { search?: string; kind?: NoteKind }) {
-    const churchId = useLocalSession((state) => state.session?.churchId);
+    const churchId = useActiveChurchId();
     return useInfiniteQuery({
         queryKey: ['believers', churchId, 'notes', believerId, query],
         queryFn: ({ pageParam }) => {
@@ -124,7 +115,7 @@ export function useBelieverNotes(believerId: string, query: { search?: string; k
 
 /** Una nota concreta, para abrirla desde el aviso de su recordatorio. */
 export function useNote(noteId: string | undefined) {
-    const churchId = useLocalSession((state) => state.session?.churchId);
+    const churchId = useActiveChurchId();
     return useQuery({
         queryKey: ['believers', churchId, 'note', noteId],
         queryFn: () => findNote(noteId ?? '', churchId ?? ''),
@@ -133,16 +124,20 @@ export function useNote(noteId: string | undefined) {
 }
 
 export function useNoteCounts(believerId: string) {
+    const churchId = useActiveChurchId();
     return useQuery({
-        queryKey: ['believers', 'noteCounts', believerId],
-        queryFn: () => noteCounts(believerId),
+        queryKey: ['believers', churchId, 'noteCounts', believerId],
+        queryFn: () => noteCounts(believerId, churchId ?? ''),
+        enabled: Boolean(churchId),
     });
 }
 
 export function useNoteDays(believerId: string, from: string, to: string) {
+    const churchId = useActiveChurchId();
     return useQuery({
-        queryKey: ['believers', 'noteDays', believerId, from, to],
-        queryFn: () => noteDays(believerId, from, to),
+        queryKey: ['believers', churchId, 'noteDays', believerId, from, to],
+        queryFn: () => noteDays(believerId, from, to, churchId ?? ''),
+        enabled: Boolean(churchId),
     });
 }
 
@@ -160,7 +155,7 @@ function useInvalidate() {
 }
 
 export function useCreateBeliever() {
-    const churchId = useLocalSession((state) => state.session?.churchId);
+    const churchId = useActiveChurchId();
     const invalidate = useInvalidate();
     return useMutation({
         mutationFn: (input: WriteBelieverInput) => {
@@ -172,7 +167,7 @@ export function useCreateBeliever() {
 }
 
 export function useUpdateBeliever() {
-    const churchId = useLocalSession((state) => state.session?.churchId);
+    const churchId = useActiveChurchId();
     const invalidate = useInvalidate();
     return useMutation({
         mutationFn: ({ id, input }: { id: string; input: Partial<WriteBelieverInput> }) => {
@@ -184,7 +179,7 @@ export function useUpdateBeliever() {
 }
 
 export function useDeleteBeliever() {
-    const churchId = useLocalSession((state) => state.session?.churchId);
+    const churchId = useActiveChurchId();
     const invalidate = useInvalidate();
     return useMutation({
         mutationFn: (id: string) => {
@@ -196,7 +191,7 @@ export function useDeleteBeliever() {
 }
 
 export function useSetCongregation() {
-    const churchId = useLocalSession((state) => state.session?.churchId);
+    const churchId = useActiveChurchId();
     const invalidate = useInvalidate();
     return useMutation({
         mutationFn: ({ ids, congregationId }: { ids: string[]; congregationId: string | null }) => {
@@ -208,18 +203,20 @@ export function useSetCongregation() {
 }
 
 export function useCreateNote(believerId: string) {
+    const churchId = useActiveChurchId();
     const session = useLocalSession((state) => state.session);
     const invalidate = useInvalidate();
     return useMutation({
         mutationFn: (input: WriteNoteInput) => {
-            if (!session?.churchId) throw new Error('Sin iglesia activa no se escribe');
-            return createNote(believerId, session.churchId, session.userId, input);
+            if (!churchId || !session) throw new Error('Sin iglesia activa no se escribe');
+            return createNote(believerId, churchId, session.userId, input);
         },
         onSuccess: invalidate,
     });
 }
 
 export function useUpdateNote(believerId: string) {
+    const churchId = useActiveChurchId();
     const invalidate = useInvalidate();
     return useMutation({
         mutationFn: ({
@@ -228,20 +225,22 @@ export function useUpdateNote(believerId: string) {
         }: {
             id: string;
             input: Partial<WriteNoteInput> & { remindDone?: boolean };
-        }) => updateNote(id, believerId, input),
+        }) => updateNote(id, believerId, input, churchId ?? ''),
         onSuccess: invalidate,
     });
 }
 
 export function useDeleteNote(believerId: string) {
+    const churchId = useActiveChurchId();
     const invalidate = useInvalidate();
     return useMutation({
-        mutationFn: (id: string) => deleteNote(id, believerId),
+        mutationFn: (id: string) => deleteNote(id, believerId, churchId ?? ''),
         onSuccess: invalidate,
     });
 }
 
 export function useAddAudio(believerId: string) {
+    const churchId = useActiveChurchId();
     const invalidate = useInvalidate();
     return useMutation({
         mutationFn: ({
@@ -256,15 +255,16 @@ export function useAddAudio(believerId: string) {
                 durationSeconds: number | null;
                 recorded: boolean;
             };
-        }) => addAudio(noteId, audio),
+        }) => addAudio(noteId, audio, churchId ?? ''),
         onSuccess: invalidate,
     });
 }
 
 export function useDeleteAudio(believerId: string) {
+    const churchId = useActiveChurchId();
     const invalidate = useInvalidate();
     return useMutation({
-        mutationFn: (audioId: string) => deleteAudio(audioId),
+        mutationFn: (audioId: string) => deleteAudio(audioId, churchId ?? ''),
         onSuccess: invalidate,
     });
 }

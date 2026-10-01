@@ -11,6 +11,7 @@ import { z } from 'zod';
 export const noticeDataSchema = z.discriminatedUnion('type', [
     z.object({
         type: z.literal('note-reminder'),
+        churchId: z.string().min(1),
         believerId: z.string().min(1),
         noteId: z.string().min(1),
     }),

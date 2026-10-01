@@ -1,3 +1,4 @@
+import { listMeetingSlots } from './calendar-slot-reads';
 import { addDays, type CalendarSummary, type PreacherBalance } from '@navis/shared';
 
 import { getDb } from '../db';
@@ -154,10 +155,7 @@ export async function calendarSummary(
     for (const meeting of meetings) {
         if (meeting.status === 'cancelada') continue;
 
-        const slots = await db.getAllAsync<{ id: string; name: string }>(
-            'SELECT id, name FROM meeting_slots WHERE meeting_id = ? ORDER BY position ASC',
-            meeting.id,
-        );
+        const slots = await listMeetingSlots(db, churchId, meeting.id);
         const people = await peopleBySlot(
             db,
             slots.map((slot) => slot.id),

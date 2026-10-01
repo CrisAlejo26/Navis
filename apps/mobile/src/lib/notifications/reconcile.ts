@@ -1,4 +1,5 @@
 import type { NotificationScheduler, PlannedNotice } from '@/lib/notifications/types';
+import { noticeDataSchema } from '@/lib/notifications/routes';
 
 /**
  * Deja el sistema como dice el plan: cancela lo que sobra y programa lo que
@@ -19,10 +20,15 @@ export async function reconcile(
 
     for (const notice of planned) {
         const existing = current.get(notice.key);
+        const parsed = noticeDataSchema.safeParse(existing?.data);
         const upToDate =
             existing?.fireAt === notice.fireAt.getTime() &&
             existing.title === notice.title &&
-            existing.body === notice.body;
+            existing.body === notice.body &&
+            parsed.success &&
+            parsed.data.churchId === notice.data.churchId &&
+            parsed.data.believerId === notice.data.believerId &&
+            parsed.data.noteId === notice.data.noteId;
         if (!upToDate) await scheduler.schedule(notice);
     }
 }

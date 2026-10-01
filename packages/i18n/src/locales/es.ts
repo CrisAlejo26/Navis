@@ -413,6 +413,10 @@ export const es = {
         chooseCalendar: 'Elegir calendario',
     },
     church: {
+        mine: 'Mis iglesias',
+        current: 'Activa',
+        noneTitle: 'Aún no tienes una iglesia',
+        noneHint: 'Crea una para empezar a trabajar.',
         edit: 'Editar la iglesia',
         updated: 'Iglesia actualizada',
         name: 'Nombre de la iglesia',

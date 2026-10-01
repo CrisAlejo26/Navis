@@ -2,13 +2,14 @@ import {
     isBelieverStatus,
     isSchedulable,
     type AssignSlotInput,
-    type CreateMeetingInput,
     type UpdateMeetingInput,
-    type SetMeetingSlotsInput,
 } from '@navis/shared';
 
 import { getDb, newId, nowIso, type LocalDb } from '../db';
+import { assertInChurch, assertAllInChurch } from '../church-scope';
 import { peopleBySlot, replaceSlotPeople } from './calendar-slot-people';
+export { setMeetingSlots } from './calendar-meeting-slots';
+export { createMeeting } from './calendar-meeting-create';
 
 /**
  * Asignar es la primitiva (D4) y el CRUD de reuniones — la pareja de
@@ -28,9 +29,14 @@ import { peopleBySlot, replaceSlotPeople } from './calendar-slot-people';
 export async function assignSlot(churchId: string, input: AssignSlotInput): Promise<void> {
     const db = await getDb();
 
+    if (input.meetingId) await assertInChurch(db, 'meetings', input.meetingId, churchId);
+    if (input.patternId) await assertInChurch(db, 'meeting_patterns', input.patternId, churchId);
+    await assertAllInChurch(db, 'believers', input.believerIds, churchId);
     // Solo se comprueba a quien **entra**: si alguien de la fase pasó a inactivo,
     // guardar la nota o reordenar a los demás no puede fallar por él.
-    const already = input.meetingId ? await currentIds(db, input.meetingId, input.position) : [];
+    const already = input.meetingId
+        ? await currentIds(db, input.meetingId, input.position, churchId)
+        : [];
     for (const believerId of input.believerIds.filter((id) => !already.includes(id))) {
         const person = await db.getFirstAsync<{ status: string }>(
             'SELECT status FROM believers WHERE church_id = ? AND id = ? AND deleted_at IS NULL',
@@ -88,18 +94,21 @@ export async function assignSlot(churchId: string, input: AssignSlotInput): Prom
                 // Las fases del patrón se copian en su orden: la reunión es dueña de
                 // la suya a partir de ahora y el patrón ya no la toca (D6, D7).
                 const phases = await db.getAllAsync<{ name: string; position: number }>(
-                    'SELECT name, position FROM pattern_phases WHERE pattern_id = ? ORDER BY position ASC',
+                    'SELECT name, position FROM pattern_phases WHERE pattern_id = ? AND pattern_phases.pattern_id IN (SELECT id FROM meeting_patterns WHERE church_id = ? AND deleted_at IS NULL) ORDER BY position ASC',
                     input.patternId,
+                    churchId,
                 );
                 for (const phase of phases) {
                     await db.runAsync(
-                        'INSERT INTO meeting_slots (id, created_at, updated_at, deleted_at, meeting_id, name, position, note) VALUES (?, ?, ?, NULL, ?, ?, ?, NULL)',
+                        'INSERT INTO meeting_slots (id, created_at, updated_at, deleted_at, meeting_id, name, position, note) SELECT ?, ?, ?, NULL, ?, ?, ?, NULL WHERE EXISTS (SELECT id FROM meetings WHERE id = ? AND church_id = ? AND deleted_at IS NULL)',
                         newId(),
                         nowIso(),
                         nowIso(),
                         meetingId,
                         phase.name,
                         phase.position,
+                        meetingId,
+                        churchId,
                     );
                 }
             }
@@ -108,65 +117,21 @@ export async function assignSlot(churchId: string, input: AssignSlotInput): Prom
         if (!meetingId) throw new Error('Hace falta la reunión o el patrón');
 
         const slot = await db.getFirstAsync<{ id: string; note: string | null }>(
-            'SELECT id, note FROM meeting_slots WHERE meeting_id = ? AND position = ?',
+            'SELECT id, note FROM meeting_slots WHERE meeting_id = ? AND position = ? AND meeting_slots.meeting_id IN (SELECT id FROM meetings WHERE church_id = ? AND deleted_at IS NULL) ',
             meetingId,
             input.position,
+            churchId,
         );
         if (!slot) throw new Error('Esa fase no existe en la reunión');
 
         await db.runAsync(
-            'UPDATE meeting_slots SET note = ?, updated_at = ? WHERE id = ?',
+            'UPDATE meeting_slots SET note = ?, updated_at = ? WHERE id = ? AND meeting_slots.meeting_id IN (SELECT id FROM meetings WHERE church_id = ? AND deleted_at IS NULL) ',
             input.note !== undefined ? (input.note ?? null) : slot.note,
             nowIso(),
             slot.id,
+            churchId,
         );
         await replaceSlotPeople(db, slot.id, input.believerIds, nowIso(), newId);
-    });
-}
-
-/** Una reunión puntual: la que no nace de ningún patrón. */
-export async function createMeeting(
-    churchId: string,
-    calendarId: string,
-    input: CreateMeetingInput,
-): Promise<void> {
-    const db = await getDb();
-    const now = nowIso();
-
-    await db.withTransactionAsync(async () => {
-        const sede = await db.getFirstAsync<{ accent: string }>(
-            'SELECT accent FROM congregations WHERE church_id = ? AND id = ? AND deleted_at IS NULL',
-            churchId,
-            input.congregationId,
-        );
-        if (!sede) throw new Error('Esa sede no existe en esta iglesia');
-
-        const meetingId = newId();
-        await db.runAsync(
-            'INSERT INTO meetings (id, created_at, updated_at, deleted_at, church_id, calendar_id, congregation_id, pattern_id, date, start_time, name, accent, status, notes) VALUES (?, ?, ?, NULL, ?, ?, ?, NULL, ?, ?, ?, ?, ?, NULL)',
-            meetingId,
-            now,
-            now,
-            churchId,
-            calendarId,
-            input.congregationId,
-            input.date,
-            input.startTime,
-            input.name,
-            sede.accent,
-            'programada',
-        );
-        for (const [position, phase] of input.phases.entries()) {
-            await db.runAsync(
-                'INSERT INTO meeting_slots (id, created_at, updated_at, deleted_at, meeting_id, name, position, note) VALUES (?, ?, ?, NULL, ?, ?, ?, NULL)',
-                newId(),
-                now,
-                now,
-                meetingId,
-                phase.name,
-                position,
-            );
-        }
     });
 }
 
@@ -203,82 +168,51 @@ export async function updateMeeting(
             );
             if (!sede) throw new Error('Esa sede no existe en esta iglesia');
             await db.runAsync(
-                'UPDATE meetings SET congregation_id = ?, accent = ? WHERE id = ?',
+                'UPDATE meetings SET congregation_id = ?, accent = ? WHERE id = ? AND meetings.church_id = ? ',
                 input.congregationId,
                 sede.accent,
                 input.id,
+                churchId,
             );
         }
 
         await db.runAsync(
-            'UPDATE meetings SET name = ?, start_time = ?, notes = ?, status = ?, updated_at = ? WHERE id = ?',
+            'UPDATE meetings SET name = ?, start_time = ?, notes = ?, status = ?, updated_at = ? WHERE id = ? AND meetings.church_id = ? ',
             input.name !== undefined ? input.name : current.name,
             input.startTime !== undefined ? input.startTime : current.start_time,
             input.notes !== undefined ? (input.notes ?? null) : current.notes,
             input.status !== undefined ? input.status : current.status,
             nowIso(),
             input.id,
+            churchId,
         );
     });
 }
 
 /** Borrado lógico; si nació de un patrón, el día vuelve a propuesta (§7). */
-export async function deleteMeeting(meetingId: string): Promise<void> {
+export async function deleteMeeting(meetingId: string, churchId: string): Promise<void> {
     const db = await getDb();
     await db.runAsync(
-        'UPDATE meetings SET deleted_at = ?, updated_at = ? WHERE id = ?',
+        'UPDATE meetings SET deleted_at = ?, updated_at = ? WHERE id = ? AND meetings.church_id = ? ',
         nowIso(),
         nowIso(),
         meetingId,
+        churchId,
     );
 }
 
-/** Reemplaza la lista de fases entera: añadir, quitar y reordenar es una sola acción. */
-export async function setMeetingSlots(
-    churchId: string,
-    input: SetMeetingSlotsInput & { id: string },
-): Promise<void> {
-    const db = await getDb();
-    const now = nowIso();
-
-    await db.withTransactionAsync(async () => {
-        const meeting = await db.getFirstAsync<{ id: string }>(
-            'SELECT id FROM meetings WHERE church_id = ? AND id = ? AND deleted_at IS NULL',
-            churchId,
-            input.id,
-        );
-        if (!meeting) throw new Error('Esa reunión no existe en esta iglesia');
-
-        // Sin claves ajenas en local: las personas de las fases que se van se
-        // borran a mano, o quedarían huérfanas.
-        await db.runAsync(
-            'DELETE FROM meeting_slot_believers WHERE slot_id IN (SELECT id FROM meeting_slots WHERE meeting_id = ?)',
-            input.id,
-        );
-        await db.runAsync('DELETE FROM meeting_slots WHERE meeting_id = ?', input.id);
-        for (const [position, slot] of input.slots.entries()) {
-            const slotId = newId();
-            await db.runAsync(
-                'INSERT INTO meeting_slots (id, created_at, updated_at, deleted_at, meeting_id, name, position, note) VALUES (?, ?, ?, NULL, ?, ?, ?, ?)',
-                slotId,
-                now,
-                now,
-                input.id,
-                slot.name,
-                position,
-                slot.note ?? null,
-            );
-            await replaceSlotPeople(db, slotId, slot.believerIds ?? [], now, newId);
-        }
-    });
-}
-
 /** Quién ocupa ya la fase de una reunión que existe. */
-async function currentIds(db: LocalDb, meetingId: string, position: number): Promise<string[]> {
+async function currentIds(
+    db: LocalDb,
+    meetingId: string,
+    position: number,
+    churchId: string,
+): Promise<string[]> {
     const slot = await db.getFirstAsync<{ id: string }>(
-        'SELECT id FROM meeting_slots WHERE meeting_id = ? AND position = ?',
+        'SELECT id FROM meeting_slots WHERE meeting_id = ? AND position = ? AND meeting_slots.meeting_id IN (SELECT id FROM meetings WHERE church_id = ? AND deleted_at IS NULL) ',
         meetingId,
         position,
+        churchId,
     );
     if (!slot) return [];
     return (await peopleBySlot(db, [slot.id])).get(slot.id) ?? [];

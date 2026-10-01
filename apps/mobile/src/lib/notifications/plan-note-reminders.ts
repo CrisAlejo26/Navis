@@ -27,6 +27,7 @@ export function planNoteReminders(
     t: NoteReminderTranslator,
     now: Date,
     limit: number,
+    showChurchName = false,
 ): PlannedNotice[] {
     return reminders
         .map((reminder) => ({ reminder, fireAt: new Date(reminder.remindAt) }))
@@ -34,7 +35,8 @@ export function planNoteReminders(
         .sort((one, other) => one.fireAt.getTime() - other.fireAt.getTime())
         .slice(0, limit)
         .map(({ reminder, fireAt }) => {
-            const name = believerName(reminder);
+            const person = believerName(reminder);
+            const name = showChurchName ? `${person} — ${reminder.churchName}` : person;
             const text = reminder.remindText?.trim();
             return {
                 key: noteReminderKey(reminder.noteId),
@@ -44,6 +46,7 @@ export function planNoteReminders(
                 channelId: NOTE_REMINDER_CHANNEL,
                 data: {
                     type: 'note-reminder' as const,
+                    churchId: reminder.churchId,
                     believerId: reminder.believerId,
                     noteId: reminder.noteId,
                 },

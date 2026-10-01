@@ -1,3 +1,4 @@
+import { repairChurchAccess } from '@/data/church-access-repair';
 import { getDb, SCHEMA_VERSION } from '@/data/db';
 
 import {
@@ -88,5 +89,6 @@ export async function restoreBackup(text: string, files: BackupFiles): Promise<v
                 );
             }
         }
+        await repairChurchAccess(db);
     });
 }

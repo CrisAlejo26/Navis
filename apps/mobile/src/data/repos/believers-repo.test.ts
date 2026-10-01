@@ -247,7 +247,7 @@ describe('los creyentes en local (RFC 0003)', () => {
         expect(after?.lastNoteAt).toBe(today);
         expect(after?.daysWithoutNote).toBe(0);
 
-        await deleteNote(noteId, id);
+        await deleteNote(noteId, id, churchId);
         const reverted = await findBeliever(id, churchId);
         expect(reverted?.lastNoteAt).toBeNull();
         expect(reverted?.daysWithoutNote).toBe(15);
@@ -268,7 +268,7 @@ describe('los creyentes en local (RFC 0003)', () => {
         expect(detail?.gifts).toHaveLength(1);
         expect(detail?.giftDates?.[gift?.id ?? '']).toBe(today);
 
-        const counts = await noteCounts(id);
+        const counts = await noteCounts(id, churchId);
         expect(counts.don).toBe(1);
         expect(counts.total).toBe(1);
 

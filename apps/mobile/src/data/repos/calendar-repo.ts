@@ -7,6 +7,7 @@ import {
 
 import { getDb, newId, nowIso } from '../db';
 import { seedPatternFor } from './calendar-seed';
+export { deleteCalendar, deleteCongregation } from './calendar-delete';
 
 /**
  * Lo que se configura una vez y sostiene el resto (D17): los **calendarios**
@@ -110,24 +111,12 @@ export async function updateCalendar(
     if (!current) throw new Error('Ese calendario no existe en esta iglesia');
 
     await db.runAsync(
-        'UPDATE calendars SET name = ?, ministry = ?, updated_at = ? WHERE id = ?',
+        'UPDATE calendars SET name = ?, ministry = ?, updated_at = ? WHERE id = ? AND calendars.church_id = ? ',
         input.name !== undefined ? input.name : current.name,
         input.ministry !== undefined ? input.ministry : current.ministry,
         nowIso(),
         input.id,
-    );
-}
-
-export async function deleteCalendar(churchId: string, calendarId: string): Promise<void> {
-    const db = await getDb();
-    const all = await listCalendars(churchId);
-    if (all.length <= 1) throw new Error('No se puede borrar el único calendario');
-
-    await db.runAsync(
-        'UPDATE calendars SET deleted_at = ?, updated_at = ? WHERE id = ?',
-        nowIso(),
-        nowIso(),
-        calendarId,
+        churchId,
     );
 }
 
@@ -233,26 +222,13 @@ export async function updateCongregation(
     if (!current) throw new Error('Esa sede no existe en esta iglesia');
 
     await db.runAsync(
-        'UPDATE congregations SET name = ?, city = ?, accent = ?, is_active = ?, updated_at = ? WHERE id = ?',
+        'UPDATE congregations SET name = ?, city = ?, accent = ?, is_active = ?, updated_at = ? WHERE id = ? AND congregations.church_id = ? ',
         input.name !== undefined ? input.name : current.name,
         input.city !== undefined ? (input.city ?? null) : current.city,
         input.accent !== undefined ? input.accent : current.accent,
         input.isActive !== undefined ? (input.isActive ? 1 : 0) : current.is_active,
         nowIso(),
         input.id,
-    );
-}
-
-/** Borrado lógico; nunca la última (§7). */
-export async function deleteCongregation(churchId: string, congregationId: string): Promise<void> {
-    const db = await getDb();
-    const all = await listCongregations(churchId);
-    if (all.length <= 1) throw new Error('No se puede borrar la última sede');
-
-    await db.runAsync(
-        'UPDATE congregations SET deleted_at = ?, updated_at = ? WHERE id = ?',
-        nowIso(),
-        nowIso(),
-        congregationId,
+        churchId,
     );
 }

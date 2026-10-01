@@ -6,7 +6,7 @@ import { View } from 'react-native';
 import { AnimatedTabBar } from '@/components/navigation/animated-tab-bar';
 import { MoreMenu } from '@/components/navigation/more-menu';
 import { BrandSplash } from '@/components/auth/brand-splash';
-import { useLocalSession } from '@/stores/local-session';
+import { useChurchAccessGate } from '@/hooks/use-church-access-gate';
 
 /**
  * Área autenticada, con sesión **local** (RFC 0024, Fase 1). La barra inferior
@@ -16,13 +16,13 @@ import { useLocalSession } from '@/stores/local-session';
  */
 export default function TabsLayout() {
     const { t } = useTranslation();
-    const session = useLocalSession((state) => state.session);
-    const hydrated = useLocalSession((state) => state.hydrated);
+    const { ready, session } = useChurchAccessGate();
     const [menuOpen, setMenuOpen] = useState(false);
 
-    if (!hydrated) return <BrandSplash />;
+    if (!ready) return <BrandSplash />;
 
-    if (!session?.churchId) return <Redirect href="/(auth)/welcome" />;
+    if (!session) return <Redirect href="/(auth)/welcome" />;
+    if (!session.churchId) return <Redirect href="/(auth)/church-setup" />;
 
     return (
         <View className="flex-1">

@@ -3,6 +3,7 @@ import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, Text } from 'react-native';
 
+import { ChurchSettingsGroup } from '@/components/settings/church-settings-group';
 import { AccountCard } from '@/components/settings/account-card';
 import { DevToolsGroup } from '@/components/settings/dev-tools-group';
 import { PreferencesGroup } from '@/components/settings/preferences-group';
@@ -46,27 +47,7 @@ export default function SettingsScreen() {
 
             <PreferencesGroup />
 
-            {session?.churchId ? (
-                <SettingsGroup label={t('settings.church')}>
-                    <SettingsRow
-                        icon="boat-outline"
-                        title={t('settings.churchData')}
-                        subtitle={church?.name}
-                        onPress={() => router.push('/settings/church')}
-                    />
-                    <SettingsRow
-                        icon="calendar-outline"
-                        title={t('calendar.settings')}
-                        onPress={() => router.push('/calendar/settings')}
-                    />
-                    <SettingsRow
-                        icon="pricetags-outline"
-                        title={t('settings.believersCatalog')}
-                        subtitle={t('settings.believersCatalogHint')}
-                        onPress={() => router.push('/believers/catalog')}
-                    />
-                </SettingsGroup>
-            ) : null}
+            {session?.churchId ? <ChurchSettingsGroup name={church?.name} /> : null}
 
             <SettingsGroup label={t('settings.scopeYou')}>
                 <SettingsRow

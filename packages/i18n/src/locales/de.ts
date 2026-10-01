@@ -415,6 +415,10 @@ export const de = {
         chooseCalendar: 'Kalender wählen',
     },
     church: {
+        mine: 'Meine Gemeinden',
+        current: 'Aktuell',
+        noneTitle: 'Noch keine Gemeinde',
+        noneHint: 'Erstelle eine Gemeinde, um loszulegen.',
         edit: 'Gemeinde bearbeiten',
         updated: 'Gemeinde aktualisiert',
         name: 'Name der Gemeinde',

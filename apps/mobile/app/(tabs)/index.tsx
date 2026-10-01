@@ -20,7 +20,7 @@ import { NotesCard } from '@/components/home/notes-card';
 import { TodayTasksCard } from '@/components/home/today-tasks-card';
 import { CompositionSection } from '@/components/home/composition-section';
 import { Button } from '@/components/ui/button';
-import { useDashboardSummary, useRegisteredBelievers } from '@/hooks/use-dashboard';
+import { useDashboardSummary } from '@/hooks/use-dashboard';
 import { useStatusBarClaim } from '@/lib/status-bar';
 import { useThemeStore } from '@/lib/theme';
 
@@ -47,7 +47,6 @@ export default function DashboardScreen() {
     const { t } = useTranslation();
     const palette = themeColorsHex[useThemeStore((state) => state.resolvedTheme)];
     const { data, isPending, isError, refetch, isRefetching } = useDashboardSummary();
-    const { data: registered } = useRegisteredBelievers();
 
     // El parallax: el hero se pinta medio desplazado (0.5×) hacia abajo, así
     // que sube a la mitad de velocidad mientras el panel blanco le pasa por
@@ -126,7 +125,7 @@ export default function DashboardScreen() {
             >
                 <Animated.View style={heroStyle}>
                     <DashboardHero
-                        total={registered ?? data.believers.total}
+                        total={data.believers.total}
                         newThisMonth={data.believers.newThisMonth}
                     />
                 </Animated.View>

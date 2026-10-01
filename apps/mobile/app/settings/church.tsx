@@ -12,7 +12,7 @@ export default function ChurchScreen() {
 
     return (
         <View className="flex-1 bg-background">
-            <AppBar title={t('settings.churchData')} />
+            <AppBar title={church?.name ?? t('settings.churchData')} />
             {church ? (
                 <ChurchForm key={church.id} church={church} />
             ) : (

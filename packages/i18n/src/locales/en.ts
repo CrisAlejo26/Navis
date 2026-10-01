@@ -402,6 +402,10 @@ export const en = {
         chooseCalendar: 'Choose calendar',
     },
     church: {
+        mine: 'My churches',
+        current: 'Current',
+        noneTitle: 'No church yet',
+        noneHint: 'Create one to start working.',
         edit: 'Edit church',
         updated: 'Church updated',
         name: 'Church name',

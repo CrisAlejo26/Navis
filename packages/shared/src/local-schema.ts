@@ -58,6 +58,10 @@ export const LOCAL_TABLES: LocalTable[] = [
         { name: 'region', type: 'text', nullable: true },
         { name: 'owner_id', type: 'text' },
     ]),
+    table('church_members', 'ChurchMember', [
+        { name: 'church_id', type: 'text' },
+        { name: 'user_id', type: 'text' },
+    ]),
     table('congregations', 'Congregation', [
         { name: 'church_id', type: 'text' },
         { name: 'name', type: 'text' },
@@ -306,6 +310,7 @@ export const LOCAL_USER_TABLE: LocalTable = {
         { name: 'name', type: 'text' },
         { name: 'email', type: 'text' },
         { name: 'password_hash', type: 'text' },
+        { name: 'active_church_id', type: 'text', nullable: true },
         // El perfil (mismos nombres que `profiles` en la API): en local vive aquí.
         { name: 'phone', type: 'text', nullable: true },
         { name: 'city', type: 'text', nullable: true },
@@ -328,6 +333,13 @@ export const LOCAL_INDEXES: {
     /** Literal para el `WHERE` de un índice **parcial** (SQLite lo admite). */
     where?: string;
 }[] = [
+    {
+        name: 'UQ_church_members',
+        table: 'church_members',
+        columns: ['church_id', 'user_id'],
+        unique: true,
+    },
+    { name: 'IDX_church_members_user', table: 'church_members', columns: ['user_id'] },
     { name: 'UQ_local_user_email', table: 'local_user', columns: ['email'], unique: true },
     {
         name: 'IDX_believers_church_search',

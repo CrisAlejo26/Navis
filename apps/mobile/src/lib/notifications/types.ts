@@ -16,6 +16,7 @@ export interface PlannedNotice {
 
 /** Lo que el sistema tiene ahora programado de nuestros avisos. */
 export interface ScheduledNotice {
+    data: NoticeData | null;
     key: string;
     /** Milisegundos; `null` si el aviso no trae su fecha. */
     fireAt: number | null;

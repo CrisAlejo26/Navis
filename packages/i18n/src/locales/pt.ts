@@ -402,6 +402,10 @@ export const pt = {
         chooseCalendar: 'Escolher calendário',
     },
     church: {
+        mine: 'As minhas igrejas',
+        current: 'Atual',
+        noneTitle: 'Ainda não tens uma igreja',
+        noneHint: 'Cria uma para começar.',
         edit: 'Editar a igreja',
         updated: 'Igreja atualizada',
         name: 'Nome da igreja',

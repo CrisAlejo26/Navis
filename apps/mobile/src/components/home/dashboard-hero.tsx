@@ -10,6 +10,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { formatNumber, formatShortDate } from '@/lib/format';
 import { useLocalSession } from '@/stores/local-session';
 import { findUser } from '@/data/repos/account-repo';
+import { ChurchPlate } from '@/components/church/church-plate';
 import { LogoBoat } from '@/components/home/logo-boat';
 
 /**
@@ -17,11 +18,6 @@ import { LogoBoat } from '@/components/home/logo-boat';
  * Navis — cielo degradado por la hora del saludo, olas en capas y el barco
  * del logo — con la cifra grande de creyentes encima, como la temperatura
  * del tiempo.
- *
- * La escena es **SVG propio** (react-native-svg), no una imagen: es la misma
- * familia vectorial plana de la estela de `ActivityCard` y se tiñe con la
- * hora sin mantener ficheros. Los degradados viven solo aquí, en la
- * ilustración — nunca como fondo de un control (Regla 9 §7).
  *
  * El barco es el del logo (`LogoBoat`), siempre en su sitio —tamaño y
  * emplazamiento fijos— y la hora le da el color: dorado como el sol de día,
@@ -283,9 +279,12 @@ export function DashboardHero({
                 </View>
             </View>
 
+            <View className="px-5 pt-3">
+                <ChurchPlate />
+            </View>
             <Pressable
                 onPress={() => router.push('/believers')}
-                className="gap-1 px-5 pt-14 active:opacity-80"
+                className="gap-1 px-5 pt-4 active:opacity-80"
                 accessibilityLabel={t('home.believersLink')}
             >
                 <Text className="text-5xl font-sans-semibold text-white tabular-nums">

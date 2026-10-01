@@ -1,3 +1,5 @@
+import { applyLinks } from './believer-links';
+import type { WriteBelieverInput } from './believer-input';
 import {
     believerName,
     toSearchName,
@@ -13,6 +15,8 @@ import type { SQLiteBindValue } from 'expo-sqlite';
 
 import { getDb, newId, nowIso } from '../db';
 import { removeBelieverPhotoAt, storeBelieverPhoto } from '../photo-storage';
+import { validateBelieverReferences } from './believer-references';
+import { assertInChurch, assertAllInChurch } from '../church-scope';
 import { listGifts } from './catalog-repo';
 import {
     believerColumns,
@@ -22,6 +26,7 @@ import {
     filterStatuses,
     type BelieverRow,
 } from './believers-sql';
+export type { WriteBelieverInput } from './believer-input';
 /**
  * Los creyentes **en local** (RFC 0003 sobre RFC 0024): el mismo contrato que
  * `BelieversService` de la API —listado paginado, resumen, ficha y escritura—,
@@ -122,10 +127,10 @@ async function decorate(
         accent: string;
     }>(
         `SELECT bg.believer_id, g.id, g.name, g.accent FROM believer_gifts bg
-     JOIN gifts g ON g.id = bg.gift_id
-     WHERE bg.believer_id IN (${marks}) AND bg.deleted_at IS NULL AND g.deleted_at IS NULL
-     ORDER BY g.position ASC, g.name ASC`,
+     JOIN gifts g ON g.id = bg.gift_id AND g.church_id = (SELECT church_id FROM believers WHERE id = bg.believer_id)
+     WHERE bg.believer_id IN (${marks}) AND bg.deleted_at IS NULL AND g.deleted_at IS NULL AND bg.believer_id IN (SELECT id FROM believers WHERE church_id = ? AND deleted_at IS NULL) ORDER BY g.position ASC, g.name ASC`,
         ...ids,
+        churchId,
     );
     const tagRows = await db.getAllAsync<{
         believer_id: string;
@@ -134,20 +139,22 @@ async function decorate(
         accent: string;
     }>(
         `SELECT tl.believer_id, t.id, t.name, t.accent FROM believer_tag_links tl
-     JOIN believer_tags t ON t.id = tl.tag_id
-     WHERE tl.believer_id IN (${marks}) AND tl.deleted_at IS NULL AND t.deleted_at IS NULL
-     ORDER BY t.position ASC, t.name ASC`,
+     JOIN believer_tags t ON t.id = tl.tag_id AND t.church_id = (SELECT church_id FROM believers WHERE id = tl.believer_id)
+     WHERE tl.believer_id IN (${marks}) AND tl.deleted_at IS NULL AND t.deleted_at IS NULL AND tl.believer_id IN (SELECT id FROM believers WHERE church_id = ? AND deleted_at IS NULL) ORDER BY t.position ASC, t.name ASC`,
         ...ids,
+        churchId,
     );
     const noteRows = await db.getAllAsync<{ believer_id: string; total: number }>(
         `SELECT believer_id, COUNT(*) AS total FROM believer_notes
-     WHERE believer_id IN (${marks}) AND deleted_at IS NULL GROUP BY believer_id`,
+     WHERE believer_id IN (${marks}) AND deleted_at IS NULL AND believer_notes.church_id = ? GROUP BY believer_id`,
         ...ids,
+        churchId,
     );
     const ministryRows = await db.getAllAsync<{ believer_id: string; ministry: string }>(
         `SELECT believer_id, ministry FROM believer_ministries
-     WHERE believer_id IN (${marks}) AND deleted_at IS NULL ORDER BY ministry ASC`,
+     WHERE believer_id IN (${marks}) AND deleted_at IS NULL AND believer_ministries.believer_id IN (SELECT id FROM believers WHERE church_id = ? AND deleted_at IS NULL) ORDER BY ministry ASC`,
         ...ids,
+        churchId,
     );
 
     for (const id of ids) extras.set(id, { gifts: [], tags: [], notesCount: 0, ministries: [] });
@@ -218,13 +225,12 @@ export async function listBelievers(query: ListQuery): Promise<Paginated<Believe
     const limit = query.limit ?? PAGE_DEFAULT;
 
     const totalRow = await db.getFirstAsync<{ total: number }>(
-        `SELECT COUNT(*) AS total FROM believers b WHERE ${clauses.join(' AND ')}`,
+        `SELECT COUNT(*) AS total FROM believers b WHERE ${clauses.join(' AND ')} `,
         ...params,
     );
     const rows = await db.getAllAsync<BelieverRow & { days_without_note: number }>(
         `SELECT ${believerColumns('b')}, ${DAYS_SINCE} AS days_without_note
-     FROM believers b WHERE ${clauses.join(' AND ')}
-     ORDER BY ${orderBy(query.sort, query.order)}
+     FROM believers b WHERE ${clauses.join(' AND ')} ORDER BY ${orderBy(query.sort, query.order)}
      LIMIT ? OFFSET ?`,
         // El orden de los parámetros es el de los `?` en el SQL: el de la sonda
         // (SELECT) va antes que los del WHERE, y después límite y salto.
@@ -313,12 +319,14 @@ export async function findBeliever(id: string, churchId: string): Promise<Believ
     if (!row) return null;
 
     const ministryRows = await db.getAllAsync<{ ministry: string; started_at: string | null }>(
-        'SELECT ministry, started_at FROM believer_ministries WHERE believer_id = ? AND deleted_at IS NULL ORDER BY ministry ASC',
+        'SELECT ministry, started_at FROM believer_ministries WHERE believer_id = ? AND deleted_at IS NULL AND believer_ministries.believer_id IN (SELECT id FROM believers WHERE church_id = ? AND deleted_at IS NULL) ORDER BY ministry ASC',
         id,
+        churchId,
     );
     const giftRows = await db.getAllAsync<{ gift_id: string; received_at: string | null }>(
-        'SELECT gift_id, received_at FROM believer_gifts WHERE believer_id = ? AND deleted_at IS NULL',
+        'SELECT gift_id, received_at FROM believer_gifts WHERE believer_id = ? AND deleted_at IS NULL AND believer_gifts.believer_id IN (SELECT id FROM believers WHERE church_id = ? AND deleted_at IS NULL) ',
         id,
+        churchId,
     );
     const tagRows = await db.getAllAsync<{
         id: string;
@@ -327,16 +335,17 @@ export async function findBeliever(id: string, churchId: string): Promise<Believ
         position: number;
     }>(
         `SELECT t.id, t.name, t.accent, t.position FROM believer_tag_links tl
-     JOIN believer_tags t ON t.id = tl.tag_id
-     WHERE tl.believer_id = ? AND tl.deleted_at IS NULL AND t.deleted_at IS NULL
-     ORDER BY t.position ASC, t.name ASC`,
+     JOIN believer_tags t ON t.id = tl.tag_id AND t.church_id = (SELECT church_id FROM believers WHERE id = tl.believer_id)
+     WHERE tl.believer_id = ? AND tl.deleted_at IS NULL AND t.deleted_at IS NULL AND tl.believer_id IN (SELECT id FROM believers WHERE church_id = ? AND deleted_at IS NULL) ORDER BY t.position ASC, t.name ASC`,
         id,
+        churchId,
     );
     const catalog = await listGifts(churchId);
     const giftById = new Map(catalog.map((one) => [one.id, one]));
     const noteRow = await db.getFirstAsync<{ total: number }>(
-        'SELECT COUNT(*) AS total FROM believer_notes WHERE believer_id = ? AND deleted_at IS NULL',
+        'SELECT COUNT(*) AS total FROM believer_notes WHERE believer_id = ? AND deleted_at IS NULL AND believer_notes.church_id = ? ',
         id,
+        churchId,
     );
 
     const gifts: Gift[] = giftRows
@@ -373,88 +382,12 @@ export async function findBeliever(id: string, churchId: string): Promise<Believ
     };
 }
 
-async function replaceLinks(
-    db: Awaited<ReturnType<typeof getDb>>,
-    believerId: string,
-    table: 'believer_ministries' | 'believer_gifts' | 'believer_tag_links',
-    column: 'ministry' | 'gift_id' | 'tag_id',
-    values: string[],
-    dateColumn: 'started_at' | 'received_at' | null = null,
-    dates: Record<string, string | null> = {},
-    featuredTagId: string | null = null,
-): Promise<void> {
-    // La API borra y reescribe el juego entero (BelieverLinksService): son
-    // cuatro filas y el índice único ya impide repetir. Aquí, lo mismo.
-    await db.runAsync(`DELETE FROM ${table} WHERE believer_id = ?`, believerId);
-    for (const value of values) {
-        const date = dates[value] ?? null;
-        if (dateColumn && date) {
-            await db.runAsync(
-                `INSERT INTO ${table} (id, created_at, updated_at, deleted_at, believer_id, ${column}, ${dateColumn}) VALUES (?, ?, ?, NULL, ?, ?, ?)`,
-                newId(),
-                nowIso(),
-                nowIso(),
-                believerId,
-                value,
-                date,
-            );
-        } else {
-            await db.runAsync(
-                `INSERT INTO ${table} (id, created_at, updated_at, deleted_at, believer_id, ${column}) VALUES (?, ?, ?, NULL, ?, ?)`,
-                newId(),
-                nowIso(),
-                nowIso(),
-                believerId,
-                value,
-            );
-        }
-    }
-    if (table === 'believer_tag_links') {
-        await db.runAsync(
-            'UPDATE believers SET featured_tag_id = ?, updated_at = ? WHERE id = ?',
-            featuredTagId,
-            nowIso(),
-            believerId,
-        );
-    }
-}
-
-export interface WriteBelieverInput {
-    firstName: string;
-    lastName?: string;
-    phone?: string | null;
-    email?: string | null;
-    congregationId?: string | null;
-    status?: string;
-    alertAfterDays?: number | null;
-    ministries?: string[];
-    /** Cuándo empezó cada labor, por `slug`; lo que no esté en `ministries` se cae (RFC 0012). */
-    ministryDates?: Record<string, string | null>;
-    giftIds?: string[];
-    /** Cuándo recibió cada don, por identificador; lo que no esté en `giftIds` se cae. */
-    giftDates?: Record<string, string | null>;
-    tagIds?: string[];
-    /** La que sale en la tabla. Si no está entre las etiquetas, se cae (como en la API). */
-    featuredTagId?: string | null;
-    arrivedAt?: string | null;
-    arrivalSite?: string | null;
-    bibleReadings?: number | null;
-    vivenciasReadings?: number | null;
-    bibleInstituteTimes?: number | null;
-    /**
-     * La fotografía. `undefined` no la toca; `null` la quita; un URI —el del
-     * fichero temporal que eligió quien escribe— la copia a su sitio definitivo
-     * (`photos/<id>`) y apunta `photo_key` a él, como hacen las notas con sus
-     * audios. El borrado del fichero viejo va dentro: reponer no deja huérfanos.
-     */
-    photoUri?: string | null;
-}
-
 export async function createBeliever(churchId: string, input: WriteBelieverInput): Promise<string> {
     const db = await getDb();
     const id = newId();
     const now = nowIso();
     await db.withTransactionAsync(async () => {
+        await validateBelieverReferences(db, churchId, input);
         await db.runAsync(
             `INSERT INTO believers (id, created_at, updated_at, deleted_at, church_id, congregation_id, first_name, last_name,
          phone, email, status, search_name, alert_after_days, arrived_at, arrival_site, bible_readings,
@@ -479,14 +412,15 @@ export async function createBeliever(churchId: string, input: WriteBelieverInput
             input.vivenciasReadings ?? null,
             input.bibleInstituteTimes ?? null,
         );
-        await applyLinks(db, id, input);
+        await applyLinks(db, id, input, churchId);
         if (input.photoUri) {
             const stored = await storeBelieverPhoto(id, input.photoUri);
             await db.runAsync(
-                'UPDATE believers SET photo_key = ?, updated_at = ? WHERE id = ?',
+                'UPDATE believers SET photo_key = ?, updated_at = ? WHERE id = ? AND believers.church_id = ? ',
                 stored,
                 nowIso(),
                 id,
+                churchId,
             );
         }
     });
@@ -509,6 +443,7 @@ export async function updateBeliever(
         churchId,
     );
     if (!existing) throw new Error('not-found');
+    await validateBelieverReferences(db, churchId, input);
 
     const fields: string[] = [];
     const params: SQLiteBindValue[] = [];
@@ -553,75 +488,15 @@ export async function updateBeliever(
     await db.withTransactionAsync(async () => {
         if (fields.length > 0) {
             await db.runAsync(
-                `UPDATE believers SET ${fields.join(', ')}, updated_at = ? WHERE id = ?`,
+                `UPDATE believers SET ${fields.join(', ')}, updated_at = ? WHERE id = ? AND believers.church_id = ? `,
                 ...params,
                 nowIso(),
                 id,
+                churchId,
             );
         }
-        await applyLinks(db, id, input);
+        await applyLinks(db, id, input, churchId);
     });
-}
-
-async function applyLinks(
-    db: Awaited<ReturnType<typeof getDb>>,
-    id: string,
-    input: Partial<WriteBelieverInput>,
-): Promise<void> {
-    if (input.ministries) {
-        await replaceLinks(
-            db,
-            id,
-            'believer_ministries',
-            'ministry',
-            input.ministries,
-            'started_at',
-            input.ministryDates,
-        );
-    }
-    if (input.giftIds) {
-        await replaceLinks(
-            db,
-            id,
-            'believer_gifts',
-            'gift_id',
-            input.giftIds,
-            'received_at',
-            input.giftDates,
-        );
-    }
-    if (input.tagIds) {
-        // El destacado **manda la lista, no la petición**: si llega uno que no
-        // está entre las suyas, se cae aquí (como en la API).
-        const featured = input.tagIds.includes(input.featuredTagId ?? '')
-            ? input.featuredTagId
-            : null;
-        await replaceLinks(
-            db,
-            id,
-            'believer_tag_links',
-            'tag_id',
-            input.tagIds,
-            null,
-            {},
-            featured,
-        );
-    } else if (input.featuredTagId !== undefined) {
-        // Sin cambio de lista, el destacado solo se apunta si ya tiene la etiqueta.
-        const has = await db.getFirstAsync<{ id: string }>(
-            'SELECT id FROM believer_tag_links WHERE believer_id = ? AND tag_id = ? AND deleted_at IS NULL',
-            id,
-            input.featuredTagId,
-        );
-        if (has) {
-            await db.runAsync(
-                'UPDATE believers SET featured_tag_id = ?, updated_at = ? WHERE id = ?',
-                input.featuredTagId,
-                nowIso(),
-                id,
-            );
-        }
-    }
 }
 
 export async function deleteBeliever(id: string, churchId: string): Promise<void> {
@@ -636,10 +511,11 @@ export async function deleteBeliever(id: string, churchId: string): Promise<void
             churchId,
         );
         await db.runAsync(
-            'UPDATE believer_notes SET deleted_at = ?, updated_at = ? WHERE believer_id = ? AND deleted_at IS NULL',
+            'UPDATE believer_notes SET deleted_at = ?, updated_at = ? WHERE believer_id = ? AND deleted_at IS NULL AND believer_notes.church_id = ? ',
             now,
             now,
             id,
+            churchId,
         );
     });
 }
@@ -652,6 +528,8 @@ export async function setCongregation(
 ): Promise<number> {
     if (ids.length === 0) return 0;
     const db = await getDb();
+    if (congregationId) await assertInChurch(db, 'congregations', congregationId, churchId);
+    await assertAllInChurch(db, 'believers', ids, churchId);
     const marks = ids.map(() => '?').join(', ');
     const result = await db.runAsync(
         `UPDATE believers SET congregation_id = ?, updated_at = ? WHERE church_id = ? AND deleted_at IS NULL AND id IN (${marks})`,

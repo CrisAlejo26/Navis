@@ -12,7 +12,7 @@ import {
     updateCatalogEntry,
     type CatalogKind,
 } from '@/data/repos/catalog-repo';
-import { useLocalSession } from '@/stores/local-session';
+import { useActiveChurchId } from './use-active-church-id';
 
 /**
  * Los catálogos de la iglesia —dones, labores, etiquetas y sedes— en local.
@@ -21,12 +21,8 @@ import { useLocalSession } from '@/stores/local-session';
  * etiquetas de estos catálogos.
  */
 
-function useChurchId(): string | null {
-    return useLocalSession((state) => state.session?.churchId) ?? null;
-}
-
 export function useGifts() {
-    const churchId = useChurchId();
+    const churchId = useActiveChurchId();
     return useQuery({
         queryKey: ['catalog', churchId, 'gifts'],
         queryFn: () => {
@@ -38,7 +34,7 @@ export function useGifts() {
 }
 
 export function useMinistries() {
-    const churchId = useChurchId();
+    const churchId = useActiveChurchId();
     return useQuery({
         queryKey: ['catalog', churchId, 'ministries'],
         queryFn: () => {
@@ -50,7 +46,7 @@ export function useMinistries() {
 }
 
 export function useTags() {
-    const churchId = useChurchId();
+    const churchId = useActiveChurchId();
     return useQuery({
         queryKey: ['catalog', churchId, 'tags'],
         queryFn: () => {
@@ -62,7 +58,7 @@ export function useTags() {
 }
 
 export function useCongregations() {
-    const churchId = useChurchId();
+    const churchId = useActiveChurchId();
     return useQuery({
         queryKey: ['catalog', churchId, 'congregations'],
         queryFn: () => {
@@ -74,7 +70,7 @@ export function useCongregations() {
 }
 
 export function useCatalogMutation() {
-    const churchId = useChurchId();
+    const churchId = useActiveChurchId();
     const client = useQueryClient();
     const invalidate = () => client.invalidateQueries({ queryKey: ['catalog'] });
 

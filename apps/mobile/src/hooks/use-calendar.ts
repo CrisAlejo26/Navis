@@ -47,21 +47,16 @@ import {
 } from '@/data/repos/calendar-settings';
 import { listPreachers } from '@/data/repos/calendar-preachers';
 import { calendarSummary } from '@/data/repos/calendar-balance';
-import { useLocalSession } from '@/stores/local-session';
+import { useActiveChurchId } from './use-active-church-id';
 
-/**
- * Los hooks del calendario **en local**: las pantallas no saben que los datos
- * vienen de SQLite —esa frontera vive en `src/data/repos/`— y las claves
- * cuelgan todas de `['calendar', churchId]` para invalidarlas juntas, igual
- * que `refresh` en el cliente de la API.
- */
+/** Hooks locales con claves de calendario acotadas por iglesia. */
 
 const listKey = (churchId: string, calendarId: string, query: { from: string; to: string }) =>
     ['calendar', churchId, calendarId, 'range', query.from, query.to] as const;
 
 /** El tramo de un calendario: el mes, la agenda y el día beben de aquí. */
 export function useCalendarSchedule(calendarId: string, from: string, to: string) {
-    const churchId = useLocalSession((state) => state.session?.churchId);
+    const churchId = useActiveChurchId();
     return useQuery({
         queryKey: listKey(churchId ?? '', calendarId, { from, to }),
         queryFn: () => {
@@ -70,12 +65,13 @@ export function useCalendarSchedule(calendarId: string, from: string, to: string
         },
         enabled: Boolean(churchId) && Boolean(calendarId),
         staleTime: 30_000,
-        placeholderData: (previous) => previous,
+        placeholderData: (previous, previousQuery) =>
+            previousQuery?.queryKey[1] === churchId ? previous : undefined,
     });
 }
 
 export function useCalendars(): UseQueryResult<LocalCalendar[]> {
-    const churchId = useLocalSession((state) => state.session?.churchId);
+    const churchId = useActiveChurchId();
     return useQuery({
         queryKey: ['calendar', churchId, 'calendars'],
         queryFn: () => {
@@ -88,7 +84,7 @@ export function useCalendars(): UseQueryResult<LocalCalendar[]> {
 }
 
 export function useCongregations() {
-    const churchId = useLocalSession((state) => state.session?.churchId);
+    const churchId = useActiveChurchId();
     return useQuery({
         queryKey: ['calendar', churchId, 'congregations'],
         queryFn: () => {
@@ -102,7 +98,7 @@ export function useCongregations() {
 
 /** El reparto del tramo y los avisos. */
 export function useCalendarSummary(calendarId: string, from: string, to: string) {
-    const churchId = useLocalSession((state) => state.session?.churchId);
+    const churchId = useActiveChurchId();
     return useQuery({
         queryKey: ['calendar', churchId, 'summary', calendarId, from, to],
         queryFn: () => {
@@ -127,7 +123,7 @@ export interface PreacherQuery {
 export const PREACHER_PAGE_SIZE = 20;
 
 export function usePreachers(query: PreacherQuery) {
-    const churchId = useLocalSession((state) => state.session?.churchId);
+    const churchId = useActiveChurchId();
     return useInfiniteQuery({
         queryKey: [
             'calendar',
@@ -169,7 +165,7 @@ function useInvalidate() {
 
 /** Poner a alguien en una fase: se pinta al instante y se corrige si falla. */
 export function useAssignSlot(calendarId: string) {
-    const churchId = useLocalSession((state) => state.session?.churchId);
+    const churchId = useActiveChurchId();
     const invalidate = useInvalidate();
     return useMutation({
         mutationFn: (input: AssignSlotInput) => {
@@ -181,7 +177,7 @@ export function useAssignSlot(calendarId: string) {
 }
 
 export function useCreateMeeting(calendarId: string) {
-    const churchId = useLocalSession((state) => state.session?.churchId);
+    const churchId = useActiveChurchId();
     const invalidate = useInvalidate();
     return useMutation({
         mutationFn: (input: CreateMeetingInput) => {
@@ -193,7 +189,7 @@ export function useCreateMeeting(calendarId: string) {
 }
 
 export function useUpdateMeeting(calendarId: string) {
-    const churchId = useLocalSession((state) => state.session?.churchId);
+    const churchId = useActiveChurchId();
     const invalidate = useInvalidate();
     return useMutation({
         mutationFn: (input: UpdateMeetingInput & { id: string }) => {
@@ -205,15 +201,16 @@ export function useUpdateMeeting(calendarId: string) {
 }
 
 export function useDeleteMeeting() {
+    const churchId = useActiveChurchId();
     const invalidate = useInvalidate();
     return useMutation({
-        mutationFn: (id: string) => deleteMeeting(id),
+        mutationFn: (id: string) => deleteMeeting(id, churchId ?? ''),
         onSuccess: invalidate,
     });
 }
 
 export function useSetMeetingSlots() {
-    const churchId = useLocalSession((state) => state.session?.churchId);
+    const churchId = useActiveChurchId();
     const invalidate = useInvalidate();
     return useMutation({
         mutationFn: (input: {
@@ -228,7 +225,7 @@ export function useSetMeetingSlots() {
 }
 
 export function useCreateCalendar() {
-    const churchId = useLocalSession((state) => state.session?.churchId);
+    const churchId = useActiveChurchId();
     const invalidate = useInvalidate();
     return useMutation({
         mutationFn: (input: { name: string; ministry?: string | null }) => {
@@ -240,7 +237,7 @@ export function useCreateCalendar() {
 }
 
 export function useUpdateCalendar() {
-    const churchId = useLocalSession((state) => state.session?.churchId);
+    const churchId = useActiveChurchId();
     const invalidate = useInvalidate();
     return useMutation({
         mutationFn: (input: { id: string; name?: string; ministry?: string | null }) => {
@@ -252,7 +249,7 @@ export function useUpdateCalendar() {
 }
 
 export function useDeleteCalendar() {
-    const churchId = useLocalSession((state) => state.session?.churchId);
+    const churchId = useActiveChurchId();
     const invalidate = useInvalidate();
     return useMutation({
         mutationFn: (id: string) => {
@@ -264,7 +261,7 @@ export function useDeleteCalendar() {
 }
 
 export function useCreateCongregation() {
-    const churchId = useLocalSession((state) => state.session?.churchId);
+    const churchId = useActiveChurchId();
     const invalidate = useInvalidate();
     return useMutation({
         mutationFn: (input: { name: string; city?: string; accent?: string }) => {
@@ -276,7 +273,7 @@ export function useCreateCongregation() {
 }
 
 export function useUpdateCongregation() {
-    const churchId = useLocalSession((state) => state.session?.churchId);
+    const churchId = useActiveChurchId();
     const invalidate = useInvalidate();
     return useMutation({
         mutationFn: (input: {
@@ -293,7 +290,7 @@ export function useUpdateCongregation() {
 }
 
 export function useDeleteCongregation() {
-    const churchId = useLocalSession((state) => state.session?.churchId);
+    const churchId = useActiveChurchId();
     const invalidate = useInvalidate();
     return useMutation({
         mutationFn: (id: string) => {
@@ -305,12 +302,12 @@ export function useDeleteCongregation() {
 }
 
 export function usePatterns(calendarId: string) {
-    const churchId = useLocalSession((state) => state.session?.churchId);
+    const churchId = useActiveChurchId();
     return useQuery({
         queryKey: ['calendar', churchId, 'patterns', calendarId],
         queryFn: () => {
             if (!churchId) throw new Error('Sin iglesia activa no hay reuniones fijas');
-            return listPatterns(calendarId);
+            return listPatterns(calendarId, churchId);
         },
         enabled: Boolean(churchId) && Boolean(calendarId),
         staleTime: 300_000,
@@ -318,7 +315,7 @@ export function usePatterns(calendarId: string) {
 }
 
 export function useCreatePattern(calendarId: string) {
-    const churchId = useLocalSession((state) => state.session?.churchId);
+    const churchId = useActiveChurchId();
     const invalidate = useInvalidate();
     return useMutation({
         mutationFn: (input: CreatePatternInput) => {
@@ -330,7 +327,7 @@ export function useCreatePattern(calendarId: string) {
 }
 
 export function useUpdatePattern(calendarId: string) {
-    const churchId = useLocalSession((state) => state.session?.churchId);
+    const churchId = useActiveChurchId();
     const invalidate = useInvalidate();
     return useMutation({
         mutationFn: (input: UpdatePatternInput & { id: string }) => {
@@ -342,9 +339,10 @@ export function useUpdatePattern(calendarId: string) {
 }
 
 export function useDeletePattern() {
+    const churchId = useActiveChurchId();
     const invalidate = useInvalidate();
     return useMutation({
-        mutationFn: (id: string) => deletePattern(id),
+        mutationFn: (id: string) => deletePattern(id, churchId ?? ''),
         onSuccess: invalidate,
     });
 }

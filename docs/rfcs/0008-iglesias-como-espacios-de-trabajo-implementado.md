@@ -1,6 +1,7 @@
 # RFC 0008: Iglesias como espacios de trabajo, y permisos por vista
 
-- **Estado**: Implementado en web (fases 1 a 5). Pendiente: la parte de móvil
+- **Estado**: Implementado en web (fases 1 a 5) y en móvil en modo local.
+  La conexión al servidor sigue el RFC 0024.
 - **Fecha**: 2026-08-03
 - **Apps afectadas**: api / web / mobile / desktop
 - **Depende de**: —
@@ -358,11 +359,24 @@ La barra lateral plegable ya está: el selector se engancha ahí y hereda el est
 
 ### 8.3 Móvil (`apps/mobile`)
 
-El selector va en la cabecera de la pantalla de inicio y en «Más», no en las
-pestañas: cambiar de iglesia es una acción de contexto, no un destino. La alta de
-iglesia y la pantalla de bienvenida se replican como pantallas de expo-router.
-La lógica —hooks, tipos, claves de traducción— se comparte; el JSX se escribe dos
-veces, como manda la Regla 1.
+Implementado en modo local (esquema 11): membresías explícitas y selección en
+`local_user.active_church_id`. La sesión es un espejo de SQLite; el arranque y
+la restauración resuelven una iglesia accesible o llevan al alta inicial.
+
+El selector aparece en Inicio, Calendario, Creyentes, «Más» y Ajustes. Las rutas
+`church/new` y `settings/churches` viven fuera de `(auth)` y permiten crear las
+iglesias necesarias. Crear añade al dueño como miembro y activa la iglesia.
+El emblema determinista y los tokens se comparten con la web; el JSX es nativo.
+
+`useSwitchChurch` valida acceso, cancela consultas, persiste la selección,
+reinicia el calendario, retira cachés acotadas y vuelve a Inicio. Repositorios y
+consultas separan datos por iglesia; profecías, sueños y enseñanzas siguen siendo
+personales. Los avisos incluyen todas las membresías, con límite global de 50,
+y cambian de contexto antes de abrir una nota. La copia incluye todas las iglesias.
+
+Implementación y evidencias en
+[`iglesias-movil-plan.md`](../planes/pendientes/iglesias-movil-plan.md) y sus
+informes de fase. No incluye borrado de iglesias ni sincronización con servidor.
 
 ### 8.4 Textos (los seis idiomas)
 
@@ -464,13 +478,14 @@ rato en notarse. Vive en `profiles` —tabla nuestra, con entidad— y viaja en 
 respuesta de `GET /churches`, que se invalida al cambiar. Se evita así la trampa
 que estaba apuntada en §12.
 
-### Fase 4 — Interfaz · **implementada (web)**
+### Fase 4 — Interfaz · **implementada (web y móvil local)**
 
 - [x] Selector en la barra lateral, desplegada y plegada, con el alta de otra.
 - [x] `/welcome` bloqueante —nombre y ciudad, nada más— y `/no-access`.
 - [x] `ChurchGate`: sin iglesia no se entra al panel.
 - [x] Los textos, en los seis idiomas.
-- [ ] `/churches` (edición de la ficha) y la parte de móvil.
+- [ ] `/churches` (edición de la ficha web).
+- [x] Móvil local: selector, alta adicional, edición de la activa y Mis iglesias.
 
 ### Fase 5 — Usuarios acotados · **implementada**
 

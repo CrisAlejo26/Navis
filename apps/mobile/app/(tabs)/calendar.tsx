@@ -1,5 +1,5 @@
+import { ChurchPlate } from '@/components/church/church-plate';
 import { useEffect, useMemo, useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -26,8 +26,7 @@ import {
     useCalendarSchedule,
     useCongregations,
 } from '@/hooks/use-calendar';
-import { findChurch } from '@/data/repos/church-repo';
-import { useLocalSession } from '@/stores/local-session';
+import { useLocalChurch } from '@/hooks/use-settings';
 import { router } from 'expo-router';
 import { addMonths, monthGrid, startOfMonth, todayIn } from '@navis/shared';
 
@@ -61,12 +60,7 @@ export default function CalendarScreen() {
     const resolvedTheme = useThemeStore((state) => state.resolvedTheme);
     useStatusBarClaim(resolvedTheme === 'dark' ? 'light' : 'dark');
 
-    const session = useLocalSession((state) => state.session);
-    const { data: church } = useQuery({
-        queryKey: ['church', session?.churchId],
-        queryFn: () => findChurch(session!.churchId!),
-        enabled: Boolean(session?.churchId),
-    });
+    const { data: church } = useLocalChurch();
 
     const { data: calendars = [] } = useCalendars();
     const { data: congregations = [] } = useCongregations();
@@ -138,6 +132,7 @@ export default function CalendarScreen() {
     return (
         <View className="flex-1 bg-background" style={{ paddingTop: insets.top + 8 }}>
             <View className="gap-3 px-4 pb-2">
+                <ChurchPlate />
                 <TopBar
                     title={activo?.name ?? t('calendar.title')}
                     subtitle={t('calendar.subtitle')}

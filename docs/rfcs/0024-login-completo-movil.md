@@ -216,10 +216,14 @@ apps/mobile/app/(auth)/
 2. Se autentica la cuenta contra ese servidor: si el email local ya existe
    allí, login; si no, registro con la misma contraseña.
 3. **Migración local → servidor**, en orden de dependencias:
-    1. Crear la iglesia en el servidor con los datos de la local (si el usuario
-       ya tiene una, se elige: usar esa o crear otra).
-    2. Subir creyentes, notas, etiquetas, listas y demás módulos locales,
-       atribuidos a la iglesia y al usuario del servidor.
+    1. Migrar **N iglesias locales**, no solo la activa: para cada una crear o
+       elegir su destino en el servidor y mantener una correspondencia de ids.
+       Establecer la membresía de la cuenta en cada destino; no fusionar iglesias
+       por nombre ni enviar los datos de varias a una sola por defecto.
+    2. Subir creyentes, notas, etiquetas, listas y demás módulos de cada iglesia,
+       atribuidos a su destino y al usuario del servidor. Conservar la selección
+       activa mediante la correspondencia de ids; los módulos personales se
+       atribuyen al usuario y se migran una vez.
     3. Al terminar, la base local se **conserva** como copia de respaldo (no
        se borra): si la migración se corta a medias, nada se ha perdido y se
        puede reintentar.
@@ -272,10 +276,12 @@ Sección `connection`, seis idiomas: `title`, `subtitle`, `urlLabel`,
    clara de qué va a pasar: **los datos del servidor se bajan al teléfono** y
    la app seguirá funcionando en local con ellos.
 2. **Migración servidor → local**, en orden inverso al de la Fase 3: se
-   descargan la iglesia activa y los datos que el usuario puede ver (mismos
-   permisos que en pantalla), se escriben en la base local — los que ya
-   existen de la época local se actualizan, no se duplican (los
-   identificadores del servidor pasan a ser los locales).
+   descargan **todas las N iglesias accesibles**, sus membresías vigentes y los
+   datos que el usuario puede ver en cada una (mismos permisos que en pantalla).
+   Se conserva la activa si sigue siendo accesible y se resuelve otra si no.
+   Se escriben en la base local: lo que ya existe se actualiza, no se duplica
+   (los identificadores del servidor pasan a ser los locales). Los módulos
+   personales se descargan una vez por usuario.
 3. Se borra la conexión guardada (URL y sesión de Better Auth del
    SecureStore). La cuenta local vuelve a ser la de entrada, con su
    contraseña, PIN y huella intactos.
@@ -285,7 +291,7 @@ Sección `connection`, seis idiomas: `title`, `subtitle`, `urlLabel`,
 ## Consideraciones
 
 - **Quien comparte servidor no se lleva lo ajeno**: se descarga lo que el
-  usuario puede ver (su iglesia y sus permisos); un miembro sin permiso de
+  usuario puede ver (sus iglesias y sus permisos); un miembro sin permiso de
   iglesia no descarga los creyentes de otros.
 - **El servidor no se toca**: desconectar no borra nada allí — otro miembro
   del equipo sigue viendo todo. Es una salida, no una baja (la baja de dueño

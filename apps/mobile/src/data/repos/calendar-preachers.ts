@@ -1,3 +1,4 @@
+import { preacherMinistries } from './preacher-ministries';
 import {
     SCHEDULABLE_STATUSES,
     toSearchName,
@@ -68,8 +69,9 @@ export async function listPreachers(
   )`;
 
     const counted = await db.getFirstAsync<{ total: number }>(
-        `SELECT COUNT(*) AS total FROM believers b WHERE ${whereSql}`,
+        `SELECT COUNT(*) AS total FROM believers b WHERE ${whereSql} AND b.church_id = ? `,
         ...params,
+        churchId,
     );
     const total = counted?.total ?? 0;
 
@@ -82,8 +84,7 @@ export async function listPreachers(
     }>(
         `SELECT b.id, b.congregation_id, b.first_name, b.last_name, ${lastSql} AS lastDate
      FROM believers b
-     WHERE ${whereSql}
-     ORDER BY ${lastSql} ASC, b.search_name ASC
+     WHERE ${whereSql} AND b.church_id = ? ORDER BY ${lastSql} ASC, b.search_name ASC
      LIMIT ? OFFSET ?`,
         // `lastSql` aparece dos veces en el texto —en el SELECT y en el ORDER
         // BY—, así que sus dos parámetros van dos veces: los del `WHERE` no bastan
@@ -93,27 +94,17 @@ export async function listPreachers(
         query.calendarId,
         ...params,
         churchId,
+        churchId,
         query.calendarId,
         query.limit,
         (query.page - 1) * query.limit,
     );
 
-    // Las labores del lote, agrupadas por persona (los `IN` vacíos se filtran
-    // antes de la consulta — la trampa del `IN ('')`).
-    const ministriesOf = new Map<string, string[]>();
-    if (people.length > 0) {
-        const placeholders = people.map(() => '?').join(', ');
-        for (const row of await db.getAllAsync<{ believer_id: string; ministry: string }>(
-            `SELECT believer_id, ministry FROM believer_ministries
-       WHERE believer_id IN (${placeholders}) AND deleted_at IS NULL`,
-            ...people.map((one) => one.id),
-        )) {
-            ministriesOf.set(row.believer_id, [
-                ...(ministriesOf.get(row.believer_id) ?? []),
-                row.ministry,
-            ]);
-        }
-    }
+    const ministriesOf = await preacherMinistries(
+        db,
+        churchId,
+        people.map((one) => one.id),
+    );
 
     const rows = people.length
         ? await db.getAllAsync<{ believer_id: string; times: number }>(

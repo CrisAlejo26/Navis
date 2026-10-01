@@ -1,4 +1,5 @@
 import { loadNotifications } from '@/lib/notifications/module';
+import { noticeDataSchema } from '@/lib/notifications/routes';
 import {
     NOTICE_KEY_PREFIX,
     type NotificationScheduler,
@@ -24,7 +25,9 @@ export async function createExpoScheduler(): Promise<NotificationScheduler | nul
                 .filter((request) => request.identifier.startsWith(NOTICE_KEY_PREFIX))
                 .map((request) => {
                     const fireAt: unknown = request.content.data?.fireAt;
+                    const parsed = noticeDataSchema.safeParse(request.content.data);
                     return {
+                        data: parsed.success ? parsed.data : null,
                         key: request.identifier,
                         fireAt: typeof fireAt === 'number' ? fireAt : null,
                         title: request.content.title ?? '',

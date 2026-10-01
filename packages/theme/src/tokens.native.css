@@ -53,5 +53,17 @@
         --border: var(--dark-border);
         --input: var(--dark-input);
         --ring: var(--dark-ring);
+        --church-1: var(--dark-church-1);
+        --church-1-foreground: var(--dark-church-1-foreground);
+        --church-2: var(--dark-church-2);
+        --church-2-foreground: var(--dark-church-2-foreground);
+        --church-3: var(--dark-church-3);
+        --church-3-foreground: var(--dark-church-3-foreground);
+        --church-4: var(--dark-church-4);
+        --church-4-foreground: var(--dark-church-4-foreground);
+        --church-5: var(--dark-church-5);
+        --church-5-foreground: var(--dark-church-5-foreground);
+        --church-6: var(--dark-church-6);
+        --church-6-foreground: var(--dark-church-6-foreground);
     }
 }

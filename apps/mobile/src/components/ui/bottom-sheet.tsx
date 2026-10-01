@@ -51,7 +51,7 @@ export function BottomSheet({ visible, onClose, title, children }: BottomSheetPr
         <Modal
             visible={visible}
             transparent
-            animationType="fade"
+            animationType={reducedMotion ? 'none' : 'fade'}
             onRequestClose={onClose}
             statusBarTranslucent
             navigationBarTranslucent

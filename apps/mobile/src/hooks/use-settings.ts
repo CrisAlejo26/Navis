@@ -4,6 +4,7 @@ import { findUser, type LocalUser } from '@/data/repos/account-repo';
 import { findChurch, type LocalChurch } from '@/data/repos/church-repo';
 import { updateChurch } from '@/data/repos/church-update';
 import { updateProfile } from '@/data/repos/profile-repo';
+import { useActiveChurchId } from './use-active-church-id';
 import { useLocalSession } from '@/stores/local-session';
 
 /** La cuenta con la sesión abierta; el concentrador y los formularios comparten esta clave. */
@@ -17,7 +18,7 @@ export function useLocalUser() {
 }
 
 export function useLocalChurch() {
-    const churchId = useLocalSession((state) => state.session?.churchId);
+    const churchId = useActiveChurchId();
     return useQuery<LocalChurch | null>({
         queryKey: ['local-church', churchId],
         queryFn: () => findChurch(churchId!),
@@ -40,7 +41,7 @@ export function useUpdateProfile() {
  */
 export function useUpdateChurch() {
     const client = useQueryClient();
-    const churchId = useLocalSession((state) => state.session?.churchId);
+    const churchId = useActiveChurchId();
     return useMutation({
         mutationFn: (input: unknown) => updateChurch(churchId!, input),
         onSuccess: async () => {

@@ -43,6 +43,8 @@ export function SearchField({
     return (
         <TextField
             {...props}
+            value={value}
+            onChangeText={onChangeText}
             label={label ?? t('common.search')}
             hideLabel
             containerClassName={containerClassName}
