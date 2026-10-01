@@ -22,3 +22,4 @@ apps/web/public/apple-touch-icon.png
 # convertiría cada actualización en un diff ilegible.
 .claude/skills/ui-ux-pro-max
 .claude/skills/frontend-design
+.agents/skills
