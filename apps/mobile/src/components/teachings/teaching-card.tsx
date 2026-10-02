@@ -35,6 +35,7 @@ export function TeachingCard({ teaching, onPress, onEdit }: TeachingCardProps) {
 
     return (
         <SwipeableRow
+            shadowColor={toneHex}
             right={
                 onEdit
                     ? {

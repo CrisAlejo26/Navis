@@ -39,6 +39,7 @@ export function DreamCard({ dream, onPress, onFulfill, onEdit }: DreamCardProps)
 
     return (
         <SwipeableRow
+            shadowColor={rail}
             left={
                 onFulfill && dream.state !== 'cumplido'
                     ? {

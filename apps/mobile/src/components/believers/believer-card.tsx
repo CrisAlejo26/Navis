@@ -89,6 +89,7 @@ export function BelieverCard({
             entering={animar && index < 12 ? FadeInDown.delay(index * 40).springify() : undefined}
         >
             <SwipeableRow
+                shadowColor={believer.needsAttention ? palette.destructive : palette.border}
                 disabled={selecting}
                 left={
                     onAddNote

@@ -4,6 +4,8 @@ import { Text, View } from 'react-native';
 import { Swipeable } from 'react-native-gesture-handler';
 
 import type { IoniconName } from '@/lib/nav-mobile';
+import { useThemeStore } from '@/lib/theme';
+import { listCardShadow } from '@/lib/ui/elevation';
 
 /** Una acción de gesto: fondo tintado, icono y etiqueta en su color de frente. */
 export interface SwipeAction {
@@ -18,6 +20,8 @@ export interface SwipeAction {
 
 interface SwipeableRowProps {
     children: ReactNode;
+    /** Tono del borde de la tarjeta; la sombra queda fuera del recorte del gesto. */
+    shadowColor?: string;
     /** En modo selección el gesto se apaga: la casilla manda. */
     disabled?: boolean;
     /** Acción que se revela deslizando la tarjeta hacia la derecha. */
@@ -57,34 +61,52 @@ function AccionDeGesto({ accion, alFinal }: { accion: SwipeAction; alFinal: bool
  * se ejecuta y la fila se cierra en el mismo tick. Sin overshoot: si se
  * pasa, es porque el dedo quiso.
  */
-export function SwipeableRow({ children, disabled = false, left, right }: SwipeableRowProps) {
+export function SwipeableRow({
+    children,
+    shadowColor,
+    disabled = false,
+    left,
+    right,
+}: SwipeableRowProps) {
     const ref = useRef<Swipeable>(null);
+    const dark = useThemeStore((state) => state.resolvedTheme) === 'dark';
+    const shadow = shadowColor ? listCardShadow(shadowColor, dark) : undefined;
 
-    if (disabled || (!left && !right)) return <>{children}</>;
+    if (disabled || (!left && !right)) {
+        return shadowColor ? (
+            <View className="rounded-2xl bg-card" style={shadow}>
+                {children}
+            </View>
+        ) : (
+            <>{children}</>
+        );
+    }
 
     return (
-        <View className="rounded-2xl overflow-hidden">
-            <Swipeable
-                ref={ref}
-                friction={2}
-                leftThreshold={72}
-                rightThreshold={72}
-                overshootLeft={false}
-                overshootRight={false}
-                renderLeftActions={
-                    left ? () => <AccionDeGesto accion={left} alFinal={false} /> : undefined
-                }
-                renderRightActions={
-                    right ? () => <AccionDeGesto accion={right} alFinal /> : undefined
-                }
-                onSwipeableOpen={(direction) => {
-                    ref.current?.close();
-                    if (direction === 'left') left?.onAction();
-                    else right?.onAction();
-                }}
-            >
-                {children}
-            </Swipeable>
+        <View className={shadowColor ? 'rounded-2xl bg-card' : 'rounded-2xl'} style={shadow}>
+            <View className="rounded-2xl overflow-hidden bg-card">
+                <Swipeable
+                    ref={ref}
+                    friction={2}
+                    leftThreshold={72}
+                    rightThreshold={72}
+                    overshootLeft={false}
+                    overshootRight={false}
+                    renderLeftActions={
+                        left ? () => <AccionDeGesto accion={left} alFinal={false} /> : undefined
+                    }
+                    renderRightActions={
+                        right ? () => <AccionDeGesto accion={right} alFinal /> : undefined
+                    }
+                    onSwipeableOpen={(direction) => {
+                        ref.current?.close();
+                        if (direction === 'left') left?.onAction();
+                        else right?.onAction();
+                    }}
+                >
+                    {children}
+                </Swipeable>
+            </View>
         </View>
     );
 }

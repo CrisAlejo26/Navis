@@ -10,6 +10,7 @@ import { NOTE_KIND_ICONS } from '@/components/believers/note-kind-icons';
 import { formatDay } from '@/lib/format';
 import { useThemeStore } from '@/lib/theme';
 import { hexAlpha } from '@/lib/color';
+import { listCardShadow } from '@/lib/ui/elevation';
 
 /**
  * Una nota de la bitácora, **como una tarjetita** — la anatomía de las notas
@@ -37,7 +38,8 @@ export function NoteCard({
     expanded?: boolean;
 }) {
     const { t } = useTranslation();
-    const palette = themeColorsHex[useThemeStore((state) => state.resolvedTheme)];
+    const theme = useThemeStore((state) => state.resolvedTheme);
+    const palette = themeColorsHex[theme];
     const accent = NOTE_KIND_ACCENTS[note.kind];
     const due = isReminderDue(note);
 
@@ -45,6 +47,7 @@ export function NoteCard({
         <View
             className="gap-2 rounded-2xl p-3.5 border bg-card"
             style={{
+                ...listCardShadow(accent, theme === 'dark'),
                 backgroundColor: hexAlpha(accent, 0.08),
                 borderColor: hexAlpha(accent, 0.3),
             }}

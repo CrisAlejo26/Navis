@@ -38,6 +38,7 @@ export function ProphecyCard({ prophecy, onPress, onAddFulfillment, onEdit }: Pr
 
     return (
         <SwipeableRow
+            shadowColor={toneHex}
             left={
                 onAddFulfillment
                     ? {

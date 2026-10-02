@@ -26,6 +26,21 @@ export function elevation(role: ElevationRole, color: string, dark = false): Vie
     };
 }
 
+/** Sombra de listado: el mismo tono del borde, suave y visible en ambos temas. */
+export function listCardShadow(color: string, dark = false): ViewStyle {
+    return {
+        boxShadow: [
+            {
+                offsetX: 0,
+                offsetY: 3,
+                blurRadius: 8,
+                spreadDistance: 0,
+                color: hexAlpha(color, dark ? 0.2 : 0.16),
+            },
+        ],
+    };
+}
+
 export function buttonElevation(
     variant: ButtonVariant,
     palette: ThemeColors,
