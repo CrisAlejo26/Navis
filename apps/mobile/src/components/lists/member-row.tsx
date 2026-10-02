@@ -2,6 +2,7 @@ import type { ListMember } from '@navis/shared';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 import { IconButton } from '@/components/ui/icon-button';
+import { Badge } from '@/components/ui/badge';
 
 export function MemberRow({
     member,
@@ -23,15 +24,21 @@ export function MemberRow({
     const { t } = useTranslation();
     const name = `${member.firstName} ${member.lastName}`;
     return (
-        <View className="gap-2 p-3 rounded-xl border border-border bg-card">
-            <View className="gap-2 flex-row items-center">
-                <Text className="text-sm text-muted-foreground">{index + 1}</Text>
+        <View className="p-4 rounded-xl border border-border bg-card">
+            <View className="gap-3 flex-row items-start">
+                <View className="pt-2.5">
+                    <Badge
+                        label={String(index + 1)}
+                        tone="primary"
+                        className="min-w-8 justify-center"
+                    />
+                </View>
                 <Pressable
                     disabled={!canManage}
                     accessibilityRole="button"
                     accessibilityLabel={t('lists.editNote', { name })}
                     onPress={onEdit}
-                    className="py-2 flex-1"
+                    className="py-2 gap-2 flex-1"
                 >
                     <Text className="text-base font-sans-medium text-foreground">{name}</Text>
                     {member.congregationName ? (
@@ -49,7 +56,7 @@ export function MemberRow({
                     ) : null}
                 </Pressable>
                 {canManage ? (
-                    <View>
+                    <View className="gap-2">
                         <IconButton
                             size="lg"
                             icon="chevron-up"

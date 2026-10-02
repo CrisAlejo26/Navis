@@ -71,8 +71,9 @@ function RootNavigator() {
                         name={name}
                         options={{
                             // Profecías, sueños y enseñanzas pintan su propia `AppBar`, como su listado y su ficha.
-                            headerShown:
-                                name !== 'prophecies' && name !== 'dreams' && name !== 'teachings',
+                            headerShown: !['prophecies', 'dreams', 'teachings', 'lists'].includes(
+                                name,
+                            ),
                             title: t(titleKey),
                             animation: PUSHED_SCREEN_ANIMATION,
                         }}
@@ -81,7 +82,7 @@ function RootNavigator() {
                 <Stack.Screen
                     name="lists/[id]"
                     options={{
-                        headerShown: true,
+                        headerShown: false,
                         title: t('nav.lists'),
                         animation: PUSHED_SCREEN_ANIMATION,
                     }}

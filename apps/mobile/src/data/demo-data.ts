@@ -21,6 +21,7 @@ import { assignSlot } from './repos/calendar-assignments';
 import { seedDemoProphecies } from './demo-prophecies';
 import { seedDemoDreams } from './demo-dreams';
 import { seedDemoTeachings } from './demo-teachings';
+import { seedDemoLists } from './demo-lists';
 
 /**
  * Datos de **prueba** para ver la aplicación llena (Regla 11): una iglesia,
@@ -324,7 +325,10 @@ export async function seedDemoData(churchId: string, userId: string): Promise<bo
         'SELECT COUNT(*) AS total FROM believers WHERE church_id = ? AND deleted_at IS NULL',
         churchId,
     );
-    if ((existing?.total ?? 0) > 0) return false;
+    if ((existing?.total ?? 0) > 0) {
+        await seedDemoLists(churchId, userId);
+        return false;
+    }
 
     // Etiquetas propias para verlas con su color en fichas y listado. Si ya
     // existieran de un intento anterior, el repo lanza «duplicate» y se ignora.
@@ -453,6 +457,7 @@ export async function seedDemoData(churchId: string, userId: string): Promise<bo
         }
     }
 
+    await seedDemoLists(churchId, userId);
     return true;
 }
 
@@ -540,6 +545,12 @@ export async function initializeTestUser(): Promise<void> {
         if (existing) {
             // La cuenta es de antes de que hubiera sueños y enseñanzas de prueba.
             await seedPersonalDemo(existing.id);
+            const churches = await db.getAllAsync<{ id: string }>(
+                'SELECT id FROM churches WHERE owner_id = ? AND deleted_at IS NULL AND name = ?',
+                existing.id,
+                DEMO_CHURCH_NAME,
+            );
+            for (const church of churches) await seedDemoLists(church.id, existing.id);
             return;
         }
         await prepareDemoSession();

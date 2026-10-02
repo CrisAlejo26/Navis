@@ -1,58 +1,49 @@
 import type { ListSummary } from '@navis/shared';
 import { accentHex } from '@navis/theme';
+import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 import { useThemeStore } from '@/lib/theme';
-import { readableInk } from '@/lib/lists/readable-ink';
+import { listSurface } from '@/lib/lists/list-surface';
+import { ListRoster } from './list-roster';
 
 export function ListPanel({ list, onPress }: { list: ListSummary; onPress: () => void }) {
     const { t } = useTranslation();
-    const color = accentHex(
+    const accent = accentHex(
         list.accent,
         useThemeStore((state) => state.resolvedTheme),
     );
-    const ink = readableInk(color);
+    const { background: color, ink } = listSurface(accent);
     return (
         <Pressable
             accessibilityRole="button"
             accessibilityLabel={`${list.name}, ${t('lists.people', { count: list.memberCount })}`}
             onPress={onPress}
-            className="gap-3 p-5 rounded-2xl active:opacity-80"
-            style={{ backgroundColor: color }}
+            className="gap-4 p-5 active:opacity-80"
+            style={{ backgroundColor: color, borderRadius: 24 }}
         >
-            <Text style={{ color: ink }} className="text-xl font-sans-semibold">
-                {list.name}
-            </Text>
+            <View className="gap-3 flex-row items-center">
+                <Text style={{ color: ink }} className="text-xl font-sans-semibold flex-1">
+                    {list.name}
+                </Text>
+                <Ionicons
+                    name="chevron-forward"
+                    size={20}
+                    color={ink}
+                    importantForAccessibility="no-hide-descendants"
+                />
+            </View>
             {list.description ? (
-                <Text style={{ color: ink }} className="text-sm font-sans">
+                <Text style={{ color: ink }} className="text-sm font-sans" numberOfLines={2}>
                     {list.description}
                 </Text>
             ) : null}
-            <View className="gap-2 flex-row flex-wrap items-center">
-                {list.initials.map((initial, index) => (
-                    <View
-                        key={index}
-                        className="h-9 w-9 items-center justify-center rounded-full"
-                        style={{ borderWidth: 1, borderColor: ink }}
-                    >
-                        <Text
-                            style={{ color: ink }}
-                            className="text-xs font-sans-semibold"
-                            numberOfLines={1}
-                            adjustsFontSizeToFit
-                            minimumFontScale={0.7}
-                        >
-                            {initial}
-                        </Text>
-                    </View>
-                ))}
-                <Text style={{ color: ink }} className="text-sm font-sans-medium">
-                    {t('lists.people', { count: list.memberCount })}
+            <ListRoster list={list} ink={ink} background={color} />
+            {!list.isActive ? (
+                <Text style={{ color: ink }} className="text-xs font-sans">
+                    {t('lists.inactive')}
                 </Text>
-            </View>
-            <Text style={{ color: ink }} className="text-xs font-sans">
-                {t(list.isActive ? 'lists.visibilityPrivate' : 'lists.inactive')}
-            </Text>
+            ) : null}
         </Pressable>
     );
 }

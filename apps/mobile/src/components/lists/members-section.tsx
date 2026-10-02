@@ -63,7 +63,7 @@ export function MembersSection({
                     toSearchName(`${one.firstName} ${one.lastName}`).includes(toSearchName(search)),
                 )}
                 keyExtractor={(one) => one.believerId}
-                contentContainerStyle={{ gap: 8, paddingHorizontal: 16, paddingBottom: bottom }}
+                contentContainerStyle={{ gap: 12, paddingHorizontal: 16, paddingBottom: bottom }}
                 ListEmptyComponent={
                     <Text className="p-4 text-muted-foreground">
                         {t(query.isPending ? 'common.loading' : 'lists.emptyList')}

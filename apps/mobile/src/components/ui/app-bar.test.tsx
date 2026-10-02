@@ -15,6 +15,12 @@ jest.mock('expo-router', () => ({
 
 /** La barra de las pantallas apiladas: la flecha vuelve, el título se lee. */
 describe('AppBar', () => {
+    it('permite volver al destino de la sección cuando se entra por enlace directo', async () => {
+        const onBack = jest.fn();
+        await render(<AppBar title="Listas" onBack={onBack} />);
+        await fireEvent.press(screen.getByLabelText('Volver'));
+        expect(onBack).toHaveBeenCalledTimes(1);
+    });
     it('vuelve atrás al pulsar la flecha', async () => {
         await render(<AppBar title="Creyentes" />);
         await fireEvent.press(screen.getByLabelText('Volver'));

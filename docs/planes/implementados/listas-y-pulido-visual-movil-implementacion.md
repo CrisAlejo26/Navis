@@ -50,3 +50,11 @@ Campos añaden anillo de foco/error, chips un mínimo táctil de 44 y segmentos 
 Capturas y archivos de QA locales en `apps/mobile/.expo/`: `lists-font130.png`, `lists-phone-dark.png`, `lists-tablet-dark.png`, `navis-export.png`. No existe una captura fiable de Navis anterior a los cambios; no se presenta una comparación antes/después como verificada. No se ha ejecutado QA iOS, ni recorrido visual completo de las seis traducciones o de todas las pantallas consumidoras; las pruebas globales cubren los primitivos compartidos. El catálogo de traducciones contiene las nuevas claves en los seis idiomas.
 
 Expo Doctor pasa 19/20: queda la advertencia previa de versiones patch de Expo, constants y router. No se ha actualizado el SDK como parte de este trabajo. La publicación remota continúa en el plan pendiente hasta acordar cómo servir enlaces y credenciales de forma independiente.
+
+## Refinamiento de Listas
+
+El tablón utiliza HeroScene y AppBar como Profecías, con devolución y recuento traducido. El detalle conserva su acento y elimina la cabecera nativa duplicada. Las tarjetas muestran iniciales y recuentos; los acentos fuertes usan texto blanco y se oscurecen ligeramente cuando hace falta para conservar contraste. Los pasteles mantienen tinta oscura. Las filas de personas incorporan badges numéricos, padding de 16, separación de 12 entre tarjetas y espacio entre texto y controles de orden.
+
+El seed demo añade siete listas (seis activas, una desactivada), incluida una vacía y notas de ejemplo. Reutiliza creyentes de la misma iglesia y es idempotente: respeta modificaciones y borrados. También actualiza cuentas existentes de Iglesia Navis Demo. RadioGroup anima borde, opacidad y escala durante 180 ms y respeta movimiento reducido.
+
+Verificación del refinamiento: `rtk pnpm check` y `rtk pnpm build` pasan; móvil suma 108 suites y 414 pruebas. Android revisado en español/claro e inglés/oscuro, con capturas `lists-redesign-board.png`, `lists-redesign-detail.png`, `lists-redesign-dark-en.png` y `lists-redesign-detail-dark-en.png` en `.expo`. Expo Doctor conserva el resultado 19/20 por las mismas tres versiones patch.

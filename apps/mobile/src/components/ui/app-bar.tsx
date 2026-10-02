@@ -27,6 +27,8 @@ interface AppBarProps {
     onScene?: boolean;
     /** Sin fondo propio y con los glifos del tema: para ir sobre un panel teñido. */
     transparent?: boolean;
+    foregroundColor?: string;
+    onBack?: () => void;
 }
 
 const ACTION_HIT = 44;
@@ -48,10 +50,13 @@ export function AppBar({
     actions = [],
     onScene = false,
     transparent = false,
+    foregroundColor,
+    onBack,
 }: AppBarProps) {
     const { t } = useTranslation();
     const palette = themeColorsHex[useThemeStore((state) => state.resolvedTheme)];
     const claro = palette.primaryForeground;
+    const ink = foregroundColor ?? (onScene ? claro : palette.foreground);
     const insets = useSafeAreaInsets();
 
     return (
@@ -64,19 +69,15 @@ export function AppBar({
                 <Pressable
                     accessibilityRole="button"
                     accessibilityLabel={backLabel ?? t('common.back')}
-                    onPress={() => router.back()}
+                    onPress={onBack ?? (() => router.back())}
                     className="h-11 w-11 items-center justify-center rounded-full active:opacity-60"
                 >
-                    <Ionicons
-                        name="chevron-back"
-                        size={24}
-                        color={onScene ? claro : palette.foreground}
-                    />
+                    <Ionicons name="chevron-back" size={24} color={ink} />
                 </Pressable>
 
                 <Text
                     className="text-base font-sans-semibold flex-1 text-center"
-                    style={{ color: onScene ? claro : palette.foreground }}
+                    style={{ color: ink }}
                     numberOfLines={1}
                 >
                     {title}
@@ -89,7 +90,7 @@ export function AppBar({
                             icon={action.icon}
                             accessibilityLabel={action.label}
                             onPress={action.onPress}
-                            iconColor={onScene ? claro : undefined}
+                            iconColor={foregroundColor ?? (onScene ? claro : undefined)}
                         />
                     ))}
                 </View>
