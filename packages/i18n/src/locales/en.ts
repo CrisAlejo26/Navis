@@ -1597,6 +1597,18 @@ export const en = {
         },
     },
     lists: {
+        localAccessHint:
+            'Recipients and permissions are saved on this device. A list publishing service still needs to be enabled before they can sign in from another device.',
+        viewerSaveFailed:
+            'Could not save access. Check the name, unique username, password and date.',
+        manageViewer: 'Manage access for {{name}}',
+        localRevokeExplain:
+            'This access and its permissions for every list in this church will be removed. People in the lists will be kept.',
+        hasListPermission: 'Permission for this list',
+        exportPreview: 'File preview',
+        exportPreviewRows: 'First 3 of {{count}} people. The file includes everyone.',
+        exportNameHint:
+            'Choose how names appear in the file: John Smith or John S. The person’s profile keeps their full name.',
         cover: 'Cover',
         removeCover: 'Remove cover',
         exportPhotosHint: 'Photos are included in PDF and image files.',
@@ -1606,7 +1618,7 @@ export const en = {
         localDeleteExplain:
             'The list and its notes will be deleted. People will remain in the church.',
         localShareHint:
-            'Share a file with the people and fields you choose. Public links and viewer accounts are not yet available in this app.',
+            'Share a file with the people and fields you choose. Shared files do not require a username or password.',
         localAudienceHint:
             'Visits and viewer activity will appear when this app supports publishing links.',
         noComposition: 'No data in this category',

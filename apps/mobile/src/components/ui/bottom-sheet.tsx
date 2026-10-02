@@ -57,6 +57,10 @@ export function BottomSheet({
     const { height } = useWindowDimensions();
     const keyboard = useKeyboardHeight();
     const theme = useThemeStore((state) => state.resolvedTheme);
+    const bodyMaxHeight = Math.max(
+        0,
+        height - keyboard - insets.top - (keyboard > 0 ? 0 : insets.bottom) - 96,
+    );
 
     return (
         <Modal
@@ -98,14 +102,14 @@ export function BottomSheet({
                     ) : null}
                     {scrollable ? (
                         <ScrollView
-                            style={{ maxHeight: height - keyboard - 96 }}
+                            style={{ maxHeight: bodyMaxHeight }}
                             keyboardShouldPersistTaps="handled"
                             showsVerticalScrollIndicator={false}
                         >
                             {children}
                         </ScrollView>
                     ) : (
-                        <View style={{ maxHeight: height - keyboard - 96 }}>{children}</View>
+                        <View style={{ maxHeight: bodyMaxHeight }}>{children}</View>
                     )}
                 </Animated.View>
             </View>

@@ -1,14 +1,12 @@
-import { ACCENT_PALETTE, createListSchema, type CreateListInput, type List } from '@navis/shared';
-import { accentHex } from '@navis/theme';
+import { createListSchema, type CreateListInput, type List } from '@navis/shared';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 import { BottomSheet } from '@/components/ui/bottom-sheet';
 import { Button } from '@/components/ui/button';
-import { Chip } from '@/components/ui/chip';
+import { ColorPicker } from '@/components/ui/color-picker';
 import { TextField } from '@/components/ui/text-field';
 import { FieldError } from '@/components/ui/field-error';
-import { useThemeStore } from '@/lib/theme';
 
 export function ListForm({
     list,
@@ -20,7 +18,6 @@ export function ListForm({
     onSave: (input: CreateListInput) => Promise<unknown>;
 }) {
     const { t } = useTranslation();
-    const theme = useThemeStore((state) => state.resolvedTheme);
     const [name, setName] = useState(list?.name ?? '');
     const [description, setDescription] = useState(list?.description ?? '');
     const [accent, setAccent] = useState(list?.accent ?? 'primary');
@@ -68,20 +65,12 @@ export function ListForm({
                     multiline
                     editable={!busy}
                 />
-                <View className="gap-2 flex-row flex-wrap">
-                    {['primary', ...ACCENT_PALETTE]
-                        .filter((one, index, all) => all.indexOf(one) === index)
-                        .map((color, index) => (
-                            <Chip
-                                key={color}
-                                label={t('lists.colorOption', { number: index + 1 })}
-                                color={accentHex(color, theme)}
-                                selected={accent === color}
-                                disabled={busy}
-                                onPress={() => setAccent(color)}
-                            />
-                        ))}
-                </View>
+                <ColorPicker
+                    label={t('lists.color')}
+                    value={accent}
+                    onChange={setAccent}
+                    disabled={busy}
+                />
                 {error ? <FieldError message={t('lists.saveFailed')} /> : null}
                 <Button title={t('common.save')} loading={busy} onPress={() => void save()} />
             </View>

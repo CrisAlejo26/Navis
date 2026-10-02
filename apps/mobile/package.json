@@ -31,6 +31,7 @@
         "@navis/i18n": "workspace:*",
         "@navis/shared": "workspace:*",
         "@navis/theme": "workspace:*",
+        "@noble/hashes": "2.2.0",
         "@react-native-async-storage/async-storage": "2.2.0",
         "@tanstack/react-query": "catalog:",
         "better-auth": "1.6.25",

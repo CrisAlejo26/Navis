@@ -12,7 +12,7 @@ export function ChurchSettingsGroup() {
     return (
         <SettingsGroup label={t('settings.church')}>
             <View className="py-3">
-                <ChurchPlate />
+                <ChurchPlate canSwitch />
             </View>
             <SettingsRow
                 icon="boat-outline"

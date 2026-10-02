@@ -58,3 +58,31 @@ El tablón utiliza HeroScene y AppBar como Profecías, con devolución y recuent
 El seed demo añade siete listas (seis activas, una desactivada), incluida una vacía y notas de ejemplo. Reutiliza creyentes de la misma iglesia y es idempotente: respeta modificaciones y borrados. También actualiza cuentas existentes de Iglesia Navis Demo. RadioGroup anima borde, opacidad y escala durante 180 ms y respeta movimiento reducido.
 
 Verificación del refinamiento: `rtk pnpm check` y `rtk pnpm build` pasan; móvil suma 108 suites y 414 pruebas. Android revisado en español/claro e inglés/oscuro, con capturas `lists-redesign-board.png`, `lists-redesign-detail.png`, `lists-redesign-dark-en.png` y `lists-redesign-detail-dark-en.png` en `.expo`. Expo Doctor conserva el resultado 19/20 por las mismas tres versiones patch.
+
+## Colores, exportación y destinatarios
+
+El formulario muestra las mismas muestras circulares de la web, una marca en el color elegido y un campo hexadecimal personalizado. La vista previa utiliza las mismas filas que los generadores de archivos: cambiar nombre completo por inicial o seleccionar campos actualiza el resultado visible sin cambiar los datos del creyente. Los archivos enviados no requieren credenciales.
+
+Compartir incorpora gestión local de destinatarios: persona o grupo, etiqueta, usuario, contraseña generada, concesiones a varias listas, activación, caducidad, regeneración y revocación. Se reutilizan `list_viewers` y `list_grants`, sin migraciones ni columnas añadidas. `password_hash` mantiene el formato y parámetros scrypt de la API; las contraseñas se muestran al crear o regenerar y no se devuelven al consultar el directorio. Los permisos de miembros se calculan a partir de concesiones vigentes, sin conceder acceso al añadir personas.
+
+La referencia funcional es `SharePanel`, `ShareViewersBlock`, `ViewerForm`, `ViewerDetailDialog`, `PublicFieldsPicker` y `ColorPicker` de la web. El selector y las hojas conservan componentes, temas y tamaños táctiles nativos. La revisión de la hoja extensa detectó que se acercaba demasiado a la barra de estado; el límite de su cuerpo ahora descuenta las áreas seguras.
+
+| Función web                                                                                     | Estado móvil                                                       |
+| ----------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| Muestras y color personalizado                                                                  | Implementado                                                       |
+| Formato de nombres y campos compartidos                                                         | Implementado; vista previa y cinco formatos locales                |
+| Crear destinatario y conceder varias listas                                                     | Implementado en las tablas locales                                 |
+| Gestionar concesiones, activo, caducidad, regenerar y revocar                                   | Implementado localmente                                            |
+| Alta masiva de accesos desde miembros y directorio independiente                                | Pendiente; el directorio de destinatarios está dentro de Compartir |
+| Publicar enlace abierto/restringido, autenticación desde otro dispositivo y descarga autorizada | Pendiente de definir el servicio de publicación independiente      |
+| Historial de audiencia y accesos remotos                                                        | Pendiente del mismo servicio                                       |
+
+No se generan enlaces ficticios ni se llama a la API desde móvil. La pregunta sobre un servicio propio o la API existente sigue pendiente: las tablas y columnas son iguales, pero eso no publica una base guardada en el dispositivo.
+
+Pruebas: verificación cruzada de hashes mediante `node:crypto`, aislamiento de iglesias, usuario duplicado, concesiones ajenas con rollback, expiración, revocación sin borrar personas, y formulario de colores. `pnpm check` pasó con 109 suites/417 pruebas móviles; build pasó. Expo Doctor sigue en 19/20 por versiones patch previas. QA Android: alta de grupo con dos listas, cambio de concesiones, regeneración y vista previa de iniciales; claro/español y oscuro/alemán. Evidencias locales: `lists-color-picker.png`, `lists-export-preview.png`, `lists-viewer-grants.png`, `lists-viewers-dark-de.png`.
+
+## Gestión de iglesias desde Configuración
+
+La iglesia actual se muestra como texto integrado debajo de Creyentes en la cabecera de Inicio, sin tarjeta ni selector. Calendario, Creyentes y Más no muestran el selector. Solo Configuración habilita el cambio y el alta adicional, que vive en `/settings/churches/new`; la antigua `/church/new` redirige al listado de iglesias de Configuración. El alta inicial del registro conserva su flujo obligatorio. Las pruebas existentes de selección y creación verifican la nueva ruta.
+
+La creación agrupa los campos en un panel con padding, separa la explicación y la acción principal, y aplica los márgenes directamente al contenedor nativo de ScrollView. Verificado en Android (`church-create-settings.png`); `pnpm check` y `pnpm build` pasan. El destinatario de prueba QA Equipo se revocó al terminar la comprobación.

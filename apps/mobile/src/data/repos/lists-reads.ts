@@ -40,12 +40,18 @@ export async function readLists(context: ListContext, activeOnly = true): Promis
 export async function readListMembers(context: ListContext, id: string): Promise<ListMember[]> {
     const db = await listDb(context, false, id);
     const rows = await db.getAllAsync<
-        Omit<ListMember, 'ministries' | 'hasAccess' | 'hasPhoto'> & { photoKey: string | null }
+        Omit<ListMember, 'ministries' | 'hasAccess' | 'hasPhoto'> & {
+            photoKey: string | null;
+            hasAccess: number;
+        }
     >(
         `SELECT b.id AS believerId, b.first_name AS firstName, b.last_name AS lastName, m.position, m.note,
          b.congregation_id AS congregationId, c.name AS congregationName, c.accent AS congregationAccent,
          b.arrived_at AS arrivedAt, b.arrival_site AS arrivalSite, b.bible_readings AS bibleReadings,
-         b.vivencias_readings AS vivenciasReadings, b.bible_institute_times AS bibleInstituteTimes, b.photo_key AS photoKey
+         b.vivencias_readings AS vivenciasReadings, b.bible_institute_times AS bibleInstituteTimes, b.photo_key AS photoKey,
+         EXISTS (SELECT 1 FROM list_viewers v JOIN list_grants g ON g.viewer_id = v.id
+          WHERE v.believer_id = b.id AND v.church_id = b.church_id AND g.list_id = m.list_id
+          AND v.deleted_at IS NULL AND v.is_active = 1 AND (v.expires_at IS NULL OR v.expires_at > strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))) AS hasAccess
          FROM list_members m JOIN believers b ON b.id = m.believer_id
          LEFT JOIN congregations c ON c.id = b.congregation_id AND c.church_id = b.church_id AND c.deleted_at IS NULL
          WHERE m.list_id = ? AND b.church_id = ? AND b.deleted_at IS NULL ORDER BY m.position, b.id`,
@@ -58,9 +64,9 @@ export async function readListMembers(context: ListContext, id: string): Promise
          WHERE m.church_id = ? AND m.deleted_at IS NULL ORDER BY m.position`,
         context.churchId,
     );
-    return rows.map(({ photoKey, ...row }) => ({
+    return rows.map(({ photoKey, hasAccess, ...row }) => ({
         ...row,
-        hasAccess: false,
+        hasAccess: hasAccess === 1,
         hasPhoto: Boolean(photoKey),
         ministries: ministries
             .filter((one) => one.believerId === row.believerId)

@@ -79,10 +79,7 @@ export default function BelieverDetailScreen() {
 
     return (
         <View className="flex-1 bg-background">
-            <ScrollView
-                contentContainerClassName="gap-5"
-                contentContainerStyle={{ paddingBottom: bottomPadding }}
-            >
+            <ScrollView contentContainerStyle={{ gap: 20, paddingBottom: bottomPadding }}>
                 <BelieverHeader
                     believer={believer}
                     congregationName={

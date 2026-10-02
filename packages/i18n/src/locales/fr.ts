@@ -1610,6 +1610,18 @@ export const fr = {
         },
     },
     lists: {
+        localAccessHint:
+            'Les destinataires et permissions sont enregistrés sur cet appareil. Un service de publication reste à activer pour permettre la connexion depuis un autre appareil.',
+        viewerSaveFailed:
+            'Impossible d’enregistrer l’accès. Vérifiez le nom, l’identifiant unique, le mot de passe et la date.',
+        manageViewer: 'Gérer l’accès de {{name}}',
+        localRevokeExplain:
+            'Cet accès et ses permissions pour toutes les listes de cette église seront supprimés. Les personnes des listes seront conservées.',
+        hasListPermission: 'Permission pour cette liste',
+        exportPreview: 'Aperçu du fichier',
+        exportPreviewRows: 'Les 3 premières personnes sur {{count}}. Le fichier les inclut toutes.',
+        exportNameHint:
+            'Choisissez les noms dans le fichier : Jean Dupont ou Jean D. La fiche de la personne conserve son nom complet.',
         cover: 'Couverture',
         removeCover: 'Supprimer la couverture',
         exportPhotosHint: 'Les photos sont incluses dans les fichiers PDF et image.',
@@ -1619,7 +1631,7 @@ export const fr = {
         localDeleteExplain:
             'La liste et ses notes seront supprimées. Les personnes resteront dans l’église.',
         localShareHint:
-            'Partagez un fichier avec les personnes et les champs de votre choix. Les liens publics et les accès ne sont pas encore disponibles dans cette application.',
+            'Partagez un fichier avec les personnes et les champs de votre choix. Les fichiers partagés ne demandent ni identifiant ni mot de passe.',
         localAudienceHint:
             'Les visites et les accès apparaîtront lorsque cette application permettra de publier des liens.',
         noComposition: 'Aucune donnée dans cette catégorie',

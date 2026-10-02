@@ -71,8 +71,12 @@ export default function CalendarSettingsScreen() {
             <AppBar title={calendar.name} backLabel={t('common.back')} />
 
             <ScrollView
-                contentContainerClassName="gap-4 px-4 pt-3"
-                contentContainerStyle={{ paddingBottom: bottomPadding }}
+                contentContainerStyle={{
+                    gap: 16,
+                    paddingHorizontal: 16,
+                    paddingTop: 12,
+                    paddingBottom: bottomPadding,
+                }}
             >
                 {calendars.length > 1 ? (
                     <ScrollView

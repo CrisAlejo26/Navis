@@ -1601,6 +1601,18 @@ export const it = {
         },
     },
     lists: {
+        localAccessHint:
+            'Destinatari e permessi vengono salvati su questo dispositivo. Per accedere da un altro dispositivo occorre ancora attivare un servizio di pubblicazione delle liste.',
+        viewerSaveFailed:
+            'Impossibile salvare l’accesso. Controlla nome, nome utente univoco, password e data.',
+        manageViewer: 'Gestisci l’accesso di {{name}}',
+        localRevokeExplain:
+            'Questo accesso e i suoi permessi per tutte le liste di questa chiesa verranno rimossi. Le persone nelle liste verranno conservate.',
+        hasListPermission: 'Permesso per questa lista',
+        exportPreview: 'Anteprima del file',
+        exportPreviewRows: 'Prime 3 persone su {{count}}. Il file le include tutte.',
+        exportNameHint:
+            'Scegli i nomi nel file: Mario Rossi o Mario R. Il profilo della persona conserva il nome completo.',
         cover: 'Copertina',
         removeCover: 'Rimuovi copertina',
         exportPhotosHint: 'Le foto sono incluse nei file PDF e immagine.',
@@ -1610,7 +1622,7 @@ export const it = {
         localDeleteExplain:
             'La lista e le sue note saranno eliminate. Le persone rimarranno nella chiesa.',
         localShareHint:
-            'Condividi un file con le persone e i campi che scegli. I link pubblici e gli accessi non sono ancora disponibili in questa app.',
+            'Condividi un file con le persone e i campi che scegli. I file condivisi non richiedono nome utente o password.',
         localAudienceHint:
             'Le visite e gli accessi appariranno quando questa app consentirà di pubblicare link.',
         noComposition: 'Nessun dato in questa categoria',

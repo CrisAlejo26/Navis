@@ -120,8 +120,7 @@ export default function ProphecyDetailScreen() {
                 onDelete={confirmDelete}
             />
             <ScrollView
-                contentContainerClassName="gap-4 p-4"
-                contentContainerStyle={{ paddingBottom: bottomPadding }}
+                contentContainerStyle={{ gap: 16, padding: 16, paddingBottom: bottomPadding }}
             >
                 <Card className="rounded-2xl">
                     <Text className="text-xs text-muted-foreground">

@@ -53,7 +53,6 @@ export default function TeachingsScreen() {
     return (
         <View className="flex-1 bg-background">
             <ScrollView
-                contentContainerClassName=""
                 contentContainerStyle={{ paddingBottom: bottomPadding }}
                 showsVerticalScrollIndicator={false}
             >

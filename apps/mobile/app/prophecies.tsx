@@ -68,7 +68,6 @@ export default function PropheciesScreen() {
             <Animated.ScrollView
                 onScroll={onScroll}
                 scrollEventThrottle={16}
-                contentContainerClassName=""
                 contentContainerStyle={{ paddingBottom: bottomPadding }}
                 showsVerticalScrollIndicator={false}
             >

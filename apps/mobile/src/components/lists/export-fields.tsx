@@ -1,6 +1,7 @@
 import type { ListPublicFields } from '@navis/shared';
+import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { View } from 'react-native';
+import { Text, View } from 'react-native';
 import { Switch } from '@/components/ui/switch';
 import { SegmentedControl } from '@/components/ui/segmented-control';
 
@@ -8,10 +9,12 @@ export function ExportFields({
     fields,
     onChange,
     disabled,
+    preview,
 }: {
     fields: ListPublicFields;
     onChange: (fields: ListPublicFields) => void;
     disabled: boolean;
+    preview?: ReactNode;
 }) {
     const { t } = useTranslation();
     const options = [
@@ -26,6 +29,7 @@ export function ExportFields({
     ] as const;
     return (
         <View className="gap-2">
+            <Text className="text-sm font-sans-medium text-foreground">{t('lists.nameStyle')}</Text>
             <SegmentedControl
                 value={fields.nameStyle}
                 onChange={(nameStyle) => {
@@ -36,6 +40,8 @@ export function ExportFields({
                     { value: 'initial', label: t('lists.nameInitial') },
                 ]}
             />
+            <Text className="text-sm text-muted-foreground">{t('lists.exportNameHint')}</Text>
+            {preview}
             {options.map((one) => (
                 <Switch
                     key={one.key}

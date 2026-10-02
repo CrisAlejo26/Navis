@@ -78,3 +78,22 @@ it('no ofrece movimientos fuera del orden ni permite gestión a un lector', asyn
     await fireEvent.press(screen.getByRole('button', { name: 'Nota de Ana Pérez' }));
     expect(edit).not.toHaveBeenCalled();
 });
+
+it('permite elegir una muestra y guardar un color personalizado compatible con la web', async () => {
+    const save = jest.fn().mockResolvedValue(undefined);
+    await render(
+        <SafeAreaProvider>
+            <ListForm onSave={save} onClose={jest.fn()} />
+        </SafeAreaProvider>,
+    );
+    await fireEvent.changeText(screen.getByLabelText('Nombre de la lista'), 'Equipo');
+    const colors = screen.getAllByRole('radio');
+    expect(colors.length).toBeGreaterThan(20);
+    await fireEvent.press(colors[3]);
+    expect(screen.getAllByRole('radio', { selected: true })).toHaveLength(1);
+    await fireEvent.changeText(screen.getByLabelText('Otro color'), '#AB1234');
+    await fireEvent.press(screen.getByRole('button', { name: 'Guardar' }));
+    await waitFor(() =>
+        expect(save).toHaveBeenCalledWith({ name: 'Equipo', description: '', accent: '#ab1234' }),
+    );
+});

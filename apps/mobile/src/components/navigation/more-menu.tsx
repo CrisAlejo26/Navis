@@ -1,4 +1,3 @@
-import { ChurchPlate } from '@/components/church/church-plate';
 import { Ionicons } from '@expo/vector-icons';
 import { themeColorsHex } from '@navis/theme';
 import * as Haptics from 'expo-haptics';
@@ -119,9 +118,6 @@ export function MoreMenu({ open, onClose }: MoreMenuProps) {
                     </Pressable>
                 </View>
 
-                <View className="mb-3">
-                    <ChurchPlate />
-                </View>
                 <MoreMenuContent />
             </Animated.View>
         </View>

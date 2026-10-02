@@ -47,7 +47,7 @@ it('marca la activa, cambia por el hook y permite añadir fuera de auth', async 
     await waitFor(() => expect(change).toHaveBeenCalledWith('south'));
     expect(close).toHaveBeenCalled();
     await fireEvent.press(screen.getByRole('button', { name: 'Añadir iglesia' }));
-    expect(router.push).toHaveBeenCalledWith('/church/new');
+    expect(router.push).toHaveBeenCalledWith('/settings/churches/new');
 });
 it('muestra el fallo sin cerrar ni alterar la activa', async () => {
     change.mockRejectedValue(new Error('not-found'));

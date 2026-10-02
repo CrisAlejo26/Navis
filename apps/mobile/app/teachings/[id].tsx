@@ -91,10 +91,7 @@ export default function TeachingDetailScreen() {
                 }
                 onDelete={confirmDelete}
             />
-            <ScrollView
-                contentContainerClassName="p-5"
-                contentContainerStyle={{ paddingBottom: bottomPadding }}
-            >
+            <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: bottomPadding }}>
                 {text === '' && !checklist ? (
                     <Text className="text-muted-foreground">{t('teachings.noNotes')}</Text>
                 ) : null}

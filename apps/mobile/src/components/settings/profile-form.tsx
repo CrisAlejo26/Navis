@@ -44,8 +44,7 @@ export function ProfileForm({ user }: { user: LocalUser }) {
         >
             <ScrollView
                 keyboardShouldPersistTaps="handled"
-                contentContainerClassName="gap-4 p-4"
-                contentContainerStyle={{ paddingBottom: bottomPadding }}
+                contentContainerStyle={{ gap: 16, padding: 16, paddingBottom: bottomPadding }}
             >
                 <Text className="text-sm text-muted-foreground">{t('profile.description')}</Text>
                 <TextField label={t('auth.name')} value={name} onChangeText={setName} />

@@ -115,8 +115,11 @@ export default function DreamsListScreen() {
                 <FlatList
                     data={items}
                     keyExtractor={(item) => item.id}
-                    contentContainerClassName="gap-2.5 px-4"
-                    contentContainerStyle={{ paddingBottom: bottomPadding }}
+                    contentContainerStyle={{
+                        gap: 10,
+                        paddingHorizontal: 16,
+                        paddingBottom: bottomPadding,
+                    }}
                     renderItem={({ item }) => (
                         <DreamCard
                             dream={item}

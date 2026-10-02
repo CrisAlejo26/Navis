@@ -17,8 +17,7 @@ export default function NotificationsScreen() {
         <View className="flex-1 bg-background">
             <AppBar title={t('notifications.title')} />
             <ScrollView
-                contentContainerClassName="gap-4 p-4"
-                contentContainerStyle={{ paddingBottom: bottomPadding }}
+                contentContainerStyle={{ gap: 16, padding: 16, paddingBottom: bottomPadding }}
             >
                 <NotificationsCard />
             </ScrollView>

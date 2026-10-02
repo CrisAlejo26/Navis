@@ -10,8 +10,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { formatNumber, formatShortDate } from '@/lib/format';
 import { useLocalSession } from '@/stores/local-session';
 import { findUser } from '@/data/repos/account-repo';
-import { ChurchPlate } from '@/components/church/church-plate';
 import { LogoBoat } from '@/components/home/logo-boat';
+import { useLocalChurch } from '@/hooks/use-settings';
 
 /**
  * El hero ilustrado del panel (RFC 0001, rediseño): la estampa náutica de
@@ -241,6 +241,7 @@ export function DashboardHero({
     const { t } = useTranslation();
     const insets = useSafeAreaInsets();
     const session = useLocalSession((state) => state.session);
+    const { data: church } = useLocalChurch();
 
     const { data: user } = useQuery({
         queryKey: ['local-user', session?.userId],
@@ -279,9 +280,6 @@ export function DashboardHero({
                 </View>
             </View>
 
-            <View className="px-5 pt-3">
-                <ChurchPlate />
-            </View>
             <Pressable
                 onPress={() => router.push('/believers')}
                 className="gap-1 px-5 pt-4 active:opacity-80"
@@ -292,6 +290,15 @@ export function DashboardHero({
                 </Text>
                 <View className="gap-0.5">
                     <Text className="text-base font-medium text-white">{t('home.believers')}</Text>
+                    {church?.name ? (
+                        <Text
+                            className="text-sm font-sans-medium text-white"
+                            style={{ maxWidth: '75%' }}
+                            numberOfLines={2}
+                        >
+                            {church.name}
+                        </Text>
+                    ) : null}
                     <Text className="text-xs" style={{ color: 'rgba(255,255,255,0.75)' }}>
                         {t('home.newThisMonth', { count: newThisMonth })}
                     </Text>

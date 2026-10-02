@@ -54,6 +54,15 @@ export function MemberRow({
                     {member.note ? (
                         <Text className="text-sm text-foreground">{member.note}</Text>
                     ) : null}
+                    {member.hasAccess ? (
+                        <View className="items-start">
+                            <Badge
+                                label={t('lists.hasListPermission')}
+                                tone="success"
+                                icon="key-outline"
+                            />
+                        </View>
+                    ) : null}
                 </Pressable>
                 {canManage ? (
                     <View className="gap-2">

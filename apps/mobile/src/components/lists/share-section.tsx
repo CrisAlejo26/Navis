@@ -8,6 +8,8 @@ import { Chip } from '@/components/ui/chip';
 import { FieldError } from '@/components/ui/field-error';
 import { ExportFields } from './export-fields';
 import { ExportPoster } from './export-poster';
+import { ExportPreview } from './export-preview';
+import { ViewersSection } from './viewers-section';
 
 const FORMATS = [
     { value: 'xlsx', key: 'export.xlsx' },
@@ -45,10 +47,23 @@ export function ShareSection({
             <Text className="text-sm text-muted-foreground">{t('lists.localShareHint')}</Text>
             {canShare ? (
                 <>
+                    <ViewersSection list={list} />
                     <Text className="text-lg font-sans-semibold text-foreground">
                         {t('lists.exportFields')}
                     </Text>
-                    <ExportFields fields={fields} onChange={setFields} disabled={busy} />
+                    <ExportFields
+                        fields={fields}
+                        onChange={setFields}
+                        disabled={busy}
+                        preview={
+                            <ExportPreview
+                                table={table}
+                                showPhotos={
+                                    fields.photo && (format === 'image' || format === 'pdf')
+                                }
+                            />
+                        }
+                    />
                     {fields.photo ? (
                         <Text className="text-sm text-muted-foreground">
                             {t('lists.exportPhotosHint')}

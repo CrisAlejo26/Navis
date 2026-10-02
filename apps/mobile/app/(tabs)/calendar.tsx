@@ -1,5 +1,4 @@
 import { usePageBottomPadding } from '@/hooks/use-page-bottom-padding';
-import { ChurchPlate } from '@/components/church/church-plate';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, Text, View } from 'react-native';
@@ -134,7 +133,6 @@ export default function CalendarScreen() {
     return (
         <View className="flex-1 bg-background" style={{ paddingTop: insets.top + 8 }}>
             <View className="gap-3 px-4 pb-2">
-                <ChurchPlate />
                 <TopBar
                     title={activo?.name ?? t('calendar.title')}
                     subtitle={t('calendar.subtitle')}
@@ -278,8 +276,11 @@ export default function CalendarScreen() {
             {isError ? (
                 <ScrollView
                     className="flex-1"
-                    contentContainerClassName="gap-3 px-4"
-                    contentContainerStyle={{ paddingBottom: bottomPadding }}
+                    contentContainerStyle={{
+                        gap: 12,
+                        paddingHorizontal: 16,
+                        paddingBottom: bottomPadding,
+                    }}
                 >
                     <EmptyState
                         icon="cloud-offline-outline"
@@ -305,8 +306,11 @@ export default function CalendarScreen() {
                 ) : (
                     <ScrollView
                         className="flex-1"
-                        contentContainerClassName="gap-3 px-4"
-                        contentContainerStyle={{ paddingBottom: bottomPadding }}
+                        contentContainerStyle={{
+                            gap: 12,
+                            paddingHorizontal: 16,
+                            paddingBottom: bottomPadding,
+                        }}
                     >
                         <AgendaList
                             range={{ ...schedule, days: diasFiltrados }}

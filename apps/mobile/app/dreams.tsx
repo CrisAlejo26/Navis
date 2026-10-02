@@ -71,7 +71,6 @@ export default function DreamsScreen() {
             <Animated.ScrollView
                 onScroll={onScroll}
                 scrollEventThrottle={16}
-                contentContainerClassName=""
                 contentContainerStyle={{ paddingBottom: bottomPadding }}
                 showsVerticalScrollIndicator={false}
             >

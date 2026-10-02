@@ -1624,6 +1624,18 @@ export const de = {
         },
     },
     lists: {
+        localAccessHint:
+            'Empfänger und Berechtigungen werden auf diesem Gerät gespeichert. Für die Anmeldung von anderen Geräten muss noch ein Dienst zur Listenveröffentlichung eingerichtet werden.',
+        viewerSaveFailed:
+            'Zugang konnte nicht gespeichert werden. Prüfen Sie Name, eindeutigen Benutzernamen, Passwort und Datum.',
+        manageViewer: 'Zugang für {{name}} verwalten',
+        localRevokeExplain:
+            'Dieser Zugang und seine Berechtigungen für alle Listen dieser Kirche werden entfernt. Die Personen in den Listen bleiben erhalten.',
+        hasListPermission: 'Berechtigung für diese Liste',
+        exportPreview: 'Dateivorschau',
+        exportPreviewRows: 'Die ersten 3 von {{count}} Personen. Die Datei enthält alle.',
+        exportNameHint:
+            'Wählen Sie die Namen in der Datei: Hans Müller oder Hans M. Das Personenprofil behält den vollständigen Namen.',
         cover: 'Titelbild',
         removeCover: 'Titelbild entfernen',
         exportPhotosHint: 'Fotos werden in PDF- und Bilddateien eingefügt.',
@@ -1633,7 +1645,7 @@ export const de = {
         localDeleteExplain:
             'Die Liste und ihre Notizen werden gelöscht. Die Personen bleiben in der Gemeinde.',
         localShareHint:
-            'Teile eine Datei mit den gewünschten Personen und Feldern. Öffentliche Links und Lesezugänge sind in dieser App noch nicht verfügbar.',
+            'Teile eine Datei mit den gewünschten Personen und Feldern. Geteilte Dateien erfordern keinen Benutzernamen und kein Passwort.',
         localAudienceHint:
             'Besuche und Zugriffsaktivität werden angezeigt, sobald diese App Links veröffentlichen kann.',
         noComposition: 'Keine Daten in dieser Kategorie',

@@ -1622,6 +1622,18 @@ export const es = {
     /* Las listas compartidas (RFC 0010). El nombre de cada lista NO se traduce:
      es dato de la iglesia, como el de una sede (Regla 2 §6). */
     lists: {
+        localAccessHint:
+            'Los destinatarios y permisos se guardan en este dispositivo. Para que puedan entrar desde otro dispositivo, falta habilitar el servicio de publicación de listas.',
+        viewerSaveFailed:
+            'No se ha podido guardar el acceso. Revisa el nombre, el usuario único, la contraseña y la fecha.',
+        manageViewer: 'Gestionar el acceso de {{name}}',
+        localRevokeExplain:
+            'Se eliminará este acceso y sus permisos para todas las listas de esta iglesia. Las personas de las listas se conservarán.',
+        hasListPermission: 'Con permiso para esta lista',
+        exportPreview: 'Vista previa del archivo',
+        exportPreviewRows: 'Primeras 3 personas de {{count}}. El archivo incluye a todas.',
+        exportNameHint:
+            'Elige cómo aparecerán los nombres en el archivo: Juan Pérez o Juan P. La ficha de la persona conserva su nombre completo.',
         cover: 'Portada',
         removeCover: 'Quitar portada',
         exportPhotosHint: 'Las fotos se incluyen en PDF e imagen.',
@@ -1631,7 +1643,7 @@ export const es = {
         localDeleteExplain:
             'Se eliminarán la lista y sus notas. Las personas seguirán en la iglesia.',
         localShareHint:
-            'Comparte un archivo con las personas y los campos que elijas. Los enlaces públicos y los accesos todavía no están disponibles en esta app.',
+            'Comparte un archivo con las personas y los campos que elijas. Los archivos compartidos no requieren usuario ni contraseña.',
         localAudienceHint:
             'Las visitas y los accesos aparecerán cuando se puedan publicar enlaces desde esta app.',
         noComposition: 'Sin datos en esta categoría',

@@ -1597,6 +1597,18 @@ export const pt = {
         },
     },
     lists: {
+        localAccessHint:
+            'Os destinatários e permissões são salvos neste dispositivo. Ainda é necessário ativar um serviço de publicação para permitir o acesso de outro dispositivo.',
+        viewerSaveFailed:
+            'Não foi possível salvar o acesso. Confira o nome, usuário único, senha e data.',
+        manageViewer: 'Gerenciar acesso de {{name}}',
+        localRevokeExplain:
+            'Este acesso e suas permissões para todas as listas desta igreja serão removidos. As pessoas das listas serão mantidas.',
+        hasListPermission: 'Permissão para esta lista',
+        exportPreview: 'Prévia do arquivo',
+        exportPreviewRows: 'Primeiras 3 pessoas de {{count}}. O arquivo inclui todas.',
+        exportNameHint:
+            'Escolha os nomes no arquivo: João Silva ou João S. O perfil da pessoa mantém o nome completo.',
         cover: 'Capa',
         removeCover: 'Remover capa',
         exportPhotosHint: 'As fotografias são incluídas nos ficheiros PDF e imagem.',
@@ -1606,7 +1618,7 @@ export const pt = {
         localDeleteExplain:
             'A lista e as suas notas serão eliminadas. As pessoas permanecerão na igreja.',
         localShareHint:
-            'Partilhe um ficheiro com as pessoas e os campos que escolher. As ligações públicas e os acessos ainda não estão disponíveis nesta aplicação.',
+            'Partilhe um ficheiro com as pessoas e os campos que escolher. Os ficheiros partilhados não exigem utilizador nem palavra-passe.',
         localAudienceHint:
             'As visitas e os acessos aparecerão quando esta aplicação permitir publicar ligações.',
         noComposition: 'Sem dados nesta categoria',

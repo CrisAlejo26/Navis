@@ -1,5 +1,4 @@
 import { usePageBottomPadding } from '@/hooks/use-page-bottom-padding';
-import { ChurchPlate } from '@/components/church/church-plate';
 import type { BelieversQuery, BelieverListItem } from '@navis/shared';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -152,7 +151,6 @@ export default function BelieversScreen() {
         <View className="flex-1 bg-background" style={{ paddingTop: insets.top + 8 }}>
             {CON_ESCENA ? <BelieversScene scrollY={scrollY} /> : null}
             <View className="gap-3 px-4 pb-2">
-                <ChurchPlate />
                 <TopBar
                     onScene={CON_ESCENA}
                     title={t('believers.title')}
@@ -243,8 +241,9 @@ export default function BelieversScreen() {
                 <FlatList
                     data={items}
                     keyExtractor={(item) => item.id}
-                    contentContainerClassName="gap-2.5 px-4"
                     contentContainerStyle={{
+                        gap: 10,
+                        paddingHorizontal: 16,
                         paddingBottom: selected.length > 0 ? 128 : bottomPadding,
                     }}
                     initialNumToRender={12}

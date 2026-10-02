@@ -109,8 +109,7 @@ export function TeachingEditor({ blocks, onChange, header, footer }: TeachingEdi
             <ScrollView
                 keyboardShouldPersistTaps="handled"
                 keyboardDismissMode="on-drag"
-                contentContainerClassName="gap-4 px-4"
-                contentContainerStyle={{ paddingBottom: 16 }}
+                contentContainerStyle={{ gap: 16, paddingHorizontal: 16, paddingBottom: 16 }}
             >
                 {header}
                 <View className="gap-1.5">

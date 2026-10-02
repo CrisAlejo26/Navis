@@ -79,10 +79,7 @@ export default function NoteDetailScreen() {
 
     return (
         <View className="flex-1 bg-background">
-            <ScrollView
-                contentContainerClassName="gap-5"
-                contentContainerStyle={{ paddingBottom: bottomPadding }}
-            >
+            <ScrollView contentContainerStyle={{ gap: 20, paddingBottom: bottomPadding }}>
                 <NoteHero
                     note={note}
                     believerName={believer.data ? believerName(believer.data) : ''}

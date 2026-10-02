@@ -37,8 +37,12 @@ export default function CalendarBalanceScreen() {
             <AppBar title={t('calendar.balance')} backLabel={t('common.back')} />
 
             <ScrollView
-                contentContainerClassName="gap-4 px-4 pt-3"
-                contentContainerStyle={{ paddingBottom: bottomPadding }}
+                contentContainerStyle={{
+                    gap: 16,
+                    paddingHorizontal: 16,
+                    paddingTop: 12,
+                    paddingBottom: bottomPadding,
+                }}
             >
                 <Card title={t('calendar.balance')}>
                     {(summary?.people ?? []).length === 0 ? (

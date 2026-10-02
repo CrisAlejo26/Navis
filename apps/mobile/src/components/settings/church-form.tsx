@@ -40,8 +40,7 @@ export function ChurchForm({ church }: { church: LocalChurch }) {
         >
             <ScrollView
                 keyboardShouldPersistTaps="handled"
-                contentContainerClassName="gap-4 p-4"
-                contentContainerStyle={{ paddingBottom: bottomPadding }}
+                contentContainerStyle={{ gap: 16, padding: 16, paddingBottom: bottomPadding }}
             >
                 <Text className="text-sm text-muted-foreground">{t('settings.churchHint')}</Text>
                 <ChurchFields

@@ -47,8 +47,7 @@ export default function BackupScreen() {
         <View className="flex-1 bg-background">
             <AppBar title={t('backup.title')} />
             <ScrollView
-                contentContainerClassName="gap-4 p-4"
-                contentContainerStyle={{ paddingBottom: bottomPadding }}
+                contentContainerStyle={{ gap: 16, padding: 16, paddingBottom: bottomPadding }}
             >
                 <Text className="text-sm text-muted-foreground">{t('backup.intro')}</Text>
                 <Card title={t('backup.exportTitle')} description={t('backup.exportBody')}>

@@ -74,8 +74,11 @@ export default function CatalogScreen() {
             {/* El título sigue al segmento: siempre dice qué catálogo se administra. */}
             <AppBar title={t(`${prefix}.title`)} />
             <ScrollView
-                contentContainerClassName="gap-4 px-4"
-                contentContainerStyle={{ paddingBottom: bottomPadding }}
+                contentContainerStyle={{
+                    gap: 16,
+                    paddingHorizontal: 16,
+                    paddingBottom: bottomPadding,
+                }}
             >
                 <Text className="text-sm text-muted-foreground">{t(`${prefix}.description`)}</Text>
                 <SegmentedControl

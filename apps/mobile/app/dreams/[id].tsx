@@ -108,8 +108,7 @@ export default function DreamDetailScreen() {
                 onDelete={confirmDelete}
             />
             <ScrollView
-                contentContainerClassName="gap-4 p-4"
-                contentContainerStyle={{ paddingBottom: bottomPadding }}
+                contentContainerStyle={{ gap: 16, padding: 16, paddingBottom: bottomPadding }}
             >
                 <ScrollView
                     horizontal

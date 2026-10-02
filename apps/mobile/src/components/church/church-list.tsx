@@ -62,7 +62,7 @@ export function ChurchList({ onClose = () => undefined }: { onClose?: () => void
                     disabled={change.isPending}
                     onPress={() => {
                         onClose();
-                        router.push('/church/new');
+                        router.push('/settings/churches/new');
                     }}
                 />
             </View>
