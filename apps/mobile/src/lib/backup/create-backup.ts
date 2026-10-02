@@ -1,4 +1,5 @@
 import { getDb, SCHEMA_VERSION } from '@/data/db';
+import { listCoverFileId } from '@/data/list-cover-storage';
 
 import {
     BACKUP_FORMAT,
@@ -43,6 +44,11 @@ export async function buildBackup(files: BackupFiles): Promise<Backup> {
     const photoIds = (tables.believers ?? [])
         .filter((row) => row.photo_key !== null)
         .map((row) => String(row.id));
+    photoIds.push(
+        ...(tables.lists ?? [])
+            .filter((row) => row.cover_key != null)
+            .map((row) => listCoverFileId(String(row.id))),
+    );
 
     return {
         format: BACKUP_FORMAT,

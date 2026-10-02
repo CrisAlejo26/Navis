@@ -3,6 +3,22 @@ import { fireEvent, render, screen } from '@testing-library/react-native';
 import { Button } from '@/components/ui/button';
 
 describe('Button', () => {
+    it('conserva estilos y callbacks del consumidor durante la pulsación', async () => {
+        const onPressIn = jest.fn();
+        const onPressOut = jest.fn();
+        const style = jest.fn(({ pressed }: { pressed: boolean }) => ({
+            opacity: pressed ? 0.6 : 1,
+        }));
+        await render(
+            <Button title="Guardar" style={style} onPressIn={onPressIn} onPressOut={onPressOut} />,
+        );
+        await fireEvent(screen.getByRole('button', { name: 'Guardar' }), 'pressIn', {});
+        expect(style).toHaveBeenLastCalledWith({ pressed: true, hovered: false });
+        await fireEvent(screen.getByRole('button', { name: 'Guardar' }), 'pressOut', {});
+        expect(style).toHaveBeenLastCalledWith({ pressed: false, hovered: false });
+        expect(onPressIn).toHaveBeenCalledTimes(1);
+        expect(onPressOut).toHaveBeenCalledTimes(1);
+    });
     it('llama a onPress al pulsar', async () => {
         const onPress = jest.fn();
         await render(<Button title="Guardar" onPress={onPress} />);

@@ -10,8 +10,9 @@ import Animated, {
 
 import { cn } from '@/lib/cn';
 import { useThemeStore } from '@/lib/theme';
+import { elevation } from '@/lib/ui/elevation';
 
-const HEIGHT = 40;
+const HEIGHT = 48;
 const SPRING = { stiffness: 240, damping: 24 };
 
 interface SegmentedControlProps<T extends string> {
@@ -63,6 +64,7 @@ export function SegmentedControl<T extends string>({
                     style={[
                         pillStyle,
                         {
+                            ...elevation('selection', palette.foreground),
                             position: 'absolute',
                             top: 4,
                             left: 4,

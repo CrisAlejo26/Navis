@@ -18,6 +18,7 @@
  * | `boolean`                         | `bool`     |
  * | `datetime` (`TIMESTAMP`)          | `text` (ISO 8601) |
  */
+import { LOCAL_LIST_TABLES } from './local-list-schema';
 export type LocalColumnType = 'text' | 'int' | 'real' | 'bool';
 
 export interface LocalColumn {
@@ -322,7 +323,11 @@ export const LOCAL_USER_TABLE: LocalTable = {
 };
 
 /** Todas las tablas que crea la base local, en orden de dependencia. */
-export const ALL_LOCAL_TABLES: LocalTable[] = [...LOCAL_TABLES, LOCAL_USER_TABLE];
+export const ALL_LOCAL_TABLES: LocalTable[] = [
+    ...LOCAL_TABLES,
+    ...LOCAL_LIST_TABLES,
+    LOCAL_USER_TABLE,
+];
 
 /** Índices de la base local. Los únicos, para no chocar con recreos de SQLite. */
 export const LOCAL_INDEXES: {

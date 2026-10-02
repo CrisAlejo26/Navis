@@ -1601,6 +1601,21 @@ export const it = {
         },
     },
     lists: {
+        cover: 'Copertina',
+        removeCover: 'Rimuovi copertina',
+        exportPhotosHint: 'Le foto sono incluse nei file PDF e immagine.',
+        showInactive: 'Mostra le liste disattivate',
+        archive: 'Disattiva la lista',
+        restore: 'Attiva la lista',
+        localDeleteExplain:
+            'La lista e le sue note saranno eliminate. Le persone rimarranno nella chiesa.',
+        localShareHint:
+            'Condividi un file con le persone e i campi che scegli. I link pubblici e gli accessi non sono ancora disponibili in questa app.',
+        localAudienceHint:
+            'Le visite e gli accessi appariranno quando questa app consentirà di pubblicare link.',
+        noComposition: 'Nessun dato in questa categoria',
+        exportFields: 'Campi del file',
+        colorOption: 'Colore {{number}}',
         title: 'Liste condivise',
         add: 'Creare una lista',
         edit: 'Modificare la lista',

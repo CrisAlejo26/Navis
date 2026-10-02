@@ -6,6 +6,7 @@ import { themeColorsHex } from '@navis/theme';
 import { useThemeStore } from '@/lib/theme';
 import { FieldError } from '@/components/ui/field-error';
 import { cn } from '@/lib/cn';
+import { hexAlpha } from '@/lib/color';
 
 export interface TextFieldProps extends TextInputProps {
     label: string;
@@ -58,6 +59,24 @@ export function TextField({
                 <Text className="text-sm font-sans-medium text-foreground">{label}</Text>
             )}
             <View
+                style={
+                    error || focused
+                        ? {
+                              boxShadow: [
+                                  {
+                                      offsetX: 0,
+                                      offsetY: 0,
+                                      blurRadius: 0,
+                                      spreadDistance: 2,
+                                      color: hexAlpha(
+                                          error ? palette.destructive : palette.primary,
+                                          0.12,
+                                      ),
+                                  },
+                              ],
+                          }
+                        : undefined
+                }
                 className={cn(
                     'gap-2 px-3 rounded-2xl flex-row items-center border-2 bg-card',
                     containerClassName,

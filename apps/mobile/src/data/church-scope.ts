@@ -1,6 +1,7 @@
 import type { LocalDb } from './local-db';
 
 export type ChurchTable =
+    | 'lists'
     | 'believers'
     | 'believer_notes'
     | 'note_audios'

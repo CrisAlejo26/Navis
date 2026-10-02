@@ -1610,6 +1610,21 @@ export const fr = {
         },
     },
     lists: {
+        cover: 'Couverture',
+        removeCover: 'Supprimer la couverture',
+        exportPhotosHint: 'Les photos sont incluses dans les fichiers PDF et image.',
+        showInactive: 'Afficher les listes désactivées',
+        archive: 'Désactiver la liste',
+        restore: 'Activer la liste',
+        localDeleteExplain:
+            'La liste et ses notes seront supprimées. Les personnes resteront dans l’église.',
+        localShareHint:
+            'Partagez un fichier avec les personnes et les champs de votre choix. Les liens publics et les accès ne sont pas encore disponibles dans cette application.',
+        localAudienceHint:
+            'Les visites et les accès apparaîtront lorsque cette application permettra de publier des liens.',
+        noComposition: 'Aucune donnée dans cette catégorie',
+        exportFields: 'Champs du fichier',
+        colorOption: 'Couleur {{number}}',
         title: 'Listes partagées',
         add: 'Créer une liste',
         edit: 'Modifier la liste',

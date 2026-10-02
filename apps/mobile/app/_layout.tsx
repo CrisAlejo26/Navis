@@ -79,6 +79,14 @@ function RootNavigator() {
                     />
                 ))}
                 <Stack.Screen
+                    name="lists/[id]"
+                    options={{
+                        headerShown: true,
+                        title: t('nav.lists'),
+                        animation: PUSHED_SCREEN_ANIMATION,
+                    }}
+                />
+                <Stack.Screen
                     name="components"
                     options={{
                         headerShown: true,

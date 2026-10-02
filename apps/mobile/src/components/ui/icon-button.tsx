@@ -1,10 +1,12 @@
 import { Ionicons } from '@expo/vector-icons';
 import { themeColorsHex } from '@navis/theme';
+import { usePressableFeedback } from '@/lib/ui/use-pressable-feedback';
 import { Pressable, type PressableProps } from 'react-native';
 
 import { cn } from '@/lib/cn';
 import type { IoniconName } from '@/lib/nav-mobile';
 import { useThemeStore } from '@/lib/theme';
+import { buttonElevation } from '@/lib/ui/elevation';
 import { BUTTON_CONTAINERS, BUTTON_ICON_TONE, type ButtonVariant } from '@/lib/ui/button-variants';
 
 type Size = 'sm' | 'md' | 'lg';
@@ -48,11 +50,19 @@ export function IconButton({
     iconColor,
     disabled,
     className,
+    style,
+    onPressIn,
+    onPressOut,
     ...props
 }: IconButtonProps) {
-    const palette = themeColorsHex[useThemeStore((state) => state.resolvedTheme)];
+    const theme = useThemeStore((state) => state.resolvedTheme);
+    const palette = themeColorsHex[theme];
     const iconColorResuelto = iconColor ?? palette[BUTTON_ICON_TONE[variant]];
     const box = BOX[size];
+    const feedback = usePressableFeedback({ style, onPressIn, onPressOut, ...props }, (pressed) => [
+        { width: box, height: box },
+        buttonElevation(variant, palette, Boolean(disabled) || pressed, theme === 'dark'),
+    ]);
 
     return (
         <Pressable
@@ -61,7 +71,6 @@ export function IconButton({
             accessibilityState={{ disabled: Boolean(disabled) }}
             disabled={disabled}
             hitSlop={touchPadding(box)}
-            style={{ width: box, height: box }}
             className={cn(
                 'items-center justify-center rounded-lg active:opacity-80',
                 BUTTON_CONTAINERS[variant],
@@ -69,6 +78,7 @@ export function IconButton({
                 className,
             )}
             {...props}
+            {...feedback}
         >
             <Ionicons name={icon} size={GLYPH[size]} color={iconColorResuelto} />
         </Pressable>

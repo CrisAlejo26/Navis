@@ -1,5 +1,6 @@
 import { repairChurchAccess } from '@/data/church-access-repair';
 import { getDb, SCHEMA_VERSION } from '@/data/db';
+import { listCoverFileId } from '@/data/list-cover-storage';
 
 import {
     BACKUP_TABLES,
@@ -52,6 +53,8 @@ function validateShape(backup: Backup): void {
 /** Las URI de los ficheros son de este teléfono: se recalculan, no se copian de la copia. */
 function localize(table: string, row: BackupRow, files: BackupFiles): BackupRow {
     const id = String(row.id);
+    if (table === 'lists' && row.cover_key != null)
+        return { ...row, cover_key: files.photoUri(listCoverFileId(id)) };
     if (table === 'note_audios' || table === 'dream_audios') {
         return { ...row, storage_key: files.audioUri(id) };
     }

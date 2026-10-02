@@ -79,3 +79,6 @@ export * from './schemas/teachings';
 export * from './schemas/weather';
 export * from './wake-path';
 export * from './church-emblem';
+
+export { buildZipBytes, crc32, utf8, type ZipEntry } from './zip';
+export { LOCAL_LIST_TABLES } from './local-list-schema';

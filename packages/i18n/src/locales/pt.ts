@@ -1597,6 +1597,21 @@ export const pt = {
         },
     },
     lists: {
+        cover: 'Capa',
+        removeCover: 'Remover capa',
+        exportPhotosHint: 'As fotografias são incluídas nos ficheiros PDF e imagem.',
+        showInactive: 'Mostrar listas desativadas',
+        archive: 'Desativar a lista',
+        restore: 'Ativar a lista',
+        localDeleteExplain:
+            'A lista e as suas notas serão eliminadas. As pessoas permanecerão na igreja.',
+        localShareHint:
+            'Partilhe um ficheiro com as pessoas e os campos que escolher. As ligações públicas e os acessos ainda não estão disponíveis nesta aplicação.',
+        localAudienceHint:
+            'As visitas e os acessos aparecerão quando esta aplicação permitir publicar ligações.',
+        noComposition: 'Sem dados nesta categoria',
+        exportFields: 'Campos do ficheiro',
+        colorOption: 'Cor {{number}}',
         title: 'Listas partilhadas',
         add: 'Criar uma lista',
         edit: 'Editar a lista',

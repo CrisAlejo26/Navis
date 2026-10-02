@@ -1622,6 +1622,21 @@ export const es = {
     /* Las listas compartidas (RFC 0010). El nombre de cada lista NO se traduce:
      es dato de la iglesia, como el de una sede (Regla 2 §6). */
     lists: {
+        cover: 'Portada',
+        removeCover: 'Quitar portada',
+        exportPhotosHint: 'Las fotos se incluyen en PDF e imagen.',
+        showInactive: 'Mostrar listas desactivadas',
+        archive: 'Desactivar la lista',
+        restore: 'Activar la lista',
+        localDeleteExplain:
+            'Se eliminarán la lista y sus notas. Las personas seguirán en la iglesia.',
+        localShareHint:
+            'Comparte un archivo con las personas y los campos que elijas. Los enlaces públicos y los accesos todavía no están disponibles en esta app.',
+        localAudienceHint:
+            'Las visitas y los accesos aparecerán cuando se puedan publicar enlaces desde esta app.',
+        noComposition: 'Sin datos en esta categoría',
+        exportFields: 'Campos del archivo',
+        colorOption: 'Color {{number}}',
         title: 'Listas compartidas',
         add: 'Crear una lista',
         edit: 'Editar la lista',

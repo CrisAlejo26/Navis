@@ -1,5 +1,2 @@
-import { PlaceholderScreen } from '@/components/placeholder-screen';
-
-export default function ListsScreen() {
-    return <PlaceholderScreen titleKey="nav.lists" rfc="0010-listas-compartidas-implementado.md" />;
-}
+import { ListsScreen } from '@/components/lists/lists-screen';
+export default ListsScreen;

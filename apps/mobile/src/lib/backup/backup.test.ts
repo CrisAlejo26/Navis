@@ -6,6 +6,8 @@ import { buildBackup } from '@/lib/backup/create-backup';
 import { restoreBackup, RestoreError } from '@/lib/backup/restore-backup';
 import type { BackupFiles } from '@/lib/backup/backup-format';
 import { openDatabaseAsync } from 'expo-sqlite';
+import { createList } from '@/data/repos/lists-repo';
+import { listCoverFileId } from '@/data/list-cover-storage';
 
 jest.mock('expo-sqlite', () => ({
     __esModule: true,
@@ -129,6 +131,27 @@ describe('copia de seguridad', () => {
             RestoreError,
         );
         expect((await dbConn.getAllAsync('SELECT id FROM churches')).length).toBe(1);
+    });
+
+    it('restaura las listas y localiza su portada en el teléfono de destino', async () => {
+        const churchId = await seed();
+        const dbConn = await getDb();
+        const user = await dbConn.getFirstAsync<{ id: string }>('SELECT id FROM local_user');
+        const id = await createList({ churchId, userId: user!.id }, { name: 'Equipo' });
+        await dbConn.runAsync(
+            'UPDATE lists SET cover_key = ? WHERE id = ?',
+            'file:///otro/cover',
+            id,
+        );
+        const files = memoryFiles();
+        await files.writePhoto(listCoverFileId(id), 'UE9SVEFEQQ==');
+        const backup = await buildBackup(files);
+        expect(backup.photos[listCoverFileId(id)]).toBe('UE9SVEFEQQ==');
+        await db.clear();
+        await restoreBackup(JSON.stringify(backup), files);
+        expect(
+            await dbConn.getFirstAsync('SELECT name, cover_key FROM lists WHERE id = ?', id),
+        ).toEqual({ name: 'Equipo', cover_key: files.photoUri(listCoverFileId(id)) });
     });
 
     it('rechaza una copia hecha con un esquema más nuevo que el de esta app', async () => {

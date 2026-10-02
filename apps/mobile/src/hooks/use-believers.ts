@@ -150,6 +150,7 @@ function useInvalidate() {
     const client = useQueryClient();
     return () => {
         void syncNotifications();
+        void client.invalidateQueries({ queryKey: ['local-lists'] });
         return client.invalidateQueries({ queryKey: ['believers'] });
     };
 }

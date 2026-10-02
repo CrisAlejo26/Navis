@@ -7,12 +7,16 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { IconButton } from '@/components/ui/icon-button';
 import { Title } from '@/components/ui/title';
 import { useKeyboardHeight } from '@/lib/ui/keyboard';
+import { themeColorsHex } from '@navis/theme';
+import { useThemeStore } from '@/lib/theme';
+import { elevation } from '@/lib/ui/elevation';
 
 interface BottomSheetProps {
     visible: boolean;
     onClose: () => void;
     title?: string;
     children: ReactNode;
+    scrollable?: boolean;
 }
 
 /**
@@ -40,12 +44,19 @@ interface BottomSheetProps {
  * pantalla entera (CLAUDE.md, «BottomSheet y teclado»). `keyboardShouldPersistTaps`
  * evita que el cierre del teclado se coma los toques sobre campos y botón.
  */
-export function BottomSheet({ visible, onClose, title, children }: BottomSheetProps) {
+export function BottomSheet({
+    visible,
+    onClose,
+    title,
+    children,
+    scrollable = true,
+}: BottomSheetProps) {
     const { t } = useTranslation();
     const insets = useSafeAreaInsets();
     const reducedMotion = useReducedMotion();
     const { height } = useWindowDimensions();
     const keyboard = useKeyboardHeight();
+    const theme = useThemeStore((state) => state.resolvedTheme);
 
     return (
         <Modal
@@ -70,6 +81,7 @@ export function BottomSheet({ visible, onClose, title, children }: BottomSheetPr
                     // Con el teclado abierto la hoja se apoya en él, no en el borde de la
                     // pantalla, y ya no hay barra de gestos debajo.
                     style={{
+                        ...elevation('sheet', themeColorsHex[theme].foreground, theme === 'dark'),
                         bottom: keyboard,
                         paddingBottom: keyboard > 0 ? 16 : insets.bottom + 16,
                     }}
@@ -84,13 +96,17 @@ export function BottomSheet({ visible, onClose, title, children }: BottomSheetPr
                             />
                         </View>
                     ) : null}
-                    <ScrollView
-                        style={{ maxHeight: height - keyboard - 96 }}
-                        keyboardShouldPersistTaps="handled"
-                        showsVerticalScrollIndicator={false}
-                    >
-                        {children}
-                    </ScrollView>
+                    {scrollable ? (
+                        <ScrollView
+                            style={{ maxHeight: height - keyboard - 96 }}
+                            keyboardShouldPersistTaps="handled"
+                            showsVerticalScrollIndicator={false}
+                        >
+                            {children}
+                        </ScrollView>
+                    ) : (
+                        <View style={{ maxHeight: height - keyboard - 96 }}>{children}</View>
+                    )}
                 </Animated.View>
             </View>
         </Modal>

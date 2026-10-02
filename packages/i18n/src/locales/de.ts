@@ -1624,6 +1624,21 @@ export const de = {
         },
     },
     lists: {
+        cover: 'Titelbild',
+        removeCover: 'Titelbild entfernen',
+        exportPhotosHint: 'Fotos werden in PDF- und Bilddateien eingefügt.',
+        showInactive: 'Deaktivierte Listen anzeigen',
+        archive: 'Liste deaktivieren',
+        restore: 'Liste aktivieren',
+        localDeleteExplain:
+            'Die Liste und ihre Notizen werden gelöscht. Die Personen bleiben in der Gemeinde.',
+        localShareHint:
+            'Teile eine Datei mit den gewünschten Personen und Feldern. Öffentliche Links und Lesezugänge sind in dieser App noch nicht verfügbar.',
+        localAudienceHint:
+            'Besuche und Zugriffsaktivität werden angezeigt, sobald diese App Links veröffentlichen kann.',
+        noComposition: 'Keine Daten in dieser Kategorie',
+        exportFields: 'Dateifelder',
+        colorOption: 'Farbe {{number}}',
         title: 'Geteilte Listen',
         add: 'Liste anlegen',
         edit: 'Liste bearbeiten',

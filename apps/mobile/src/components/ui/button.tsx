@@ -1,10 +1,12 @@
 import { Ionicons } from '@expo/vector-icons';
 import { themeColorsHex } from '@navis/theme';
+import { usePressableFeedback } from '@/lib/ui/use-pressable-feedback';
 import { ActivityIndicator, Pressable, Text, type PressableProps } from 'react-native';
 
 import { cn } from '@/lib/cn';
 import type { IoniconName } from '@/lib/nav-mobile';
 import { useThemeStore } from '@/lib/theme';
+import { buttonElevation } from '@/lib/ui/elevation';
 import {
     BUTTON_CONTAINERS,
     BUTTON_ICON_TONE,
@@ -41,11 +43,18 @@ export function Button({
     trailingIcon,
     disabled,
     className,
+    style,
+    onPressIn,
+    onPressOut,
     ...props
 }: ButtonProps) {
     const isDisabled = disabled === true || loading;
-    const palette = themeColorsHex[useThemeStore((state) => state.resolvedTheme)];
+    const theme = useThemeStore((state) => state.resolvedTheme);
+    const palette = themeColorsHex[theme];
     const iconColor = palette[BUTTON_ICON_TONE[variant]];
+    const feedback = usePressableFeedback({ style, onPressIn, onPressOut, ...props }, (pressed) =>
+        buttonElevation(variant, palette, isDisabled || pressed, theme === 'dark'),
+    );
 
     const icon = (name: IoniconName | undefined) =>
         name ? (
@@ -72,6 +81,7 @@ export function Button({
                 className,
             )}
             {...props}
+            {...feedback}
         >
             {loading ? <ActivityIndicator size="small" color={iconColor} /> : icon(leadingIcon)}
             <Text className={cn('text-base font-sans-semibold', BUTTON_LABELS[variant])}>

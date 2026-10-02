@@ -81,6 +81,7 @@ export function Chip({
                 onPress={onPress}
                 className="py-1 gap-1.5 flex-row items-center rounded-full"
                 style={{
+                    minHeight: 44,
                     paddingLeft: 12,
                     paddingRight: onRemove ? 22 : 12,
                     borderWidth: 1,

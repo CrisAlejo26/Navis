@@ -9,6 +9,7 @@ import {
 } from '@navis/shared';
 import { migrateChurchAccess } from './church-access-migration';
 import { repairChurchAccess } from './church-access-repair';
+import { migrateLists } from './lists-migration';
 import * as SQLite from 'expo-sqlite';
 
 import { seedCalendarScaffold } from './repos/calendar-seed';
@@ -100,7 +101,7 @@ export function setDbForTests(fake: LocalDb | null): void {
 }
 
 /** Versión actual del esquema local. Cada cambio añade un caso a `migrations`. */
-export const SCHEMA_VERSION = 11;
+export const SCHEMA_VERSION = 12;
 
 type Migration = (db: LocalDb) => Promise<void>;
 
@@ -405,6 +406,7 @@ const migrations: Record<number, Migration> = {
         }
     },
     11: migrateChurchAccess,
+    12: migrateLists,
 };
 
 async function columnOf(table: string, column: string, db: LocalDb): Promise<boolean> {

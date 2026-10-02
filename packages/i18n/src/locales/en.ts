@@ -1597,6 +1597,21 @@ export const en = {
         },
     },
     lists: {
+        cover: 'Cover',
+        removeCover: 'Remove cover',
+        exportPhotosHint: 'Photos are included in PDF and image files.',
+        showInactive: 'Show inactive lists',
+        archive: 'Deactivate list',
+        restore: 'Activate list',
+        localDeleteExplain:
+            'The list and its notes will be deleted. People will remain in the church.',
+        localShareHint:
+            'Share a file with the people and fields you choose. Public links and viewer accounts are not yet available in this app.',
+        localAudienceHint:
+            'Visits and viewer activity will appear when this app supports publishing links.',
+        noComposition: 'No data in this category',
+        exportFields: 'File fields',
+        colorOption: 'Color {{number}}',
         title: 'Shared lists',
         add: 'Create a list',
         edit: 'Edit the list',

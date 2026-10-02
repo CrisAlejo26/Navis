@@ -46,6 +46,12 @@ jest.mock('expo-secure-store', () => {
 });
 
 const ALL_TABLES = [
+    'list_grants',
+    'list_members',
+    'list_views',
+    'list_access_log',
+    'list_viewers',
+    'lists',
     'churches',
     'church_members',
     'congregations',

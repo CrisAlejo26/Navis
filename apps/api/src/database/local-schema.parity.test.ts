@@ -1,6 +1,7 @@
 import {
     LOCAL_TABLES,
     LOCAL_USER_TABLE,
+    LOCAL_LIST_TABLES,
     type LocalColumnType,
     type LocalTable,
 } from '@navis/shared';
@@ -38,6 +39,12 @@ import { TaskOccurrence } from '../tasks/task-occurrence.entity';
 import { TaskReminder } from '../tasks/task-reminder.entity';
 import { TaskReminderTag } from '../tasks/task-reminder-tag.entity';
 import { TaskTag } from '../tasks/task-tag.entity';
+import { List } from '../lists/list.entity';
+import { ListMember } from '../lists/list-member.entity';
+import { ListViewer } from '../lists/list-viewer.entity';
+import { ListGrant } from '../lists/list-grant.entity';
+import { ListView } from '../lists/list-view.entity';
+import { ListAccessLog } from '../lists/list-access-log.entity';
 
 /**
  * La paridad entre el esquema **local del teléfono** (`ALL_LOCAL_TABLES` de
@@ -51,6 +58,12 @@ import { TaskTag } from '../tasks/task-tag.entity';
 
 /** Las entidades que participan en la comparación, más las que sus relaciones exigen registradas. */
 const ENTITIES = [
+    List,
+    ListMember,
+    ListViewer,
+    ListGrant,
+    ListView,
+    ListAccessLog,
     Church,
     ChurchMember,
     Congregation,
@@ -134,38 +147,41 @@ beforeAll(async () => {
     await dataSource.destroy();
 });
 
-describe.each(LOCAL_TABLES)('paridad local ↔ TypeORM: $name', (localTable: LocalTable) => {
-    it('existe la entidad que espeja', () => {
-        expect(localTable.mirror).toBeDefined();
-        const metadata = dataSource.entityMetadatas.find(
-            (one) => one.tableName === localTable.name,
-        );
-        expect(metadata, `No hay entidad para la tabla ${localTable.name}`).toBeDefined();
-    });
+describe.each([...LOCAL_TABLES, ...LOCAL_LIST_TABLES])(
+    'paridad local ↔ TypeORM: $name',
+    (localTable: LocalTable) => {
+        it('existe la entidad que espeja', () => {
+            expect(localTable.mirror).toBeDefined();
+            const metadata = dataSource.entityMetadatas.find(
+                (one) => one.tableName === localTable.name,
+            );
+            expect(metadata, `No hay entidad para la tabla ${localTable.name}`).toBeDefined();
+        });
 
-    it('tiene las mismas columnas, con el mismo tipo y la misma anulabilidad', () => {
-        const metadata = dataSource.entityMetadatas.find(
-            (one) => one.tableName === localTable.name,
-        );
-        expect(metadata).toBeDefined();
-        if (!metadata) return;
+        it('tiene las mismas columnas, con el mismo tipo y la misma anulabilidad', () => {
+            const metadata = dataSource.entityMetadatas.find(
+                (one) => one.tableName === localTable.name,
+            );
+            expect(metadata).toBeDefined();
+            if (!metadata) return;
 
-        const entityColumns = metadata.columns.map((one) => one.databaseName).sort();
-        const localColumns = localTable.columns.map((one) => one.name).sort();
-        expect(localColumns).toEqual(entityColumns);
+            const entityColumns = metadata.columns.map((one) => one.databaseName).sort();
+            const localColumns = localTable.columns.map((one) => one.name).sort();
+            expect(localColumns).toEqual(entityColumns);
 
-        for (const column of localTable.columns) {
-            expect(
-                localTypeOf(metadata, column.name),
-                `${localTable.name}.${column.name}: tipo`,
-            ).toBe(column.type);
-            expect(
-                metadata.columns.find((one) => one.databaseName === column.name)!.isNullable,
-                `${localTable.name}.${column.name}: anulabilidad`,
-            ).toBe(Boolean(column.nullable));
-        }
-    });
-});
+            for (const column of localTable.columns) {
+                expect(
+                    localTypeOf(metadata, column.name),
+                    `${localTable.name}.${column.name}: tipo`,
+                ).toBe(column.type);
+                expect(
+                    metadata.columns.find((one) => one.databaseName === column.name)!.isNullable,
+                    `${localTable.name}.${column.name}: anulabilidad`,
+                ).toBe(Boolean(column.nullable));
+            }
+        });
+    },
+);
 
 describe('la cuenta local', () => {
     it('no espeja ninguna entidad: es propia del móvil', () => {
