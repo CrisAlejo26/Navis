@@ -1,7 +1,6 @@
-import { daysBetween, type IsoDate } from '@navis/shared';
+import { daysBetween, type IsoDate } from './dates';
 
-import { monthsBetween } from './task-recurrence';
-import type { Habit } from './habit.entity';
+import type { Habit } from './schemas/habits';
 
 /**
  * Si un hábito propone una ocurrencia ese día (RFC 0018 §5.3, D3).

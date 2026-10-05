@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { eachDay, type HabitOccurrence, type HabitReminder, type TagRef } from '@navis/shared';
 import { Between, In, Repository } from 'typeorm';
 
-import { habitAppliesOn } from './habit-recurrence';
+import { habitAppliesOn } from '@navis/shared';
 import { HabitOccurrence as HabitOccurrenceEntity } from './habit-occurrence.entity';
 import { HabitReminderTag } from './habit-reminder-tag.entity';
 import { HabitReminder as HabitReminderEntity } from './habit-reminder.entity';

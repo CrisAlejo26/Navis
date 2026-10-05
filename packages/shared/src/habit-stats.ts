@@ -1,11 +1,7 @@
-import {
-    eachDay,
-    startOfWeek,
-    type HabitOccurrence,
-    type HabitStatsByTag,
-    type HabitStatsWeek,
-    type TagRef,
-} from '@navis/shared';
+import { eachDay, startOfWeek } from './dates';
+import type { TagRef } from './schemas/tags';
+import type { HabitOccurrence } from './schemas/habits';
+import type { HabitStatsByTag, HabitStatsWeek } from './schemas/habit-queries';
 
 export function byWeek(items: HabitOccurrence[], from: string, to: string): HabitStatsWeek[] {
     const weeks = new Map<string, HabitStatsWeek>();

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import type { HabitStats } from '@navis/shared';
 
 import { HabitsExpansionService } from './habits-expansion.service';
-import { byTag, byWeek, trend } from './habit-stats';
+import { habitByTag as byTag, habitByWeek as byWeek, habitTrend as trend } from '@navis/shared';
 
 /** Las cuentas de cumplimiento de hábitos (RFC 0018 §9.4). Sin racha (D19). */
 @Injectable()

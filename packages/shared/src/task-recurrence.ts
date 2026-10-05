@@ -1,6 +1,6 @@
-import { daysBetween, parseIsoDate, type IsoDate } from '@navis/shared';
+import { daysBetween, parseIsoDate, type IsoDate } from './dates';
 
-import type { Task } from './task.entity';
+import type { Task } from './schemas/tasks';
 
 /** Meses de diferencia entre dos días `AAAA-MM-DD`, sin mirar el día del mes. */
 export function monthsBetween(from: IsoDate, to: IsoDate): number {

@@ -1,13 +1,12 @@
-import {
-    eachDay,
-    startOfWeek,
-    type TagRef,
-    type TaskOccurrence,
-    type TaskStatsByPriority,
-    type TaskStatsByTag,
-    type TaskStatsWeek,
-    type TaskStreakDay,
-} from '@navis/shared';
+import { eachDay, startOfWeek } from './dates';
+import type { TagRef } from './schemas/tags';
+import type { TaskOccurrence } from './schemas/tasks';
+import type {
+    TaskStatsByPriority,
+    TaskStatsByTag,
+    TaskStatsWeek,
+    TaskStreakDay,
+} from './schemas/task-queries';
 
 /** Cuántas completadas y cuántas pendientes cayeron en cada semana del tramo. */
 export function byWeek(items: TaskOccurrence[], from: string, to: string): TaskStatsWeek[] {

@@ -84,3 +84,15 @@ export { buildZipBytes, crc32, utf8, type ZipEntry } from './zip';
 export { LOCAL_LIST_TABLES } from './local-list-schema';
 export { LOCAL_CUSTOM_TABLES } from './local-table-schema';
 export { LOCAL_JOURNAL_TABLES } from './local-journal-schema';
+
+export * from './task-recurrence';
+export * from './habit-recurrence';
+export * from './task-streak';
+export {
+    byWeek as taskByWeek,
+    byTag as taskByTag,
+    trend as taskTrend,
+    byPriority as taskByPriority,
+    streak90 as taskStreak90,
+} from './task-stats';
+export { byWeek as habitByWeek, byTag as habitByTag, trend as habitTrend } from './habit-stats';

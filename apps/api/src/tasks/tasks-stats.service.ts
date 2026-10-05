@@ -1,7 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { addDays, STREAK_STATS_DAYS, type TaskStats } from '@navis/shared';
 
-import { byPriority, byTag, byWeek, streak90, trend } from './task-stats';
+import {
+    taskByPriority as byPriority,
+    taskByTag as byTag,
+    taskByWeek as byWeek,
+    taskStreak90 as streak90,
+    taskTrend as trend,
+} from '@navis/shared';
 import { TasksExpansionService } from './tasks-expansion.service';
 import { TasksStreakService } from './tasks-streak.service';
 

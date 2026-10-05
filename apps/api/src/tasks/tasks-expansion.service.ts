@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { eachDay, type TagRef, type TaskOccurrence, type TaskReminder } from '@navis/shared';
 import { Between, In, Repository } from 'typeorm';
 
-import { taskAppliesOn } from './task-recurrence';
+import { taskAppliesOn } from '@navis/shared';
 import { TaskOccurrence as TaskOccurrenceEntity } from './task-occurrence.entity';
 import { TaskReminderTag } from './task-reminder-tag.entity';
 import { TaskReminder as TaskReminderEntity } from './task-reminder.entity';
