@@ -1,7 +1,7 @@
 # Tareas móvil: investigación de Taskia y decisiones de diseño
 
 Fecha: 2026-10-05. Referencia principal solicitada por el usuario: `D:/Proyectos_personales/taskia/mobile`.
-Método: skill `refero-design`, investigación del código de Tomtask (`taskia/mobile`) y del sistema visual existente de Navis. Refero MCP no está disponible; se han usado las referencias locales y las guías de interacción, accesibilidad y movimiento del skill. La agenda, tarjetas, calendario y filtros están implementados en la fase 2; los editores, estadísticas y avisos siguen sus fases del plan.
+Método: skill `refero-design`, investigación del código de Tomtask (`taskia/mobile`) y del sistema visual existente de Navis. Refero MCP no está disponible; se han usado las referencias locales y las guías de interacción, accesibilidad y movimiento del skill. Agenda, calendario y filtros se implementan en la fase 2; editores, detalle y etiquetas en la fase 3. Estadísticas y avisos conservan sus fases del plan.
 
 ## Dirección
 
@@ -46,4 +46,12 @@ Se compararon las pantallas Android de Navis con las proporciones y comportamien
 
 Correcciones de la revisión: cabecera compacta del mes y flechas a la derecha; día seleccionado con fondo azul y anillo blanco; contraste de iconos y etiquetas personalizado comprobado sobre su tinte (mínimo 4,5:1 antes de conservar el acento); texto alemán de búsqueda más corto; CTA de filtros visible sobre el teclado. Se conservan los radios 26, iconos 42, márgenes 22, sombras semánticas, chips compactos y fuentes de Tomtask.
 
-Las acciones de completar/reabrir y eliminar también tienen botones accesibles en la hoja de acciones. El borrado pide confirmación y la agenda excluye las plantillas borradas; los lectores de histórico permanecen disponibles para estadísticas. La selección y el orden manual por pulsación larga quedan en la fase 5.
+Las acciones de completar/reabrir y eliminar también tienen botones accesibles en el detalle completo, que sustituye la hoja de acciones en la fase 3. El borrado pide confirmación y la agenda excluye las plantillas borradas; los lectores de histórico permanecen disponibles para estadísticas. La selección y el orden manual por pulsación larga quedan en la fase 5.
+
+## Decisiones y revisión de la fase 3
+
+Referencias investigadas: `components/tasks/edit-item-screen.tsx`, `item-detail-screen.tsx` y `components/sheet/category-sheet.tsx` de Tomtask. Se conservan el título editable grande, selector de tarea/hábito, prioridad mediante chips, estado explícito, recordatorio con fecha/hora y etiquetas y botón fijo Guardar. El detalle usa icono de 52 con radio 18, título de 26 y bloques de radio 26, con botones Editar y Completar/reabrir y borrado confirmado.
+
+Las categorías se adaptan a las etiquetas del modelo Navis: vista previa de icono/color, nombre, paleta, color hexadecimal y catálogo compartido de 120 iconos, virtualizado y buscable por nombre y categoría en los seis idiomas. Los colores semánticos se resuelven según el tema y el texto de los chips mantiene contraste legible. Se reutilizan los selectores de fecha, hora, color y el marco del editor existente; el selector de hora se comparte con Cuaderno.
+
+Verificación renderizada en Android: claro/español y oscuro/alemán a 375 dp con texto al 130 %, títulos multilínea, chips de estado que pasan a otra línea y selector de iconos. La revisión detectó el pie Guardar detrás del teclado; se incorporó dentro del área que evita el teclado y se verificó guardar con el teclado abierto. Las capturas y los recorridos funcionales están en el registro de QA. Los recordatorios se guardan en la zona de la iglesia; la entrega de avisos continúa reservada para la fase 6.

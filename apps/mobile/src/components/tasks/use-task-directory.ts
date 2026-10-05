@@ -23,8 +23,7 @@ export function useTaskDirectory() {
         [view, setView] = useState<'list' | 'calendar'>('list');
     const [month, setMonth] = useState(today),
         [day, setDay] = useState(today),
-        [filtersOpen, setFiltersOpen] = useState(false),
-        [selected, setSelected] = useState<ActivityItem | null>(null);
+        [filtersOpen, setFiltersOpen] = useState(false);
     const search = useDebouncedValue(filters.search ?? ''),
         request = { ...filters, search };
     const listing = useActivities(
@@ -41,7 +40,6 @@ export function useTaskDirectory() {
     async function change(item: ActivityItem, status?: TaskStatus) {
         try {
             await action.mutateAsync({ item, status });
-            setSelected(null);
         } catch {
             Alert.alert(t('tasks.saveFailed'), t('errors.generic'));
         }
@@ -66,8 +64,6 @@ export function useTaskDirectory() {
         setDay,
         filtersOpen,
         setFiltersOpen,
-        selected,
-        setSelected,
         listing,
         calendar,
         exists,

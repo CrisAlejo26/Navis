@@ -1343,6 +1343,15 @@ export const it = {
         },
     },
     tasks: {
+        editor: {
+            invalidFields: 'Controlla titolo, data, ora e promemoria.',
+            timezone: 'Fuso orario: {{timezone}}',
+            reminderTags: 'Etichette del promemoria',
+            tagsHint: 'L’icona e il colore della prima etichetta identificano l’attività.',
+            invalidTag: 'Inserisci un nome e scegli un’icona e un colore validi.',
+            editTagNamed: 'Modifica etichetta {{name}}',
+            titleRequired: 'Inserisci un titolo.',
+        },
         mobile: {
             filters: 'Filtri',
             filtersCount: 'Filtri ({{count}})',

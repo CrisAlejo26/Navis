@@ -3,6 +3,7 @@ import { nowIso } from '../db';
 import { inLocalTransaction } from '../local-transaction';
 import { requireActivity, tasksDb, type ActivityKind, type TasksContext } from './tasks-context';
 import { requireTaskTags, replaceActivityTags } from './task-relations';
+import { writeActivityStatus, type ActivityState } from './activity-status-write';
 
 export type ActivityFields = Record<string, string | number | null>;
 export interface ActivityRelations {
@@ -20,6 +21,7 @@ export async function saveActivity(
     fields: ActivityFields,
     relations: ActivityRelations,
     create: boolean,
+    state?: ActivityState,
 ): Promise<void> {
     const db = await tasksDb(context);
     await inLocalTransaction(db, async (tx) => {
@@ -69,6 +71,7 @@ export async function saveActivity(
                 String(fields.date),
                 fields.time === null ? null : String(fields.time),
             );
+        if (state) await writeActivityStatus(tx, context, kind, id, state);
     });
 }
 

@@ -1,6 +1,6 @@
 # Plan — Tareas y hábitos en Navis móvil, con la gestión de Tomtask
 
-Estado: **fases 0, 1 y 2 cerradas; fase 3 pendiente de autorización**. Fecha: 2026-10-05.
+Estado: **fases 0, 1, 2 y 3 cerradas; fase 4 pendiente de autorización**. Fecha: 2026-10-05.
 Referencias: RFC 0018 (modelo y web), `D:/Proyectos_personales/taskia` (web) y `taskia/mobile` (Habit Land, la referencia de estilos y botones).
 
 Investigación y dirección visual: [tareas-movil-diseno.md](./tareas-movil-diseno.md). Las fases 2–6 conservan el alcance del plan, incluyendo notificaciones reales.
@@ -87,6 +87,15 @@ Cada fase termina verde en `pnpm check` y con verificación en emulador (Regla 1
 | **7** Opcional                    | Estados personalizados y flujos, fecha límite y alarma de «en progreso»                                                                                                                                               | solo si lo confirmas                                                      |
 
 ## 6. Riesgos y trampas conocidas
+
+### Registro de fase 3 (2026-10-05)
+
+- Alta y edición a pantalla completa de tareas y hábitos: título, descripción, meta, fecha, hora, prioridad, estado, repetición simple, etiquetas y recordatorio con fecha/hora y etiquetas propias. Se conserva la configuración avanzada existente al editar el texto de una serie.
+- Detalle con icono 52, título 26, chips y bloques de radio 26 según Tomtask; botones para editar, completar/reabrir y borrar con confirmación. Gestión de etiquetas con vista previa, colores semánticos/personalizados y catálogo virtualizado de 120 iconos con búsqueda.
+- Guardado transaccional de actividad, relaciones, recordatorio y estado; aislamiento por usuario/iglesia. Editar una actividad completada conserva su fecha de realización. Fechas de recordatorio interpretadas en la zona de la iglesia, con rechazo de horas inexistentes por cambio de horario.
+- Android: creación, edición y borrado de tarea y hábito; completar/reabrir, confirmaciones, protección al salir con cambios y CRUD de etiquetas. Recordatorio y sus etiquetas guardados y visibles en el detalle. Español/claro y alemán/oscuro a 375 dp, texto al 130 %. Se corrigió Guardar tapado por el teclado en el marco compartido. [Capturas](../../qa/tareas-movil/README.md).
+- `pnpm check` completo: 144 suites y 516 pruebas de móvil, más 29 pruebas de scripts. `pnpm build` pasa. E2E completos sobre bases aisladas: 224 pruebas en SQLite y 224 en PostgreSQL, migraciones al día. Tipos y pruebas afectadas repetidos tras la corrección final del teclado.
+- Sin nuevas dependencias ni migraciones. La ruta temporal de QA se retira. Los recordatorios se persisten; su entrega real corresponde a la fase 6. Hoy y estadísticas quedan para la fase 4.
 
 ### Registro de fase 2 (2026-10-05)
 

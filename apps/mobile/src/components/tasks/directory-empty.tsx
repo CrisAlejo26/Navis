@@ -1,4 +1,5 @@
 import { View } from 'react-native';
+import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { EmptyState } from '@/components/ui/empty-state';
 import { defaultFilters } from '@/lib/tasks/filters';
@@ -40,7 +41,7 @@ export function TaskDirectoryEmpty({ state: s }: { state: TaskDirectoryState }) 
                               s.setView('list');
                           },
                       }
-                    : undefined
+                    : { label: t('tasks.add'), onPress: () => router.push('/tasks/edit') }
             }
         />
     );

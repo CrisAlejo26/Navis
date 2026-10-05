@@ -1,12 +1,11 @@
-import { View, Text } from 'react-native';
+import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Badge } from '@/components/ui/badge';
-import { hexAlpha, readableAccent } from '@/lib/color';
 import { activityKind, type ActivityItem } from '@/lib/tasks/filters';
-import { statusKeys, priorityKeys, useTaskPalette } from './task-theme';
+import { statusKeys, priorityKeys } from './task-theme';
+import { TaskTagBadges } from './task-tag-badges';
 export function TaskCardChips({ item }: { item: ActivityItem }) {
-    const p = useTaskPalette(),
-        { t } = useTranslation(),
+    const { t } = useTranslation(),
         done = item.status === 'completada',
         kind = activityKind(item);
     return (
@@ -19,24 +18,7 @@ export function TaskCardChips({ item }: { item: ActivityItem }) {
             {'priority' in item && item.priority === 'alta' && (
                 <Badge label={t(priorityKeys[item.priority])} tone="warning" />
             )}
-            {item.tags.map((label) => (
-                <View
-                    key={label.id}
-                    style={{
-                        borderRadius: 20,
-                        paddingHorizontal: 8,
-                        paddingVertical: 4,
-                        backgroundColor: hexAlpha(label.accent, 0.12),
-                    }}
-                >
-                    <Text
-                        className="font-sans-medium text-xs"
-                        style={{ color: readableAccent(label.accent, p.card, p.foreground) }}
-                    >
-                        {label.name}
-                    </Text>
-                </View>
-            ))}
+            <TaskTagBadges tags={item.tags} />
             {item.isRecurring && <Badge label={t('tasks.repeat')} icon="repeat-outline" />}
             {item.reminder?.enabled && (
                 <Badge label={t('tasks.reminder')} icon="notifications-outline" />

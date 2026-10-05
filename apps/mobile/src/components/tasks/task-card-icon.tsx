@@ -4,17 +4,26 @@ import { hexAlpha, readableAccent } from '@/lib/color';
 import { useTaskPalette } from './task-theme';
 import { taskIcon } from '@/lib/tasks/icon-map';
 import { activityKind, type ActivityItem } from '@/lib/tasks/filters';
-export function TaskCardIcon({ item, color }: { item: ActivityItem; color: string }) {
+export function TaskCardIcon({
+    item,
+    color,
+    size = 42,
+}: {
+    item: ActivityItem;
+    color: string;
+    size?: number;
+}) {
     const p = useTaskPalette(),
         tag = item.tags[0],
-        kind = activityKind(item);
+        kind = activityKind(item),
+        accent = tag ? p.accent(tag.accent) : color;
     return (
         <View
             style={{
-                width: 42,
-                height: 42,
-                borderRadius: 15,
-                backgroundColor: hexAlpha(tag?.accent ?? color, 0.14),
+                width: size,
+                height: size,
+                borderRadius: size === 42 ? 15 : 18,
+                backgroundColor: hexAlpha(accent, 0.14),
                 alignItems: 'center',
                 justifyContent: 'center',
             }}
@@ -27,8 +36,8 @@ export function TaskCardIcon({ item, color }: { item: ActivityItem; color: strin
                           ? 'leaf-outline'
                           : 'clipboard-outline'
                 }
-                size={22}
-                color={readableAccent(tag?.accent ?? color, p.card, p.foreground, 0.14)}
+                size={size === 42 ? 22 : 28}
+                color={readableAccent(accent, p.card, p.foreground, 0.14)}
                 aria-hidden
             />
         </View>

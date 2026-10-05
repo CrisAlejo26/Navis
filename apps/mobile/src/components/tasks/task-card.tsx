@@ -27,7 +27,9 @@ export function TaskCard({
         ? p.success
         : item.status === 'en_progreso'
           ? p.primary
-          : (item.tags[0]?.accent ?? p.primary);
+          : item.tags[0]
+            ? p.accent(item.tags[0].accent)
+            : p.primary;
     return (
         <View style={{ marginBottom: 12 }}>
             <SwipeableRow

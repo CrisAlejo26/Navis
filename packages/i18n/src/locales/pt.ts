@@ -1339,6 +1339,15 @@ export const pt = {
         },
     },
     tasks: {
+        editor: {
+            invalidFields: 'Verifique o título, a data, a hora e o lembrete.',
+            timezone: 'Fuso horário: {{timezone}}',
+            reminderTags: 'Etiquetas do lembrete',
+            tagsHint: 'O ícone e a cor da primeira etiqueta identificam a tarefa.',
+            invalidTag: 'Introduza um nome e escolha um ícone e uma cor válidos.',
+            editTagNamed: 'Editar etiqueta {{name}}',
+            titleRequired: 'Introduza um título.',
+        },
         mobile: {
             filters: 'Filtros',
             filtersCount: 'Filtros ({{count}})',

@@ -1362,6 +1362,15 @@ export const es = {
     /* Tareas y hábitos (RFC 0018). El catálogo de iconos (§7.1) lleva su propia
      etiqueta accesible por clave, una por cada entrada de TASK_ICON_CATALOG. */
     tasks: {
+        editor: {
+            invalidFields: 'Revisa el título, la fecha, la hora y el recordatorio.',
+            timezone: 'Zona horaria: {{timezone}}',
+            reminderTags: 'Etiquetas del recordatorio',
+            tagsHint: 'El icono y el color de la primera etiqueta identifican la tarea.',
+            invalidTag: 'Pon un nombre y elige un icono y un color válidos.',
+            editTagNamed: 'Editar etiqueta {{name}}',
+            titleRequired: 'Escribe un título.',
+        },
         mobile: {
             filters: 'Filtros',
             filtersCount: 'Filtros ({{count}})',

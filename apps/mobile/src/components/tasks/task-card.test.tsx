@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react-native';
 import { TaskCard } from './task-card';
-import { TaskActions } from './task-actions';
+import { ActivityStatePicker } from './activity-state-picker';
 import type { TaskOccurrence, HabitOccurrence } from '@navis/shared';
 const item: TaskOccurrence = {
     taskId: 'a',
@@ -49,13 +49,7 @@ describe('tarjetas de agenda', () => {
             createdAt: 'now',
         };
         await render(
-            <TaskActions
-                item={habit}
-                busy={false}
-                onClose={jest.fn()}
-                onStatus={jest.fn()}
-                onDelete={jest.fn()}
-            />,
+            <ActivityStatePicker kind="habit" value={habit.status} onChange={jest.fn()} />,
         );
         expect(screen.queryByRole('button', { name: 'En progreso' })).toBeNull();
         expect(screen.getByRole('button', { name: 'Completada' })).toBeTruthy();

@@ -2,6 +2,7 @@ import { render, screen, fireEvent } from '@testing-library/react-native';
 import { TaskDirectoryEmpty } from './directory-empty';
 import type { TaskDirectoryState } from './use-task-directory';
 import { defaultFilters } from '@/lib/tasks/filters';
+jest.mock('expo-router', () => ({ router: { push: jest.fn() } }));
 
 function state(exists: boolean, error = false): TaskDirectoryState {
     return {

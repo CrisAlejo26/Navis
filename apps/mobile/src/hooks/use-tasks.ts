@@ -59,6 +59,9 @@ export function useTaskMutation<T, R>(operation: (context: TasksContext, input: 
             });
             await client.invalidateQueries({ queryKey: tasksKey(context) });
             await client.invalidateQueries({
+                queryKey: ['local-habits', context.churchId, context.userId],
+            });
+            await client.invalidateQueries({
                 queryKey: ['dashboard', context.churchId, context.userId],
             });
         },

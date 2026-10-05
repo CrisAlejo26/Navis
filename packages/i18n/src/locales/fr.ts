@@ -1352,6 +1352,15 @@ export const fr = {
         },
     },
     tasks: {
+        editor: {
+            invalidFields: 'Vérifiez le titre, la date, l’heure et le rappel.',
+            timezone: 'Fuseau horaire : {{timezone}}',
+            reminderTags: 'Étiquettes du rappel',
+            tagsHint: 'L’icône et la couleur de la première étiquette identifient la tâche.',
+            invalidTag: 'Saisissez un nom et choisissez une icône et une couleur valides.',
+            editTagNamed: 'Modifier l’étiquette {{name}}',
+            titleRequired: 'Saisissez un titre.',
+        },
         mobile: {
             filters: 'Filtres',
             filtersCount: 'Filtres ({{count}})',

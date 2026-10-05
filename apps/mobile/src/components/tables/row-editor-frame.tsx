@@ -15,12 +15,16 @@ export function RowEditorFrame({
     onClose,
     children,
     footer,
+    contentPadding = 16,
+    contentWidth,
 }: {
     title: string;
     dirty?: boolean;
     onClose: () => void;
     children: ReactNode;
     footer?: ReactNode;
+    contentPadding?: number;
+    contentWidth?: number;
 }) {
     const { t } = useTranslation(),
         navigation = useNavigation(),
@@ -35,27 +39,30 @@ export function RowEditorFrame({
             <AppBar title={title} onBack={onClose} />
             <KeyboardAvoidingView
                 style={{ flex: 1 }}
-                behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+                behavior={Platform.OS === 'ios' ? 'padding' : contentWidth ? 'height' : undefined}
             >
                 <ScrollView
                     keyboardShouldPersistTaps="handled"
                     contentContainerStyle={{
-                        padding: 16,
+                        padding: contentPadding,
+                        width: '100%',
+                        maxWidth: contentWidth,
+                        alignSelf: 'center',
                         paddingBottom: footer ? 24 : bottom,
                         gap: 16,
                     }}
                 >
                     {children}
                 </ScrollView>
+                {footer ? (
+                    <View
+                        className="px-4 pt-3 gap-2 border-t border-border bg-background"
+                        style={{ paddingBottom: insets.bottom + 12 }}
+                    >
+                        {footer}
+                    </View>
+                ) : null}
             </KeyboardAvoidingView>
-            {footer ? (
-                <View
-                    className="px-4 pt-3 gap-2 border-t border-border bg-background"
-                    style={{ paddingBottom: insets.bottom + 12 }}
-                >
-                    {footer}
-                </View>
-            ) : null}
             {pendingExit ? (
                 <ConfirmationSheet
                     title={t('tables.mobile.discard')}

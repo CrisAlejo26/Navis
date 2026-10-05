@@ -1339,6 +1339,15 @@ export const en = {
         },
     },
     tasks: {
+        editor: {
+            invalidFields: 'Check the title, date, time and reminder.',
+            timezone: 'Time zone: {{timezone}}',
+            reminderTags: 'Reminder tags',
+            tagsHint: 'The first tag’s icon and color identify the task.',
+            invalidTag: 'Enter a name and choose a valid icon and color.',
+            editTagNamed: 'Edit tag {{name}}',
+            titleRequired: 'Enter a title.',
+        },
         mobile: {
             filters: 'Filters',
             filtersCount: 'Filters ({{count}})',

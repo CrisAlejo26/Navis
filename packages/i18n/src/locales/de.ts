@@ -1365,6 +1365,15 @@ export const de = {
         },
     },
     tasks: {
+        editor: {
+            invalidFields: 'Prüfe Titel, Datum, Uhrzeit und Erinnerung.',
+            timezone: 'Zeitzone: {{timezone}}',
+            reminderTags: 'Erinnerungslabels',
+            tagsHint: 'Symbol und Farbe des ersten Labels kennzeichnen die Aufgabe.',
+            invalidTag: 'Gib einen Namen ein und wähle ein gültiges Symbol und eine Farbe.',
+            editTagNamed: 'Label {{name}} bearbeiten',
+            titleRequired: 'Gib einen Titel ein.',
+        },
         mobile: {
             filters: 'Filter',
             filtersCount: 'Filter ({{count}})',

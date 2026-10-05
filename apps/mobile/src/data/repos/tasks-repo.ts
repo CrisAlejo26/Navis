@@ -9,6 +9,7 @@ import { newId } from '../db';
 import { tasksDb, type TasksContext } from './tasks-context';
 import { taskRecords } from './task-records';
 import { saveActivity, deleteActivity, type ActivityFields } from './activity-writes';
+import type { ActivityState } from './activity-status-write';
 
 export { taskRange, listTasks, taskStreak } from './tasks-reads';
 export { setTaskStatus } from './activity-status';
@@ -17,16 +18,21 @@ export type { TasksContext } from './tasks-context';
 export async function findTask(context: TasksContext, id: string): Promise<Task | null> {
     return (await taskRecords(await tasksDb(context), context, { id }))[0] ?? null;
 }
-export async function createTask(context: TasksContext, input: CreateTaskInput): Promise<string> {
+export async function createTask(
+    context: TasksContext,
+    input: CreateTaskInput,
+    state?: ActivityState,
+): Promise<string> {
     const data = createTaskSchema.parse(input),
         id = newId();
-    await saveActivity(context, 'task', id, fields(data), data, true);
+    await saveActivity(context, 'task', id, fields(data), data, true, state);
     return id;
 }
 export async function updateTask(
     context: TasksContext,
     id: string,
     input: UpdateTaskInput,
+    state?: ActivityState,
 ): Promise<void> {
     const patch = updateTaskSchema.parse(input),
         previous = await findTask(context, id);
@@ -59,7 +65,7 @@ export async function updateTask(
     const values = fields(merged);
     values.status = merged.isRecurring ? null : (previous.status ?? 'pendiente');
     values.completed_at = merged.isRecurring ? null : previous.completedAt;
-    await saveActivity(context, 'task', id, values, patch, false);
+    await saveActivity(context, 'task', id, values, patch, false, state);
 }
 export async function deleteTask(context: TasksContext, id: string): Promise<void> {
     await deleteActivity(context, 'task', id);
