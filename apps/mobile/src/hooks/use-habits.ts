@@ -40,6 +40,11 @@ export function useHabitMutation<T, R>(operation: (context: TasksContext, input:
             if (!enabled) throw new Error('not-found');
             return operation(context, input);
         },
-        onSuccess: () => client.invalidateQueries({ queryKey: habitsKey(context) }),
+        onSuccess: async () => {
+            await client.invalidateQueries({ queryKey: habitsKey(context) });
+            await client.invalidateQueries({
+                queryKey: ['local-activities', context.churchId, context.userId],
+            });
+        },
     });
 }

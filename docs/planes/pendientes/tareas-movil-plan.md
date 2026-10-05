@@ -1,6 +1,6 @@
 # Plan — Tareas y hábitos en Navis móvil, con la gestión de Tomtask
 
-Estado: **fases 0 y 1 cerradas; fase 2 pendiente de autorización**. Fecha: 2026-10-05.
+Estado: **fases 0, 1 y 2 cerradas; fase 3 pendiente de autorización**. Fecha: 2026-10-05.
 Referencias: RFC 0018 (modelo y web), `D:/Proyectos_personales/taskia` (web) y `taskia/mobile` (Habit Land, la referencia de estilos y botones).
 
 Investigación y dirección visual: [tareas-movil-diseno.md](./tareas-movil-diseno.md). Las fases 2–6 conservan el alcance del plan, incluyendo notificaciones reales.
@@ -51,7 +51,7 @@ Inventario de `taskia/mobile` (lo que se quiere tener) frente al modelo RFC 0018
 Se adapta, no se copia: Regla 9 y Regla 7 mandan.
 
 - **Se toma**: tarjeta de 26 px de radio con sombra suave, tinte por estado (verde = hecha, color del estado si no es «pendiente»), `MiniChip` con color, hora a la derecha, cabeceras de sección con contador y color de aviso en «atrasadas», lista virtualizada con esqueleto al cargar más, botón fijo de filtros con fila de chips activos, pantalla de filtros con borrador y botón «aplicar (N)», swipe con etiquetas, estado vacío distinto para «nada creado» y «los filtros no dejan pasar nada».
-- **No se toma**: la paleta lavanda `#4B6BFB`/gradiente rosa (el azul es el token `primary`), Poppins (la fuente es Roboto), el icono de gato, la llama como firma (El Faro ya es la firma de Navis, RFC 0018 D19), ningún icono con forma de cruz.
+- **No se toma**: la paleta lavanda `#4B6BFB`/gradiente rosa (el azul es el token `primary`), el icono de gato, la llama como firma (El Faro ya es la firma de Navis, RFC 0018 D19), ningún icono con forma de cruz. Se conserva Poppins en móvil: `packages/theme/src/fonts.ts` ya la establece por petición del usuario para corresponder a Tomtask.
 - **Profundidad**: `listCardShadow` y la elevación semántica de `lib/ui/elevation.ts`; nada de un segundo sistema de sombras.
 - Todo en claro y oscuro con tokens y `themeColorsHex`; los iconos de etiqueta salen del catálogo `task-icons` con un mapa clave → Ionicons en fichero propio (sin cruces).
 
@@ -87,6 +87,16 @@ Cada fase termina verde en `pnpm check` y con verificación en emulador (Regla 1
 | **7** Opcional                    | Estados personalizados y flujos, fecha límite y alarma de «en progreso»                                                                                                                                               | solo si lo confirmas                                                      |
 
 ## 6. Riesgos y trampas conocidas
+
+### Registro de fase 2 (2026-10-05)
+
+- Agenda combinada de tareas y hábitos con paginación global, grupos por fecha/estado/prioridad/etiqueta, búsqueda, contadores y calendario mensual con selección y progreso diario (El Faro).
+- Tarjetas conforme a las referencias de Tomtask: Poppins, radio 26, icono 42, hora a la derecha, chips, tintes por estado y sombras semánticas. Swipe para completar/reabrir y borrar; hoja con botones como alternativa accesible al gesto.
+- Filtros de pantalla completa con borrador, previsualización «Aplicar (N)», rango validado, tipo, texto, estados, prioridades, etiquetas, recordatorio/repetición en tres estados, completadas, orden y agrupación. Chips removibles al volver; vacío inicial, vacío filtrado, esqueleto y errores con reintento.
+- Datos demo idempotentes solo en el contexto solicitado; consultas y caché acotadas por iglesia/usuario. Las actividades borradas desaparecen de la agenda y los lectores de histórico conservan los datos para estadísticas.
+- Android real en el emulador dedicado: completar una ocurrencia actualiza pendientes/hechas; borrar con cancelación y confirmación actualiza la agenda; filtros con cero coincidencias, restablecer, calendario y teclado. Español/claro y alemán/oscuro, 375 dp y texto al 130 %. Ruta temporal de QA retirada. [Capturas y revisión](../../qa/tareas-movil/README.md).
+- `pnpm check` completo y `pnpm build` pasan. Móvil: 140 suites y 505 pruebas; scripts: 29 pruebas. API y esquema no se modifican en esta fase; se mantienen los e2e SQLite/PostgreSQL de la fase 1.
+- Alta, edición, detalle completo y gestor de etiquetas siguen en la fase 3. Hoy/estadísticas en la 4; selección y orden manual en la 5; entrega real de notificaciones en la 6.
 
 ### Registro de fase 1 (2026-10-05)
 

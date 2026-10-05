@@ -1362,6 +1362,28 @@ export const es = {
     /* Tareas y hábitos (RFC 0018). El catálogo de iconos (§7.1) lleva su propia
      etiqueta accesible por clave, una por cada entrada de TASK_ICON_CATALOG. */
     tasks: {
+        mobile: {
+            filters: 'Filtros',
+            filtersCount: 'Filtros ({{count}})',
+            reset: 'Restablecer',
+            apply: 'Aplicar ({{count}})',
+            summary: '{{pending}} pendientes · {{done}} hechas',
+            matches: '{{count}} resultados',
+            searchPlaceholder: 'Buscar tareas y hábitos',
+            untagged: 'Sin etiqueta',
+            withRepeat: 'Con repetición',
+            withoutRepeat: 'Sin repetición',
+            defaultRange: 'Últimos y próximos 30 días',
+            rangeError: 'Elige un rango de hasta 92 días.',
+            emptyTitle: 'Todavía no hay tareas ni hábitos',
+            emptyHint: 'Aquí aparecerán tus tareas y hábitos organizados por fecha.',
+            emptyFilteredHint: 'Prueba otros filtros o restablécelos para ver tu agenda.',
+            noTags: 'No hay etiquetas todavía',
+            removeFilter: 'Quitar filtro: {{label}}',
+            dayComplete: 'Día cumplido · El Faro',
+            dayPartial: 'En progreso',
+            calendarDay: '{{date}}: {{done}} de {{total}} completadas',
+        },
         title: 'Tareas',
         today: 'Hoy',
         list: 'Listado',

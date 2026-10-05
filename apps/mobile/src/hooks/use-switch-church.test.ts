@@ -45,11 +45,9 @@ it('persiste, reinicia el calendario, vuelve a Inicio y excluye datos anteriores
     });
     client.setQueryData(['church', north.churchId], 'N-church');
     client.setQueryData(['demo-data', north.churchId], 'N-demo');
-    const taskKeys = ['local-tasks', 'local-habits', 'local-task-tags'].map((prefix) => [
-        prefix,
-        north.churchId,
-        ISOLATION_OWNER,
-    ]);
+    const taskKeys = ['local-tasks', 'local-habits', 'local-task-tags', 'local-activities'].map(
+        (prefix) => [prefix, north.churchId, ISOLATION_OWNER],
+    );
     for (const key of taskKeys) client.setQueryData(key, ['private']);
     client.setQueryData(['prophecies', ISOLATION_OWNER], ['personal']);
     let release: (data: string) => void = () => undefined;

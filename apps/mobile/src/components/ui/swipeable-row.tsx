@@ -19,6 +19,7 @@ export interface SwipeAction {
 }
 
 interface SwipeableRowProps {
+    radius?: number;
     children: ReactNode;
     /** Tono del borde de la tarjeta; la sombra queda fuera del recorte del gesto. */
     shadowColor?: string;
@@ -67,6 +68,7 @@ export function SwipeableRow({
     disabled = false,
     left,
     right,
+    radius = 16,
 }: SwipeableRowProps) {
     const ref = useRef<Swipeable>(null);
     const dark = useThemeStore((state) => state.resolvedTheme) === 'dark';
@@ -74,7 +76,7 @@ export function SwipeableRow({
 
     if (disabled || (!left && !right)) {
         return shadowColor ? (
-            <View className="rounded-2xl bg-card" style={shadow}>
+            <View className="bg-card" style={[shadow, { borderRadius: radius }]}>
                 {children}
             </View>
         ) : (
@@ -83,8 +85,11 @@ export function SwipeableRow({
     }
 
     return (
-        <View className={shadowColor ? 'rounded-2xl bg-card' : 'rounded-2xl'} style={shadow}>
-            <View className="rounded-2xl overflow-hidden bg-card">
+        <View
+            className={shadowColor ? 'bg-card' : undefined}
+            style={[shadow, { borderRadius: radius }]}
+        >
+            <View className="overflow-hidden bg-card" style={{ borderRadius: radius }}>
                 <Swipeable
                     ref={ref}
                     friction={2}

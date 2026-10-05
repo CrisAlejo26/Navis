@@ -21,10 +21,10 @@ export function checkActivityRange(from: string, to: string, max = MAX_TASKS_RAN
     const days = daysBetween(from, to);
     if (days < 0 || days > max) throw new Error('invalid-range');
 }
-export function activityPage<T extends TaskOccurrence | HabitOccurrence>(
+export function matchingActivities<T extends TaskOccurrence | HabitOccurrence>(
     items: T[],
     query: ActivityQuery,
-): Paginated<T> {
+): T[] {
     const search = fold(query.search?.trim() ?? '');
     const filtered = items.filter((item) => {
         if ((query.hideCompleted ?? true) && item.status === 'completada') return false;
@@ -53,6 +53,13 @@ export function activityPage<T extends TaskOccurrence | HabitOccurrence>(
             return weight[a.priority] - weight[b.priority] || compare(a, b);
         return query.sort === 'farthest' ? compare(b, a) : compare(a, b);
     });
+    return filtered;
+}
+export function activityPage<T extends TaskOccurrence | HabitOccurrence>(
+    items: T[],
+    query: ActivityQuery,
+): Paginated<T> {
+    const filtered = matchingActivities(items, query);
     const page = Math.max(1, Math.floor(query.page ?? 1)),
         limit = Math.min(100, Math.max(1, Math.floor(query.limit ?? 20)));
     if (!Number.isFinite(page) || !Number.isFinite(limit)) throw new Error('invalid-page');

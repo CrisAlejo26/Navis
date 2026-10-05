@@ -1,5 +1,7 @@
-import { PlaceholderScreen } from '@/components/placeholder-screen';
+import { TaskDirectory } from '@/components/tasks/task-directory';
+import { useListContext } from '@/hooks/use-lists';
 
 export default function TasksScreen() {
-    return <PlaceholderScreen titleKey="nav.tasks" rfc="0018-tareas-y-habitos-implementado.md" />;
+    const { context } = useListContext();
+    return <TaskDirectory key={`${context.churchId}:${context.userId}`} />;
 }

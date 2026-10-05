@@ -22,6 +22,7 @@ import { seedDemoProphecies } from './demo-prophecies';
 import { seedDemoDreams } from './demo-dreams';
 import { seedDemoTeachings } from './demo-teachings';
 import { seedDemoLists } from './demo-lists';
+import { seedDemoTasks } from './demo-tasks';
 
 /**
  * Datos de **prueba** para ver la aplicación llena (Regla 11): una iglesia,
@@ -327,6 +328,7 @@ export async function seedDemoData(churchId: string, userId: string): Promise<bo
     );
     if ((existing?.total ?? 0) > 0) {
         await seedDemoLists(churchId, userId);
+        await seedDemoTasks(churchId, userId);
         return false;
     }
 
@@ -458,6 +460,7 @@ export async function seedDemoData(churchId: string, userId: string): Promise<bo
     }
 
     await seedDemoLists(churchId, userId);
+    await seedDemoTasks(churchId, userId);
     return true;
 }
 
@@ -550,7 +553,10 @@ export async function initializeTestUser(): Promise<void> {
                 existing.id,
                 DEMO_CHURCH_NAME,
             );
-            for (const church of churches) await seedDemoLists(church.id, existing.id);
+            for (const church of churches) {
+                await seedDemoLists(church.id, existing.id);
+                await seedDemoTasks(church.id, existing.id);
+            }
             return;
         }
         await prepareDemoSession();

@@ -3,8 +3,10 @@ import { Pressable, Text, View, useWindowDimensions } from 'react-native';
 import { cn } from '@/lib/cn';
 import { buildDateGrid, isInMonth } from '@/lib/ui/date-grid';
 import type { IsoDate } from '@navis/shared';
+import type { ReactNode } from 'react';
 
 interface CalendarGridProps {
+    renderDay?: (day: IsoDate, selected: boolean, outside: boolean) => ReactNode;
     /** Cualquier día del mes que se enseña. */
     month: IsoDate;
     today: IsoDate;
@@ -30,6 +32,7 @@ export function CalendarGrid({
     counts,
     dayLabel,
     compact = false,
+    renderDay,
 }: CalendarGridProps) {
     const grid = buildDateGrid(month);
     const { fontScale } = useWindowDimensions();
@@ -67,29 +70,33 @@ export function CalendarGrid({
                                     compact ? { minHeight: 48 * Math.max(1, fontScale) } : undefined
                                 }
                             >
-                                <View
-                                    className={cn(
-                                        'items-center justify-center rounded-full',
-                                        compact ? 'min-h-8 min-w-8 p-1' : 'h-8 w-8',
-                                        selected && 'bg-primary',
-                                        inRange && 'bg-muted',
-                                        day === today && !selected && 'border border-primary',
-                                    )}
-                                >
-                                    <Text
+                                {renderDay ? (
+                                    renderDay(day, selected, outside)
+                                ) : (
+                                    <View
                                         className={cn(
-                                            'text-sm font-sans',
-                                            selected
-                                                ? 'text-primary-foreground'
-                                                : 'text-foreground',
-                                            outside &&
-                                                !selected &&
-                                                'text-muted-foreground opacity-50',
+                                            'items-center justify-center rounded-full',
+                                            compact ? 'min-h-8 min-w-8 p-1' : 'h-8 w-8',
+                                            selected && 'bg-primary',
+                                            inRange && 'bg-muted',
+                                            day === today && !selected && 'border border-primary',
                                         )}
                                     >
-                                        {Number(day.slice(8, 10))}
-                                    </Text>
-                                </View>
+                                        <Text
+                                            className={cn(
+                                                'text-sm font-sans',
+                                                selected
+                                                    ? 'text-primary-foreground'
+                                                    : 'text-foreground',
+                                                outside &&
+                                                    !selected &&
+                                                    'text-muted-foreground opacity-50',
+                                            )}
+                                        >
+                                            {Number(day.slice(8, 10))}
+                                        </Text>
+                                    </View>
+                                )}
                                 {counts?.[day] ? (
                                     <Text className="text-xs font-sans text-muted-foreground">
                                         {counts[day]}

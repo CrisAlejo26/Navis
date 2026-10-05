@@ -1,11 +1,11 @@
 # Tareas móvil: investigación de Taskia y decisiones de diseño
 
 Fecha: 2026-10-05. Referencia principal solicitada por el usuario: `D:/Proyectos_personales/taskia/mobile`.
-Método: skill `refero-design`, investigación del código de Taskia y del sistema visual existente de Navis. Refero MCP no está disponible; se han usado las referencias locales y las guías de interacción, accesibilidad y movimiento del skill. Este documento fija la dirección para las fases de UI; no implica que esas pantallas estén implementadas.
+Método: skill `refero-design`, investigación del código de Tomtask (`taskia/mobile`) y del sistema visual existente de Navis. Refero MCP no está disponible; se han usado las referencias locales y las guías de interacción, accesibilidad y movimiento del skill. La agenda, tarjetas, calendario y filtros están implementados en la fase 2; los editores, estadísticas y avisos siguen sus fases del plan.
 
 ## Dirección
 
-Una agenda móvil con tarjetas redondeadas, calendario interactivo, agrupación legible y acciones accesibles con una mano. Se preservan las proporciones y los gestos de Taskia y se aplican los tokens, sombras y tipografía definidos para esta sección en Navis. La firma del progreso es El Faro.
+Una agenda móvil con tarjetas redondeadas, calendario interactivo, agrupación legible y acciones accesibles con una mano. Se preservan las proporciones y los gestos de Taskia y se aplican los tokens, sombras y tipografía de Navis. La firma del progreso es El Faro. Al empezar la fase 2 se verificó que `packages/theme/src/fonts.ts` ya define Poppins para móvil por petición del usuario; se conserva ese sistema vigente, sustituyendo la referencia antigua a Roboto del plan.
 
 ## Decisiones vinculadas a fuentes
 
@@ -14,7 +14,7 @@ Las rutas de Taskia de esta tabla son relativas a `taskia/mobile/src/`.
 | Decisión                                                                      | Fuente                                                         | Adaptación en Navis                                                                     | Motivo                                                                        |
 | ----------------------------------------------------------------------------- | -------------------------------------------------------------- | --------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
 | Tarjeta de radio 26, padding 15 y separación vertical 13                      | `components/tasks/task-card.tsx`                               | Superficie semántica y `listCardShadow`; sin crear otro sistema de elevación            | Conservar la silueta reconocible y el ritmo de la referencia                  |
-| Título de 15 semibold, descripción de 13, hora de 12 a la derecha             | `components/tasks/task-card.tsx`                               | Roboto según el plan, colores de texto por token, título multilínea                     | Distinguir tarea, contexto y horario incluso a 375 px                         |
+| Título de 15 semibold, descripción de 13, hora de 12 a la derecha             | `components/tasks/task-card.tsx`                               | Poppins según el sistema móvil vigente, colores de texto por token, título multilínea   | Distinguir tarea, contexto y horario incluso a 375 px                         |
 | Icono de etiqueta, chips compactos, tinte verde y título tachado al completar | `components/tasks/task-card.tsx`                               | Catálogo compartido de iconos sin cruces; estado expresado también mediante texto/icono | Paridad visual sin depender exclusivamente del color                          |
 | Swipe con acciones rotuladas y pulsación larga de 350 ms para seleccionar     | `components/tasks/task-card.tsx`                               | Reutilizar `SwipeableRow`; confirmación de borrado y objetivos táctiles accesibles      | Las acciones deben ser claras y cómodas, también sin gesto                    |
 | Lista por secciones, contadores y atrasadas destacadas                        | `components/tasks/tasks-screen.tsx`                            | `SectionList`, ancho máximo 480, padding horizontal 22; virtualización y paginación     | Evitar una pantalla genérica de filas y mantener fluidez                      |
@@ -39,3 +39,11 @@ La fase 1 persiste recordatorios y sus etiquetas y los incluye en las copias de 
 ## Puerta de calidad visual para las próximas fases
 
 Comparar las pantallas renderizadas con los componentes de referencia, comprobando silueta de tarjeta, densidad, jerarquía, chips, swipe y CTA de filtros. Probar claro/oscuro, español/alemán, ancho 375 px y texto al 130 %, teclado, errores, vacío y carga. Las pantallas tienen que conservar estos rasgos concretos; una lista básica con un formulario no cumple la dirección solicitada.
+
+## Revisión renderizada de la fase 2
+
+Se compararon las pantallas Android de Navis con las proporciones y comportamientos del código de Tomtask, sin afirmar una comparación de capturas de ambas aplicaciones. Se probaron español/claro y alemán/oscuro a 375 dp, incluyendo texto al 130 %, teclado, búsqueda sin resultados, selección del calendario y acciones de tarjetas.
+
+Correcciones de la revisión: cabecera compacta del mes y flechas a la derecha; día seleccionado con fondo azul y anillo blanco; contraste de iconos y etiquetas personalizado comprobado sobre su tinte (mínimo 4,5:1 antes de conservar el acento); texto alemán de búsqueda más corto; CTA de filtros visible sobre el teclado. Se conservan los radios 26, iconos 42, márgenes 22, sombras semánticas, chips compactos y fuentes de Tomtask.
+
+Las acciones de completar/reabrir y eliminar también tienen botones accesibles en la hoja de acciones. El borrado pide confirmación y la agenda excluye las plantillas borradas; los lectores de histórico permanecen disponibles para estadísticas. La selección y el orden manual por pulsación larga quedan en la fase 5.

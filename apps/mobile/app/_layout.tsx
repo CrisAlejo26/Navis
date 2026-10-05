@@ -79,6 +79,7 @@ function RootNavigator() {
                                 'lists',
                                 'tables',
                                 'journal',
+                                'tasks',
                             ].includes(name),
                             title: t(titleKey),
                             animation: PUSHED_SCREEN_ANIMATION,

@@ -17,6 +17,8 @@ const TONE_KEY: Record<RingTone, keyof ThemeColors> = {
 const SCENE_ARC = '#7df0b4';
 
 interface ProgressRingProps {
+    progressColor?: string;
+    trackColor?: string;
     /** 0–1. */
     progress: number;
     size?: number;
@@ -42,6 +44,8 @@ export function ProgressRing({
     tone = 'primary',
     label,
     onScene = false,
+    progressColor,
+    trackColor,
 }: ProgressRingProps) {
     const palette = themeColorsHex[useThemeStore((state) => state.resolvedTheme)];
     const radius = (size - strokeWidth) / 2;
@@ -57,7 +61,7 @@ export function ProgressRing({
                     cx={center}
                     cy={center}
                     r={radius}
-                    stroke={onScene ? 'rgba(255, 255, 255, 0.25)' : palette.muted}
+                    stroke={trackColor ?? (onScene ? 'rgba(255, 255, 255, 0.25)' : palette.muted)}
                     strokeWidth={strokeWidth}
                     fill="none"
                 />
@@ -65,7 +69,7 @@ export function ProgressRing({
                     cx={center}
                     cy={center}
                     r={radius}
-                    stroke={onScene ? SCENE_ARC : palette[TONE_KEY[tone]]}
+                    stroke={progressColor ?? (onScene ? SCENE_ARC : palette[TONE_KEY[tone]])}
                     strokeWidth={strokeWidth}
                     strokeLinecap="round"
                     strokeDasharray={`${circumference} ${circumference}`}

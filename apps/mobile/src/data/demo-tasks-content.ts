@@ -1,0 +1,43 @@
+export const DEMO_TASKS = [
+    [
+        'Preparar la predicación del domingo',
+        'Revisar las notas y escoger el pasaje principal.',
+        0,
+        '09:30',
+        0,
+        'alta',
+    ],
+    [
+        'Visitar a Carmen y su familia',
+        'Confirmar la visita antes de salir.',
+        1,
+        '17:00',
+        1,
+        'media',
+    ],
+    ['Llamar a Andrés', 'Acompañarlo durante esta semana.', 1, null, -2, 'alta'],
+    [
+        'Organizar el encuentro de jóvenes',
+        'Preparar materiales y distribuir las responsabilidades.',
+        2,
+        '18:30',
+        2,
+        'media',
+    ],
+    [
+        'Revisar el calendario de la iglesia',
+        'Comprobar los turnos de esta semana.',
+        2,
+        null,
+        0,
+        'baja',
+    ],
+    [
+        'Enviar el resumen del estudio',
+        'Compartirlo con el grupo de lectura.',
+        0,
+        '12:00',
+        -1,
+        'media',
+    ],
+] as const;

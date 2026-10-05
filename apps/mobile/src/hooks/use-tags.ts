@@ -27,9 +27,12 @@ export function useTaskTagMutation<T, R>(
         },
         onSuccess: async () => {
             await Promise.all(
-                [taskTagsKey(context), tasksKey(context), habitsKey(context)].map((queryKey) =>
-                    client.invalidateQueries({ queryKey }),
-                ),
+                [
+                    taskTagsKey(context),
+                    tasksKey(context),
+                    habitsKey(context),
+                    ['local-activities', context.churchId, context.userId],
+                ].map((queryKey) => client.invalidateQueries({ queryKey })),
             );
         },
     });
