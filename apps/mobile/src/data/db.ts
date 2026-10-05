@@ -12,6 +12,7 @@ import { repairChurchAccess } from './church-access-repair';
 import { migrateLists } from './lists-migration';
 import { migrateTables, migrateTablesParity } from './tables-migration';
 import { migrateJournal } from './journal-migration';
+import { migrateTasks } from './tasks-migration';
 import * as SQLite from 'expo-sqlite';
 
 import { seedCalendarScaffold } from './repos/calendar-seed';
@@ -43,7 +44,7 @@ export function setDbForTests(fake: LocalDb | null): void {
 }
 
 /** Versión actual del esquema local. Cada cambio añade un caso a `migrations`. */
-export const SCHEMA_VERSION = 15;
+export const SCHEMA_VERSION = 16;
 
 type Migration = (db: LocalDb) => Promise<void>;
 
@@ -352,6 +353,7 @@ const migrations: Record<number, Migration> = {
     13: migrateTables,
     14: migrateJournal,
     15: migrateTablesParity,
+    16: migrateTasks,
 };
 
 async function columnOf(table: string, column: string, db: LocalDb): Promise<boolean> {

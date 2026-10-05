@@ -48,6 +48,14 @@ jest.mock('expo-secure-store', () => {
 });
 
 const ALL_TABLES = [
+    'task_reminder_tags',
+    'habit_reminder_tags',
+    'task_reminders',
+    'habit_reminders',
+    'habit_occurrences',
+    'habit_tags',
+    'habits',
+    'task_streak_cache',
     'journal_entry_audios',
     'journal_entries',
     'custom_table_views',

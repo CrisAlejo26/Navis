@@ -8,6 +8,9 @@ import { useChurchTransition } from '@/stores/church-transition';
 import { useLocalSession, type LocalSession } from '@/stores/local-session';
 
 const scopedPrefixes = new Set([
+    'local-tasks',
+    'local-habits',
+    'local-task-tags',
     'local-tables',
     'believers',
     'calendar',

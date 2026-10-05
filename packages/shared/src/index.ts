@@ -96,3 +96,4 @@ export {
     streak90 as taskStreak90,
 } from './task-stats';
 export { byWeek as habitByWeek, byTag as habitByTag, trend as habitTrend } from './habit-stats';
+export * from './local-task-schema';

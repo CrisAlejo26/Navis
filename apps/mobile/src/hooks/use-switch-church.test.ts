@@ -45,6 +45,12 @@ it('persiste, reinicia el calendario, vuelve a Inicio y excluye datos anteriores
     });
     client.setQueryData(['church', north.churchId], 'N-church');
     client.setQueryData(['demo-data', north.churchId], 'N-demo');
+    const taskKeys = ['local-tasks', 'local-habits', 'local-task-tags'].map((prefix) => [
+        prefix,
+        north.churchId,
+        ISOLATION_OWNER,
+    ]);
+    for (const key of taskKeys) client.setQueryData(key, ['private']);
     client.setQueryData(['prophecies', ISOLATION_OWNER], ['personal']);
     let release: (data: string) => void = () => undefined;
     const late = client
@@ -81,6 +87,7 @@ it('persiste, reinicia el calendario, vuelve a Inicio y excluye datos anteriores
         expect(client.getQueryData(['calendar', north.churchId, 'late'])).toBeUndefined();
         expect(client.getQueryData(['church', north.churchId])).toBeUndefined();
         expect(client.getQueryData(['demo-data', north.churchId])).toBeUndefined();
+        for (const key of taskKeys) expect(client.getQueryData(key)).toBeUndefined();
         expect(client.getQueryData(['prophecies', ISOLATION_OWNER])).toEqual(['personal']);
         expect(router.dismissAll).not.toHaveBeenCalled();
         expect(router.replace).toHaveBeenCalledWith('/(tabs)');

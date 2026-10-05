@@ -1,11 +1,13 @@
 # Plan — Tareas y hábitos en Navis móvil, con la gestión de Tomtask
 
-Estado: **propuesto, sin implementar**. Fecha: 2026-10-05.
+Estado: **fases 0 y 1 cerradas; fase 2 pendiente de autorización**. Fecha: 2026-10-05.
 Referencias: RFC 0018 (modelo y web), `D:/Proyectos_personales/taskia` (web) y `taskia/mobile` (Habit Land, la referencia de estilos y botones).
+
+Investigación y dirección visual: [tareas-movil-diseno.md](./tareas-movil-diseno.md). Las fases 2–6 conservan el alcance del plan, incluyendo notificaciones reales.
 
 ## 0. Lo primero: tablas y notas ya están hechas
 
-El árbol de trabajo tiene **sin commitear** las secciones móviles de **Tablas** (RFC 0021/0025: cuadrícula, tablero, calendario, 12 tipos de columna, filtros, exportación, SQLite y backup) y **Cuaderno/Notas de iglesia** (RFC 0017: `app/journal/`, repos, audios, recordatorios). Ambas tienen tests y el plan de tablas registra QA en Android. **No se rehacen.** Falta, como mucho, un repaso visual de las dos y commitearlas (en dos commits, `tables` y `journal`). Si «notas» era otra cosa (las notas de creyentes ya existen desde `creyentes-movil-plan`), hay que decirlo antes de empezar.
+Tablas y Cuaderno quedaron guardados, junto con todo el contenido staged, en `277730b`, como pidió el usuario. `pnpm check` pasó y el árbol quedó limpio antes de empezar tareas. El commit `c130b90` retiró los bloqueos de los hooks locales de commit y documentó las validaciones manuales, para permitir commits desde Visual Studio. Estas secciones no se rehacen.
 
 ## 1. Punto de partida (lo que hay)
 
@@ -85,6 +87,18 @@ Cada fase termina verde en `pnpm check` y con verificación en emulador (Regla 1
 | **7** Opcional                    | Estados personalizados y flujos, fecha límite y alarma de «en progreso»                                                                                                                                               | solo si lo confirmas                                                      |
 
 ## 6. Riesgos y trampas conocidas
+
+### Registro de fase 1 (2026-10-05)
+
+- Repetición, racha actual y agregados de estadísticas extraídos a `packages/shared`; API y móvil consumen las mismas funciones, sin cambiar las reglas existentes.
+- SQLite v16: hábitos, ocurrencias, recordatorios, etiquetas de recordatorios y caché de racha máxima. Los ocho esquemas nuevos reproducen las entidades de API y están cubiertos por el test de paridad.
+- Repositorios con contexto de usuario/iglesia, validación de membresía y referencias, transacciones, filtros y paginación; ocurrencias materializadas solo al cambiar estado. El auditor estático de consultas incluye las tablas nuevas.
+- Hooks de consulta/mutación y retirada de caché al cambiar de iglesia. Copias de seguridad con las tablas nuevas; restauración compatible con copias anteriores sin esas tablas.
+- Android, emulador dedicado `navis_tables_qa`: migración real 15 → 16 y prueba con `expo-sqlite` de alta/edición/lectura de tareas y hábitos, recordatorio conservado tras editar, estado idempotente y borrado con historial. Resultado nativo: PASS. Ruta temporal de QA retirada después de verificar.
+- E2E de API sobre bases aisladas: 224 pruebas en SQLite y 224 en PostgreSQL, con migraciones aplicadas desde cero. `pnpm build` pasó.
+- `pnpm check` completo pasó: formato, lint sin errores, tipos, tests del workspace y 29 pruebas de scripts. En móvil: 134 suites y 493 pruebas verdes. Extracción de lógica guardada en `refactor(shared): compartir repeticion racha y estadisticas de tareas`.
+- `expo-doctor`: 19/20 comprobaciones; única incidencia, desfases de patch previos en Expo, Constants y Router. No se cambiaron dependencias como parte de esta fase.
+- No hay UI nueva en esta fase ni programación de notificaciones todavía; se ha investigado y documentado el comportamiento de Taskia para implementarlo en las fases previstas.
 
 - Tablas del repo sin `church_id` solo para profecías, sueños y enseñanzas: las de tareas **sí** llevan `church_id` **y** `owner_id`.
 - `date` locales: usar `formatDay` / helpers de `iso-day.ts`, no `toISOString().slice(0,10)`.

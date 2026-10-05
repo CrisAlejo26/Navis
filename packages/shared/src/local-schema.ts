@@ -19,6 +19,7 @@
  * | `datetime` (`TIMESTAMP`)          | `text` (ISO 8601) |
  */
 import { LOCAL_JOURNAL_TABLES } from './local-journal-schema';
+import { LOCAL_TASK_TABLES } from './local-task-schema';
 import { LOCAL_LIST_TABLES } from './local-list-schema';
 import { LOCAL_CUSTOM_TABLES } from './local-table-schema';
 export type LocalColumnType = 'text' | 'int' | 'real' | 'bool';
@@ -327,6 +328,7 @@ export const LOCAL_USER_TABLE: LocalTable = {
 /** Todas las tablas que crea la base local, en orden de dependencia. */
 export const ALL_LOCAL_TABLES: LocalTable[] = [
     ...LOCAL_TABLES,
+    ...LOCAL_TASK_TABLES,
     ...LOCAL_LIST_TABLES,
     ...LOCAL_CUSTOM_TABLES,
     ...LOCAL_JOURNAL_TABLES,

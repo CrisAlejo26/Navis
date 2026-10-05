@@ -1,5 +1,5 @@
 import ts from 'typescript';
-import { LOCAL_TABLES } from '@navis/shared';
+import { LOCAL_TABLES, LOCAL_TASK_TABLES } from '@navis/shared';
 
 const parents = [
     'believer_tag_links',
@@ -10,15 +10,21 @@ const parents = [
     'meeting_slot_believers',
     'task_occurrences',
     'task_tags',
+    'habit_tags',
+    'habit_occurrences',
+    'task_reminders',
+    'habit_reminders',
+    'task_reminder_tags',
+    'habit_reminder_tags',
     'custom_table_columns',
     'custom_table_rows',
     'custom_table_views',
 ];
 const scoped = new Set([
     'custom_tables',
-    ...LOCAL_TABLES.filter((table) =>
-        table.columns.some((column) => column.name === 'church_id'),
-    ).map((table) => table.name),
+    ...[...LOCAL_TABLES, ...LOCAL_TASK_TABLES]
+        .filter((table) => table.columns.some((column) => column.name === 'church_id'))
+        .map((table) => table.name),
     ...parents,
 ]);
 // B6 comprueba que los llamadores validan padres y personas antes de usar helpers.

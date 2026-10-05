@@ -4,6 +4,7 @@ import {
     LOCAL_LIST_TABLES,
     LOCAL_CUSTOM_TABLES,
     LOCAL_JOURNAL_TABLES,
+    LOCAL_TASK_TABLES,
     type LocalColumnType,
     type LocalTable,
 } from '@navis/shared';
@@ -41,6 +42,12 @@ import { TaskOccurrence } from '../tasks/task-occurrence.entity';
 import { TaskReminder } from '../tasks/task-reminder.entity';
 import { TaskReminderTag } from '../tasks/task-reminder-tag.entity';
 import { TaskTag } from '../tasks/task-tag.entity';
+import { Habit } from '../tasks/habit.entity';
+import { HabitTag } from '../tasks/habit-tag.entity';
+import { HabitOccurrence } from '../tasks/habit-occurrence.entity';
+import { HabitReminder } from '../tasks/habit-reminder.entity';
+import { HabitReminderTag } from '../tasks/habit-reminder-tag.entity';
+import { TaskStreakCache } from '../tasks/task-streak-cache.entity';
 import { CustomTable } from '../tables/custom-table.entity';
 import { CustomTableColumn } from '../tables/custom-table-column.entity';
 import { CustomTableRow } from '../tables/custom-table-row.entity';
@@ -66,6 +73,12 @@ import { ListAccessLog } from '../lists/list-access-log.entity';
 
 /** Las entidades que participan en la comparación, más las que sus relaciones exigen registradas. */
 const ENTITIES = [
+    Habit,
+    HabitTag,
+    HabitOccurrence,
+    HabitReminder,
+    HabitReminderTag,
+    TaskStreakCache,
     CustomTable,
     CustomTableColumn,
     CustomTableRow,
@@ -166,6 +179,7 @@ describe.each([
     ...LOCAL_LIST_TABLES,
     ...LOCAL_CUSTOM_TABLES,
     ...LOCAL_JOURNAL_TABLES,
+    ...LOCAL_TASK_TABLES,
 ])('paridad local ↔ TypeORM: $name', (localTable: LocalTable) => {
     it('existe la entidad que espeja', () => {
         expect(localTable.mirror).toBeDefined();
