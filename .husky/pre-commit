@@ -1,5 +1,3 @@
-# Formatea y arregla lo que se va a subir, en vez de descubrirlo en CI.
-#
-# `lint-staged` (configurado en package.json) pasa oxlint, eslint y prettier
-# **solo por los ficheros en el índice**, así que cuesta un par de segundos.
-pnpm lint-staged --quiet
+# Los commits locales no ejecutan herramientas ni modifican el índice.
+# Ejecuta pnpm check antes de abrir un PR; la CI también lo comprueba.
+exit 0

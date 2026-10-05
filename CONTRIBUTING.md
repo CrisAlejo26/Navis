@@ -69,8 +69,13 @@ Están escritas en [`.claude/rules/`](./.claude/rules), y en resumen son estas:
 
 ## Commits y pull requests
 
-- **Conventional Commits** (`feat:`, `fix:`, `docs:`, `refactor:`, `test:`,
-  `chore:`), que valida commitlint en el hook de pre-commit.
+- Se recomienda **Conventional Commits** (`feat:`, `fix:`, `docs:`, `refactor:`,
+  `test:`, `chore:`), pero se aceptan mensajes libres en los commits locales.
+- Los hooks locales no ejecutan validaciones ni modifican los archivos staged,
+  para que guardar un commit desde Visual Studio / VS Code no dependa de pnpm,
+  del formato del mensaje ni de las comprobaciones de código. Ejecuta
+  `pnpm check` antes de abrir un PR; puedes ejecutar `pnpm lint-staged` para
+  arreglar y formatear los archivos staged cuando lo necesites.
 - Un PR, un cambio. Si te encuentras arreglando algo por el camino, sepáralo.
 - En la descripción: qué cambia, por qué, y cómo se ha comprobado.
 - La CI corre lo mismo que `pnpm check`, más los e2e, `expo-doctor`,
