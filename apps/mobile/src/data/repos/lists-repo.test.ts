@@ -1,5 +1,5 @@
 import { setupLocalDb } from '@/data/test-support';
-import { getDb, setDbForTests } from '@/data/db';
+import { getDb, setDbForTests, SCHEMA_VERSION } from '@/data/db';
 import { openDatabaseAsync } from 'expo-sqlite';
 import { createChurch } from './church-repo';
 import { createBeliever } from './believers-repo';
@@ -125,7 +125,9 @@ describe('listas independientes del teléfono', () => {
             believersBefore,
         );
         await local.withTransactionAsync(() => migrateLists(local));
-        expect(await local.getFirstAsync('PRAGMA user_version')).toEqual({ user_version: 12 });
+        expect(await local.getFirstAsync('PRAGMA user_version')).toEqual({
+            user_version: SCHEMA_VERSION,
+        });
         setDbForTests(null);
         expect(await readLists(context)).toEqual([]);
     });

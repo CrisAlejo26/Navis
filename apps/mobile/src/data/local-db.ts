@@ -17,6 +17,7 @@ export type LocalDb = {
     runAsync(source: string, ...params: SQLiteVariadicBindParams): Promise<SQLiteRunResult>;
     execAsync(source: string): Promise<void>;
     withTransactionAsync(fn: () => Promise<void>): Promise<void>;
+    withIsolatedTransactionAsync?(fn: (transaction: LocalDb) => Promise<void>): Promise<void>;
 };
 
 /** Para el `created_at`/`updated_at` de cada fila: ISO completo, comparable como texto. */

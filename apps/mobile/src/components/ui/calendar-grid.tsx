@@ -1,4 +1,4 @@
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, Text, View, useWindowDimensions } from 'react-native';
 
 import { cn } from '@/lib/cn';
 import { buildDateGrid, isInMonth } from '@/lib/ui/date-grid';
@@ -12,6 +12,9 @@ interface CalendarGridProps {
     /** Para el tramo de un `DateRangePicker`; sin ella, ninguna celda lo lleva. */
     isInRange?: (day: IsoDate) => boolean;
     onSelectDay: (day: IsoDate) => void;
+    counts?: Record<string, number>;
+    dayLabel?: (day: IsoDate) => string;
+    compact?: boolean;
 }
 
 /**
@@ -24,8 +27,12 @@ export function CalendarGrid({
     isSelected,
     isInRange,
     onSelectDay,
+    counts,
+    dayLabel,
+    compact = false,
 }: CalendarGridProps) {
     const grid = buildDateGrid(month);
+    const { fontScale } = useWindowDimensions();
 
     return (
         <View className="gap-1">
@@ -50,13 +57,20 @@ export function CalendarGrid({
                                 key={day}
                                 accessibilityRole="button"
                                 accessibilityState={{ selected }}
-                                accessibilityLabel={day}
+                                accessibilityLabel={dayLabel?.(day) ?? day}
                                 onPress={() => onSelectDay(day)}
-                                className="aspect-square flex-1 items-center justify-center"
+                                className={cn(
+                                    'flex-1 items-center justify-center',
+                                    !compact && 'aspect-square',
+                                )}
+                                style={
+                                    compact ? { minHeight: 48 * Math.max(1, fontScale) } : undefined
+                                }
                             >
                                 <View
                                     className={cn(
-                                        'h-8 w-8 items-center justify-center rounded-full',
+                                        'items-center justify-center rounded-full',
+                                        compact ? 'min-h-8 min-w-8 p-1' : 'h-8 w-8',
                                         selected && 'bg-primary',
                                         inRange && 'bg-muted',
                                         day === today && !selected && 'border border-primary',
@@ -76,6 +90,11 @@ export function CalendarGrid({
                                         {Number(day.slice(8, 10))}
                                     </Text>
                                 </View>
+                                {counts?.[day] ? (
+                                    <Text className="text-xs font-sans text-muted-foreground">
+                                        {counts[day]}
+                                    </Text>
+                                ) : null}
                             </Pressable>
                         );
                     })}

@@ -10,6 +10,8 @@ import {
 import { migrateChurchAccess } from './church-access-migration';
 import { repairChurchAccess } from './church-access-repair';
 import { migrateLists } from './lists-migration';
+import { migrateTables, migrateTablesParity } from './tables-migration';
+import { migrateJournal } from './journal-migration';
 import * as SQLite from 'expo-sqlite';
 
 import { seedCalendarScaffold } from './repos/calendar-seed';
@@ -22,68 +24,8 @@ import { seedSystemEmotions } from './repos/emotions-seed';
 // (`db.ts → calendar-seed.ts → db.ts`). Aquí se reexportan, que es de donde
 // los repositorios las seguían tomando.
 import { newId, nowIso, type LocalDb } from './local-db';
-import type { SQLiteRunResult, SQLiteVariadicBindParams } from 'expo-sqlite';
+import { serialize } from './serialized-db';
 export { nowIso, newId, type LocalDb } from './local-db';
-
-/**
- * Sobre Android, dos llamadas que se cruzan sobre la misma conexión revientan
- * con «Call to function 'NativeDatabase.prepareAsync' has been rejected»
- * (NullPointerException) — y una vez muerta, **todas** las consultas siguientes
- * fallan: se vio al escribir en el buscador de creyentes. React Query lanza
- * consultas concurrentes a propósito (listado, resumen, catálogos), así que el
- * retardo del buscador no basta: toda operación pasa por una **cola**, de una
- * en una. Dentro de una transacción el acceso ya es exclusivo, y los pasos del
- * callback corren en línea sin pasar por la cola.
- */
-function serialize(db: SQLite.SQLiteDatabase): LocalDb {
-    let tail: Promise<unknown> = Promise.resolve();
-    let inTransaction = false;
-
-    const enqueue = <T>(op: () => Promise<T>): Promise<T> => {
-        if (inTransaction) return op();
-        const run = tail.then(op, op);
-        tail = run.catch(() => undefined);
-        return run;
-    };
-
-    return {
-        async getAllAsync<T>(source: string, ...params: SQLiteVariadicBindParams): Promise<T[]> {
-            return enqueue(() => db.getAllAsync<T>(source, ...params));
-        },
-        async getFirstAsync<T>(
-            source: string,
-            ...params: SQLiteVariadicBindParams
-        ): Promise<T | null> {
-            return enqueue(() => db.getFirstAsync<T>(source, ...params));
-        },
-        async runAsync(
-            source: string,
-            ...params: SQLiteVariadicBindParams
-        ): Promise<SQLiteRunResult> {
-            return enqueue(() => db.runAsync(source, ...params));
-        },
-        async execAsync(source: string): Promise<void> {
-            return enqueue(() => db.execAsync(source));
-        },
-        withTransactionAsync(fn: () => Promise<void>): Promise<void> {
-            return enqueue(async () => {
-                inTransaction = true;
-                try {
-                    await db.execAsync('BEGIN');
-                    try {
-                        await fn();
-                        await db.execAsync('COMMIT');
-                    } catch (error) {
-                        await db.execAsync('ROLLBACK');
-                        throw error;
-                    }
-                } finally {
-                    inTransaction = false;
-                }
-            });
-        },
-    };
-}
 
 /**
  * La promesa de apertura y no la instancia abierta: si varios hooks piden la
@@ -101,7 +43,7 @@ export function setDbForTests(fake: LocalDb | null): void {
 }
 
 /** Versión actual del esquema local. Cada cambio añade un caso a `migrations`. */
-export const SCHEMA_VERSION = 12;
+export const SCHEMA_VERSION = 15;
 
 type Migration = (db: LocalDb) => Promise<void>;
 
@@ -407,6 +349,9 @@ const migrations: Record<number, Migration> = {
     },
     11: migrateChurchAccess,
     12: migrateLists,
+    13: migrateTables,
+    14: migrateJournal,
+    15: migrateTablesParity,
 };
 
 async function columnOf(table: string, column: string, db: LocalDb): Promise<boolean> {

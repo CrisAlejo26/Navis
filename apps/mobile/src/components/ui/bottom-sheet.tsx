@@ -17,6 +17,7 @@ interface BottomSheetProps {
     title?: string;
     children: ReactNode;
     scrollable?: boolean;
+    showCloseButton?: boolean;
 }
 
 /**
@@ -50,6 +51,7 @@ export function BottomSheet({
     title,
     children,
     scrollable = true,
+    showCloseButton = true,
 }: BottomSheetProps) {
     const { t } = useTranslation();
     const insets = useSafeAreaInsets();
@@ -93,11 +95,13 @@ export function BottomSheet({
                     {title ? (
                         <View className="flex-row items-center justify-between">
                             <Title size="md">{title}</Title>
-                            <IconButton
-                                icon="close"
-                                accessibilityLabel={t('common.close')}
-                                onPress={onClose}
-                            />
+                            {showCloseButton ? (
+                                <IconButton
+                                    icon="close"
+                                    accessibilityLabel={t('common.close')}
+                                    onPress={onClose}
+                                />
+                            ) : null}
                         </View>
                     ) : null}
                     {scrollable ? (

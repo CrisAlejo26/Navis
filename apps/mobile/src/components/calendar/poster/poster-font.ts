@@ -1,7 +1,7 @@
 import { FONT_FAMILIES } from '@navis/theme';
 
 /**
- * Las familias reales de Roboto que carga la app (`_layout.tsx`), para que la
+ * Las familias reales de Poppins que carga la app (`_layout.tsx`), para que la
  * negrita del SVG se vea de verdad. `fontWeight` por sí solo no la sintetiza
  * de forma fiable en Android dentro de `react-native-svg`: hace falta el
  * fichero de la fuente exacta, como en cualquier otro texto de la app.

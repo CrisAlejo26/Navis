@@ -151,6 +151,7 @@ function useInvalidate() {
     return () => {
         void syncNotifications();
         void client.invalidateQueries({ queryKey: ['local-lists'] });
+        void client.invalidateQueries({ queryKey: ['local-tables'] });
         return client.invalidateQueries({ queryKey: ['believers'] });
     };
 }

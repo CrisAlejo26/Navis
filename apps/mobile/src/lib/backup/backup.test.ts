@@ -8,6 +8,7 @@ import type { BackupFiles } from '@/lib/backup/backup-format';
 import { openDatabaseAsync } from 'expo-sqlite';
 import { createList } from '@/data/repos/lists-repo';
 import { listCoverFileId } from '@/data/list-cover-storage';
+import { createJournalEntry, findJournalEntry } from '@/data/repos/journal-repo';
 
 jest.mock('expo-sqlite', () => ({
     __esModule: true,
@@ -131,6 +132,44 @@ describe('copia de seguridad', () => {
             RestoreError,
         );
         expect((await dbConn.getAllAsync('SELECT id FROM churches')).length).toBe(1);
+    });
+
+    it('restaura el cuaderno completo y relocaliza sus audios en el teléfono de destino', async () => {
+        const churchId = await seed(),
+            dbConn = await getDb();
+        const user = await dbConn.getFirstAsync<{ id: string }>('SELECT id FROM local_user');
+        const context = { churchId, userId: user!.id };
+        const id = await createJournalEntry(context, {
+            title: 'Con audio',
+            kind: 'oracion',
+            occurredAt: '2026-10-04',
+            annotation: 'Texto completo',
+            learned: 'Reflexión',
+            remindAt: '2099-10-04T19:00:00',
+        });
+        await dbConn.runAsync(
+            'INSERT INTO journal_entry_audios (id, created_at, updated_at, church_id, entry_id, mime_type, size_bytes, recorded, storage_key) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+            'journal-audio',
+            'now',
+            'now',
+            churchId,
+            id,
+            'audio/mp4',
+            12,
+            1,
+            'file:///otro-telefono/voz.m4a',
+        );
+        const files = memoryFiles();
+        await files.writeAudio('journal-audio', 'Vk9a');
+        const backup = await buildBackup(files);
+        expect(backup.audios['journal-audio']).toBe('Vk9a');
+        await db.clear();
+        await restoreBackup(JSON.stringify(backup), files);
+        const entry = await findJournalEntry(context, id);
+        expect(entry?.annotation).toBe('Texto completo');
+        expect(entry?.learned).toBe('Reflexión');
+        expect(entry?.remindAt).toBe('2099-10-04T19:00:00');
+        expect(entry?.audios[0]?.uri).toBe(files.audioUri('journal-audio'));
     });
 
     it('restaura las listas y localiza su portada en el teléfono de destino', async () => {

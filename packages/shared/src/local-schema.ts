@@ -18,7 +18,9 @@
  * | `boolean`                         | `bool`     |
  * | `datetime` (`TIMESTAMP`)          | `text` (ISO 8601) |
  */
+import { LOCAL_JOURNAL_TABLES } from './local-journal-schema';
 import { LOCAL_LIST_TABLES } from './local-list-schema';
+import { LOCAL_CUSTOM_TABLES } from './local-table-schema';
 export type LocalColumnType = 'text' | 'int' | 'real' | 'bool';
 
 export interface LocalColumn {
@@ -326,6 +328,8 @@ export const LOCAL_USER_TABLE: LocalTable = {
 export const ALL_LOCAL_TABLES: LocalTable[] = [
     ...LOCAL_TABLES,
     ...LOCAL_LIST_TABLES,
+    ...LOCAL_CUSTOM_TABLES,
+    ...LOCAL_JOURNAL_TABLES,
     LOCAL_USER_TABLE,
 ];
 
@@ -338,6 +342,45 @@ export const LOCAL_INDEXES: {
     /** Literal para el `WHERE` de un índice **parcial** (SQLite lo admite). */
     where?: string;
 }[] = [
+    ...LOCAL_CUSTOM_TABLES.map((table) => ({
+        name: `UQ_${table.name}_id`,
+        table: table.name,
+        columns: ['id'],
+        unique: true,
+    })),
+    {
+        name: 'IDX_custom_tables_church',
+        table: 'custom_tables',
+        columns: ['church_id', 'is_active', 'position'],
+    },
+    {
+        name: 'UQ_custom_table_column_key',
+        table: 'custom_table_columns',
+        columns: ['table_id', 'key'],
+        unique: true,
+    },
+    {
+        name: 'IDX_custom_table_columns_order',
+        table: 'custom_table_columns',
+        columns: ['table_id', 'position'],
+    },
+    {
+        name: 'IDX_custom_table_rows_table',
+        table: 'custom_table_rows',
+        columns: ['table_id', 'deleted_at', 'id'],
+    },
+    {
+        name: 'IDX_custom_table_views_order',
+        table: 'custom_table_views',
+        columns: ['table_id', 'position'],
+    },
+    {
+        name: 'UQ_custom_table_believer',
+        table: 'custom_table_rows',
+        columns: ['table_id', 'believer_id'],
+        unique: true,
+        where: '"deleted_at" IS NULL AND "believer_id" IS NOT NULL',
+    },
     {
         name: 'UQ_church_members',
         table: 'church_members',

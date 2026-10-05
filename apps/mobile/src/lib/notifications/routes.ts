@@ -10,6 +10,11 @@ import { z } from 'zod';
  */
 export const noticeDataSchema = z.discriminatedUnion('type', [
     z.object({
+        type: z.literal('journal-reminder'),
+        churchId: z.string().min(1),
+        entryId: z.string().min(1),
+    }),
+    z.object({
         type: z.literal('note-reminder'),
         churchId: z.string().min(1),
         believerId: z.string().min(1),
@@ -23,6 +28,8 @@ export type NoticeData = z.infer<typeof noticeDataSchema>;
 export function hrefForNotice(data: unknown): Href | null {
     const parsed = noticeDataSchema.safeParse(data);
     if (!parsed.success) return null;
+    if (parsed.data.type === 'journal-reminder')
+        return { pathname: '/journal/[id]', params: { id: parsed.data.entryId } };
     // La página de la nota: se llega a **leerla**, no al formulario de edición.
     return { pathname: '/believers/notes/[id]', params: { id: parsed.data.noteId } };
 }

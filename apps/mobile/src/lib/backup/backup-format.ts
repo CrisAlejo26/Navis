@@ -1,5 +1,6 @@
 import { ALL_LOCAL_TABLES, type LocalTable } from '@navis/shared';
 import { z } from 'zod';
+import { backupKeysSchema } from '../tables/backup-keys';
 
 export const BACKUP_FORMAT = 'navis-backup';
 export const BACKUP_VERSION = 1;
@@ -21,6 +22,7 @@ export const backupSchema = z.object({
     tables: z.record(z.string(), z.array(z.record(z.string(), cell))),
     audios: z.record(z.string(), z.string()),
     photos: z.record(z.string(), z.string()),
+    tableKeys: backupKeysSchema.optional(),
 });
 
 export type Backup = z.infer<typeof backupSchema>;

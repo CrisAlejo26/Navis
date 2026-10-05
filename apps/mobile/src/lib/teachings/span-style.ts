@@ -5,7 +5,7 @@ import type { Style } from '@/lib/teachings/runs';
 
 /**
  * La familia que corresponde a cada combinación de negrita y cursiva. Se
- * elige la fuente entera y no `fontWeight`/`fontStyle`: con Roboto cargada por
+ * elige la fuente entera y no `fontWeight`/`fontStyle`: con Poppins cargada por
  * pesos, esas propiedades no hacen nada en Android y en iOS no inclinan una
  * familia que no trae cursiva.
  */

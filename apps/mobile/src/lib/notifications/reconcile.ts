@@ -27,8 +27,12 @@ export async function reconcile(
             existing.body === notice.body &&
             parsed.success &&
             parsed.data.churchId === notice.data.churchId &&
-            parsed.data.believerId === notice.data.believerId &&
-            parsed.data.noteId === notice.data.noteId;
+            (parsed.data.type === 'journal-reminder' && notice.data.type === 'journal-reminder'
+                ? parsed.data.entryId === notice.data.entryId
+                : parsed.data.type === 'note-reminder' &&
+                  notice.data.type === 'note-reminder' &&
+                  parsed.data.believerId === notice.data.believerId &&
+                  parsed.data.noteId === notice.data.noteId);
         if (!upToDate) await scheduler.schedule(notice);
     }
 }

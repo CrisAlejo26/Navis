@@ -1,13 +1,14 @@
 import '@/global.css';
 
 import {
-    Roboto_400Regular,
-    Roboto_400Regular_Italic,
-    Roboto_500Medium,
-    Roboto_600SemiBold,
-    Roboto_700Bold,
-    Roboto_700Bold_Italic,
-} from '@expo-google-fonts/roboto';
+    Poppins_400Regular,
+    Poppins_400Regular_Italic,
+    Poppins_500Medium,
+    Poppins_600SemiBold,
+    Poppins_700Bold,
+    Poppins_700Bold_Italic,
+    Poppins_800ExtraBold,
+} from '@expo-google-fonts/poppins';
 import { themeColorsHex } from '@navis/theme';
 import { AppBackdrop } from '@/components/navigation/app-backdrop';
 import { BootSplash } from '@/components/splash/boot-splash';
@@ -71,14 +72,43 @@ function RootNavigator() {
                         name={name}
                         options={{
                             // Profecías, sueños y enseñanzas pintan su propia `AppBar`, como su listado y su ficha.
-                            headerShown: !['prophecies', 'dreams', 'teachings', 'lists'].includes(
-                                name,
-                            ),
+                            headerShown: ![
+                                'prophecies',
+                                'dreams',
+                                'teachings',
+                                'lists',
+                                'tables',
+                                'journal',
+                            ].includes(name),
                             title: t(titleKey),
                             animation: PUSHED_SCREEN_ANIMATION,
                         }}
                     />
                 ))}
+                <Stack.Screen
+                    name="tables/[id]/row"
+                    options={{
+                        headerShown: false,
+                        title: t('nav.tables'),
+                        animation: PUSHED_SCREEN_ANIMATION,
+                    }}
+                />
+                <Stack.Screen
+                    name="journal/list"
+                    options={{ headerShown: false, animation: PUSHED_SCREEN_ANIMATION }}
+                />
+                <Stack.Screen
+                    name="journal/[id]"
+                    options={{ headerShown: false, animation: PUSHED_SCREEN_ANIMATION }}
+                />
+                <Stack.Screen
+                    name="tables/[id]"
+                    options={{
+                        headerShown: false,
+                        title: t('nav.tables'),
+                        animation: PUSHED_SCREEN_ANIMATION,
+                    }}
+                />
                 <Stack.Screen
                     name="lists/[id]"
                     options={{
@@ -186,12 +216,13 @@ export default function RootLayout() {
     // `tokens.native.css`. Sin esperar a `fontsLoaded`, el primer fotograma
     // saldría con la fuente del sistema y se vería el salto al llegar la real.
     const [fontsLoaded] = useFonts({
-        Roboto_400Regular,
-        Roboto_400Regular_Italic,
-        Roboto_500Medium,
-        Roboto_600SemiBold,
-        Roboto_700Bold,
-        Roboto_700Bold_Italic,
+        Poppins_400Regular,
+        Poppins_400Regular_Italic,
+        Poppins_500Medium,
+        Poppins_600SemiBold,
+        Poppins_700Bold,
+        Poppins_700Bold_Italic,
+        Poppins_800ExtraBold,
     });
 
     useEffect(() => {

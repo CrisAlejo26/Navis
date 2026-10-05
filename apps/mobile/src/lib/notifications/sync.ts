@@ -4,6 +4,7 @@ import { i18n } from '@/lib/i18n';
 import { createExpoScheduler } from '@/lib/notifications/expo-scheduler';
 import { getPermissionStatus } from '@/lib/notifications/permission';
 import { planNoteReminders } from '@/lib/notifications/plan-note-reminders';
+import { planJournalReminders } from './plan-journal-reminders';
 import { reconcile } from '@/lib/notifications/reconcile';
 import type { PlannedNotice } from '@/lib/notifications/types';
 import { useLocalSession } from '@/stores/local-session';
@@ -20,6 +21,7 @@ async function planEverything(): Promise<PlannedNotice[]> {
 
     const planned: PlannedNotice[] = [];
     if (settings.noteReminders) {
+        planned.push(...(await planJournalReminders(session.userId)));
         const churches = await listMyChurches(session.userId);
         const reminders = await listPendingNoteReminders(session.userId);
         planned.push(
@@ -32,7 +34,7 @@ async function planEverything(): Promise<PlannedNotice[]> {
             ),
         );
     }
-    return planned;
+    return planned.sort((a, b) => a.fireAt.getTime() - b.fireAt.getTime()).slice(0, MAX_PENDING);
 }
 
 async function run(): Promise<void> {

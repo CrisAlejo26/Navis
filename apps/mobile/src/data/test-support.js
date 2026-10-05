@@ -21,6 +21,7 @@ jest.mock('expo-crypto', () => {
     const nodeCrypto = require('node:crypto');
     return {
         __esModule: true,
+        ...require('./test-support/aes-mock'),
         CryptoDigestAlgorithm: { SHA256: 'SHA-256' },
         digestStringAsync: async (_algorithm, data) =>
             nodeCrypto.createHash('sha256').update(data, 'utf8').digest('hex'),
@@ -47,6 +48,12 @@ jest.mock('expo-secure-store', () => {
 });
 
 const ALL_TABLES = [
+    'journal_entry_audios',
+    'journal_entries',
+    'custom_table_views',
+    'custom_table_rows',
+    'custom_table_columns',
+    'custom_tables',
     'list_grants',
     'list_members',
     'list_views',

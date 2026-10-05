@@ -1,6 +1,7 @@
 import { assertAccessible } from '@/data/repos/church-access';
 import { findBeliever } from '@/data/repos/believers-repo';
 import { findNote } from '@/data/repos/notes-repo';
+import { findJournalEntry } from '@/data/repos/journal-repo';
 import { useLocalSession } from '@/stores/local-session';
 import { noticeDataSchema, type NoticeData } from './routes';
 
@@ -15,10 +16,18 @@ export async function prepareNotice(
     const { data } = parsed;
     const session = before.session;
     await assertAccessible(session.userId, data.churchId);
-    const note = await findNote(data.noteId, data.churchId);
-    if (!note || note.believerId !== data.believerId) return null;
-    if (note.authorId && note.authorId !== session.userId) return null;
-    if (!(await findBeliever(data.believerId, data.churchId))) return null;
+    if (data.type === 'journal-reminder') {
+        const entry = await findJournalEntry(
+            { userId: session.userId, churchId: data.churchId },
+            data.entryId,
+        );
+        if (!entry || (entry.authorId && entry.authorId !== session.userId)) return null;
+    } else {
+        const note = await findNote(data.noteId, data.churchId);
+        if (!note || note.believerId !== data.believerId) return null;
+        if (note.authorId && note.authorId !== session.userId) return null;
+        if (!(await findBeliever(data.believerId, data.churchId))) return null;
+    }
     const current = useLocalSession.getState().session;
     if (current?.userId !== session.userId || current.churchId !== session.churchId) return null;
     const switched = session.churchId !== data.churchId;

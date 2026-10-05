@@ -25,10 +25,10 @@ export function useBackup() {
     const clear = useLocalSession((state) => state.clear);
     const [busy, setBusy] = useState<'export' | 'restore' | null>(null);
 
-    async function exportBackup(): Promise<BackupOutcome | null> {
+    async function exportBackup(secret?: string): Promise<BackupOutcome | null> {
         setBusy('export');
         try {
-            const backup = await buildBackup(deviceBackupFiles);
+            const backup = await buildBackup(deviceBackupFiles, secret);
             const name = `navis-copia-${backup.createdAt.slice(0, 10)}.json`;
             const file = new File(Paths.cache, name);
             file.create({ overwrite: true });
@@ -48,10 +48,10 @@ export function useBackup() {
         return picked.canceled ? null : picked.result;
     }
 
-    async function restore(file: File): Promise<BackupOutcome> {
+    async function restore(file: File, secret?: string): Promise<BackupOutcome> {
         setBusy('restore');
         try {
-            await restoreBackup(await file.text(), deviceBackupFiles);
+            await restoreBackup(await file.text(), deviceBackupFiles, secret);
             // `invalidateQueries` y no `clear()`: las pestañas siguen montadas bajo la
             // pantalla de copia y `clear()` no avisa a sus consultas, que se
             // quedarían con los datos de antes de restaurar.

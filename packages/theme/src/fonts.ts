@@ -7,9 +7,10 @@
  * fuente a mano; todos leen de aquí.
  *
  * La pareja, elegida por su carácter (no genérica, Regla 9):
- * - **Roboto** en todo: la fuente de Android y de Material Design, presente
- *   en millones de pantallas y con todos los pesos del sistema. Sustituyó a
- *   la pareja Libre Caslon Display + Public Sans a petición de Cristian.
+ * - **Poppins** en todo, la misma que usa Tomtask (`taskia/mobile`):
+ * geométrica y redonda, con cada peso como archivo propio. Sustituyó a Roboto a
+ * petición de Cristian, para que la app móvil se lea como Tomtask. La web
+ * conserva Roboto: el cambio es solo de `apps/mobile`.
  *
  * Declarada con subset `latin` + `latin-ext` en Google Fonts: cubre los
  * acentos de los seis idiomas del proyecto (Regla 2), incluida la `ß`
@@ -24,15 +25,16 @@
  * `themeColorsHex` y `tokens.css` se mantienen a mano en Regla 3).
  */
 export const FONT_FAMILIES = {
-    display: { native: 'Roboto_500Medium' },
-    sans: { native: 'Roboto_400Regular' },
-    sansMedium: { native: 'Roboto_500Medium' },
-    sansSemiBold: { native: 'Roboto_600SemiBold' },
-    sansBold: { native: 'Roboto_700Bold' },
+    display: { native: 'Poppins_800ExtraBold' },
+    sans: { native: 'Poppins_400Regular' },
+    sansMedium: { native: 'Poppins_500Medium' },
+    sansSemiBold: { native: 'Poppins_600SemiBold' },
+    sansBold: { native: 'Poppins_700Bold' },
+    sansExtraBold: { native: 'Poppins_800ExtraBold' },
     // Solo para el texto con formato del editor de enseñanzas: iOS no inclina
     // una familia personalizada que no trae cursiva, así que se cargan de verdad.
-    sansItalic: { native: 'Roboto_400Regular_Italic' },
-    sansBoldItalic: { native: 'Roboto_700Bold_Italic' },
+    sansItalic: { native: 'Poppins_400Regular_Italic' },
+    sansBoldItalic: { native: 'Poppins_700Bold_Italic' },
 } as const;
 
 export type FontToken = keyof typeof FONT_FAMILIES;
@@ -44,8 +46,8 @@ export type FontToken = keyof typeof FONT_FAMILIES;
  */
 export const TYPE_SCALE = {
     display: { fontSize: 32, lineHeight: 38, font: 'display' as FontToken },
-    h1: { fontSize: 26, lineHeight: 32, font: 'display' as FontToken },
-    h2: { fontSize: 21, lineHeight: 27, font: 'sansSemiBold' as FontToken },
+    h1: { fontSize: 26, lineHeight: 32, font: 'sansBold' as FontToken },
+    h2: { fontSize: 21, lineHeight: 27, font: 'sansBold' as FontToken },
     h3: { fontSize: 17, lineHeight: 23, font: 'sansSemiBold' as FontToken },
     body: { fontSize: 15, lineHeight: 22, font: 'sans' as FontToken },
     bodyMedium: { fontSize: 15, lineHeight: 22, font: 'sansMedium' as FontToken },

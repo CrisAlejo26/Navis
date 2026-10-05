@@ -1231,6 +1231,24 @@ export const es = {
     /* El cuaderno de la iglesia (RFC 0017). Vive bajo `journal.*` para no chocar
      con `notes.*`, que ya es la bitácora de un creyente. */
     journal: {
+        mobile: {
+            olderMonths: 'Seis meses anteriores',
+            newerMonths: 'Seis meses siguientes',
+            recent: 'Últimas entradas',
+            seeAll: 'Ver todas',
+            select: 'Seleccionar',
+            selectionHint: 'Mantén pulsado para seleccionar',
+            list: 'Lista',
+            time: 'Hora',
+            tomorrow: 'Mañana',
+            minutes: 'Minutos',
+            activity: 'Actividad reciente',
+            dayEntries: 'Entradas del día',
+            share: 'Compartir',
+            actions: 'Acciones',
+            discard: 'Descartar cambios',
+            discardBody: 'Tienes cambios sin guardar. ¿Quieres descartarlos?',
+        },
         filterKindHelp: 'Deja solo las entradas de alguno de los tipos marcados.',
         filterDateHelp: 'Deja solo las entradas anotadas dentro de ese tramo de fechas.',
         filterReminderHelp:
@@ -1835,6 +1853,43 @@ export const es = {
     /* Tablas personalizadas (RFC 0021): cada iglesia define su propia rejilla
      de columnas y filas. */
     tables: {
+        mobile: {
+            exportScope:
+                'Todas las filas que coinciden con la búsqueda y los filtros de esta vista, incluidos todos los carriles y fechas.',
+            imageLimit:
+                'Para exportar una imagen, limita el resultado a 100 filas mediante búsqueda o filtros.',
+            exportEmpty: 'No hay filas que exportar con estos filtros.',
+            countTables_one: '{{count}} tabla',
+            countTables_other: '{{count}} tablas',
+            manualRows: 'Filas creadas a mano',
+            linkedRows: 'Filas vinculadas a creyentes',
+            inactive: 'Tabla inactiva',
+            localOnly: 'Datos locales en este dispositivo; sin sincronización con la web.',
+            showInactive: 'Mostrar tablas inactivas',
+            active: 'Tabla activa',
+            icon: 'Icono',
+            decimals: 'Decimales',
+            includeTime: 'Incluir hora',
+            time: 'Hora',
+            views: 'Vistas',
+            renameView: 'Renombrar vista',
+            viewUnavailable:
+                'La columna de esta vista ya no está disponible. Selecciona Cuadrícula o configura las columnas.',
+            cards: 'Mostrar como fichas',
+            cardsView: 'Tarjetas',
+            width: 'Anchura de columna',
+            noDate: 'Sin fecha',
+            incompatible: 'Valor incompatible; se conserva hasta que lo cambies',
+            discard: 'Descartar cambios',
+            clearValue: 'Vaciar valor',
+            openLink: 'Abrir enlace',
+            moveTo: 'Mover a…',
+            manageColumns: 'Gestionar columnas',
+            unsaved: 'Cambios sin guardar',
+            recoverySecret: 'Secreto de recuperación',
+            recoveryHint:
+                'Usa un secreto de al menos 12 caracteres para recuperar tu cuenta en otro dispositivo. Es obligatorio si las tablas contienen contraseñas. Introduce el mismo secreto al restaurar y guárdalo fuera del dispositivo.',
+        },
         noRowsMatch: 'Ninguna fila con esos filtros',
         title: 'Tablas',
         subtitle: 'Lo que se lleva en una hoja de cálculo, aquí dentro',

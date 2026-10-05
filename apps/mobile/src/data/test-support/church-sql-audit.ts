@@ -10,8 +10,12 @@ const parents = [
     'meeting_slot_believers',
     'task_occurrences',
     'task_tags',
+    'custom_table_columns',
+    'custom_table_rows',
+    'custom_table_views',
 ];
 const scoped = new Set([
+    'custom_tables',
     ...LOCAL_TABLES.filter((table) =>
         table.columns.some((column) => column.name === 'church_id'),
     ).map((table) => table.name),
@@ -19,6 +23,31 @@ const scoped = new Set([
 ]);
 // B6 comprueba que los llamadores validan padres y personas antes de usar helpers.
 const exceptions: Record<string, string> = {
+    'table-password-migration.ts:encryptExistingColumn':
+        'Helper interno llamado por saveColumn con tableDb autorizado; filas restringidas a table_id en transacción.',
+    'table-believers.ts:addTableBelievers':
+        'tableDb autoriza propietario y padre; cada creyente se valida en la misma iglesia antes de insertar en transacción.',
+    'tables-reads.ts:readTable': 'tableDb autoriza tabla e iglesia antes de leer sus columnas.',
+    'tables-reads.ts:readTableViews':
+        'tableDb autoriza el padre antes de leer vistas por table_id.',
+    'table-columns.ts:saveColumn':
+        'tableDb exige propietario y padre; el id de columna se resuelve en readTable autorizado.',
+    'table-columns.ts:deleteColumn':
+        'tableDb exige propietario y padre; UPDATE restringido a id y table_id.',
+    'table-columns.ts:reorderColumns':
+        'tableDb exige propietario; conjunto completo de hijos verificado dentro de transacción.',
+    'table-views.ts:createView':
+        'tableDb exige propietario y padre; columna y consulta validadas contra readTable.',
+    'table-views.ts:updateView':
+        'tableDb exige propietario; vista resuelta en listado autorizado y UPDATE por id/table_id.',
+    'table-views.ts:deleteView': 'tableDb exige propietario; UPDATE por id/table_id.',
+    'table-rows.ts:createTableRow':
+        'tableDb exige propietario y padre; creyente validado por iglesia antes de insertar.',
+    'table-rows.ts:updateTableRow':
+        'tableDb exige propietario; fila leída y actualizada por id/table_id.',
+    'table-rows.ts:deleteTableRow': 'tableDb exige propietario; UPDATE por id/table_id.',
+    'table-rows-read.ts:revealPassword':
+        'tableDb exige propietario y padre; columna y fila validadas por table_id.',
     'note-reminders-repo.ts:listPendingNoteReminders':
         'Avisos multiiglesia: usuario y membresía vigente por EXISTS; creyente y nota de la misma iglesia.',
     'church-access.ts:listMyChurches':

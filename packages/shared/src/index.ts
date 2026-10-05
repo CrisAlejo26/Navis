@@ -82,3 +82,5 @@ export * from './church-emblem';
 
 export { buildZipBytes, crc32, utf8, type ZipEntry } from './zip';
 export { LOCAL_LIST_TABLES } from './local-list-schema';
+export { LOCAL_CUSTOM_TABLES } from './local-table-schema';
+export { LOCAL_JOURNAL_TABLES } from './local-journal-schema';

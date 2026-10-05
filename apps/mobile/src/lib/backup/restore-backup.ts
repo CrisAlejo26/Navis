@@ -1,6 +1,11 @@
 import { repairChurchAccess } from '@/data/church-access-repair';
 import { getDb, SCHEMA_VERSION } from '@/data/db';
 import { listCoverFileId } from '@/data/list-cover-storage';
+import { unwrapBackupKeys } from '../tables/backup-keys';
+import { validateTableBackup } from '../tables/restore-validation';
+import { upgradeLegacyTables } from './legacy-tables';
+import { restoreRows } from './restore-rows';
+import { restoreTransaction } from './restore-transaction';
 
 import {
     BACKUP_TABLES,
@@ -55,7 +60,7 @@ function localize(table: string, row: BackupRow, files: BackupFiles): BackupRow 
     const id = String(row.id);
     if (table === 'lists' && row.cover_key != null)
         return { ...row, cover_key: files.photoUri(listCoverFileId(id)) };
-    if (table === 'note_audios' || table === 'dream_audios') {
+    if (table === 'note_audios' || table === 'dream_audios' || table === 'journal_entry_audios') {
         return { ...row, storage_key: files.audioUri(id) };
     }
     if (table === 'believers' && row.photo_key !== null) {
@@ -69,28 +74,31 @@ function localize(table: string, row: BackupRow, files: BackupFiles): BackupRow 
  * transacción: o entra entera o no cambia nada. Los ficheros se escriben antes,
  * con su identificador como nombre, y un fallo de la base no los hace daño.
  */
-export async function restoreBackup(text: string, files: BackupFiles): Promise<void> {
+export async function restoreBackup(
+    text: string,
+    files: BackupFiles,
+    secret?: string,
+): Promise<void> {
     const backup = parse(text);
+    upgradeLegacyTables(backup);
     validateShape(backup);
+    const accountPepper = await unwrapBackupKeys(backup.tableKeys, secret);
+    await validateTableBackup(backup);
 
     for (const [id, content] of Object.entries(backup.audios)) await files.writeAudio(id, content);
     for (const [id, content] of Object.entries(backup.photos)) await files.writePhoto(id, content);
 
     const db = await getDb();
-    await db.withTransactionAsync(async () => {
+    await restoreTransaction(db, accountPepper, async (db) => {
         for (const table of [...BACKUP_TABLES].reverse()) {
             await db.runAsync(`DELETE FROM "${table.name}"`);
         }
         for (const table of BACKUP_TABLES) {
-            for (const row of backup.tables[table.name] ?? []) {
-                const local = localize(table.name, row, files);
-                const columns = Object.keys(local);
-                const values = Object.values(local);
-                await db.runAsync(
-                    `INSERT INTO "${table.name}" (${columns.map((c) => `"${c}"`).join(', ')}) VALUES (${columns.map(() => '?').join(', ')})`,
-                    ...values,
-                );
-            }
+            await restoreRows(
+                db,
+                table.name,
+                (backup.tables[table.name] ?? []).map((row) => localize(table.name, row, files)),
+            );
         }
         await repairChurchAccess(db);
     });

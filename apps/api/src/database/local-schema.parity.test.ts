@@ -2,6 +2,8 @@ import {
     LOCAL_TABLES,
     LOCAL_USER_TABLE,
     LOCAL_LIST_TABLES,
+    LOCAL_CUSTOM_TABLES,
+    LOCAL_JOURNAL_TABLES,
     type LocalColumnType,
     type LocalTable,
 } from '@navis/shared';
@@ -39,6 +41,12 @@ import { TaskOccurrence } from '../tasks/task-occurrence.entity';
 import { TaskReminder } from '../tasks/task-reminder.entity';
 import { TaskReminderTag } from '../tasks/task-reminder-tag.entity';
 import { TaskTag } from '../tasks/task-tag.entity';
+import { CustomTable } from '../tables/custom-table.entity';
+import { CustomTableColumn } from '../tables/custom-table-column.entity';
+import { CustomTableRow } from '../tables/custom-table-row.entity';
+import { CustomTableView } from '../tables/custom-table-view.entity';
+import { JournalEntry } from '../journal/journal-entry.entity';
+import { JournalEntryAudio } from '../journal/journal-entry-audio.entity';
 import { List } from '../lists/list.entity';
 import { ListMember } from '../lists/list-member.entity';
 import { ListViewer } from '../lists/list-viewer.entity';
@@ -58,6 +66,12 @@ import { ListAccessLog } from '../lists/list-access-log.entity';
 
 /** Las entidades que participan en la comparación, más las que sus relaciones exigen registradas. */
 const ENTITIES = [
+    CustomTable,
+    CustomTableColumn,
+    CustomTableRow,
+    CustomTableView,
+    JournalEntry,
+    JournalEntryAudio,
     List,
     ListMember,
     ListViewer,
@@ -147,41 +161,43 @@ beforeAll(async () => {
     await dataSource.destroy();
 });
 
-describe.each([...LOCAL_TABLES, ...LOCAL_LIST_TABLES])(
-    'paridad local ↔ TypeORM: $name',
-    (localTable: LocalTable) => {
-        it('existe la entidad que espeja', () => {
-            expect(localTable.mirror).toBeDefined();
-            const metadata = dataSource.entityMetadatas.find(
-                (one) => one.tableName === localTable.name,
-            );
-            expect(metadata, `No hay entidad para la tabla ${localTable.name}`).toBeDefined();
-        });
+describe.each([
+    ...LOCAL_TABLES,
+    ...LOCAL_LIST_TABLES,
+    ...LOCAL_CUSTOM_TABLES,
+    ...LOCAL_JOURNAL_TABLES,
+])('paridad local ↔ TypeORM: $name', (localTable: LocalTable) => {
+    it('existe la entidad que espeja', () => {
+        expect(localTable.mirror).toBeDefined();
+        const metadata = dataSource.entityMetadatas.find(
+            (one) => one.tableName === localTable.name,
+        );
+        expect(metadata, `No hay entidad para la tabla ${localTable.name}`).toBeDefined();
+    });
 
-        it('tiene las mismas columnas, con el mismo tipo y la misma anulabilidad', () => {
-            const metadata = dataSource.entityMetadatas.find(
-                (one) => one.tableName === localTable.name,
-            );
-            expect(metadata).toBeDefined();
-            if (!metadata) return;
+    it('tiene las mismas columnas, con el mismo tipo y la misma anulabilidad', () => {
+        const metadata = dataSource.entityMetadatas.find(
+            (one) => one.tableName === localTable.name,
+        );
+        expect(metadata).toBeDefined();
+        if (!metadata) return;
 
-            const entityColumns = metadata.columns.map((one) => one.databaseName).sort();
-            const localColumns = localTable.columns.map((one) => one.name).sort();
-            expect(localColumns).toEqual(entityColumns);
+        const entityColumns = metadata.columns.map((one) => one.databaseName).sort();
+        const localColumns = localTable.columns.map((one) => one.name).sort();
+        expect(localColumns).toEqual(entityColumns);
 
-            for (const column of localTable.columns) {
-                expect(
-                    localTypeOf(metadata, column.name),
-                    `${localTable.name}.${column.name}: tipo`,
-                ).toBe(column.type);
-                expect(
-                    metadata.columns.find((one) => one.databaseName === column.name)!.isNullable,
-                    `${localTable.name}.${column.name}: anulabilidad`,
-                ).toBe(Boolean(column.nullable));
-            }
-        });
-    },
-);
+        for (const column of localTable.columns) {
+            expect(
+                localTypeOf(metadata, column.name),
+                `${localTable.name}.${column.name}: tipo`,
+            ).toBe(column.type);
+            expect(
+                metadata.columns.find((one) => one.databaseName === column.name)!.isNullable,
+                `${localTable.name}.${column.name}: anulabilidad`,
+            ).toBe(Boolean(column.nullable));
+        }
+    });
+});
 
 describe('la cuenta local', () => {
     it('no espeja ninguna entidad: es propia del móvil', () => {

@@ -20,6 +20,18 @@ config.resolver.nodeModulesPaths = [
     path.resolve(workspaceRoot, 'node_modules'),
 ];
 config.resolver.disableHierarchicalLookup = false;
+// Local SDKs, emulators and native build output are not JavaScript sources.
+// Excluding them keeps a cold monorepo crawl from indexing generated artifacts.
+const existingBlockList = config.resolver.blockList;
+config.resolver.blockList = [
+    ...(Array.isArray(existingBlockList)
+        ? existingBlockList
+        : existingBlockList
+          ? [existingBlockList]
+          : []),
+    /[/\\](?:\.tools|\.git|\.gradle|\.cxx)[/\\]/,
+    /[/\\]android[/\\](?:build|app[/\\]build)[/\\]/,
+];
 
 // --- `@navis/api-client` va a su fuente, no a su `dist` ---------------------
 // Mismo problema que resuelve el alias de `vite.config.ts` en la web (léelo
@@ -35,10 +47,22 @@ config.resolver.disableHierarchicalLookup = false;
 // `dist`, que es lo que ya espera el resto de este fichero (`watchFolders`
 // vigila ese `dist` para recargar en caliente al reconstruirlo).
 const API_CLIENT_SOURCE = path.resolve(workspaceRoot, 'packages/api-client/src/index.ts');
+const TEXT_DEFAULTS = path.resolve(projectRoot, 'src/lib/ui/react-native-fonts.tsx');
 const previousResolveRequest = config.resolver.resolveRequest;
 config.resolver.resolveRequest = (context, moduleName, platform) => {
     if (moduleName === '@navis/api-client') {
         return { type: 'sourceFile', filePath: API_CLIENT_SOURCE };
+    }
+    // El plugin de Babel de NativeWind reescribe `import { Text } from
+    // 'react-native'` a `react-native-css/components/Text`; aquí se pone en
+    // medio un módulo que lo reexporta con Poppins por defecto (léelo en
+    // `react-native-fonts.tsx`). El propio módulo importa el original, así que
+    // no se redirige a sí mismo.
+    if (
+        moduleName === 'react-native-css/components/Text' &&
+        context.originModulePath !== TEXT_DEFAULTS
+    ) {
+        return { type: 'sourceFile', filePath: TEXT_DEFAULTS };
     }
     if (previousResolveRequest) return previousResolveRequest(context, moduleName, platform);
     return context.resolveRequest(context, moduleName, platform);

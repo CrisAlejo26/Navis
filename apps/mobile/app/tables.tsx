@@ -1,7 +1,6 @@
-import { PlaceholderScreen } from '@/components/placeholder-screen';
-
-export default function TablesScreen() {
-    return (
-        <PlaceholderScreen titleKey="nav.tables" rfc="0021-tablas-personalizadas-implementado.md" />
-    );
+import { TablesDirectory } from '@/components/tables/tables-directory';
+import { useTableContext } from '@/hooks/use-tables';
+export default function TablesRoute() {
+    const { context } = useTableContext();
+    return <TablesDirectory key={`${context.churchId}:${context.userId}`} />;
 }

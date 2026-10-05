@@ -1,5 +1,7 @@
-import { PlaceholderScreen } from '@/components/placeholder-screen';
+import { JournalDirectory } from '@/components/journal/journal-directory';
+import { useListContext } from '@/hooks/use-lists';
 
 export default function JournalScreen() {
-    return <PlaceholderScreen titleKey="nav.journal" rfc="0017-notas-de-iglesia-implementado.md" />;
+    const { context } = useListContext();
+    return <JournalDirectory key={`${context.churchId}:${context.userId}`} />;
 }

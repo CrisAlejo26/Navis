@@ -1,5 +1,6 @@
 import { getDb, SCHEMA_VERSION } from '@/data/db';
 import { listCoverFileId } from '@/data/list-cover-storage';
+import { wrapBackupKeys } from '../tables/backup-keys';
 
 import {
     BACKUP_FORMAT,
@@ -24,7 +25,7 @@ async function readFiles(
 }
 
 /** Vuelca la base local y sus ficheros en un solo objeto, listo para guardarse como JSON. */
-export async function buildBackup(files: BackupFiles): Promise<Backup> {
+export async function buildBackup(files: BackupFiles, secret?: string): Promise<Backup> {
     const db = await getDb();
     const tables: Backup['tables'] = {};
     for (const table of BACKUP_TABLES) {
@@ -38,9 +39,11 @@ export async function buildBackup(files: BackupFiles): Promise<Backup> {
         );
     }
 
-    const audioIds = [...(tables.note_audios ?? []), ...(tables.dream_audios ?? [])].map((row) =>
-        String(row.id),
-    );
+    const audioIds = [
+        ...(tables.note_audios ?? []),
+        ...(tables.dream_audios ?? []),
+        ...(tables.journal_entry_audios ?? []),
+    ].map((row) => String(row.id));
     const photoIds = (tables.believers ?? [])
         .filter((row) => row.photo_key !== null)
         .map((row) => String(row.id));
@@ -58,5 +61,6 @@ export async function buildBackup(files: BackupFiles): Promise<Backup> {
         tables,
         audios: await readFiles(audioIds, (id) => files.readAudio(id)),
         photos: await readFiles(photoIds, (id) => files.readPhoto(id)),
+        tableKeys: await wrapBackupKeys(tables.custom_table_rows ?? [], secret),
     };
 }

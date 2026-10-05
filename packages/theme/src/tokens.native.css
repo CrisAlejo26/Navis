@@ -26,11 +26,12 @@
     --radius-md: 8px;
     --radius-lg: 10px;
     --radius-xl: 14px;
-    --font-display: Roboto_500Medium;
-    --font-sans: Roboto_400Regular;
-    --font-sans-medium: Roboto_500Medium;
-    --font-sans-semibold: Roboto_600SemiBold;
-    --font-sans-bold: Roboto_700Bold;
+    --font-display: Poppins_800ExtraBold;
+    --font-sans: Poppins_400Regular;
+    --font-sans-medium: Poppins_500Medium;
+    --font-sans-semibold: Poppins_600SemiBold;
+    --font-sans-bold: Poppins_700Bold;
+    --font-sans-extrabold: Poppins_800ExtraBold;
 }
 
 @media (prefers-color-scheme: dark) {

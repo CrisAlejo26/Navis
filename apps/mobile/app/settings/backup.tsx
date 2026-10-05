@@ -6,6 +6,7 @@ import { Alert, ScrollView, Text, View } from 'react-native';
 import { AppBar } from '@/components/ui/app-bar';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { PasswordField } from '@/components/ui/password-field';
 import { useBackup, type BackupOutcome } from '@/hooks/use-backup';
 
 /**
@@ -17,10 +18,11 @@ export default function BackupScreen() {
     const { t } = useTranslation();
     const { busy, exportBackup, pickBackup, restore } = useBackup();
     const [outcome, setOutcome] = useState<BackupOutcome | null>(null);
+    const [secret, setSecret] = useState('');
 
     async function onExport(): Promise<void> {
         setOutcome(null);
-        setOutcome(await exportBackup());
+        setOutcome(await exportBackup(secret));
     }
 
     async function onRestore(): Promise<void> {
@@ -32,7 +34,7 @@ export default function BackupScreen() {
             {
                 text: t('backup.restoreConfirmAction'),
                 style: 'destructive',
-                onPress: () => void restore(file).then(setOutcome),
+                onPress: () => void restore(file, secret).then(setOutcome),
             },
         ]);
     }
@@ -50,6 +52,14 @@ export default function BackupScreen() {
                 contentContainerStyle={{ gap: 16, padding: 16, paddingBottom: bottomPadding }}
             >
                 <Text className="text-sm text-muted-foreground">{t('backup.intro')}</Text>
+                <PasswordField
+                    label={t('tables.mobile.recoverySecret')}
+                    value={secret}
+                    onChangeText={setSecret}
+                />
+                <Text className="font-sans text-muted-foreground">
+                    {t('tables.mobile.recoveryHint')}
+                </Text>
                 <Card title={t('backup.exportTitle')} description={t('backup.exportBody')}>
                     <Button
                         title={t('backup.exportButton')}
