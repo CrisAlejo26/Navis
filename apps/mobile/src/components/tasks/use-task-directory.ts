@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useLocalSearchParams } from 'expo-router';
 import { Alert } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { todayIn, monthGrid } from '@navis/shared';
@@ -19,7 +20,8 @@ export function useTaskDirectory() {
         { t } = useTranslation(),
         timezone = scope.church?.timezone ?? 'UTC',
         today = todayIn(timezone);
-    const [filters, setFilters] = useState<TaskFilters>(defaultFilters),
+    const params = useLocalSearchParams<{ sort?: string }>();
+    const [filters, setFilters] = useState<TaskFilters>(() => ({ ...defaultFilters(), ...(params.sort === 'manual' ? { sort: 'manual' as const, group: 'none' as const } : {}) })),
         [view, setView] = useState<'list' | 'calendar'>('list');
     const [month, setMonth] = useState(today),
         [day, setDay] = useState(today),

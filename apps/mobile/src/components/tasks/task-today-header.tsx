@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { SegmentedControl } from '@/components/ui/segmented-control';
 import { Chip } from '@/components/ui/chip';
 import { Button } from '@/components/ui/button';
-import { TaskSkeleton } from './task-skeleton';
+import { TaskStreakSkeleton } from './task-block-skeleton';
 import { TaskDaySelector } from './task-day-selector';
 import { TaskStreakStrip } from './task-streak-strip';
 import type { TaskTodayState } from './use-task-today';
@@ -26,7 +26,7 @@ export function TaskTodayHeader({ state: s }: { state: TaskTodayState }) {
                     }}
                 />
             ) : s.streak.isPending || s.history.isPending ? (
-                <TaskSkeleton />
+                <TaskStreakSkeleton />
             ) : (
                 <TaskStreakStrip current={s.streak.data?.current ?? 0} days={s.strip} />
             )}

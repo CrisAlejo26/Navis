@@ -3,11 +3,13 @@ import {
     TASK_REPEAT_FREQS,
     type TaskRepeatEndType,
     type TaskRepeatFreq,
+    type TaskRepeatOptions,
 } from '@navis/shared';
 import { useTranslation } from 'react-i18next';
 
 import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
+import { RepeatOptionsFields } from './repeat-options-fields';
 
 export interface RepeatDraft {
     freq: TaskRepeatFreq;
@@ -15,18 +17,21 @@ export interface RepeatDraft {
     endType: TaskRepeatEndType;
     endDate: string;
     endCount: number;
+    options?: TaskRepeatOptions | null;
 }
 
 const UNIT_KEY: Record<TaskRepeatFreq, string> = {
     diaria: 'tasks.repeatIntervalDays',
     semanal: 'tasks.repeatIntervalWeeks',
     mensual: 'tasks.repeatIntervalMonths',
+    fechas: 'tasks.repeatDates',
 };
 
 const FREQ_KEY: Record<TaskRepeatFreq, string> = {
     diaria: 'tasks.repeatDaily',
     semanal: 'tasks.repeatWeekly',
     mensual: 'tasks.repeatMonthly',
+    fechas: 'tasks.repeatDates',
 };
 
 const END_KEY: Record<TaskRepeatEndType, string> = {
@@ -52,7 +57,7 @@ export function RepeatFields({
                     label={t('tasks.repeat')}
                     value={value.freq}
                     onChange={(event) => {
-                        onChange({ ...value, freq: event.target.value as TaskRepeatFreq });
+                        onChange({ ...value, freq: event.target.value as TaskRepeatFreq, options: null });
                     }}
                 >
                     {TASK_REPEAT_FREQS.map((freq) => (
@@ -81,6 +86,8 @@ export function RepeatFields({
                     </span>
                 </div>
             </div>
+
+            <RepeatOptionsFields value={value} onChange={onChange} />
 
             <Select
                 label={t('tasks.repeatEnd')}

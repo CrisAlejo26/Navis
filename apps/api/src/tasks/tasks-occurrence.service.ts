@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import type { TaskStatus } from '@navis/shared';
+import { taskAppliesOn, isoDateSchema, type TaskStatus } from '@navis/shared';
 import { Repository } from 'typeorm';
 
 import { TaskOccurrence } from './task-occurrence.entity';
@@ -28,9 +28,11 @@ export class TasksOccurrenceService {
         status: TaskStatus,
     ): Promise<void> {
         const task = await this.tasksService.require(churchId, ownerId, taskId);
+        if (!isoDateSchema.safeParse(date).success) throw new UnprocessableEntityException('invalid-date');
         const completedAt = status === 'completada' ? new Date() : null;
 
         if (!task.isRecurring) {
+            if (date !== task.date) throw new UnprocessableEntityException('invalid-occurrence');
             task.status = status;
             task.completedAt = completedAt;
             await this.tasks.save(task);
@@ -38,6 +40,7 @@ export class TasksOccurrenceService {
         }
 
         let occurrence = await this.occurrences.findOne({ where: { taskId, date } });
+        if (!occurrence && !taskAppliesOn(task, date)) throw new UnprocessableEntityException('invalid-occurrence');
         occurrence ??= this.occurrences.create({ taskId, date });
         occurrence.status = status;
         occurrence.completedAt = completedAt;

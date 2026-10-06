@@ -2,7 +2,7 @@ import { Pressable, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { SwipeableRow } from '@/components/ui/swipeable-row';
 import { TaskCardCopy } from './task-card-copy';
-import { hexAlpha } from '@/lib/color';
+import { activityCardSurface } from './task-card-surface';
 import { TaskCardIcon } from './task-card-icon';
 import { type ActivityItem } from '@/lib/tasks/filters';
 import { useTaskPalette, statusKeys } from './task-theme';
@@ -13,28 +13,24 @@ export function TaskCard({
     onPress,
     onToggle,
     onDelete,
+    onLongPress,
 }: {
     item: ActivityItem;
     busy?: boolean;
     onPress: () => void;
     onToggle: () => void;
     onDelete: () => void;
+    onLongPress?: () => void;
 }) {
     const p = useTaskPalette(),
         { t } = useTranslation(),
         done = item.status === 'completada';
-    const color = done
-        ? p.success
-        : item.status === 'en_progreso'
-          ? p.primary
-          : item.tags[0]
-            ? p.accent(item.tags[0].accent)
-            : p.primary;
+    const surface = activityCardSurface(item, p),
+        color = surface.accent;
     return (
         <View style={{ marginBottom: 12 }}>
             <SwipeableRow
                 radius={26}
-                shadowColor={color}
                 disabled={busy}
                 left={{
                     icon: done ? 'refresh-outline' : 'checkmark',
@@ -57,14 +53,16 @@ export function TaskCard({
                     accessibilityState={{ disabled: busy }}
                     disabled={busy}
                     onPress={onPress}
+                    onLongPress={onLongPress}
                     style={{
                         borderRadius: 26,
-                        padding: 15,
+                        padding: 14,
+                        borderWidth: 1,
+                        borderColor: surface.border,
                         flexDirection: 'row',
                         gap: 13,
                         alignItems: 'center',
-                        backgroundColor:
-                            done || item.status === 'en_progreso' ? hexAlpha(color, 0.1) : p.card,
+                        backgroundColor: surface.background,
                     }}
                 >
                     <TaskCardIcon item={item} color={color} />

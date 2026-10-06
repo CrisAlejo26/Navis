@@ -47,4 +47,5 @@ export * from './table-mutations';
 export * from './table-row-mutations';
 export * from './table-view-mutations';
 export * from './task-hooks';
+export * from './task-series-hooks';
 export * from './task-mutations';

@@ -20,6 +20,7 @@ export function ActivityEditScreen({
         return (
             <ActivityQueryState
                 title={t('tasks.edit')}
+                layout="editor"
                 pending={detail.isPending}
                 error={detail.isError}
                 onRetry={() => void detail.refetch()}

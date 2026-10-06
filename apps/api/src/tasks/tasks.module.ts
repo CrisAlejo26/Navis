@@ -29,6 +29,7 @@ import { TasksOccurrenceService } from './tasks-occurrence.service';
 import { TasksStatsService } from './tasks-stats.service';
 import { TasksStreakService } from './tasks-streak.service';
 import { TasksService } from './tasks.service';
+import { TaskSeriesService } from './task-series.service';
 
 /**
  * Tareas y hábitos (RFC 0018). Importa `ChurchesModule` por
@@ -57,6 +58,7 @@ import { TasksService } from './tasks.service';
     providers: [
         TagsService,
         TasksService,
+        TaskSeriesService,
         TasksExpansionService,
         TasksListService,
         TasksOccurrenceService,

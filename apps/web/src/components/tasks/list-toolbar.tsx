@@ -29,6 +29,7 @@ const SORT_KEY: Record<TaskSort, string> = {
     priority: 'tasks.sortPriority',
     recent: 'tasks.sortRecent',
     alphabetical: 'tasks.sortAlphabetical',
+    manual: 'tasks.sortManual',
 };
 
 const GROUP_KEY: Record<GroupBy, string> = {

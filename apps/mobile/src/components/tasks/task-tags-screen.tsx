@@ -16,6 +16,7 @@ export function TaskTagsScreen() {
         return (
             <ActivityQueryState
                 title={t('tasks.manageTags')}
+                layout="tag"
                 pending={tags.isPending}
                 error={tags.isError}
                 onRetry={() => void tags.refetch()}

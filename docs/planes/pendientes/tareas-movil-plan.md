@@ -1,6 +1,6 @@
 # Plan — Tareas y hábitos en Navis móvil, con la gestión de Tomtask
 
-Estado: **fases 0–4 cerradas; fase 5 pendiente de autorización**. Fecha: 2026-10-06.
+Estado: **fases 0–4 cerradas; fase 5 en implementación, autorizada al continuar**. Fecha: 2026-10-06.
 Referencias: RFC 0018 (modelo y web), `D:/Proyectos_personales/taskia` (web) y `taskia/mobile` (Habit Land, la referencia de estilos y botones).
 
 Investigación y dirección visual: [tareas-movil-diseno.md](./tareas-movil-diseno.md). Las fases 2–6 conservan el alcance del plan, incluyendo notificaciones reales.

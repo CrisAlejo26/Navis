@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import type { TaskPriority, TaskRepeatEndType, TaskRepeatFreq, TaskStatus } from '@navis/shared';
+import type { TaskPriority, TaskRepeatEndType, TaskRepeatFreq, TaskStatus, TaskRepeatOptions, TaskRepeatPause } from '@navis/shared';
 import { Column, Entity, Index, OneToMany } from 'typeorm';
 
 import { BaseEntity } from '../common/entities/base.entity';
@@ -83,6 +83,22 @@ export class Task extends BaseEntity {
     @ApiPropertyOptional()
     @Column({ name: 'repeat_end_count', type: 'int', nullable: true })
     repeatEndCount: number | null;
+
+    @ApiPropertyOptional()
+    @Column({ name: 'repeat_options', type: 'simple-json', nullable: true })
+    repeatOptions: TaskRepeatOptions | null;
+
+    @ApiPropertyOptional()
+    @Column({ name: 'repeat_pauses', type: 'simple-json', nullable: true })
+    repeatPauses: TaskRepeatPause[] | null;
+
+    @ApiPropertyOptional()
+    @Column({ name: 'repeat_stopped_at', type: 'date', nullable: true })
+    repeatStoppedAt: string | null;
+
+    @ApiPropertyOptional()
+    @Column({ name: 'manual_order', type: 'int', nullable: true })
+    manualOrder: number | null;
 
     @OneToMany(() => TaskTag, (link) => link.task, { cascade: true })
     tags: TaskTag[];

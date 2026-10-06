@@ -40,8 +40,8 @@ async function expandTasks(
         });
         for (const task of templates)
             for (const date of eachDay(from, to)) {
-                if (!taskAppliesOn(task, date)) continue;
                 const row = task.isRecurring ? materialized.get(`${task.id}:${date}`) : undefined;
+                if (!row && !taskAppliesOn(task, date)) continue;
                 if (task.deletedAt && task.isRecurring && !row) continue;
                 result.push({
                     taskId: task.id,
@@ -58,6 +58,7 @@ async function expandTasks(
                     tags: task.tags,
                     reminder: task.reminder,
                     createdAt: task.createdAt,
+                    ...(task.manualOrder == null ? {} : { manualOrder: task.manualOrder }),
                 });
             }
         if (templates.length < 100) break;

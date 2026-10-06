@@ -24,6 +24,23 @@ export function hexShade(hex: string, factor: number): string {
     return `#${channel(0)}${channel(2)}${channel(4)}`;
 }
 
+/** Solid tint: swipe actions behind a card must not bleed through its surface. */
+export function hexBlend(surface: string, accent: string, alpha: number): string {
+    return (
+        '#' +
+        [1, 3, 5]
+            .map((start) =>
+                Math.round(
+                    parseInt(surface.slice(start, start + 2), 16) * (1 - alpha) +
+                        parseInt(accent.slice(start, start + 2), 16) * alpha,
+                )
+                    .toString(16)
+                    .padStart(2, '0'),
+            )
+            .join('')
+    );
+}
+
 /** Conserve el acento si se lee sobre su tinte; si no, use la tinta del tema. */
 export function readableAccent(accent: string, surface: string, ink: string, alpha = 0.12): string {
     const rgb = (hex: string) =>

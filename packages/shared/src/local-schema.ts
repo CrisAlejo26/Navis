@@ -219,6 +219,10 @@ export const LOCAL_TABLES: LocalTable[] = [
         { name: 'repeat_end_type', type: 'text', nullable: true },
         { name: 'repeat_end_date', type: 'text', nullable: true },
         { name: 'repeat_end_count', type: 'int', nullable: true },
+        { name: 'repeat_options', type: 'text', nullable: true },
+        { name: 'repeat_pauses', type: 'text', nullable: true },
+        { name: 'repeat_stopped_at', type: 'text', nullable: true },
+        { name: 'manual_order', type: 'int', nullable: true },
     ]),
     table('tags', 'Tag', [
         { name: 'church_id', type: 'text' },

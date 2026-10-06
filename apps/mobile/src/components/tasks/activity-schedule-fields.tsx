@@ -4,13 +4,15 @@ import { DatePicker } from '@/components/ui/date-picker';
 import { TimePicker } from '@/components/ui/time-picker';
 import { Switch } from '@/components/ui/switch';
 import { Select } from '@/components/ui/select';
-import { HABIT_REPEAT_FREQS } from '@navis/shared';
+import { HABIT_REPEAT_FREQS, TASK_REPEAT_FREQS } from '@navis/shared';
+import { TaskRepeatFields } from './task-repeat-fields';
 import type { ActivityDraft } from '@/lib/tasks/editor-draft';
 const repeatKeys = {
     ninguna: 'tasks.repeatNone',
     diaria: 'tasks.repeatDaily',
     semanal: 'tasks.repeatWeekly',
     mensual: 'tasks.repeatMonthly',
+    fechas: 'tasks.repeatDates',
 } as const;
 export function ActivityScheduleFields({
     draft: d,
@@ -53,12 +55,13 @@ export function ActivityScheduleFields({
                 value={d.repeatFreq}
                 placeholder={t('tasks.repeatNone')}
                 disabled={busy}
-                options={HABIT_REPEAT_FREQS.map((value) => ({
+                options={(d.kind === 'habit' ? HABIT_REPEAT_FREQS : ['ninguna', ...TASK_REPEAT_FREQS] as const).map((value) => ({
                     value,
                     label: t(repeatKeys[value]),
                 }))}
-                onChange={(repeatFreq) => change({ repeatFreq })}
+                onChange={(repeatFreq) => change({ repeatFreq, repeatOptions: repeatFreq === 'fechas' ? { kind: 'dates', dates: [d.date] } : null })}
             />
+            {d.kind === 'task' && d.repeatFreq !== 'ninguna' && <TaskRepeatFields draft={d} change={change} timezone={timezone} busy={busy} />}
         </View>
     );
 }

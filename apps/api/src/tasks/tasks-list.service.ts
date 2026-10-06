@@ -80,6 +80,8 @@ const PRIORITY_WEIGHT: Record<TaskOccurrence['priority'], number> = { alta: 0, m
 function applySort(items: TaskOccurrence[], sort: TasksQuery['sort']): TaskOccurrence[] {
     const sorted = [...items];
     switch (sort) {
+        case 'manual':
+            return sorted.sort((a, b) => (a.manualOrder ?? Infinity) - (b.manualOrder ?? Infinity) || a.date.localeCompare(b.date) || a.title.localeCompare(b.title));
         case 'farthest':
             return sorted.reverse();
         case 'priority':

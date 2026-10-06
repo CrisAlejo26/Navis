@@ -1,15 +1,11 @@
-import Animated, {
-    useAnimatedStyle,
-    useReducedMotion,
-    useSharedValue,
-    withRepeat,
-    withTiming,
-} from 'react-native-reanimated';
-import { useEffect } from 'react';
+import Animated, { useAnimatedStyle, useReducedMotion } from 'react-native-reanimated';
+import type { StyleProp, ViewStyle } from 'react-native';
 import { cn } from '@/lib/cn';
+import { useSkeletonPulse } from './skeleton-pulse';
 
 interface SkeletonProps {
     className?: string;
+    style?: StyleProp<ViewStyle>;
 }
 
 /**
@@ -18,15 +14,9 @@ interface SkeletonProps {
  * §5). Tamaño y forma los pone quien lo usa con `className` (`h-4 w-40`,
  * `rounded-full`…); con movimiento reducido queda estático, sin animación.
  */
-export function Skeleton({ className }: SkeletonProps) {
+export function Skeleton({ className, style }: SkeletonProps) {
     const reduced = useReducedMotion();
-    const opacity = useSharedValue(1);
-
-    useEffect(() => {
-        if (!reduced) {
-            opacity.value = withRepeat(withTiming(0.5, { duration: 800 }), -1, true);
-        }
-    }, [reduced, opacity]);
+    const opacity = useSkeletonPulse();
 
     const pulse = useAnimatedStyle(() => ({ opacity: opacity.value }));
 
@@ -35,7 +25,7 @@ export function Skeleton({ className }: SkeletonProps) {
             testID="skeleton"
             aria-hidden
             className={cn('rounded-lg bg-muted', className)}
-            style={[pulse, reduced ? { opacity: 0.6 } : null]}
+            style={[style, pulse, reduced ? { opacity: 0.6 } : null]}
         />
     );
 }

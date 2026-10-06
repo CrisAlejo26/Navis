@@ -5,6 +5,7 @@ import { addDays } from '@navis/shared';
 import { getLocale } from '@/lib/i18n';
 import { formatDay } from '@/lib/format';
 import { DayProgress } from './day-progress';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useTaskPalette } from './task-theme';
 import type { TaskTodayState } from './use-task-today';
 
@@ -55,11 +56,15 @@ export function TaskDaySelector({ state: s }: { state: TaskTodayState }) {
                     <Pressable
                         key={day.date}
                         accessibilityRole="button"
-                        accessibilityLabel={t('tasks.mobile.calendarDay', {
-                            date: formatDay(day.date),
-                            total: day.total,
-                            done: day.done,
-                        })}
+                        accessibilityLabel={
+                            s.history.isPending
+                                ? formatDay(day.date)
+                                : t('tasks.mobile.calendarDay', {
+                                      date: formatDay(day.date),
+                                      total: day.total,
+                                      done: day.done,
+                                  })
+                        }
                         accessibilityState={{ selected: day.date === s.day }}
                         onPress={() => s.setDay(day.date)}
                         style={{ width: 46, alignItems: 'center', gap: 7 }}
@@ -70,13 +75,17 @@ export function TaskDaySelector({ state: s }: { state: TaskTodayState }) {
                                 timeZone: 'UTC',
                             }).format(new Date(`${day.date}T12:00:00Z`))}
                         </Text>
-                        <DayProgress
-                            day={day.date}
-                            total={day.total}
-                            done={day.done}
-                            selected={day.date === s.day}
-                            outside={false}
-                        />
+                        {s.history.isPending ? (
+                            <Skeleton style={{ width: 40, height: 40, borderRadius: 20 }} />
+                        ) : (
+                            <DayProgress
+                                day={day.date}
+                                total={day.total}
+                                done={day.done}
+                                selected={day.date === s.day}
+                                outside={false}
+                            />
+                        )}
                     </Pressable>
                 ))}
             </ScrollView>

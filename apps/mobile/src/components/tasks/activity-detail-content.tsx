@@ -11,6 +11,7 @@ const repeatKeys = {
     semanal: 'tasks.repeatWeekly',
     mensual: 'tasks.repeatMonthly',
     ninguna: 'tasks.repeatNone',
+    fechas: 'tasks.repeatDates',
 } as const;
 
 export function ActivityDetailContent({

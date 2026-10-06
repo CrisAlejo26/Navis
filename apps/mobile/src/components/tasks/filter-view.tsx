@@ -17,6 +17,7 @@ export function FilterView({
         priority: 'tasks.sortPriority',
         recent: 'tasks.sortRecent',
         alphabetical: 'tasks.sortAlphabetical',
+        manual: 'tasks.sortManual',
     } as const;
     const groups = {
         date: 'tasks.groupDate',

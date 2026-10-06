@@ -1,6 +1,7 @@
 import { ScrollView } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Chip } from '@/components/ui/chip';
+import { TaskChipsSkeleton } from './task-loading';
 import { useTaskTags } from '@/hooks/use-tags';
 import { formatDay } from '@/lib/format';
 import type { TaskFilters } from '@/lib/tasks/filters';
@@ -48,10 +49,18 @@ export function TaskActiveFilters({
                     priorities: f.priorities?.filter((one) => one !== priority),
                 }),
             )}
-            {f.tag?.map((id) =>
-                chip(id, tags.data?.find((tag) => tag.id === id)?.name ?? t('tasks.filterTag'), {
-                    tag: f.tag?.filter((one) => one !== id),
-                }),
+            {tags.isPending && f.tag?.length ? (
+                <TaskChipsSkeleton count={f.tag.length} />
+            ) : (
+                f.tag?.map((id) =>
+                    chip(
+                        id,
+                        tags.data?.find((tag) => tag.id === id)?.name ?? t('tasks.filterTag'),
+                        {
+                            tag: f.tag?.filter((one) => one !== id),
+                        },
+                    ),
+                )
             )}
             {f.reminder &&
                 chip(

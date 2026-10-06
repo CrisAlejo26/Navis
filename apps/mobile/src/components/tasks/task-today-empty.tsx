@@ -1,12 +1,12 @@
 import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { EmptyState } from '@/components/ui/empty-state';
-import { TaskSkeleton } from './task-skeleton';
+import { TaskListSkeleton } from './task-loading';
 import type { TaskTodayState } from './use-task-today';
 
 export function TaskTodayEmpty({ state: s }: { state: TaskTodayState }) {
     const { t } = useTranslation();
-    if (s.listing.isPending) return <TaskSkeleton />;
+    if (s.listing.isPending) return <TaskListSkeleton kind={s.kind} />;
     const filtered = s.filter !== 'all';
     return (
         <EmptyState

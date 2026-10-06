@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Chip } from '@/components/ui/chip';
 import { FilterFlags } from './filter-flags';
 import { useTaskTags } from '@/hooks/use-tags';
+import { TaskChipsSkeleton } from './task-loading';
 import type { TaskFilters } from '@/lib/tasks/filters';
 import { statusKeys, priorityKeys } from './task-theme';
 export function FilterMeta({
@@ -64,9 +65,7 @@ export function FilterMeta({
                     />
                 ))}
             </View>
-            {tags.isPending && (
-                <Text className="font-sans text-muted-foreground">{t('common.loading')}</Text>
-            )}
+            {tags.isPending && <TaskChipsSkeleton />}
             {tags.isError && (
                 <Text accessibilityRole="alert" className="font-sans text-destructive">
                     {t('errors.generic')}

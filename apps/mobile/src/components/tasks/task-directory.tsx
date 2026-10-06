@@ -68,6 +68,7 @@ export function TaskDirectory() {
                             )
                         }
                         onDelete={() => s.remove(item)}
+                        onLongPress={'taskId' in item ? () => router.push('/tasks/order') : undefined}
                     />
                 )}
                 ListEmptyComponent={<TaskDirectoryEmpty state={s} />}

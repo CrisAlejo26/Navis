@@ -134,6 +134,7 @@ const ENTITIES = [
  */
 const TYPE_MAP: Record<string, LocalColumnType> = {
     text: 'text',
+    'simple-json': 'text',
     varchar: 'text',
     uuid: 'text',
     date: 'text',

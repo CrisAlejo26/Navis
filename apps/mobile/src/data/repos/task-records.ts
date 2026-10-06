@@ -1,4 +1,5 @@
 import type { Task, Habit } from '@navis/shared';
+import { taskRepeatOptionsSchema, taskRepeatPauseSchema } from '@navis/shared';
 import type { LocalDb } from '../db';
 import { readActivityTags } from './task-relations';
 import { readActivityReminder } from './task-reminders';
@@ -14,7 +15,8 @@ const common = `id, title, description, date, time, status, completed_at AS comp
     repeat_freq AS repeatFreq, created_at AS createdAt, deleted_at AS deletedAt`;
 const projections = {
     task: `${common}, priority, is_recurring AS isRecurring, repeat_interval AS repeatInterval,
-        repeat_end_type AS repeatEndType, repeat_end_date AS repeatEndDate, repeat_end_count AS repeatEndCount`,
+        repeat_end_type AS repeatEndType, repeat_end_date AS repeatEndDate, repeat_end_count AS repeatEndCount,
+        repeat_options AS repeatOptionsJson, repeat_pauses AS repeatPausesJson, repeat_stopped_at AS repeatStoppedAt, manual_order AS manualOrder`,
     habit: `${common}, goal`,
 };
 
@@ -28,10 +30,15 @@ export async function taskRecords(
         limit?: number;
         offset?: number;
         history?: boolean;
+        recurring?: boolean;
+        manual?: boolean;
     } = {},
 ): Promise<TaskRecord[]> {
-    const rows = await records<TaskRecord>(db, context, 'task', options);
-    return rows.map((row) => ({ ...row, isRecurring: Boolean(row.isRecurring) }));
+    const rows = await records<TaskRecord & { repeatOptionsJson: string | null; repeatPausesJson: string | null }>(db, context, 'task', options);
+    return rows.map(({ repeatOptionsJson, repeatPausesJson, ...row }) => ({ ...row, isRecurring: Boolean(row.isRecurring),
+        repeatOptions: repeatOptionsJson ? taskRepeatOptionsSchema.parse(JSON.parse(repeatOptionsJson)) : null,
+        repeatPauses: repeatPausesJson ? taskRepeatPauseSchema.array().parse(JSON.parse(repeatPausesJson)) : null,
+    }));
 }
 export async function habitRecords(
     db: LocalDb,
@@ -50,6 +57,7 @@ async function records<T extends TaskRecord | HabitRecord>(
     const clauses: string[] = [];
     const params: (string | number)[] = [context.churchId, context.userId];
     if (!options.history) clauses.push('deleted_at IS NULL');
+    if (options.recurring) clauses.push('is_recurring = 1');
     if (options.id) {
         clauses.push('id = ?');
         params.push(options.id);
@@ -70,7 +78,7 @@ async function records<T extends TaskRecord | HabitRecord>(
     if (options.limit !== undefined) params.push(options.limit, options.offset ?? 0);
     const rows = await db.getAllAsync<T>(
         `SELECT ${projections[kind]} FROM ${kind}s WHERE church_id = ? AND owner_id = ?${clauses.length ? ` AND ${clauses.join(' AND ')}` : ''}
-        ORDER BY date, time IS NULL, time, title, id${paging}`,
+        ORDER BY ${options.manual ? 'manual_order IS NULL, manual_order, date, id' : 'date, time IS NULL, time, title, id'}${paging}`,
         ...params,
     );
     for (const row of rows) {

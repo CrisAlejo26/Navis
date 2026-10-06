@@ -5,8 +5,7 @@ import { ProgressRing } from '@/components/ui/progress-ring';
 import { TaskCardIcon } from './task-card-icon';
 import { TaskTagBadges } from './task-tag-badges';
 import { useTaskPalette } from './task-theme';
-import { hexAlpha } from '@/lib/color';
-import { listCardShadow } from '@/lib/ui/elevation';
+import { activityCardSurface } from './task-card-surface';
 
 export function HabitTodayCard({
     item,
@@ -22,15 +21,17 @@ export function HabitTodayCard({
     const { t } = useTranslation(),
         p = useTaskPalette(),
         done = item.status === 'completada';
+    const surface = activityCardSurface(item, p);
     return (
         <View
             style={{
                 marginBottom: 13,
                 borderRadius: 26,
-                padding: 15,
+                padding: 14,
+                borderWidth: 1,
+                borderColor: surface.border,
                 gap: 13,
-                backgroundColor: done ? hexAlpha(p.success, 0.1) : p.card,
-                ...listCardShadow(p.primary, p.dark),
+                backgroundColor: surface.background,
             }}
         >
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 13 }}>
@@ -40,7 +41,7 @@ export function HabitTodayCard({
                     onPress={onPress}
                     style={{ flex: 1, flexDirection: 'row', gap: 13, alignItems: 'center' }}
                 >
-                    <TaskCardIcon item={item} color={done ? p.success : p.primary} />
+                    <TaskCardIcon item={item} color={surface.accent} />
                     <View style={{ flex: 1, gap: 4 }}>
                         <Text
                             className="font-sans-semibold text-[15px] text-foreground"

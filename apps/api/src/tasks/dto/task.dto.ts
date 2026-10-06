@@ -1,11 +1,13 @@
 import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
 import { TASK_PRIORITIES, TASK_REPEAT_END_TYPES, TASK_REPEAT_FREQS } from '@navis/shared';
+import type { TaskRepeatOptions } from '@navis/shared';
 import { Transform } from 'class-transformer';
 import {
     IsArray,
     IsBoolean,
     IsIn,
     IsInt,
+    IsObject,
     IsISO8601,
     IsOptional,
     IsString,
@@ -97,6 +99,11 @@ export class CreateTaskDto {
     @Max(999)
     repeatEndCount?: number;
 
+    @ApiPropertyOptional()
+    @IsOptional()
+    @IsObject()
+    repeatOptions?: TaskRepeatOptions | null;
+
     @ApiPropertyOptional({ type: [String] })
     @IsOptional()
     @IsArray()
@@ -122,4 +129,15 @@ export class CreateTaskDto {
     reminderTagIds: string[] = [];
 }
 
-export class UpdateTaskDto extends PartialType(CreateTaskDto) {}
+export class UpdateTaskDto extends PartialType(CreateTaskDto) {
+    constructor() {
+        super();
+        // PATCH must not inherit creation defaults: editing a title must not end its series.
+        delete this.priority;
+        delete this.isRecurring;
+        delete this.repeatInterval;
+        delete this.tagIds;
+        delete this.reminderEnabled;
+        delete this.reminderTagIds;
+    }
+}

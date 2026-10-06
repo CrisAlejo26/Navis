@@ -32,12 +32,12 @@ export async function writeActivityStatus(
     await requireActivity(tx, context, kind, id);
     const task = kind === 'task' ? (await taskRecords(tx, context, { id }))[0] : null;
     const habit = kind === 'habit' ? (await habitRecords(tx, context, { id }))[0] : null;
-    if (!(task ? taskAppliesOn(task, date) : habit && habitAppliesOn(habit, date)))
-        throw new Error('invalid-occurrence');
     const recurring = Boolean(task?.isRecurring || (habit && habit.repeatFreq !== 'ninguna'));
     const previous = recurring
         ? (await activityOccurrences(tx, context, kind, date, date)).get(`${id}:${date}`)
         : (task ?? habit);
+    if (!previous && !(task ? taskAppliesOn(task, date) : habit && habitAppliesOn(habit, date))) throw new Error('invalid-occurrence');
+    if (!recurring && date !== (task ?? habit)?.date) throw new Error('invalid-occurrence');
     const completedAt =
         status === 'completada'
             ? previous?.status === 'completada'

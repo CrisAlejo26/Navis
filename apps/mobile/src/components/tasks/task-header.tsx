@@ -4,6 +4,8 @@ import { SegmentedControl } from '@/components/ui/segmented-control';
 import { SearchField } from '@/components/ui/search-field';
 import { Button } from '@/components/ui/button';
 import { Title } from '@/components/ui/title';
+import { Skeleton } from '@/components/ui/skeleton';
+import { TaskLoading } from './task-loading';
 import { filterCount, type TaskFilters } from '@/lib/tasks/filters';
 import { TaskActiveFilters } from './task-active-filters';
 export function TaskHeader({
@@ -15,6 +17,7 @@ export function TaskHeader({
     done,
     total,
     onFilters,
+    loading = false,
 }: {
     filters: TaskFilters;
     onChange: (filters: TaskFilters) => void;
@@ -24,6 +27,7 @@ export function TaskHeader({
     done: number;
     total: number;
     onFilters: () => void;
+    loading?: boolean;
 }) {
     const { t } = useTranslation(),
         count = filterCount(filters);
@@ -31,9 +35,15 @@ export function TaskHeader({
         <View className="gap-4 pt-2">
             <View className="gap-1">
                 <Title size="lg">{t('tasks.title')}</Title>
-                <Text className="font-sans-medium text-[13px] text-muted-foreground">
-                    {t('tasks.mobile.summary', { pending, done })}
-                </Text>
+                {loading ? (
+                    <TaskLoading>
+                        <Skeleton style={{ width: '65%', height: 20 }} />
+                    </TaskLoading>
+                ) : (
+                    <Text className="font-sans-medium text-[13px] text-muted-foreground">
+                        {t('tasks.mobile.summary', { pending, done })}
+                    </Text>
+                )}
             </View>
             <SegmentedControl
                 value={view}
@@ -56,11 +66,16 @@ export function TaskHeader({
                 onPress={onFilters}
             />
             <TaskActiveFilters filters={filters} onChange={onChange} />
-            {count > 0 && (
-                <Text className="font-sans-medium text-xs text-muted-foreground">
-                    {t('tasks.mobile.matches', { count: total })}
-                </Text>
-            )}
+            {count > 0 &&
+                (loading ? (
+                    <TaskLoading>
+                        <Skeleton className="h-4 w-28" />
+                    </TaskLoading>
+                ) : (
+                    <Text className="font-sans-medium text-xs text-muted-foreground">
+                        {t('tasks.mobile.matches', { count: total })}
+                    </Text>
+                ))}
         </View>
     );
 }

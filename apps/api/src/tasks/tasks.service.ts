@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import type { Task as TaskView } from '@navis/shared';
+import { taskRepeatOptionsSchema, validTaskRepeat, type Task as TaskView } from '@navis/shared';
 import { Repository } from 'typeorm';
 
 import type { CreateTaskDto, UpdateTaskDto } from './dto/task.dto';
@@ -33,6 +33,8 @@ export class TasksService {
     }
 
     async create(churchId: string, ownerId: string, dto: CreateTaskDto): Promise<Task> {
+        if (dto.repeatOptions && !taskRepeatOptionsSchema.safeParse(dto.repeatOptions).success) throw new UnprocessableEntityException('Revisa los días de repetición');
+        if (!validTaskRepeat(dto)) throw new UnprocessableEntityException('Revisa los días de repetición');
         checkRepeat(
             dto.isRecurring,
             dto.repeatFreq,
@@ -56,6 +58,7 @@ export class TasksService {
                 isRecurring: dto.isRecurring,
                 repeatFreq: dto.isRecurring ? (dto.repeatFreq ?? null) : null,
                 repeatInterval: dto.repeatInterval,
+                repeatOptions: dto.isRecurring ? (dto.repeatOptions ?? null) : null,
                 repeatEndType: dto.isRecurring ? (dto.repeatEndType ?? 'nunca') : null,
                 repeatEndDate: dto.repeatEndType === 'fecha' ? (dto.repeatEndDate ?? null) : null,
                 repeatEndCount:
@@ -77,6 +80,8 @@ export class TasksService {
     async update(churchId: string, ownerId: string, id: string, dto: UpdateTaskDto): Promise<Task> {
         const task = await this.require(churchId, ownerId, id);
         const isRecurring = dto.isRecurring ?? task.isRecurring;
+        if (dto.repeatOptions && !taskRepeatOptionsSchema.safeParse(dto.repeatOptions).success) throw new UnprocessableEntityException('Revisa los días de repetición');
+        if (!validTaskRepeat({ ...task, ...dto, isRecurring })) throw new UnprocessableEntityException('Revisa los días de repetición');
         checkRepeat(
             isRecurring,
             dto.repeatFreq ?? task.repeatFreq ?? undefined,
@@ -96,6 +101,8 @@ export class TasksService {
         if (dto.isRecurring !== undefined) task.isRecurring = dto.isRecurring;
         task.repeatFreq = isRecurring ? (dto.repeatFreq ?? task.repeatFreq) : null;
         task.repeatInterval = dto.repeatInterval ?? task.repeatInterval;
+        if (dto.repeatOptions !== undefined) task.repeatOptions = dto.repeatOptions;
+        if (!isRecurring) task.repeatOptions = null;
         const endType = isRecurring ? (dto.repeatEndType ?? task.repeatEndType ?? 'nunca') : null;
         task.repeatEndType = endType;
         task.repeatEndDate = endType === 'fecha' ? (dto.repeatEndDate ?? task.repeatEndDate) : null;
@@ -150,6 +157,10 @@ export class TasksService {
             repeatEndType: task.repeatEndType,
             repeatEndDate: task.repeatEndDate,
             repeatEndCount: task.repeatEndCount,
+            repeatOptions: task.repeatOptions,
+            repeatPauses: task.repeatPauses,
+            repeatStoppedAt: task.repeatStoppedAt,
+            manualOrder: task.manualOrder,
             status: task.status,
             completedAt: task.completedAt?.toISOString() ?? null,
             tags: tagLinks.map((link) => ({

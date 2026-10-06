@@ -70,6 +70,7 @@ jest.mock('react-native-reanimated', () => {
         withTiming: (value) => value,
         interpolateColor: (value, _range, colors) => colors[value >= 0.5 ? 1 : 0],
         withRepeat: (value) => value,
+        cancelAnimation: jest.fn(),
         withSequence: (...values) => values[values.length - 1],
         withDelay: (_delay, value) => value,
         // La hoja inferior anima a mano: `Easing` envuelve el easing que le toca

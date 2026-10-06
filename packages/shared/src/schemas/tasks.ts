@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 import { isoDateSchema, reminderAtSchema, timeSchema } from './common';
 import { tagRefSchema } from './tags';
+import { taskRepeatOptionsSchema, taskRepeatPauseSchema, validTaskRepeat } from './task-series';
 
 /** RFC 0018 §5.2, D1: la tarea es su propia entidad, con tres estados y prioridad. */
 export const TASK_PRIORITIES = ['baja', 'media', 'alta'] as const;
@@ -15,7 +16,7 @@ export const TASK_STATUSES = ['pendiente', 'en_progreso', 'completada'] as const
 export type TaskStatus = (typeof TASK_STATUSES)[number];
 
 /** Sin `RRULE` (D2): solo estas tres frecuencias, con un intervalo en días/semanas/meses. */
-export const TASK_REPEAT_FREQS = ['diaria', 'semanal', 'mensual'] as const;
+export const TASK_REPEAT_FREQS = ['diaria', 'semanal', 'mensual', 'fechas'] as const;
 
 export type TaskRepeatFreq = (typeof TASK_REPEAT_FREQS)[number];
 
@@ -51,6 +52,7 @@ export const taskOccurrenceSchema = z.object({
     tags: z.array(tagRefSchema),
     reminder: taskReminderSchema.nullable(),
     createdAt: z.string(),
+    manualOrder: z.number().int().min(0).nullable().optional(),
 });
 
 export type TaskOccurrence = z.infer<typeof taskOccurrenceSchema>;
@@ -73,6 +75,10 @@ export const taskSchema = z.object({
     repeatEndType: z.enum(TASK_REPEAT_END_TYPES).nullable(),
     repeatEndDate: isoDateSchema.nullable(),
     repeatEndCount: z.number().int().nullable(),
+    repeatOptions: taskRepeatOptionsSchema.nullable().optional(),
+    repeatPauses: z.array(taskRepeatPauseSchema).nullable().optional(),
+    repeatStoppedAt: isoDateSchema.nullable().optional(),
+    manualOrder: z.number().int().min(0).nullable().optional(),
     status: z.enum(TASK_STATUSES).nullable(),
     completedAt: z.string().nullable(),
     tags: z.array(tagRefSchema),
@@ -94,11 +100,13 @@ export const createTaskSchema = z
         repeatEndType: z.enum(TASK_REPEAT_END_TYPES).optional(),
         repeatEndDate: isoDateSchema.optional(),
         repeatEndCount: z.number().int().min(1).max(999).optional(),
+        repeatOptions: taskRepeatOptionsSchema.nullable().optional(),
         tagIds: z.array(z.uuid()).max(20).default([]),
         reminderEnabled: z.boolean().default(true),
         reminderAt: reminderAtSchema.optional(),
         reminderTagIds: z.array(z.uuid()).max(20).default([]),
     })
+    .refine(validTaskRepeat, { message: 'Revisa los días de repetición', path: ['repeatOptions'] })
     .refine((task) => !task.isRecurring || Boolean(task.repeatFreq), {
         message: 'Una tarea repetitiva necesita una frecuencia',
         path: ['repeatFreq'],
@@ -127,6 +135,7 @@ export const updateTaskSchema = z.object({
     repeatEndType: z.enum(TASK_REPEAT_END_TYPES).nullable().optional(),
     repeatEndDate: isoDateSchema.nullable().optional(),
     repeatEndCount: z.number().int().min(1).max(999).nullable().optional(),
+    repeatOptions: taskRepeatOptionsSchema.nullable().optional(),
     tagIds: z.array(z.uuid()).max(20).optional(),
     reminderEnabled: z.boolean().optional(),
     reminderAt: reminderAtSchema.nullable().optional(),

@@ -1,11 +1,12 @@
 import { Text, View } from 'react-native';
+import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { formatDay } from '@/lib/format';
 import type { TaskDirectoryState } from './use-task-directory';
 import { TaskHeader } from './task-header';
 import { TaskCalendar } from './task-calendar';
-import { TaskSkeleton } from './task-skeleton';
+import { TaskCalendarSkeleton } from './task-block-skeleton';
 export function DirectoryHeader({ state: s }: { state: TaskDirectoryState }) {
     const { t } = useTranslation(),
         page = s.listing.data?.pages[0];
@@ -19,12 +20,20 @@ export function DirectoryHeader({ state: s }: { state: TaskDirectoryState }) {
                 pending={page?.pending ?? 0}
                 done={page?.done ?? 0}
                 total={page?.total ?? 0}
+                loading={s.listing.isPending}
                 onFilters={() => s.setFiltersOpen(true)}
+            />
+            <Button
+                title={t('tasks.orderTasks')}
+                variant="ghost"
+                size="sm"
+                leadingIcon="reorder-three-outline"
+                onPress={() => router.push('/tasks/order')}
             />
             {s.view === 'calendar' && (
                 <>
                     {s.calendar.isPending ? (
-                        <TaskSkeleton />
+                        <TaskCalendarSkeleton month={s.month} />
                     ) : s.calendar.isError ? (
                         <Button
                             title={t('common.retry')}

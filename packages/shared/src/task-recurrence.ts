@@ -1,6 +1,7 @@
 import { daysBetween, parseIsoDate, type IsoDate } from './dates';
 
 import type { Task } from './schemas/tasks';
+import { advancedRepeatIndex } from './task-repeat-index';
 
 /** Meses de diferencia entre dos días `AAAA-MM-DD`, sin mirar el día del mes. */
 export function monthsBetween(from: IsoDate, to: IsoDate): number {
@@ -18,6 +19,9 @@ type TaskRepeat = Pick<
     | 'repeatEndType'
     | 'repeatEndDate'
     | 'repeatEndCount'
+    | 'repeatOptions'
+    | 'repeatPauses'
+    | 'repeatStoppedAt'
 >;
 
 /**
@@ -30,11 +34,18 @@ type TaskRepeat = Pick<
 export function taskAppliesOn(task: TaskRepeat, date: IsoDate): boolean {
     if (date < task.date) return false;
     if (!task.isRecurring) return date === task.date;
+    if (task.repeatStoppedAt && date >= task.repeatStoppedAt) return false;
+    if (task.repeatPauses?.some((pause) => date >= pause.from && (!pause.to || date <= pause.to))) return false;
 
     const interval = Math.max(1, task.repeatInterval);
     let index: number;
 
-    if (task.repeatFreq === 'mensual') {
+    if (task.repeatOptions) {
+        const rank = advancedRepeatIndex(task.date, date, interval, task.repeatOptions);
+        if (rank === null || rank < 0) return false;
+        index = rank;
+    } else if (task.repeatFreq === 'fechas') return false;
+    else if (task.repeatFreq === 'mensual') {
         if (Number(date.slice(8, 10)) !== Number(task.date.slice(8, 10))) return false;
         const months = monthsBetween(task.date, date);
         if (months < 0 || months % interval !== 0) return false;

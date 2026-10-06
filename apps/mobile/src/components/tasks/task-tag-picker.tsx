@@ -9,6 +9,7 @@ import { FieldError } from '@/components/ui/field-error';
 import { useTaskPalette } from './task-theme';
 import { taskIcon } from '@/lib/tasks/icon-map';
 import { hexAlpha, readableAccent } from '@/lib/color';
+import { TaskChipsSkeleton } from './task-loading';
 export function TaskTagPicker({
     value,
     onChange,
@@ -33,6 +34,7 @@ export function TaskTagPicker({
             <Text className="font-sans-medium text-sm text-foreground">
                 {label ?? t('tasks.tags')}
             </Text>
+            {tags.isPending && <TaskChipsSkeleton />}
             <View className="gap-2 flex-row flex-wrap">
                 {tags.data?.map((tag) => {
                     const selected = value.includes(tag.id),

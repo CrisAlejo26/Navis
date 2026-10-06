@@ -48,6 +48,7 @@ export function TextField({
     onFocus,
     onBlur,
     placeholderTextColor,
+    style,
     ...props
 }: TextFieldProps) {
     const [focused, setFocused] = useState(false);
@@ -80,7 +81,7 @@ export function TextField({
                 className={cn(
                     'gap-2 px-3 rounded-2xl flex-row items-center border-2 bg-card',
                     containerClassName,
-                    multiline ? 'py-3' : 'py-2',
+                    multiline ? 'py-3' : 'py-2 min-h-[52px]',
                     error ? 'border-destructive' : focused ? 'border-ring' : 'border-input',
                 )}
             >
@@ -88,7 +89,8 @@ export function TextField({
                 <TextInput
                     accessibilityLabel={label}
                     multiline={multiline}
-                    textAlignVertical={multiline ? 'top' : undefined}
+                    textAlignVertical={multiline ? 'top' : 'center'}
+                    style={[!multiline && { includeFontPadding: false, paddingVertical: 0 }, style]}
                     // Sin él, Android pinta el placeholder con su gris por defecto y en
                     // dark mode apenas se lee contra `bg-card`. El que pase quien llame
                     // (la variante de vidrio de creyentes, p. ej.) gana.

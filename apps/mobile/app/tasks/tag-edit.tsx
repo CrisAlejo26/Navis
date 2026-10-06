@@ -14,6 +14,7 @@ export default function TagEditRoute() {
         return (
             <ActivityQueryState
                 title={t('tasks.editTag')}
+                layout="tag-editor"
                 pending={tags.isPending}
                 error={tags.isError}
                 onRetry={() => void tags.refetch()}

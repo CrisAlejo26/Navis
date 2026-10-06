@@ -32,6 +32,8 @@ import { TasksOccurrenceService } from './tasks-occurrence.service';
 import { TasksStatsService } from './tasks-stats.service';
 import { TasksStreakService } from './tasks-streak.service';
 import { TasksService } from './tasks.service';
+import { TaskSeriesService } from './task-series.service';
+import { TaskSeriesActionDto, TaskOrderDto } from './dto/task-series.dto';
 
 /**
  * Las tareas (RFC 0018 §8). `streak` y `stats` van declaradas antes de
@@ -45,6 +47,7 @@ import { TasksService } from './tasks.service';
 export class TasksController {
     constructor(
         private readonly tasks: TasksService,
+        private readonly series: TaskSeriesService,
         private readonly listService: TasksListService,
         private readonly occurrences: TasksOccurrenceService,
         private readonly streakService: TasksStreakService,
@@ -94,6 +97,21 @@ export class TasksController {
     ): Promise<TaskView> {
         const task = await this.tasks.create(churchId, ownerId, dto);
         return this.tasks.view(churchId, ownerId, task.id);
+    }
+
+    @Get('templates')
+    templates(@CurrentChurch() churchId: string, @CurrentUser('id') ownerId: string, @Query() query: TasksQueryDto, @Query('recurring') recurring?: string): Promise<Paginated<TaskView>> {
+        return this.series.list(churchId, ownerId, recurring === 'true', query.page, query.limit);
+    }
+
+    @Put('order')
+    async order(@CurrentChurch() churchId: string, @CurrentUser('id') ownerId: string, @Body() dto: TaskOrderDto): Promise<void> {
+        await this.series.order(churchId, ownerId, dto.ids);
+    }
+
+    @Put(':id/series')
+    async seriesAction(@CurrentChurch() churchId: string, @CurrentUser('id') ownerId: string, @Param('id') id: string, @Body() dto: TaskSeriesActionDto): Promise<void> {
+        await this.series.action(churchId, ownerId, id, dto);
     }
 
     @Get(':id')

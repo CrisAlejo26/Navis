@@ -6,6 +6,9 @@ import {
     type TaskStatus,
     type TaskPriority,
     type HabitRepeatFreq,
+    type TaskRepeatFreq,
+    type TaskRepeatOptions,
+    type TaskRepeatEndType,
 } from '@navis/shared';
 import { reminderInstant, reminderParts } from './reminder-time';
 export type ItemKind = 'task' | 'habit';
@@ -19,7 +22,12 @@ export interface ActivityDraft {
     allDay: boolean;
     priority: TaskPriority;
     status: TaskStatus;
-    repeatFreq: HabitRepeatFreq;
+    repeatFreq: HabitRepeatFreq | TaskRepeatFreq;
+    repeatInterval: number;
+    repeatOptions: TaskRepeatOptions | null;
+    repeatEndType: TaskRepeatEndType;
+    repeatEndDate: string;
+    repeatEndCount: number;
     tagIds: string[];
     reminderEnabled: boolean;
     reminderDate: string;
@@ -47,6 +55,11 @@ export function activityDraft(
         priority: item && 'priority' in item ? item.priority : 'media',
         status: status ?? item?.status ?? 'pendiente',
         repeatFreq: item?.repeatFreq ?? (kind === 'habit' ? 'diaria' : 'ninguna'),
+        repeatInterval: item && 'repeatInterval' in item ? item.repeatInterval : 1,
+        repeatOptions: item && 'repeatOptions' in item ? (item.repeatOptions ?? null) : null,
+        repeatEndType: item && 'repeatEndType' in item ? (item.repeatEndType ?? 'nunca') : 'nunca',
+        repeatEndDate: item && 'repeatEndDate' in item ? (item.repeatEndDate ?? today) : today,
+        repeatEndCount: item && 'repeatEndCount' in item ? (item.repeatEndCount ?? 10) : 10,
         tagIds: item?.tags.map((tag) => tag.id) ?? [],
         reminderEnabled: item?.reminder?.enabled ?? false,
         reminderDate: reminder.date,
@@ -54,7 +67,7 @@ export function activityDraft(
         reminderTagIds: item?.reminder?.tags.map((tag) => tag.id) ?? [],
     };
 }
-export function draftInput(draft: ActivityDraft, timezone: string, previous?: Task | Habit) {
+export function draftInput(draft: ActivityDraft, timezone: string, _previous?: Task | Habit) {
     const common = {
         title: draft.title,
         description: draft.description,
@@ -83,20 +96,11 @@ export function draftInput(draft: ActivityDraft, timezone: string, previous?: Ta
                   priority: draft.priority,
                   isRecurring: draft.repeatFreq !== 'ninguna',
                   repeatFreq: draft.repeatFreq === 'ninguna' ? undefined : draft.repeatFreq,
-                  repeatInterval:
-                      previous && 'repeatInterval' in previous ? previous.repeatInterval : 1,
-                  repeatEndType:
-                      previous && 'repeatEndType' in previous
-                          ? (previous.repeatEndType ?? undefined)
-                          : undefined,
-                  repeatEndDate:
-                      previous && 'repeatEndDate' in previous
-                          ? (previous.repeatEndDate ?? undefined)
-                          : undefined,
-                  repeatEndCount:
-                      previous && 'repeatEndCount' in previous
-                          ? (previous.repeatEndCount ?? undefined)
-                          : undefined,
+                  repeatInterval: draft.repeatInterval,
+                  repeatOptions: draft.repeatOptions,
+                  repeatEndType: draft.repeatEndType,
+                  repeatEndDate: draft.repeatEndType === 'fecha' ? draft.repeatEndDate : undefined,
+                  repeatEndCount: draft.repeatEndType === 'cantidad' ? draft.repeatEndCount : undefined,
               }),
           };
 }

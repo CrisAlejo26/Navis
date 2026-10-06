@@ -52,6 +52,7 @@ export function TaskFormBody({
                   endType: task.repeatEndType ?? 'nunca',
                   endDate: task.repeatEndDate ?? '',
                   endCount: task.repeatEndCount ?? 10,
+                  options: task.repeatOptions,
               }
             : DEFAULT_REPEAT,
     );
@@ -81,6 +82,7 @@ export function TaskFormBody({
             isRecurring,
             repeatFreq: isRecurring ? repeat.freq : undefined,
             repeatInterval: repeat.interval,
+            repeatOptions: repeat.options,
             repeatEndType: isRecurring ? repeat.endType : undefined,
             repeatEndDate: isRecurring && repeat.endType === 'fecha' ? repeat.endDate : undefined,
             repeatEndCount:

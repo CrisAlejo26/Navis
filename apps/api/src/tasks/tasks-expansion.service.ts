@@ -47,10 +47,10 @@ export class TasksExpansionService {
         const result: TaskOccurrence[] = [];
         for (const date of eachDay(from, to)) {
             for (const task of templates) {
-                if (!taskAppliesOn(task, date)) continue;
                 const materializedRow = task.isRecurring
                     ? byKey.get(`${task.id}:${date}`)
                     : undefined;
+                if (!materializedRow && !taskAppliesOn(task, date)) continue;
 
                 // Una tarea borrada ya no propone nada hacia adelante (D18): solo
                 // sigue enseñando lo que ya estaba materializado. Una no repetitiva
@@ -173,6 +173,7 @@ function toView(
         tags,
         reminder,
         createdAt: task.createdAt.toISOString(),
+        ...(task.manualOrder == null ? {} : { manualOrder: task.manualOrder }),
     };
 }
 

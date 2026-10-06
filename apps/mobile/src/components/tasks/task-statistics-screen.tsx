@@ -8,7 +8,7 @@ import { formatDay } from '@/lib/format';
 import { useTaskStatistics } from './use-task-statistics';
 import { TaskAppBar } from './task-app-bar';
 import { TaskNavigation } from './task-navigation';
-import { TaskSkeleton } from './task-skeleton';
+import { TaskStatisticsSkeleton } from './task-statistics-skeleton';
 
 export function TaskStatisticsScreen() {
     const s = useTaskStatistics(),
@@ -49,7 +49,7 @@ export function TaskStatisticsScreen() {
                         action={{ label: t('common.retry'), onPress: s.retry }}
                     />
                 ) : s.pendingData ? (
-                    <TaskSkeleton />
+                    <TaskStatisticsSkeleton />
                 ) : (
                     <TaskStatisticsContent state={s} />
                 )}
