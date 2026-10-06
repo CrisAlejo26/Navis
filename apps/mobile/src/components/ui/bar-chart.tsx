@@ -1,6 +1,7 @@
 import { themeColorsHex } from '@navis/theme';
 import { View } from 'react-native';
 import { BarChart as GiftedBarChart } from 'react-native-gifted-charts';
+import { useReducedMotion } from 'react-native-reanimated';
 
 import { useThemeStore } from '@/lib/theme';
 import { useChartWidth } from '@/lib/ui/chart-width';
@@ -37,6 +38,7 @@ export function BarChart({
     const palette = themeColorsHex[useThemeStore((state) => state.resolvedTheme)];
     const theme = chartTheme(palette);
     const chart = useChartWidth();
+    const reducedMotion = useReducedMotion();
 
     return (
         <View onLayout={chart.onLayout}>
@@ -50,11 +52,11 @@ export function BarChart({
                 frontColor={theme.line}
                 barBorderTopLeftRadius={4}
                 barBorderTopRightRadius={4}
-                isAnimated
+                isAnimated={!reducedMotion}
                 animationDuration={400}
                 showValuesAsTopLabel={showValues}
                 topLabelTextStyle={{ color: theme.label, fontSize: 10, fontFamily: theme.font }}
-                noOfSections={3}
+                noOfSections={maxValue && maxValue < 3 ? Math.max(1, Math.floor(maxValue)) : 3}
                 rulesColor={theme.axis}
                 rulesType="solid"
                 yAxisColor={theme.axis}

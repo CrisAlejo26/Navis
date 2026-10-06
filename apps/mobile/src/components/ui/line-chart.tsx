@@ -22,6 +22,9 @@ interface LineChartProps {
     showDataPoints?: boolean;
     /** Mini gráfica sin ejes ni etiquetas, para dentro de un `StatCard`. */
     sparkline?: boolean;
+    /** Straight segments avoid overshooting bounded values such as percentages. */
+    curved?: boolean;
+    endSpacing?: number;
 }
 
 /**
@@ -39,6 +42,8 @@ export function LineChart({
     area = false,
     showDataPoints = false,
     sparkline = false,
+    curved = true,
+    endSpacing,
 }: LineChartProps) {
     const palette = themeColorsHex[useThemeStore((state) => state.resolvedTheme)];
     const theme = chartTheme(palette);
@@ -52,8 +57,17 @@ export function LineChart({
                 parentWidth={chart.parentWidth}
                 height={height}
                 adjustToWidth
+                endSpacing={endSpacing}
+                spacing={
+                    endSpacing === undefined
+                        ? undefined
+                        : Math.max(
+                              0,
+                              (chart.width - 20 - endSpacing) / Math.max(data.length - 1, 1),
+                          )
+                }
                 disableScroll
-                curved
+                curved={curved}
                 thickness={sparkline ? 2 : 2.5}
                 color={theme.line}
                 areaChart={area}

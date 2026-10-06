@@ -1362,6 +1362,27 @@ export const es = {
     /* Tareas y hábitos (RFC 0018). El catálogo de iconos (§7.1) lleva su propia
      etiqueta accesible por clave, una por cada entrada de TASK_ICON_CATALOG. */
     tasks: {
+        insights: {
+            days_one: '{{count}} día',
+            days_other: '{{count}} días',
+            history90: 'El Faro · 90 días',
+            historyHint: 'Dorado: día cumplido. Vacío: sin tareas previstas.',
+            bestTaskStreak: 'Mejor racha de tareas',
+            faro: 'El Faro',
+            streakActive: 'Los días sin tareas no interrumpen la racha.',
+            streakStart: 'Completa las tareas de un día para encender El Faro.',
+            noTasks: 'Sin tareas previstas',
+            yourDay: 'Tu día',
+            todayProgress: 'Progreso de hoy',
+            progressCount: '{{done}} de {{total}} completadas',
+            week: '7 días',
+            month: '30 días',
+            finished: 'Completadas',
+            scheduled: 'Previstas',
+            habitsToday: 'Hábitos para hoy',
+            completionRate: 'Tasa de cumplimiento',
+            chartHint: 'Cada barra cuenta las ocurrencias completadas en su fecha prevista.',
+        },
         editor: {
             invalidFields: 'Revisa el título, la fecha, la hora y el recordatorio.',
             timezone: 'Zona horaria: {{timezone}}',

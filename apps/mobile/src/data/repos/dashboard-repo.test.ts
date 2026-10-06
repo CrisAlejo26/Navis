@@ -1,10 +1,11 @@
 // Primero el soporte: registra los mocks de expo-crypto/expo-secure-store
 // antes de que carguen los módulos que los usan.
 import { setupLocalDb } from '@/data/test-support';
-import { addDays, startOfWeek } from '@navis/shared';
+import { createTaskSchema, addDays, startOfWeek } from '@navis/shared';
 import { setDbForTests } from '@/data/db';
 import { createChurch } from '@/data/repos/church-repo';
 import { localDashboardRepository, todayIso } from '@/data/repos/dashboard-repo';
+import { createTask, setTaskStatus } from './tasks-repo';
 import { openDatabaseAsync } from 'expo-sqlite';
 
 jest.mock('expo-sqlite', () => ({
@@ -216,71 +217,23 @@ describe('el panel de inicio en local', () => {
         expect(summary.upcomingEvents[0]).toMatchObject({ name: 'Culto mañana' });
     });
 
-    it('cuenta las tareas de hoy y la racha de días completados', async () => {
-        const today = todayIso();
-        const addTask = async (id: string, date: string) => {
-            await db.adapter.runAsync(
-                `INSERT INTO tasks (id, created_at, updated_at, deleted_at, church_id, owner_id, title, date, priority, is_recurring, repeat_interval)
-         VALUES (?, ?, ?, NULL, ?, ?, ?, ?, 'media', 0, 1)`,
-                id,
-                new Date().toISOString(),
-                new Date().toISOString(),
-                churchId,
-                ownerId,
-                `Tarea ${id}`,
-                date,
-            );
-        };
-
-        // Ayer: dos ocurrencias, las dos completadas → cuenta para la racha.
-        const yesterday = addDays(today, -1);
-        await addTask('t-1', yesterday);
-        await addTask('t-2', yesterday);
-        for (const id of ['t-1', 't-2']) {
-            await db.adapter.runAsync(
-                "INSERT INTO task_occurrences (id, created_at, updated_at, deleted_at, task_id, date, status, completed_at) VALUES (?, ?, ?, NULL, ?, ?, 'completada', NULL)",
-                `o-${id}`,
-                new Date().toISOString(),
-                new Date().toISOString(),
-                id,
-                yesterday,
-            );
-        }
-
-        // Anteayer: una sin completar → corta la racha en 1.
-        const beforeYesterday = addDays(today, -2);
-        await addTask('t-3', beforeYesterday);
-        await db.adapter.runAsync(
-            "INSERT INTO task_occurrences (id, created_at, updated_at, deleted_at, task_id, date, status, completed_at) VALUES (?, ?, ?, NULL, 't-3', ?, 'pendiente', NULL)",
-            'o-t-3',
-            new Date().toISOString(),
-            new Date().toISOString(),
-            beforeYesterday,
-        );
-
-        // Hoy: dos de hoy, una completada.
-        await addTask('t-4', today);
-        await addTask('t-5', today);
-        await db.adapter.runAsync(
-            "INSERT INTO task_occurrences (id, created_at, updated_at, deleted_at, task_id, date, status, completed_at) VALUES (?, ?, ?, NULL, 't-4', ?, 'completada', NULL)",
-            'o-t-4',
-            new Date().toISOString(),
-            new Date().toISOString(),
-            today,
-        );
-        await db.adapter.runAsync(
-            "INSERT INTO task_occurrences (id, created_at, updated_at, deleted_at, task_id, date, status, completed_at) VALUES (?, ?, ?, NULL, 't-5', ?, 'pendiente', NULL)",
-            'o-t-5',
-            new Date().toISOString(),
-            new Date().toISOString(),
-            today,
-        );
-
+    it('expande tareas sin materializar y usa la racha compartida', async () => {
+        const today = todayIso(),
+            context = { churchId, userId: ownerId };
+        const create = (title: string, date: string) =>
+            createTask(context, createTaskSchema.parse({ title, date, reminderEnabled: false }));
+        const yesterday = addDays(today, -1),
+            broken = addDays(today, -2);
+        const first = await create('Ayer', yesterday);
+        await setTaskStatus(context, first, yesterday, 'completada');
+        await create('Antes', broken);
+        const current = await create('Hoy completada', today);
+        await setTaskStatus(context, current, today, 'completada');
+        await create('Hoy pendiente', today);
         const summary = await localDashboardRepository.summary(churchId, ownerId);
-
         expect(summary.taskStreak).toBe(1);
         expect(summary.todayTasks).toHaveLength(2);
-        expect(summary.todayTasks.map((one) => one.completed)).toEqual([true, false]);
+        expect(summary.todayTasks.map((item) => item.completed)).toEqual([true, false]);
     });
 
     it('con todo vacío devuelve ceros y listas vacías, no errores', async () => {

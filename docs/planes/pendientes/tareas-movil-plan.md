@@ -1,6 +1,6 @@
 # Plan — Tareas y hábitos en Navis móvil, con la gestión de Tomtask
 
-Estado: **fases 0, 1, 2 y 3 cerradas; fase 4 pendiente de autorización**. Fecha: 2026-10-05.
+Estado: **fases 0–4 cerradas; fase 5 pendiente de autorización**. Fecha: 2026-10-06.
 Referencias: RFC 0018 (modelo y web), `D:/Proyectos_personales/taskia` (web) y `taskia/mobile` (Habit Land, la referencia de estilos y botones).
 
 Investigación y dirección visual: [tareas-movil-diseno.md](./tareas-movil-diseno.md). Las fases 2–6 conservan el alcance del plan, incluyendo notificaciones reales.
@@ -87,6 +87,16 @@ Cada fase termina verde en `pnpm check` y con verificación en emulador (Regla 1
 | **7** Opcional                    | Estados personalizados y flujos, fecha límite y alarma de «en progreso»                                                                                                                                               | solo si lo confirmas                                                      |
 
 ## 6. Riesgos y trampas conocidas
+
+### Registro de fase 4 (2026-10-06)
+
+- Hoy como entrada de Tareas, con navegación común a Listado y Estadísticas; selector de día con progreso de tareas, El Faro y tira de 14 días. Hábitos con meta, hora, etiquetas y anillo diario para completar/reabrir. La racha sigue contando exclusivamente tareas, conforme al contrato de Navis.
+- Estadísticas de 7/30 días, tareas/hábitos, resumen de hoy con anillo, tasa, barras, cuatro métricas, prioridades, etiquetas, tendencia y 90 días de El Faro. Cálculos compartidos con la API; el histórico borrado se conserva y la agenda muestra solo actividades activas.
+- El inicio utiliza el mismo repositorio local de ocurrencias y la zona de la iglesia, incluyendo tareas puntuales y series sin materializar. Consultas y mutaciones acotadas por iglesia/usuario.
+- Dirección Tomtask comprobada en Android: Poppins, márgenes 22, tarjetas 26, iconos 42, resumen 32/anillo 92 y cifra 56. Español/claro y alemán/oscuro a 375 dp y texto al 130 %. Se corrigieron fechas recortadas, métricas con palabras partidas, ejes duplicados al contar una sola ocurrencia y curvas que dibujaban porcentajes negativos. [Revisión y capturas](../../qa/tareas-movil/README.md).
+- Prueba permanente de paridad con una misma fixture y respuesta completa esperada: semanas, prioridades, etiquetas, tendencias, racha actual/máxima y 90 días. Aislamiento y separación de hábitos; comparación con respuestas HTTP reales en SQLite y PostgreSQL.
+- `pnpm check` y `pnpm build` completos. Móvil: 146 suites y 520 pruebas; scripts: 29 pruebas. API e2e: 225 pruebas por motor sobre bases aisladas. Sin nuevas dependencias ni migraciones. `expo-doctor`: 19/20; única incidencia, seis paquetes Expo con parches pendientes.
+- Rutas temporales de QA retiradas. Repetición avanzada y orden manual siguen en la fase 5; entrega de avisos reales en la fase 6.
 
 ### Registro de fase 3 (2026-10-05)
 

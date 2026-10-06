@@ -2,7 +2,8 @@ import { View, SectionList } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
-import { AppBar } from '@/components/ui/app-bar';
+import { TaskAppBar } from './task-app-bar';
+import { TaskNavigation } from './task-navigation';
 import { TaskDirectoryEmpty } from './directory-empty';
 import { TaskDirectoryFooter } from './directory-footer';
 import { activityKey, activityId, activityKind } from '@/lib/tasks/filters';
@@ -20,25 +21,8 @@ export function TaskDirectory() {
         { t } = useTranslation();
     return (
         <View style={{ flex: 1, backgroundColor: p.background }}>
-            <AppBar
-                title={t('tasks.list')}
-                actions={[
-                    {
-                        icon: 'pricetags-outline',
-                        label: t('tasks.manageTags'),
-                        onPress: () => router.push('/tasks/tags'),
-                    },
-                    {
-                        icon: 'create-outline',
-                        label: t('tasks.add'),
-                        onPress: () =>
-                            router.push({
-                                pathname: '/tasks/edit',
-                                params: { date: s.view === 'calendar' ? s.day : s.today },
-                            }),
-                    },
-                ]}
-            />
+            <TaskAppBar title={t('tasks.list')} date={s.view === 'calendar' ? s.day : s.today} />
+            <TaskNavigation active="list" />
             <SectionList
                 sections={s.sections}
                 keyExtractor={activityKey}

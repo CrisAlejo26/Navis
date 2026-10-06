@@ -54,4 +54,23 @@ Referencias investigadas: `components/tasks/edit-item-screen.tsx`, `item-detail-
 
 Las categorías se adaptan a las etiquetas del modelo Navis: vista previa de icono/color, nombre, paleta, color hexadecimal y catálogo compartido de 120 iconos, virtualizado y buscable por nombre y categoría en los seis idiomas. Los colores semánticos se resuelven según el tema y el texto de los chips mantiene contraste legible. Se reutilizan los selectores de fecha, hora, color y el marco del editor existente; el selector de hora se comparte con Cuaderno.
 
+## Dirección bloqueada para la fase 4
+
+| Decisión                                                                                  | Fuente                                                                 | Adaptación y papel                                                                                                                            |
+| ----------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| Hoy: selector horizontal de días con progreso, tira de racha y selector de hábitos/tareas | Tomtask `home/home-screen.tsx`, `day-selector.tsx`, `streak-strip.tsx` | Poppins, márgenes 22, ancho 480 y tarjetas 26; El Faro sustituye la llama y la racha cuenta exclusivamente tareas, conforme al contrato Navis |
+| Hábitos con meta visible y anillo de cumplimiento                                         | Tomtask `home/home-list.tsx`, modelo de hábitos Navis                  | Anillo con estado diario binario, sin inventar progreso numérico que no existe en el modelo; completar/reabrir la ocurrencia seleccionada     |
+| Resumen de hoy con anillo, cifra de cumplimiento, barras y cuatro métricas                | Tomtask `stats/stats-screen.tsx`, `hero-card.tsx`, `stat-tile.tsx`     | Resumen destacado en azul semántico, sin gradiente pastel de Tomtask; barras y anillo reutilizan los componentes de Navis                     |
+| Semana/mes y cifras separadas de tareas/hábitos                                           | Servicios `TasksStatsService` y `HabitsStatsService`, RFC 0018 D19     | Agregados compartidos, histórico preservado, racha solo de tareas; no mezclar hábitos en El Faro                                              |
+
+La ruta principal abre Hoy; Listado y Estadísticas tienen navegación visible común. El inicio consume la misma expansión local de tareas y zona de iglesia.
+
+## Revisión renderizada de la fase 4
+
+Android en español/claro y alemán/oscuro, 375 dp y texto al 130 %. Se preservan las proporciones investigadas de Tomtask: selector de días 46, tarjeta 26, icono 42, resumen 32, anillo 92 y porcentaje 56. Las metas de hábitos están visibles y el anillo cambia una ocurrencia concreta; abrir el título lleva al detalle.
+
+Correcciones del render: fechas de gráficas compactas día/mes, margen para el último punto, métricas que pasan a una columna cuando aumenta el texto, tira de 14 días visible completa, eje entero sin etiquetas duplicadas y tendencia con segmentos rectos para mantener el intervalo 0–100 %. Los hábitos no se incorporan a El Faro. Vacío filtrado con restablecer y estados de carga/error con componentes reales en una ruta temporal de QA, retirada tras la revisión.
+
+Las cifras se contrastaron con respuestas reales de la API, en ambos motores, sobre la misma fixture local. El histórico incluye actividades borradas conforme a la API; por ello, el cumplimiento de la agenda activa de un día puede diferir del histórico de El Faro. El registro de QA conserva las capturas y la prueba reproducible.
+
 Verificación renderizada en Android: claro/español y oscuro/alemán a 375 dp con texto al 130 %, títulos multilínea, chips de estado que pasan a otra línea y selector de iconos. La revisión detectó el pie Guardar detrás del teclado; se incorporó dentro del área que evita el teclado y se verificó guardar con el teclado abierto. Las capturas y los recorridos funcionales están en el registro de QA. Los recordatorios se guardan en la zona de la iglesia; la entrega de avisos continúa reservada para la fase 6.

@@ -1,0 +1,55 @@
+{
+    "today": "2026-10-05",
+    "from": "2026-10-01",
+    "to": "2026-10-07",
+    "tag": { "name": "Lectura", "icon": "book-open", "accent": "primary" },
+    "tasks": [
+        {
+            "title": "Diaria",
+            "date": "2026-10-03",
+            "priority": "media",
+            "isRecurring": true,
+            "repeatFreq": "diaria",
+            "completed": ["2026-10-03", "2026-10-04"],
+            "inProgress": ["2026-10-05"],
+            "deleted": false
+        },
+        {
+            "title": "Histórica",
+            "date": "2026-10-02",
+            "priority": "alta",
+            "isRecurring": false,
+            "completed": ["2026-10-02"],
+            "inProgress": [],
+            "deleted": true
+        },
+        {
+            "title": "Semanal",
+            "date": "2026-09-28",
+            "priority": "baja",
+            "isRecurring": true,
+            "repeatFreq": "semanal",
+            "completed": [],
+            "inProgress": [],
+            "deleted": false
+        }
+    ],
+    "habits": [
+        {
+            "title": "Orar",
+            "goal": "Diez minutos",
+            "date": "2026-10-01",
+            "repeatFreq": "diaria",
+            "completed": ["2026-10-01", "2026-10-05"],
+            "deleted": false
+        },
+        {
+            "title": "Hábito histórico",
+            "goal": "Un pasaje",
+            "date": "2026-10-05",
+            "repeatFreq": "ninguna",
+            "completed": ["2026-10-05"],
+            "deleted": true
+        }
+    ]
+}

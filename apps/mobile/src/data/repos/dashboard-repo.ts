@@ -4,10 +4,10 @@ import {
     DASHBOARD_EVENTS_PREVIEW,
     DASHBOARD_EVENTS_WINDOW_DAYS,
     DASHBOARD_NOTES_PREVIEW,
-    DASHBOARD_TASKS_PREVIEW,
     addDays,
     believerName,
     startOfWeek,
+    todayIn,
     type DashboardBucket,
     type DashboardEvent,
     type DashboardSummary,
@@ -16,6 +16,7 @@ import {
 
 import { getDb } from '../db';
 import { calendarRange } from './calendar-schedule';
+import { dashboardTasks } from './dashboard-tasks';
 
 /**
  * El panel de inicio **en local** (RFC 0024, Fase 1): calcula la misma
@@ -26,12 +27,9 @@ import { calendarRange } from './calendar-schedule';
  * el mismo módulo del calendario— porque `DashboardEventsService` de la API
  * también lo hace: una iglesia recién creada (o cualquier semana que nadie
  * haya tocado todavía) tiene que proponer su culto igual que en la web, no
- * solo lo que ya se ha asignado a mano. Las tareas siguen leyéndose de las
- * filas materializadas: no hay módulo de tareas en móvil todavía.
+ * solo lo que ya se ha asignado a mano. Las tareas y su racha usan la misma
+ * expansión local que Hoy y Estadísticas.
  */
-
-/** Días hacia atrás que mira la racha, como el `STREAK_LOOKBACK_DAYS` de la API. */
-const STREAK_LOOKBACK_DAYS = 30;
 
 /** Cuánto del texto de una nota entra en la tarjeta (`EXCERPT_LENGTH` en la API). */
 const EXCERPT_LENGTH = 140;
@@ -305,94 +303,15 @@ async function weeklyActivity(churchId: string, today: IsoDate) {
     return weeks.map((week) => ({ week, notes: counts.get(week) ?? 0 }));
 }
 
-async function todayTasksAndStreak(churchId: string, ownerId: string, today: IsoDate) {
-    const db = await getDb();
-    const rows = await db.getAllAsync<{
-        task_id: string;
-        title: string;
-        time: string | null;
-        priority: string;
-        status: string;
-    }>(
-        `SELECT o.task_id, t.title, t.time, t.priority, o.status
-     FROM task_occurrences o
-     JOIN tasks t ON t.id = o.task_id
-     WHERE t.church_id = ? AND t.owner_id = ? AND t.deleted_at IS NULL AND o.date = ?
-     ORDER BY t.time IS NULL, t.time, t.title`,
-        churchId,
-        ownerId,
-        today,
-    );
-
-    // El acento es el de su primera etiqueta, o `primary` si no lleva ninguna.
-    const accents = new Map<string, string>();
-    const taskIds = [...new Set(rows.map((row) => row.task_id))];
-    for (const taskId of taskIds) {
-        const tag = await db.getFirstAsync<{ accent: string }>(
-            `SELECT tg.accent FROM task_tags tt JOIN tags tg ON tg.id = tt.tag_id
-       WHERE tt.task_id = ? AND tt.deleted_at IS NULL AND tg.deleted_at IS NULL AND tt.task_id IN (SELECT id FROM tasks WHERE church_id = ? AND deleted_at IS NULL) ORDER BY tt.created_at ASC LIMIT 1`,
-            taskId,
-            churchId,
-        );
-        if (tag) accents.set(taskId, tag.accent);
-    }
-
-    const tasks = rows.slice(0, DASHBOARD_TASKS_PREVIEW).map((row) => ({
-        taskId: row.task_id,
-        title: row.title,
-        time: row.time,
-        priority: row.priority as DashboardSummary['todayTasks'][number]['priority'],
-        completed: row.status === 'completada',
-        accent: accents.get(row.task_id) ?? 'primary',
-    }));
-
-    return { tasks, streak: await streak(churchId, ownerId, today) };
-}
-
-async function streak(churchId: string, ownerId: string, today: IsoDate): Promise<number> {
-    const db = await getDb();
-    const rows = await db.getAllAsync<{ date: string; status: string }>(
-        `SELECT o.date, o.status FROM task_occurrences o
-     JOIN tasks t ON t.id = o.task_id
-     WHERE t.church_id = ? AND t.owner_id = ? AND t.deleted_at IS NULL AND o.date >= ? AND o.date <= ?`,
-        churchId,
-        ownerId,
-        addDays(today, -STREAK_LOOKBACK_DAYS),
-        today,
-    );
-
-    const byDay = new Map<string, string[]>();
-    for (const row of rows) {
-        const list = byDay.get(row.date) ?? [];
-        list.push(row.status);
-        byDay.set(row.date, list);
-    }
-
-    // Se recorre hacia atrás desde ayer (D8 de la API): un día sin ocurrencias
-    // no corta la racha; un día con alguna sin completar, sí. Hoy se suma aparte.
-    let streak = 0;
-    for (let offset = 1; offset <= STREAK_LOOKBACK_DAYS; offset++) {
-        const statuses = byDay.get(addDays(today, -offset));
-        if (!statuses || statuses.length === 0) continue;
-        if (statuses.some((status) => status !== 'completada')) break;
-        streak++;
-    }
-
-    const todayStatuses = byDay.get(today);
-    if (
-        todayStatuses &&
-        todayStatuses.length > 0 &&
-        todayStatuses.every((s) => s === 'completada')
-    ) {
-        streak++;
-    }
-
-    return streak;
-}
-
 export const localDashboardRepository: DashboardRepository = {
     async summary(churchId, ownerId): Promise<DashboardSummary> {
-        const today = todayIso();
+        const church = await (
+            await getDb()
+        ).getFirstAsync<{ timezone: string }>(
+            'SELECT timezone FROM churches WHERE id = ? AND deleted_at IS NULL',
+            churchId,
+        );
+        const today = todayIn(church?.timezone ?? 'UTC');
         const [
             believers,
             attention,
@@ -408,7 +327,7 @@ export const localDashboardRepository: DashboardRepository = {
             recentNotes(churchId),
             composition(churchId),
             weeklyActivity(churchId, today),
-            todayTasksAndStreak(churchId, ownerId, today),
+            dashboardTasks(churchId, ownerId, today),
         ]);
 
         return {

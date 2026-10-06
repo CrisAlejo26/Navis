@@ -1,0 +1,139 @@
+{
+    "tasks": {
+        "byWeek": [
+            { "week": "2026-09-28", "completed": 3, "pending": 0 },
+            { "week": "2026-10-05", "completed": 0, "pending": 4 }
+        ],
+        "byPriority": [
+            { "priority": "baja", "count": 1 },
+            { "priority": "media", "count": 5 },
+            { "priority": "alta", "count": 1 }
+        ],
+        "byTag": [
+            {
+                "tagId": "tag",
+                "name": "Lectura",
+                "icon": "book-open",
+                "accent": "primary",
+                "count": 7
+            }
+        ],
+        "trend": [
+            { "week": "2026-09-28", "rate": 1 },
+            { "week": "2026-10-05", "rate": 0 }
+        ],
+        "streak90": [
+            { "date": "2026-07-08", "empty": true, "completed": false },
+            { "date": "2026-07-09", "empty": true, "completed": false },
+            { "date": "2026-07-10", "empty": true, "completed": false },
+            { "date": "2026-07-11", "empty": true, "completed": false },
+            { "date": "2026-07-12", "empty": true, "completed": false },
+            { "date": "2026-07-13", "empty": true, "completed": false },
+            { "date": "2026-07-14", "empty": true, "completed": false },
+            { "date": "2026-07-15", "empty": true, "completed": false },
+            { "date": "2026-07-16", "empty": true, "completed": false },
+            { "date": "2026-07-17", "empty": true, "completed": false },
+            { "date": "2026-07-18", "empty": true, "completed": false },
+            { "date": "2026-07-19", "empty": true, "completed": false },
+            { "date": "2026-07-20", "empty": true, "completed": false },
+            { "date": "2026-07-21", "empty": true, "completed": false },
+            { "date": "2026-07-22", "empty": true, "completed": false },
+            { "date": "2026-07-23", "empty": true, "completed": false },
+            { "date": "2026-07-24", "empty": true, "completed": false },
+            { "date": "2026-07-25", "empty": true, "completed": false },
+            { "date": "2026-07-26", "empty": true, "completed": false },
+            { "date": "2026-07-27", "empty": true, "completed": false },
+            { "date": "2026-07-28", "empty": true, "completed": false },
+            { "date": "2026-07-29", "empty": true, "completed": false },
+            { "date": "2026-07-30", "empty": true, "completed": false },
+            { "date": "2026-07-31", "empty": true, "completed": false },
+            { "date": "2026-08-01", "empty": true, "completed": false },
+            { "date": "2026-08-02", "empty": true, "completed": false },
+            { "date": "2026-08-03", "empty": true, "completed": false },
+            { "date": "2026-08-04", "empty": true, "completed": false },
+            { "date": "2026-08-05", "empty": true, "completed": false },
+            { "date": "2026-08-06", "empty": true, "completed": false },
+            { "date": "2026-08-07", "empty": true, "completed": false },
+            { "date": "2026-08-08", "empty": true, "completed": false },
+            { "date": "2026-08-09", "empty": true, "completed": false },
+            { "date": "2026-08-10", "empty": true, "completed": false },
+            { "date": "2026-08-11", "empty": true, "completed": false },
+            { "date": "2026-08-12", "empty": true, "completed": false },
+            { "date": "2026-08-13", "empty": true, "completed": false },
+            { "date": "2026-08-14", "empty": true, "completed": false },
+            { "date": "2026-08-15", "empty": true, "completed": false },
+            { "date": "2026-08-16", "empty": true, "completed": false },
+            { "date": "2026-08-17", "empty": true, "completed": false },
+            { "date": "2026-08-18", "empty": true, "completed": false },
+            { "date": "2026-08-19", "empty": true, "completed": false },
+            { "date": "2026-08-20", "empty": true, "completed": false },
+            { "date": "2026-08-21", "empty": true, "completed": false },
+            { "date": "2026-08-22", "empty": true, "completed": false },
+            { "date": "2026-08-23", "empty": true, "completed": false },
+            { "date": "2026-08-24", "empty": true, "completed": false },
+            { "date": "2026-08-25", "empty": true, "completed": false },
+            { "date": "2026-08-26", "empty": true, "completed": false },
+            { "date": "2026-08-27", "empty": true, "completed": false },
+            { "date": "2026-08-28", "empty": true, "completed": false },
+            { "date": "2026-08-29", "empty": true, "completed": false },
+            { "date": "2026-08-30", "empty": true, "completed": false },
+            { "date": "2026-08-31", "empty": true, "completed": false },
+            { "date": "2026-09-01", "empty": true, "completed": false },
+            { "date": "2026-09-02", "empty": true, "completed": false },
+            { "date": "2026-09-03", "empty": true, "completed": false },
+            { "date": "2026-09-04", "empty": true, "completed": false },
+            { "date": "2026-09-05", "empty": true, "completed": false },
+            { "date": "2026-09-06", "empty": true, "completed": false },
+            { "date": "2026-09-07", "empty": true, "completed": false },
+            { "date": "2026-09-08", "empty": true, "completed": false },
+            { "date": "2026-09-09", "empty": true, "completed": false },
+            { "date": "2026-09-10", "empty": true, "completed": false },
+            { "date": "2026-09-11", "empty": true, "completed": false },
+            { "date": "2026-09-12", "empty": true, "completed": false },
+            { "date": "2026-09-13", "empty": true, "completed": false },
+            { "date": "2026-09-14", "empty": true, "completed": false },
+            { "date": "2026-09-15", "empty": true, "completed": false },
+            { "date": "2026-09-16", "empty": true, "completed": false },
+            { "date": "2026-09-17", "empty": true, "completed": false },
+            { "date": "2026-09-18", "empty": true, "completed": false },
+            { "date": "2026-09-19", "empty": true, "completed": false },
+            { "date": "2026-09-20", "empty": true, "completed": false },
+            { "date": "2026-09-21", "empty": true, "completed": false },
+            { "date": "2026-09-22", "empty": true, "completed": false },
+            { "date": "2026-09-23", "empty": true, "completed": false },
+            { "date": "2026-09-24", "empty": true, "completed": false },
+            { "date": "2026-09-25", "empty": true, "completed": false },
+            { "date": "2026-09-26", "empty": true, "completed": false },
+            { "date": "2026-09-27", "empty": true, "completed": false },
+            { "date": "2026-09-28", "empty": false, "completed": false },
+            { "date": "2026-09-29", "empty": true, "completed": false },
+            { "date": "2026-09-30", "empty": true, "completed": false },
+            { "date": "2026-10-01", "empty": true, "completed": false },
+            { "date": "2026-10-02", "empty": false, "completed": true },
+            { "date": "2026-10-03", "empty": false, "completed": true },
+            { "date": "2026-10-04", "empty": false, "completed": true },
+            { "date": "2026-10-05", "empty": false, "completed": false }
+        ],
+        "currentStreak": 3,
+        "longestStreak": 3
+    },
+    "habits": {
+        "byWeek": [
+            { "week": "2026-09-28", "completed": 1, "pending": 3 },
+            { "week": "2026-10-05", "completed": 2, "pending": 2 }
+        ],
+        "byTag": [
+            {
+                "tagId": "tag",
+                "name": "Lectura",
+                "icon": "book-open",
+                "accent": "primary",
+                "count": 8
+            }
+        ],
+        "trend": [
+            { "week": "2026-09-28", "rate": 0.25 },
+            { "week": "2026-10-05", "rate": 0.5 }
+        ]
+    }
+}
