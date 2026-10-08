@@ -23,6 +23,7 @@ export function toTaskSearch(query: TasksQuery): string {
     if (query.search) params.set('search', query.search);
     for (const tag of query.tag ?? []) params.append('tag', tag);
     if (query.reminder) params.set('reminder', query.reminder);
+    if (query.workflowId) params.set('workflowId', query.workflowId);
     if (query.hideCompleted !== undefined) params.set('hideCompleted', String(query.hideCompleted));
     if (query.sort) params.set('sort', query.sort);
 

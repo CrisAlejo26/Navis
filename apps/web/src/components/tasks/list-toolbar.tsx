@@ -1,4 +1,4 @@
-import { useTags } from '@navis/api-client';
+import { useTags, useWorkflows } from '@navis/api-client';
 import { TASK_SORTS, type TaskSort } from '@navis/shared';
 import { useTranslation } from 'react-i18next';
 
@@ -46,6 +46,7 @@ const GROUP_OPTIONS: GroupBy[] = ['none', 'status', 'date', 'tag', 'priority'];
 export function ListToolbar({ screen }: { screen: ReturnType<typeof useListScreen> }) {
     const { t } = useTranslation();
     const { data: tags = [] } = useTags(api);
+    const { data: workflows = [] } = useWorkflows(api);
 
     return (
         <div className="gap-3 flex flex-col">
@@ -86,6 +87,24 @@ export function ListToolbar({ screen }: { screen: ReturnType<typeof useListScree
                         </option>
                     ))}
                 </Select>
+
+                {workflows.length > 0 && (
+                    <Select
+                        size="sm"
+                        value={screen.workflow}
+                        aria-label={t('tasks.workflow')}
+                        onChange={(event) => {
+                            screen.setWorkflow(event.target.value);
+                        }}
+                    >
+                        <option value="">{t('tasks.allWorkflows')}</option>
+                        {workflows.map((workflow) => (
+                            <option key={workflow.id} value={workflow.id}>
+                                {workflow.name}
+                            </option>
+                        ))}
+                    </Select>
+                )}
 
                 <button
                     type="button"

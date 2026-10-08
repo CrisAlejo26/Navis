@@ -14,6 +14,13 @@ import { HabitsOccurrenceService } from './habits-occurrence.service';
 import { HabitsStatsService } from './habits-stats.service';
 import { HabitsService } from './habits.service';
 import { Tag } from './tag.entity';
+import { TaskTimeController } from './task-time.controller';
+import { TaskTimeEntry } from './task-time-entry.entity';
+import { TaskTimeSummaryService } from './task-time-summary.service';
+import { TaskTimeService } from './task-time.service';
+import { Workflow } from './workflow.entity';
+import { WorkflowsController } from './workflows.controller';
+import { WorkflowsService } from './workflows.service';
 import { TagsController } from './tags.controller';
 import { TagsService } from './tags.service';
 import { TaskOccurrence } from './task-occurrence.entity';
@@ -40,6 +47,8 @@ import { TaskSeriesService } from './task-series.service';
     imports: [
         TypeOrmModule.forFeature([
             Tag,
+            Workflow,
+            TaskTimeEntry,
             Task,
             TaskTag,
             TaskOccurrence,
@@ -54,9 +63,18 @@ import { TaskSeriesService } from './task-series.service';
         ]),
         ChurchesModule,
     ],
-    controllers: [TagsController, TasksController, HabitsController],
+    controllers: [
+        TagsController,
+        WorkflowsController,
+        TaskTimeController,
+        TasksController,
+        HabitsController,
+    ],
     providers: [
         TagsService,
+        WorkflowsService,
+        TaskTimeService,
+        TaskTimeSummaryService,
         TasksService,
         TaskSeriesService,
         TasksExpansionService,

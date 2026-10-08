@@ -104,6 +104,25 @@ export class CreateTaskDto {
     @IsObject()
     repeatOptions?: TaskRepeatOptions | null;
 
+    @ApiPropertyOptional({ description: 'Flujo de trabajo (Fase 7b)', nullable: true })
+    @IsOptional()
+    @ValidateIf((_object, value) => value !== null)
+    @IsUUID('all')
+    workflowId?: string | null;
+
+    @ApiPropertyOptional({ description: 'Vence el (Fase 7a)', example: '2026-08-20' })
+    @IsOptional()
+    @ValidateIf((_object, value) => value !== null)
+    @IsISO8601({ strict: true })
+    @Length(10, 10)
+    dueDate?: string | null;
+
+    @ApiPropertyOptional({ description: 'Tiempo máximo en progreso', example: '2026-08-15T18:00' })
+    @IsOptional()
+    @ValidateIf((_object, value) => value !== null)
+    @Matches(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/)
+    inProgressDeadline?: string | null;
+
     @ApiPropertyOptional({ type: [String] })
     @IsOptional()
     @IsArray()

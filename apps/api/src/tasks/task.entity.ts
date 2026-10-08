@@ -107,6 +107,18 @@ export class Task extends BaseEntity {
     @Column({ name: 'manual_order', type: 'int', nullable: true })
     manualOrder: number | null;
 
+    @ApiPropertyOptional({ description: 'Vence el (Fase 7a). Solo si NO es repetitiva' })
+    @Column({ name: 'due_date', type: 'date', nullable: true })
+    dueDate: string | null;
+
+    @ApiPropertyOptional({ description: 'Tiempo máximo «en progreso» (Fase 7a)' })
+    @Column({ name: 'in_progress_deadline', type: TIMESTAMP, nullable: true })
+    inProgressDeadline: Date | null;
+
+    @ApiPropertyOptional({ description: 'Flujo de trabajo (Fase 7b); sin relación, ver Workflow' })
+    @Column({ name: 'workflow_id', type: UUID, nullable: true })
+    workflowId: string | null;
+
     @OneToMany(() => TaskTag, (link) => link.task, { cascade: true })
     tags: TaskTag[];
 

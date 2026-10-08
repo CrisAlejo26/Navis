@@ -3,6 +3,7 @@ import { taskRepeatOptionsSchema, taskRepeatPauseSchema } from '@navis/shared';
 import type { LocalDb } from '../db';
 import { readActivityTags } from './task-relations';
 import { readActivityReminder } from './task-reminders';
+import { readWorkflowRef } from './workflow-relations';
 import type { ActivityKind, TasksContext } from './tasks-context';
 
 export interface ActivityMeta {
@@ -16,7 +17,9 @@ const common = `id, title, description, date, time, status, completed_at AS comp
 const projections = {
     task: `${common}, priority, is_recurring AS isRecurring, repeat_interval AS repeatInterval,
         repeat_end_type AS repeatEndType, repeat_end_date AS repeatEndDate, repeat_end_count AS repeatEndCount,
-        repeat_options AS repeatOptionsJson, repeat_pauses AS repeatPausesJson, repeat_stopped_at AS repeatStoppedAt, manual_order AS manualOrder`,
+        repeat_options AS repeatOptionsJson, repeat_pauses AS repeatPausesJson, repeat_stopped_at AS repeatStoppedAt, manual_order AS manualOrder,
+        due_date AS dueDate, in_progress_deadline AS inProgressDeadline,
+        workflow_id AS workflowId`,
     habit: `${common}, goal`,
 };
 
@@ -35,18 +38,26 @@ export async function taskRecords(
     } = {},
 ): Promise<TaskRecord[]> {
     const rows = await records<
-        TaskRecord & { repeatOptionsJson: string | null; repeatPausesJson: string | null }
+        TaskRecord & {
+            repeatOptionsJson: string | null;
+            repeatPausesJson: string | null;
+            workflowId: string | null;
+        }
     >(db, context, 'task', options);
-    return rows.map(({ repeatOptionsJson, repeatPausesJson, ...row }) => ({
-        ...row,
-        isRecurring: Boolean(row.isRecurring),
-        repeatOptions: repeatOptionsJson
-            ? taskRepeatOptionsSchema.parse(JSON.parse(repeatOptionsJson))
-            : null,
-        repeatPauses: repeatPausesJson
-            ? taskRepeatPauseSchema.array().parse(JSON.parse(repeatPausesJson))
-            : null,
-    }));
+    const result: TaskRecord[] = [];
+    for (const { repeatOptionsJson, repeatPausesJson, workflowId, ...row } of rows)
+        result.push({
+            ...row,
+            isRecurring: Boolean(row.isRecurring),
+            repeatOptions: repeatOptionsJson
+                ? taskRepeatOptionsSchema.parse(JSON.parse(repeatOptionsJson))
+                : null,
+            repeatPauses: repeatPausesJson
+                ? taskRepeatPauseSchema.array().parse(JSON.parse(repeatPausesJson))
+                : null,
+            workflow: await readWorkflowRef(db, context, workflowId),
+        });
+    return result;
 }
 export async function habitRecords(
     db: LocalDb,

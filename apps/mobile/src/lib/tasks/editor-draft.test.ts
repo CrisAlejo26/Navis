@@ -45,4 +45,59 @@ describe('borrador del editor', () => {
         );
         expect(result.input).toMatchObject({ time: null, reminderEnabled: false });
     });
+    it('lleva el límite de una tarea que no se repite y lo quita en una serie', () => {
+        const single: Task = {
+            ...task,
+            isRecurring: false,
+            repeatFreq: null,
+            status: 'pendiente',
+            dueDate: '2026-10-09',
+            inProgressDeadline: '2026-10-05T16:00:00.000Z',
+        };
+        const draft = activityDraft('task', single.date, 'UTC', single);
+        expect(draft).toMatchObject({
+            limitEnabled: true,
+            dueDate: '2026-10-09',
+            deadlineEnabled: true,
+            deadlineDate: '2026-10-05',
+            deadlineTime: '16:00',
+        });
+        expect(draftInput(draft, 'UTC', single).input).toMatchObject({
+            dueDate: '2026-10-09',
+            inProgressDeadline: '2026-10-05T16:00:00.000Z',
+        });
+        const asSeries = draftInput({ ...draft, repeatFreq: 'diaria' }, 'UTC', single);
+        expect(asSeries.input).toMatchObject({ dueDate: null, inProgressDeadline: null });
+    });
+    it('apagar los interruptores quita el límite', () => {
+        const single: Task = {
+            ...task,
+            isRecurring: false,
+            repeatFreq: null,
+            dueDate: '2026-10-09',
+        };
+        const draft = activityDraft('task', single.date, 'UTC', single);
+        const result = draftInput({ ...draft, limitEnabled: false, deadlineEnabled: false }, 'UTC');
+        expect(result.input).toMatchObject({ dueDate: null, inProgressDeadline: null });
+    });
+    it('lleva el flujo de la tarea y lo quita si se elige «sin flujo»', () => {
+        const single: Task = {
+            ...task,
+            isRecurring: false,
+            repeatFreq: null,
+            workflow: {
+                id: '00000000-0000-4000-8000-000000000009',
+                name: 'Visitas',
+                accent: 'primary',
+            },
+        };
+        const draft = activityDraft('task', single.date, 'UTC', single);
+        expect(draft.workflowId).toBe('00000000-0000-4000-8000-000000000009');
+        expect(draftInput(draft, 'UTC', single).input).toMatchObject({
+            workflowId: '00000000-0000-4000-8000-000000000009',
+        });
+        expect(draftInput({ ...draft, workflowId: '' }, 'UTC', single).input).toMatchObject({
+            workflowId: null,
+        });
+    });
 });

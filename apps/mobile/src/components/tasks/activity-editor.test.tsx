@@ -12,6 +12,9 @@ jest.mock('@/hooks/use-lists', () => ({
 jest.mock('@/hooks/use-tasks', () => ({
     useTaskMutation: () => ({ mutateAsync: mockMutate, isPending: false }),
 }));
+jest.mock('@/hooks/use-workflows', () => ({
+    useWorkflows: () => ({ data: [], isPending: false }),
+}));
 jest.mock('@/hooks/use-tags', () => ({
     useTaskTags: () => ({ data: [], isPending: false, isError: false }),
 }));

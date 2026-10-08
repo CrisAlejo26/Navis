@@ -62,6 +62,18 @@ export const LOCAL_TASK_TABLES: LocalTable[] = [
         },
     ]),
     {
+        name: 'task_time_entries',
+        mirror: 'TaskTimeEntry',
+        columns: [
+            ...base,
+            { name: 'church_id', type: 'text' },
+            { name: 'owner_id', type: 'text' },
+            { name: 'task_id', type: 'text' },
+            { name: 'started_at', type: 'text' },
+            { name: 'ended_at', type: 'text', nullable: true },
+        ],
+    },
+    {
         name: 'task_streak_cache',
         mirror: 'TaskStreakCache',
         columns: [

@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 import { isoDateSchema, reminderAtSchema, timeSchema } from './common';
 import { tagRefSchema } from './tags';
+import { workflowRefSchema } from './workflows';
 import { taskRepeatOptionsSchema, taskRepeatPauseSchema, validTaskRepeat } from './task-series';
 
 /** RFC 0018 §5.2, D1: la tarea es su propia entidad, con tres estados y prioridad. */
@@ -34,6 +35,19 @@ export const taskReminderSchema = z.object({
 export type TaskReminder = z.infer<typeof taskReminderSchema>;
 
 /**
+ * El límite de una tarea (Fase 7a): «vence el» y el tiempo máximo en curso.
+ * Solo las tareas **no repetitivas** lo llevan: una serie no tiene «un» límite.
+ * `inProgressDeadline` es un instante ISO y solo avisa si la tarea sigue «en
+ * progreso» cuando llega la hora.
+ */
+const taskExtraFields = {
+    /** Fase 7b: el flujo de trabajo al que pertenece, o nada. */
+    workflow: workflowRefSchema.nullable().optional(),
+    dueDate: isoDateSchema.nullable().optional(),
+    inProgressDeadline: z.string().nullable().optional(),
+};
+
+/**
  * Una ocurrencia de tarea, ya expandida (§5.4, D3): el día concreto de una
  * tarea puntual o repetitiva, materializada en `task_occurrences` o todavía
  * una propuesta calculada al vuelo. `date` es siempre el día que se está
@@ -53,6 +67,7 @@ export const taskOccurrenceSchema = z.object({
     reminder: taskReminderSchema.nullable(),
     createdAt: z.string(),
     manualOrder: z.number().int().min(0).nullable().optional(),
+    ...taskExtraFields,
 });
 
 export type TaskOccurrence = z.infer<typeof taskOccurrenceSchema>;
@@ -79,6 +94,7 @@ export const taskSchema = z.object({
     repeatPauses: z.array(taskRepeatPauseSchema).nullable().optional(),
     repeatStoppedAt: isoDateSchema.nullable().optional(),
     manualOrder: z.number().int().min(0).nullable().optional(),
+    ...taskExtraFields,
     status: z.enum(TASK_STATUSES).nullable(),
     completedAt: z.string().nullable(),
     tags: z.array(tagRefSchema),
@@ -101,6 +117,9 @@ export const createTaskSchema = z
         repeatEndDate: isoDateSchema.optional(),
         repeatEndCount: z.number().int().min(1).max(999).optional(),
         repeatOptions: taskRepeatOptionsSchema.nullable().optional(),
+        dueDate: isoDateSchema.nullable().optional(),
+        inProgressDeadline: reminderAtSchema.nullable().optional(),
+        workflowId: z.uuid().nullable().optional(),
         tagIds: z.array(z.uuid()).max(20).default([]),
         reminderEnabled: z.boolean().default(true),
         reminderAt: reminderAtSchema.optional(),
@@ -118,6 +137,14 @@ export const createTaskSchema = z
     .refine((task) => task.repeatEndType !== 'cantidad' || Boolean(task.repeatEndCount), {
         message: 'Falta cuántas veces se repite',
         path: ['repeatEndCount'],
+    })
+    .refine((task) => !task.isRecurring || (!task.dueDate && !task.inProgressDeadline), {
+        message: 'Una serie no tiene fecha límite',
+        path: ['dueDate'],
+    })
+    .refine((task) => !task.dueDate || task.dueDate >= task.date, {
+        message: 'El límite no puede ser anterior al día de la tarea',
+        path: ['dueDate'],
     });
 
 export type CreateTaskInput = z.infer<typeof createTaskSchema>;
@@ -136,6 +163,9 @@ export const updateTaskSchema = z.object({
     repeatEndDate: isoDateSchema.nullable().optional(),
     repeatEndCount: z.number().int().min(1).max(999).nullable().optional(),
     repeatOptions: taskRepeatOptionsSchema.nullable().optional(),
+    dueDate: isoDateSchema.nullable().optional(),
+    inProgressDeadline: reminderAtSchema.nullable().optional(),
+    workflowId: z.uuid().nullable().optional(),
     tagIds: z.array(z.uuid()).max(20).optional(),
     reminderEnabled: z.boolean().optional(),
     reminderAt: reminderAtSchema.nullable().optional(),

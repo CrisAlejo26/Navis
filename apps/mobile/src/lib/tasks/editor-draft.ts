@@ -33,6 +33,14 @@ export interface ActivityDraft {
     reminderDate: string;
     reminderTime: string;
     reminderTagIds: string[];
+    /** Fase 7a: «vence el» y tiempo máximo en curso; solo tareas que no se repiten. */
+    limitEnabled: boolean;
+    dueDate: string;
+    deadlineEnabled: boolean;
+    deadlineDate: string;
+    deadlineTime: string;
+    /** Fase 7b: el flujo de la tarea; vacío = sin flujo. */
+    workflowId: string;
 }
 export function activityDraft(
     kind: ItemKind,
@@ -44,6 +52,10 @@ export function activityDraft(
     const reminder = item?.reminder
         ? reminderParts(item.reminder.remindAt, timezone)
         : { date: item?.date ?? today, time: item?.time ?? '09:00' };
+    const task = item && 'priority' in item ? item : undefined;
+    const deadline = task?.inProgressDeadline
+        ? reminderParts(task.inProgressDeadline, timezone)
+        : { date: item?.date ?? today, time: '18:00' };
     return {
         kind,
         title: item?.title ?? '',
@@ -65,6 +77,12 @@ export function activityDraft(
         reminderDate: reminder.date,
         reminderTime: reminder.time,
         reminderTagIds: item?.reminder?.tags.map((tag) => tag.id) ?? [],
+        limitEnabled: Boolean(task?.dueDate),
+        dueDate: task?.dueDate ?? item?.date ?? today,
+        deadlineEnabled: Boolean(task?.inProgressDeadline),
+        deadlineDate: deadline.date,
+        deadlineTime: deadline.time,
+        workflowId: task?.workflow?.id ?? '',
     };
 }
 export function draftInput(draft: ActivityDraft, timezone: string, _previous?: Task | Habit) {
@@ -80,6 +98,7 @@ export function draftInput(draft: ActivityDraft, timezone: string, _previous?: T
             : undefined,
         reminderTagIds: draft.reminderTagIds,
     };
+    const single = draft.repeatFreq === 'ninguna';
     return draft.kind === 'habit'
         ? {
               kind: 'habit' as const,
@@ -102,6 +121,12 @@ export function draftInput(draft: ActivityDraft, timezone: string, _previous?: T
                   repeatEndDate: draft.repeatEndType === 'fecha' ? draft.repeatEndDate : undefined,
                   repeatEndCount:
                       draft.repeatEndType === 'cantidad' ? draft.repeatEndCount : undefined,
+                  workflowId: draft.workflowId || null,
+                  dueDate: single && draft.limitEnabled ? draft.dueDate : null,
+                  inProgressDeadline:
+                      single && draft.deadlineEnabled
+                          ? reminderInstant(draft.deadlineDate, draft.deadlineTime, timezone)
+                          : null,
               }),
           };
 }

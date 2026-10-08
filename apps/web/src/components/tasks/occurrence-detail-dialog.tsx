@@ -12,6 +12,8 @@ import { useTranslation } from 'react-i18next';
 import { HabitForm } from '@/components/tasks/habit-form';
 import { TagChip } from '@/components/tasks/tag-chip';
 import { TaskForm } from '@/components/tasks/task-form';
+import { TaskTimerControl } from '@/components/tasks/task-timer-control';
+import { WorkflowChip } from '@/components/tasks/workflow-chip';
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { Dialog } from '@/components/ui/dialog';
@@ -113,6 +115,22 @@ export function OccurrenceDetailDialog({
                             </>
                         )}
 
+                        {occurrence.kind === 'task' && occurrence.item.workflow && (
+                            <>
+                                <dt className="text-muted-foreground">{t('tasks.workflow')}</dt>
+                                <dd>
+                                    <WorkflowChip workflow={occurrence.item.workflow} />
+                                </dd>
+                            </>
+                        )}
+
+                        {occurrence.kind === 'task' && occurrence.item.dueDate && (
+                            <>
+                                <dt className="text-muted-foreground">{t('tasks.dueDate')}</dt>
+                                <dd>{occurrence.item.dueDate}</dd>
+                            </>
+                        )}
+
                         {occurrence.kind === 'habit' && occurrence.item.goal && (
                             <>
                                 <dt className="text-muted-foreground">{t('tasks.goal')}</dt>
@@ -140,6 +158,10 @@ export function OccurrenceDetailDialog({
                                 <TagChip key={tag.id} tag={tag} />
                             ))}
                         </div>
+                    )}
+
+                    {occurrence.kind === 'task' && (
+                        <TaskTimerControl taskId={occurrence.item.taskId} />
                     )}
 
                     <div className="gap-2 flex">

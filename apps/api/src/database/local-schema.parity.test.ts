@@ -41,6 +41,8 @@ import { Tag } from '../tasks/tag.entity';
 import { TaskOccurrence } from '../tasks/task-occurrence.entity';
 import { TaskReminder } from '../tasks/task-reminder.entity';
 import { TaskReminderTag } from '../tasks/task-reminder-tag.entity';
+import { TaskTimeEntry } from '../tasks/task-time-entry.entity';
+import { Workflow } from '../tasks/workflow.entity';
 import { TaskTag } from '../tasks/task-tag.entity';
 import { Habit } from '../tasks/habit.entity';
 import { HabitTag } from '../tasks/habit-tag.entity';
@@ -110,6 +112,8 @@ const ENTITIES = [
     BelieverTagLink,
     Task,
     Tag,
+    Workflow,
+    TaskTimeEntry,
     TaskTag,
     TaskOccurrence,
     Prophecy,

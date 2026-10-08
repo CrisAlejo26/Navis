@@ -2,6 +2,7 @@ import { View } from 'react-native';
 import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { SegmentedControl } from '@/components/ui/segmented-control';
+import { RunningTimerBar } from './running-timer-bar';
 
 const destinations = { today: '/tasks', list: '/tasks/list', stats: '/tasks/stats' } as const;
 export function TaskNavigation({ active }: { active: keyof typeof destinations }) {
@@ -24,6 +25,7 @@ export function TaskNavigation({ active }: { active: keyof typeof destinations }
                     label: t(`tasks.${value}`),
                 }))}
             />
+            <RunningTimerBar />
         </View>
     );
 }

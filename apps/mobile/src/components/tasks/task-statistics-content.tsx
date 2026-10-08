@@ -11,6 +11,7 @@ import { TaskStatisticsBreakdown } from './task-statistics-breakdown';
 import { TaskStreakStrip } from './task-streak-strip';
 import { TaskStreakHistory } from './task-streak-history';
 import { ActivityBlock } from './activity-block';
+import { TaskTimeSummary } from './task-time-summary';
 
 export function TaskStatisticsContent({ state: s }: { state: TaskStatisticsState }) {
     const { t } = useTranslation();
@@ -54,6 +55,7 @@ export function TaskStatisticsContent({ state: s }: { state: TaskStatisticsState
                 days={(s.query.data?.tasks.streak90 ?? []).slice(-14)}
             />
             <TaskStatisticsBreakdown state={s} />
+            <TaskTimeSummary from={s.from} to={s.to} />
             <ActivityBlock title={t('tasks.statsTrend')}>
                 <LineChart
                     data={(s.stats?.trend ?? []).map((point) => ({

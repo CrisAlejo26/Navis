@@ -60,6 +60,12 @@ export async function updateTask(
             patch.repeatEndCount === null
                 ? undefined
                 : (patch.repeatEndCount ?? previous.repeatEndCount ?? undefined),
+        // Una serie no tiene límite (como en la API): convertirla lo borra.
+        ...((patch.isRecurring ?? previous.isRecurring)
+            ? { dueDate: null, inProgressDeadline: null }
+            : {}),
+        workflowId:
+            patch.workflowId === undefined ? (previous.workflow?.id ?? null) : patch.workflowId,
         reminderAt: undefined,
     });
     const values = fields(merged);
@@ -87,5 +93,8 @@ function fields(data: CreateTaskInput): ActivityFields {
         repeat_end_count: data.repeatEndCount ?? null,
         repeat_options:
             data.isRecurring && data.repeatOptions ? JSON.stringify(data.repeatOptions) : null,
+        due_date: data.isRecurring ? null : (data.dueDate ?? null),
+        in_progress_deadline: data.isRecurring ? null : (data.inProgressDeadline ?? null),
+        workflow_id: data.workflowId ?? null,
     };
 }

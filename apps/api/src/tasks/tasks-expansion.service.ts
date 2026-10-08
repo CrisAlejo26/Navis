@@ -1,6 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { eachDay, type TagRef, type TaskOccurrence, type TaskReminder } from '@navis/shared';
+import {
+    eachDay,
+    type TagRef,
+    type TaskOccurrence,
+    type TaskReminder,
+    type WorkflowRef,
+} from '@navis/shared';
 import { Between, In, Repository } from 'typeorm';
 
 import { taskAppliesOn } from '@navis/shared';
@@ -9,6 +15,7 @@ import { TaskReminderTag } from './task-reminder-tag.entity';
 import { TaskReminder as TaskReminderEntity } from './task-reminder.entity';
 import { TaskTag } from './task-tag.entity';
 import { Task } from './task.entity';
+import { WorkflowsService } from './workflows.service';
 
 /**
  * La expansión de tareas: el rango pedido, con las repetitivas calculadas al
@@ -24,6 +31,7 @@ export class TasksExpansionService {
         @InjectRepository(TaskTag) private readonly taskTags: Repository<TaskTag>,
         @InjectRepository(TaskReminderEntity)
         private readonly reminders: Repository<TaskReminderEntity>,
+        private readonly workflows: WorkflowsService,
     ) {}
 
     /** Las tareas del rango, expandidas y ordenadas por fecha y hora. */
@@ -37,10 +45,13 @@ export class TasksExpansionService {
         if (templates.length === 0) return [];
 
         const ids = templates.map((task) => task.id);
-        const [materialized, tagsByTask, remindersByTask] = await Promise.all([
+        const [materialized, tagsByTask, remindersByTask, workflowsById] = await Promise.all([
             this.occurrences.find({ where: { taskId: In(ids), date: Between(from, to) } }),
             this.tagsFor(ids),
             this.remindersFor(ids),
+            this.workflows.refs(
+                templates.flatMap((task) => (task.workflowId ? [task.workflowId] : [])),
+            ),
         ]);
         const byKey = new Map(materialized.map((row) => [`${row.taskId}:${row.date}`, row]));
 
@@ -65,6 +76,7 @@ export class TasksExpansionService {
                         materializedRow,
                         tagsByTask.get(task.id) ?? [],
                         remindersByTask.get(task.id) ?? null,
+                        (task.workflowId && workflowsById.get(task.workflowId)) || null,
                     ),
                 );
             }
@@ -152,6 +164,7 @@ function toView(
     materialized: TaskOccurrenceEntity | undefined,
     tags: TagRef[],
     reminder: TaskReminder | null,
+    workflow: WorkflowRef | null,
 ): TaskOccurrence {
     const status = task.isRecurring
         ? (materialized?.status ?? 'pendiente')
@@ -174,6 +187,11 @@ function toView(
         reminder,
         createdAt: task.createdAt.toISOString(),
         ...(task.manualOrder == null ? {} : { manualOrder: task.manualOrder }),
+        ...(workflow ? { workflow } : {}),
+        ...(task.dueDate ? { dueDate: task.dueDate } : {}),
+        ...(task.inProgressDeadline
+            ? { inProgressDeadline: task.inProgressDeadline.toISOString() }
+            : {}),
     };
 }
 

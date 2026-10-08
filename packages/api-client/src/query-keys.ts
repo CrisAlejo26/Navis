@@ -148,6 +148,11 @@ export const queryKeys = {
     tasks: {
         all: ['tasks'] as const,
         tags: ['tasks', 'tags'] as const,
+        workflows: ['tasks', 'workflows'] as const,
+        time: ['tasks', 'time'] as const,
+        timeRunning: ['tasks', 'time', 'running'] as const,
+        timeOf: (id: string) => ['tasks', 'time', 'of', id] as const,
+        timeSummary: (range: object) => ['tasks', 'time', 'summary', range] as const,
         list: (query: object) => [...queryKeys.tasks.all, 'list', query] as const,
         streak: ['tasks', 'streak'] as const,
         stats: (query: object) => [...queryKeys.tasks.all, 'stats', query] as const,

@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import type { Task, Habit } from '@navis/shared';
 import { ActivityBlock } from './activity-block';
 import { TaskTagBadges } from './task-tag-badges';
+import { TaskTimerControl } from './task-timer-control';
 import { formatDay } from '@/lib/format';
 import { reminderParts } from '@/lib/tasks/reminder-time';
 import type { ActivityItem } from '@/lib/tasks/filters';
@@ -29,6 +30,7 @@ export function ActivityDetailContent({
         : null;
     return (
         <>
+            {'taskId' in item && <TaskTimerControl taskId={item.taskId} />}
             <ActivityBlock title={t('tasks.tags')}>
                 {item.tags.length ? (
                     <View className="gap-2 flex-row flex-wrap">

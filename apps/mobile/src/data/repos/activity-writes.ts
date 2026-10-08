@@ -3,6 +3,7 @@ import { nowIso } from '../db';
 import { inLocalTransaction } from '../local-transaction';
 import { requireActivity, tasksDb, type ActivityKind, type TasksContext } from './tasks-context';
 import { requireTaskTags, replaceActivityTags } from './task-relations';
+import { requireOwnWorkflow } from './workflow-relations';
 import { writeActivityStatus, type ActivityState } from './activity-status-write';
 
 export type ActivityFields = Record<string, string | number | null>;
@@ -11,6 +12,8 @@ export interface ActivityRelations {
     reminderEnabled?: boolean;
     reminderAt?: string | null;
     reminderTagIds?: string[];
+    /** Solo se valida aquí: la columna `workflow_id` viaja en `fields`. */
+    workflowId?: string | null;
 }
 
 /** The caller supplies validated fields; all relation changes commit together. */
@@ -30,6 +33,7 @@ export async function saveActivity(
             ...(relations.tagIds ?? []),
             ...(relations.reminderTagIds ?? []),
         ]);
+        await requireOwnWorkflow(tx, context, relations.workflowId);
         const keys = Object.keys(fields);
         if (create) {
             const table = `${kind}s`;

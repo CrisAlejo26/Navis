@@ -12,6 +12,7 @@ import { StreakStrip } from '@/components/tasks/streak-strip';
 import { TaskForm } from '@/components/tasks/task-form';
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
+import { RunningTimerBar } from '@/components/tasks/running-timer-bar';
 import { PageSkeleton } from '@/components/ui/page-skeleton';
 import { api } from '@/lib/api';
 import { cn } from '@/lib/cn';
@@ -98,6 +99,8 @@ export function TasksPage() {
                 )}
             </header>
 
+            <RunningTimerBar />
+
             {screen.tab === 'tasks' && (
                 <div className="gap-3 flex flex-col items-center">
                     <Faro days={screen.streak?.current ?? 0} dimmed={isFuture} />
@@ -169,6 +172,8 @@ export function TasksPage() {
                                   tags={item.tags}
                                   completed={item.status === 'completada'}
                                   priority={item.priority}
+                                  dueDate={item.dueDate}
+                                  workflow={item.workflow}
                                   hasReminder={item.reminder?.enabled ?? false}
                                   isPending={setTaskStatus.isPending}
                                   onOpen={() => {

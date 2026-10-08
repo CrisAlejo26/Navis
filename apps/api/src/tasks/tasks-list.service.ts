@@ -69,6 +69,7 @@ function applyFilters(items: TaskOccurrence[], query: TasksQuery): TaskOccurrenc
             if (!haystack.includes(search)) return false;
         }
         if (tagIds && !item.tags.some((tag) => tagIds.has(tag.id))) return false;
+        if (query.workflowId && item.workflow?.id !== query.workflowId) return false;
         if (query.reminder === 'with' && !(item.reminder?.enabled ?? false)) return false;
         if (query.reminder === 'without' && (item.reminder?.enabled ?? false)) return false;
         return true;

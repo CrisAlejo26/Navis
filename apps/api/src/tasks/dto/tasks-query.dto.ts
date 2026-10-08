@@ -59,6 +59,11 @@ export class TasksQueryDto {
     @IsUUID('all', { each: true })
     tag?: string[];
 
+    @ApiPropertyOptional({ description: 'Solo las tareas de ese flujo (Fase 7b)' })
+    @IsOptional()
+    @IsUUID('all')
+    workflowId?: string;
+
     @ApiPropertyOptional({ enum: ['with', 'without'] })
     @IsOptional()
     @IsIn(['with', 'without'])

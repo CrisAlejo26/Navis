@@ -38,6 +38,7 @@ export function filterCount(f: TaskFilters): number {
         (f.tag?.length ?? 0) +
         Number(Boolean(f.reminder)) +
         Number(Boolean(f.recurring)) +
+        Number(Boolean(f.workflowId)) +
         Number(f.hideCompleted === false)
     );
 }

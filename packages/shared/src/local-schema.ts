@@ -223,6 +223,17 @@ export const LOCAL_TABLES: LocalTable[] = [
         { name: 'repeat_pauses', type: 'text', nullable: true },
         { name: 'repeat_stopped_at', type: 'text', nullable: true },
         { name: 'manual_order', type: 'int', nullable: true },
+        { name: 'due_date', type: 'text', nullable: true },
+        { name: 'in_progress_deadline', type: 'text', nullable: true },
+        { name: 'workflow_id', type: 'text', nullable: true },
+    ]),
+    table('workflows', 'Workflow', [
+        { name: 'church_id', type: 'text' },
+        { name: 'owner_id', type: 'text' },
+        { name: 'name', type: 'text' },
+        { name: 'description', type: 'text', nullable: true },
+        { name: 'accent', type: 'text' },
+        { name: 'position', type: 'int', default: 0 },
     ]),
     table('tags', 'Tag', [
         { name: 'church_id', type: 'text' },

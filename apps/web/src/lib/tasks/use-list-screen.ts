@@ -33,6 +33,8 @@ export function itemFields(item: ListItem) {
         tags: item.occurrence.tags,
         status: item.occurrence.status,
         priority: item.kind === 'task' ? item.occurrence.priority : null,
+        dueDate: item.kind === 'task' ? (item.occurrence.dueDate ?? null) : null,
+        workflow: item.kind === 'task' ? (item.occurrence.workflow ?? null) : null,
     };
 }
 
@@ -67,6 +69,7 @@ export function useListScreen() {
     const search = params.get('search') ?? '';
     const tagKey = params.getAll('tag').join(',');
     const tag = useMemo(() => (tagKey ? tagKey.split(',') : []), [tagKey]);
+    const workflow = params.get('workflow') ?? '';
     const reminder = (params.get('reminder') as 'with' | 'without' | null) ?? undefined;
     const hideCompleted = params.get('hideCompleted') !== 'false';
     const sort = (params.get('sort') as TaskSort | null) ?? DEFAULT_TASK_SORT;
@@ -88,6 +91,7 @@ export function useListScreen() {
             search: search || undefined,
             tag,
             reminder,
+            workflowId: workflow || undefined,
             hideCompleted,
             sort,
             limit: 200,
@@ -129,6 +133,7 @@ export function useListScreen() {
         type,
         search,
         tag,
+        workflow,
         reminder,
         hideCompleted,
         sort,
@@ -155,6 +160,9 @@ export function useListScreen() {
         toggleTag: (id: string) => {
             update({ tag: tag.includes(id) ? tag.filter((one) => one !== id) : [...tag, id] });
         },
+        setWorkflow: (next: string) => {
+            update({ workflow: next || null });
+        },
         setReminder: (next: 'with' | 'without' | null) => {
             update({ reminder: next });
         },
@@ -171,6 +179,7 @@ export function useListScreen() {
             update({
                 search: null,
                 tag: [],
+                workflow: null,
                 reminder: null,
                 hideCompleted: null,
                 sort: null,
@@ -181,7 +190,11 @@ export function useListScreen() {
             });
         },
         activeCount:
-            (search ? 1 : 0) + tag.length + (reminder ? 1 : 0) + (dateQuick !== 'custom' ? 1 : 0),
+            (search ? 1 : 0) +
+            tag.length +
+            (workflow ? 1 : 0) +
+            (reminder ? 1 : 0) +
+            (dateQuick !== 'custom' ? 1 : 0),
     };
 }
 

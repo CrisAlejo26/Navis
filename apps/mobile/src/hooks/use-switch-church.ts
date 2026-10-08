@@ -12,6 +12,8 @@ const scopedPrefixes = new Set([
     'local-tasks',
     'local-habits',
     'local-task-tags',
+    'local-workflows',
+    'local-task-time',
     'local-tables',
     'believers',
     'calendar',

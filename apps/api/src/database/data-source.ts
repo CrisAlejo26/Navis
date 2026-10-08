@@ -53,6 +53,8 @@ import { HabitReminder } from '../tasks/habit-reminder.entity';
 import { HabitTag } from '../tasks/habit-tag.entity';
 import { Habit } from '../tasks/habit.entity';
 import { Tag } from '../tasks/tag.entity';
+import { TaskTimeEntry } from '../tasks/task-time-entry.entity';
+import { Workflow } from '../tasks/workflow.entity';
 import { TaskOccurrence } from '../tasks/task-occurrence.entity';
 import { TaskReminderTag } from '../tasks/task-reminder-tag.entity';
 import { TaskReminder } from '../tasks/task-reminder.entity';
@@ -115,6 +117,8 @@ const entities = [
     MessageAttachment,
     MessageReaction,
     Tag,
+    Workflow,
+    TaskTimeEntry,
     Task,
     TaskTag,
     TaskOccurrence,

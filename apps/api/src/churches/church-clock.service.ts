@@ -17,6 +17,12 @@ import { Church } from './church.entity';
 export class ChurchClockService {
     constructor(@InjectRepository(Church) private readonly churches: Repository<Church>) {}
 
+    /** La zona horaria de la iglesia, o UTC si no existe (mismo criterio que `today`). */
+    async timezone(churchId: string): Promise<string> {
+        const church = await this.churches.findOne({ where: { id: churchId } });
+        return church?.timezone ?? 'UTC';
+    }
+
     async today(churchId: string, now = new Date()): Promise<IsoDate> {
         const church = await this.churches.findOne({ where: { id: churchId } });
         // Sin iglesia no hay huso; el día del servidor es mejor que ninguno.

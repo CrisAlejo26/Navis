@@ -9,6 +9,7 @@ import type {
     Task,
     TaskOccurrence,
     TaskStreak,
+    WorkflowWithCount,
 } from '@navis/shared';
 import { addDays } from '@navis/shared';
 import { toNodeHandler } from 'better-auth/node';
@@ -413,6 +414,185 @@ describe('Tareas y hábitos (e2e)', () => {
             expect(
                 body<Task>(await get(`/api/v1/tasks/${second.id}`).expect(200)).manualOrder,
             ).toBe(0);
+        });
+    });
+
+    describe('el límite de una tarea (Fase 7a)', () => {
+        it('guarda «vence el» y el tiempo máximo, y los devuelve en la plantilla y el rango', async () => {
+            const due = addDays(today, 3);
+            const created = body<Task>(
+                await post('/api/v1/tasks', {
+                    title: 'Con límite',
+                    date: today,
+                    dueDate: due,
+                    inProgressDeadline: `${today}T18:00`,
+                }).expect(201),
+            );
+            const template = body<Task>(await get(`/api/v1/tasks/${created.id}`).expect(200));
+            expect(template.dueDate).toBe(due);
+            expect(template.inProgressDeadline).toMatch(/^\d{4}-\d{2}-\d{2}T/);
+            const range = body<Paginated<TaskOccurrence>>(
+                await get(`/api/v1/tasks?from=${today}&to=${today}&hideCompleted=false&limit=100`),
+            );
+            const row = range.items.find((one) => one.taskId === created.id);
+            expect(row?.dueDate).toBe(due);
+            expect(row?.inProgressDeadline).toBeTruthy();
+        });
+
+        it('se puede quitar con null y no se cuela en las demás tareas', async () => {
+            const created = body<Task>(
+                await post('/api/v1/tasks', {
+                    title: 'Quitar límite',
+                    date: today,
+                    dueDate: addDays(today, 1),
+                }).expect(201),
+            );
+            const edited = body<Task>(
+                await patch(`/api/v1/tasks/${created.id}`, { dueDate: null }).expect(200),
+            );
+            expect(edited.dueDate).toBeNull();
+            const plain = body<Task>(
+                await post('/api/v1/tasks', { title: 'Sin límite', date: today }).expect(201),
+            );
+            expect(plain.dueDate ?? null).toBeNull();
+        });
+
+        it('rechaza un límite anterior al día de la tarea y un límite en una serie', async () => {
+            await post('/api/v1/tasks', {
+                title: 'Mal límite',
+                date: today,
+                dueDate: addDays(today, -1),
+            }).expect(422);
+            await post('/api/v1/tasks', {
+                title: 'Serie con límite',
+                date: today,
+                isRecurring: true,
+                repeatFreq: 'diaria',
+                dueDate: addDays(today, 5),
+            }).expect(422);
+            const plain = body<Task>(
+                await post('/api/v1/tasks', {
+                    title: 'A serie',
+                    date: today,
+                    dueDate: today,
+                }).expect(201),
+            );
+            await patch(`/api/v1/tasks/${plain.id}`, { dueDate: addDays(today, -2) }).expect(422);
+        });
+
+        it('convertir una tarea con límite en serie lo borra', async () => {
+            const created = body<Task>(
+                await post('/api/v1/tasks', {
+                    title: 'Se vuelve serie',
+                    date: today,
+                    dueDate: addDays(today, 2),
+                }).expect(201),
+            );
+            await patch(`/api/v1/tasks/${created.id}`, {
+                isRecurring: true,
+                repeatFreq: 'diaria',
+                dueDate: null,
+            }).expect(200);
+            const after = body<Task>(await get(`/api/v1/tasks/${created.id}`).expect(200));
+            expect(after.dueDate).toBeNull();
+        });
+    });
+
+    describe('los flujos de trabajo (Fase 7b)', () => {
+        const createFlow = async (name: string, accent = '#2140cf') =>
+            body<WorkflowWithCount>(
+                await post('/api/v1/workflows', {
+                    name,
+                    description: 'Del domingo',
+                    accent,
+                }).expect(201),
+            );
+
+        it('se crean, se editan y salen en la lista con su recuento', async () => {
+            const flow = await createFlow('Predicación');
+            expect(flow).toMatchObject({ name: 'Predicación', accent: '#2140cf', count: 0 });
+            const edited = body<WorkflowWithCount>(
+                await patch(`/api/v1/workflows/${flow.id}`, {
+                    name: 'Predicación 2',
+                    description: null,
+                }).expect(200),
+            );
+            expect(edited).toMatchObject({ name: 'Predicación 2', description: null });
+            const list = body<WorkflowWithCount[]>(await get('/api/v1/workflows').expect(200));
+            expect(list.map((row) => row.id)).toContain(flow.id);
+        });
+
+        it('no admite dos con el mismo nombre ni un color inválido', async () => {
+            await createFlow('Repetido');
+            await post('/api/v1/workflows', { name: 'Repetido', accent: '#2140cf' }).expect(409);
+            await post('/api/v1/workflows', { name: 'Mal color', accent: 'rojo' }).expect(400);
+            await post('/api/v1/workflows', { name: '', accent: '#2140cf' }).expect(400);
+        });
+
+        it('una tarea lleva su flujo en la plantilla, el rango y el filtro', async () => {
+            const flow = await createFlow('Visitas');
+            const inFlow = body<Task>(
+                await post('/api/v1/tasks', {
+                    title: 'Con flujo',
+                    date: today,
+                    workflowId: flow.id,
+                }).expect(201),
+            );
+            await post('/api/v1/tasks', { title: 'Sin flujo', date: today }).expect(201);
+            const template = body<Task>(await get(`/api/v1/tasks/${inFlow.id}`).expect(200));
+            expect(template.workflow).toMatchObject({ id: flow.id, name: 'Visitas' });
+            const filtered = body<Paginated<TaskOccurrence>>(
+                await get(
+                    `/api/v1/tasks?from=${today}&to=${today}&hideCompleted=false&limit=100&workflowId=${flow.id}`,
+                ).expect(200),
+            );
+            expect(filtered.items.map((row) => row.taskId)).toEqual([inFlow.id]);
+            expect(filtered.items[0]?.workflow?.name).toBe('Visitas');
+            const list = body<WorkflowWithCount[]>(await get('/api/v1/workflows').expect(200));
+            expect(list.find((row) => row.id === flow.id)?.count).toBe(1);
+        });
+
+        it('una tarea solo puede llevar un flujo propio y se le puede quitar', async () => {
+            const flow = await createFlow('Quitar');
+            const task = body<Task>(
+                await post('/api/v1/tasks', {
+                    title: 'Quitar flujo',
+                    date: today,
+                    workflowId: flow.id,
+                }).expect(201),
+            );
+            await post('/api/v1/tasks', {
+                title: 'Flujo ajeno',
+                date: today,
+                workflowId: '00000000-0000-4000-8000-000000000000',
+            }).expect(404);
+            await patch(`/api/v1/tasks/${task.id}`, {
+                workflowId: '00000000-0000-4000-8000-000000000000',
+            }).expect(404);
+            await patch(`/api/v1/tasks/${task.id}`, { workflowId: null }).expect(200);
+            expect(
+                body<Task>(await get(`/api/v1/tasks/${task.id}`).expect(200)).workflow ?? null,
+            ).toBeNull();
+        });
+
+        it('borrar un flujo deja sus tareas sin flujo y no las borra', async () => {
+            const flow = await createFlow('Efímero');
+            const task = body<Task>(
+                await post('/api/v1/tasks', {
+                    title: 'Sobrevive',
+                    date: today,
+                    workflowId: flow.id,
+                }).expect(201),
+            );
+            await del(`/api/v1/workflows/${flow.id}`).expect(200);
+            const after = body<Task>(await get(`/api/v1/tasks/${task.id}`).expect(200));
+            expect(after.title).toBe('Sobrevive');
+            expect(after.workflow ?? null).toBeNull();
+            await patch(`/api/v1/workflows/${flow.id}`, { name: 'Fantasma' }).expect(404);
+        });
+
+        it('sin sesión no responde', async () => {
+            await request(app.getHttpServer()).get('/api/v1/workflows').expect(401);
         });
     });
 

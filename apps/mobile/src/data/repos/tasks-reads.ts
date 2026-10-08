@@ -59,6 +59,11 @@ async function expandTasks(
                     reminder: task.reminder,
                     createdAt: task.createdAt,
                     ...(task.manualOrder == null ? {} : { manualOrder: task.manualOrder }),
+                    ...(task.workflow ? { workflow: task.workflow } : {}),
+                    ...(task.dueDate ? { dueDate: task.dueDate } : {}),
+                    ...(task.inProgressDeadline
+                        ? { inProgressDeadline: task.inProgressDeadline }
+                        : {}),
                 });
             }
         if (templates.length < 100) break;

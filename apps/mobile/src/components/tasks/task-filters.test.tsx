@@ -3,6 +3,9 @@ import { TaskFiltersScreen } from './task-filters';
 import { defaultFilters } from '@/lib/tasks/filters';
 jest.mock('expo-router', () => ({ router: { back: jest.fn() } }));
 jest.mock('@/hooks/use-tags', () => ({ useTaskTags: () => ({ data: [], isPending: false }) }));
+jest.mock('@/hooks/use-workflows', () => ({
+    useWorkflows: () => ({ data: [], isPending: false }),
+}));
 jest.mock('@/hooks/use-activities', () => ({
     useActivities: () => ({ data: { pages: [{ total: 3 }] }, isPending: false, isError: false }),
 }));

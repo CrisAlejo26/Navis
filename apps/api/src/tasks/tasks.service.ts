@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 
 import type { CreateTaskDto, UpdateTaskDto } from './dto/task.dto';
 import { TagsService } from './tags.service';
+import { WorkflowsService } from './workflows.service';
 import { TaskReminderTag } from './task-reminder-tag.entity';
 import { TaskReminder } from './task-reminder.entity';
 import { TaskTag } from './task-tag.entity';
@@ -24,10 +25,22 @@ export class TasksService {
         @InjectRepository(TaskReminderTag)
         private readonly reminderTags: Repository<TaskReminderTag>,
         private readonly tags: TagsService,
+        private readonly workflows: WorkflowsService,
     ) {}
 
     async require(churchId: string, ownerId: string, id: string): Promise<Task> {
         const task = await this.tasks.findOne({ where: { id, churchId, ownerId } });
+        if (!task) throw new NotFoundException('Esa tarea no existe');
+        return task;
+    }
+
+    /** Como `require`, pero también una tarea borrada: su tiempo trabajado se conserva (D18). */
+    findAny(churchId: string, ownerId: string, id: string): Promise<Task | null> {
+        return this.tasks.findOne({ where: { id, churchId, ownerId }, withDeleted: true });
+    }
+
+    async requireAny(churchId: string, ownerId: string, id: string): Promise<Task> {
+        const task = await this.findAny(churchId, ownerId, id);
         if (!task) throw new NotFoundException('Esa tarea no existe');
         return task;
     }
@@ -44,7 +57,9 @@ export class TasksService {
             dto.repeatEndDate,
             dto.repeatEndCount,
         );
+        checkLimit(dto.isRecurring, dto.date, dto.dueDate, dto.inProgressDeadline);
         await this.tags.requireAll(churchId, ownerId, [...dto.tagIds, ...dto.reminderTagIds]);
+        await this.workflows.requireOrNone(churchId, ownerId, dto.workflowId);
 
         const task = await this.tasks.save(
             this.tasks.create({
@@ -65,6 +80,11 @@ export class TasksService {
                 repeatEndDate: dto.repeatEndType === 'fecha' ? (dto.repeatEndDate ?? null) : null,
                 repeatEndCount:
                     dto.repeatEndType === 'cantidad' ? (dto.repeatEndCount ?? null) : null,
+                workflowId: dto.workflowId ?? null,
+                dueDate: dto.dueDate ?? null,
+                inProgressDeadline: dto.inProgressDeadline
+                    ? new Date(dto.inProgressDeadline)
+                    : null,
             }),
         );
 
@@ -94,8 +114,19 @@ export class TasksService {
             dto.repeatEndCount ?? task.repeatEndCount ?? undefined,
         );
 
+        const dueDate = dto.dueDate === undefined ? task.dueDate : dto.dueDate;
+        const deadline =
+            dto.inProgressDeadline === undefined
+                ? (task.inProgressDeadline?.toISOString() ?? null)
+                : dto.inProgressDeadline;
+        checkLimit(isRecurring, dto.date ?? task.date, dueDate, deadline);
+
         const tagIds = [...(dto.tagIds ?? []), ...(dto.reminderTagIds ?? [])];
         if (tagIds.length > 0) await this.tags.requireAll(churchId, ownerId, tagIds);
+        if (dto.workflowId !== undefined) {
+            await this.workflows.requireOrNone(churchId, ownerId, dto.workflowId);
+            task.workflowId = dto.workflowId;
+        }
 
         if (dto.title !== undefined) task.title = dto.title;
         if (dto.description !== undefined) task.description = dto.description ?? null;
@@ -113,6 +144,9 @@ export class TasksService {
         task.repeatEndCount =
             endType === 'cantidad' ? (dto.repeatEndCount ?? task.repeatEndCount) : null;
         if (!isRecurring && task.status === null) task.status = 'pendiente';
+        // Una serie no tiene límite: convertir una tarea en serie lo borra.
+        task.dueDate = isRecurring ? null : dueDate;
+        task.inProgressDeadline = isRecurring || !deadline ? null : new Date(deadline);
 
         await this.tasks.save(task);
         if (dto.tagIds) await this.setTags(task.id, dto.tagIds);
@@ -140,12 +174,13 @@ export class TasksService {
     /** La plantilla entera, con sus etiquetas y su recordatorio (§9.6). */
     async view(churchId: string, ownerId: string, id: string): Promise<TaskView> {
         const task = await this.require(churchId, ownerId, id);
-        const [tagLinks, reminder] = await Promise.all([
+        const [tagLinks, reminder, workflows] = await Promise.all([
             this.taskTags.find({ where: { taskId: task.id }, relations: { tag: true } }),
             this.reminders.findOne({
                 where: { taskId: task.id },
                 relations: { tags: { tag: true } },
             }),
+            this.workflows.refs(task.workflowId ? [task.workflowId] : []),
         ]);
 
         return {
@@ -165,6 +200,9 @@ export class TasksService {
             repeatPauses: task.repeatPauses,
             repeatStoppedAt: task.repeatStoppedAt,
             manualOrder: task.manualOrder,
+            dueDate: task.dueDate,
+            inProgressDeadline: task.inProgressDeadline?.toISOString() ?? null,
+            workflow: (task.workflowId && workflows.get(task.workflowId)) || null,
             status: task.status,
             completedAt: task.completedAt?.toISOString() ?? null,
             tags: tagLinks.map((link) => ({
@@ -226,6 +264,21 @@ export class TasksService {
 /** `date`+`time` de la tarea, o las nueve de la mañana si no tiene hora. */
 function defaultReminder(date: string, time: string | null): string {
     return `${date}T${time ?? '09:00'}`;
+}
+
+/** Una serie no tiene límite, y el límite no puede ser anterior al día de la tarea. */
+function checkLimit(
+    isRecurring: boolean,
+    date: string,
+    dueDate: string | null | undefined,
+    deadline: string | null | undefined,
+): void {
+    if (isRecurring && (dueDate || deadline))
+        throw new UnprocessableEntityException('Una serie no tiene fecha límite');
+    if (dueDate && dueDate < date)
+        throw new UnprocessableEntityException(
+            'El límite no puede ser anterior al día de la tarea',
+        );
 }
 
 function checkRepeat(

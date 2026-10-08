@@ -11,6 +11,8 @@ import { useActivityEditor } from './use-activity-editor';
 import { ActivityBlock } from './activity-block';
 import { ActivityScheduleFields } from './activity-schedule-fields';
 import { ActivityReminderFields } from './activity-reminder-fields';
+import { ActivityLimitFields } from './activity-limit-fields';
+import { ActivityWorkflowField } from './activity-workflow-field';
 import { TaskTagPicker } from './task-tag-picker';
 import type { ItemKind } from '@/lib/tasks/editor-draft';
 export function ActivityEditor({
@@ -71,7 +73,22 @@ export function ActivityEditor({
                     busy={f.busy}
                 />
             </ActivityBlock>
+            {d.kind === 'task' && d.repeatFreq === 'ninguna' && (
+                <ActivityBlock title={t('tasks.limitSection')}>
+                    <ActivityLimitFields
+                        draft={d}
+                        change={f.change}
+                        timezone={f.timezone}
+                        busy={f.busy}
+                    />
+                </ActivityBlock>
+            )}
             <ActivityEditorState state={f} />
+            {d.kind === 'task' && (
+                <ActivityBlock title={t('tasks.workflow')}>
+                    <ActivityWorkflowField draft={d} change={f.change} busy={f.busy} />
+                </ActivityBlock>
+            )}
             <ActivityBlock title={t('tasks.tags')}>
                 <TaskTagPicker
                     value={d.tagIds}

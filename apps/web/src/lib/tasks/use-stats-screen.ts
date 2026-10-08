@@ -17,5 +17,5 @@ export function useStatsScreen() {
     const from = addDays(today, -DAYS_BACK[range]);
     const stats = useTaskStats(api, { from, to: today });
 
-    return { range, setRange, today, stats: stats.data, isLoading: stats.isLoading };
+    return { range, setRange, today, from, stats: stats.data, isLoading: stats.isLoading };
 }

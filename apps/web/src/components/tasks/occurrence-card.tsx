@@ -1,10 +1,18 @@
-import type { TagRef, TaskPriority } from '@navis/shared';
-import { Bell, Check } from 'lucide-react';
+import {
+    isTaskOverdue,
+    todayIn,
+    type TagRef,
+    type TaskPriority,
+    type WorkflowRef,
+} from '@navis/shared';
+import { Bell, CalendarClock, Check } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import { TagChip } from '@/components/tasks/tag-chip';
+import { WorkflowChip } from '@/components/tasks/workflow-chip';
 import { accentVars } from '@/lib/accents';
 import { cn } from '@/lib/cn';
+import { formatDay } from '@/lib/format';
 import { PRIORITY_ACCENT, PRIORITY_LABEL_KEY } from '@/lib/tasks/task-format';
 import { TASK_ICON_MAP } from '@/lib/tasks/icon-map';
 
@@ -16,6 +24,10 @@ export interface OccurrenceCardProps {
     /** Solo las tareas la llevan (D1). */
     priority?: TaskPriority;
     hasReminder?: boolean;
+    /** «Vence el» (Fase 7a): solo las tareas que no se repiten lo llevan. */
+    dueDate?: string | null;
+    /** El flujo de trabajo de una tarea (Fase 7b). */
+    workflow?: WorkflowRef | null;
     onToggle: () => void;
     onOpen: () => void;
     isPending?: boolean;
@@ -36,6 +48,8 @@ export function OccurrenceCard({
     completed,
     priority,
     hasReminder = false,
+    dueDate = null,
+    workflow = null,
     onToggle,
     onOpen,
     isPending = false,
@@ -44,6 +58,10 @@ export function OccurrenceCard({
     const { t } = useTranslation();
     const first = tags[0];
     const Icon = first ? TASK_ICON_MAP[first.icon] : null;
+    const overdue = isTaskOverdue(
+        { dueDate, status: completed ? 'completada' : 'pendiente' },
+        todayIn(Intl.DateTimeFormat().resolvedOptions().timeZone),
+    );
 
     return (
         <li
@@ -115,6 +133,19 @@ export function OccurrenceCard({
                     <span className="gap-2 text-xs flex flex-wrap items-center text-muted-foreground">
                         {time && <span className="tabular-nums">{time}</span>}
                         {hasReminder && <Bell size={11} aria-hidden />}
+                        {dueDate && (
+                            <span
+                                className={cn(
+                                    'gap-1 inline-flex items-center',
+                                    overdue && 'font-medium text-destructive',
+                                )}
+                            >
+                                <CalendarClock size={11} aria-hidden />
+                                {overdue
+                                    ? `${t('tasks.overdue')} · ${formatDay(dueDate, 'short')}`
+                                    : t('tasks.dueOn', { date: formatDay(dueDate, 'short') })}
+                            </span>
+                        )}
                         {priority && (
                             <span
                                 className="font-medium"
@@ -123,6 +154,7 @@ export function OccurrenceCard({
                                 {t(PRIORITY_LABEL_KEY[priority])}
                             </span>
                         )}
+                        {workflow && <WorkflowChip workflow={workflow} size="sm" />}
                         {tags.slice(0, 2).map((tag) => (
                             <TagChip key={tag.id} tag={tag} size="sm" />
                         ))}

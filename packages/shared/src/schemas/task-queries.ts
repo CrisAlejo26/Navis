@@ -51,6 +51,8 @@ export interface TasksQuery {
     /** Repetible: varias etiquetas suman. */
     tag?: readonly string[];
     reminder?: 'with' | 'without';
+    /** Fase 7b: solo las tareas de ese flujo. */
+    workflowId?: string;
     hideCompleted?: boolean;
     sort?: TaskSort;
 }

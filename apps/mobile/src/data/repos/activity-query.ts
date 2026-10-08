@@ -32,6 +32,8 @@ export function matchingActivities<T extends TaskOccurrence | HabitOccurrence>(
             return false;
         if (query.tag?.length && !item.tags.some((tag) => query.tag?.includes(tag.id)))
             return false;
+        if (query.workflowId && !('workflow' in item && item.workflow?.id === query.workflowId))
+            return false;
         if (query.statuses?.length && !query.statuses.includes(item.status)) return false;
         if (
             'priority' in item &&

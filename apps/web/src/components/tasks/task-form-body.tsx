@@ -5,6 +5,8 @@ import { useTranslation } from 'react-i18next';
 
 import { RepeatFields, type RepeatDraft } from '@/components/tasks/repeat-fields';
 import { TagPicker } from '@/components/tasks/tag-picker';
+import { TaskLimitFields } from '@/components/tasks/task-limit-fields';
+import { WorkflowPicker } from '@/components/tasks/workflow-picker';
 import { FormError } from '@/components/auth/form-error';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -56,6 +58,9 @@ export function TaskFormBody({
               }
             : DEFAULT_REPEAT,
     );
+    const [workflowId, setWorkflowId] = useState(task?.workflow?.id ?? '');
+    const [dueDate, setDueDate] = useState(task?.dueDate ?? '');
+    const [deadline, setDeadline] = useState(toLocalInput(task?.inProgressDeadline ?? null));
     const [tagIds, setTagIds] = useState(task?.tags.map((tag) => tag.id) ?? []);
     const [reminderEnabled, setReminderEnabled] = useState(task?.reminder?.enabled ?? true);
     const [reminderAt, setReminderAt] = useState(toLocalInput(task?.reminder?.remindAt ?? null));
@@ -87,6 +92,9 @@ export function TaskFormBody({
             repeatEndDate: isRecurring && repeat.endType === 'fecha' ? repeat.endDate : undefined,
             repeatEndCount:
                 isRecurring && repeat.endType === 'cantidad' ? repeat.endCount : undefined,
+            workflowId: workflowId || null,
+            dueDate: isRecurring ? null : dueDate || null,
+            inProgressDeadline: isRecurring ? null : deadline || null,
             tagIds,
             reminderEnabled,
             reminderAt: reminderEnabled ? reminderAt || undefined : undefined,
@@ -189,6 +197,18 @@ export function TaskFormBody({
             </div>
 
             {isRecurring && <RepeatFields value={repeat} onChange={setRepeat} />}
+
+            {!isRecurring && (
+                <TaskLimitFields
+                    dueDate={dueDate}
+                    deadline={deadline}
+                    minDate={task?.date ?? defaultDate}
+                    onDueDate={setDueDate}
+                    onDeadline={setDeadline}
+                />
+            )}
+
+            <WorkflowPicker value={workflowId} onChange={setWorkflowId} />
 
             <TagPicker value={tagIds} onChange={setTagIds} />
 

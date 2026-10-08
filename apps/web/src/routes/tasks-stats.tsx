@@ -6,6 +6,7 @@ import { Faro } from '@/components/tasks/faro';
 import { PriorityBars } from '@/components/tasks/priority-bars';
 import { StreakGrid } from '@/components/tasks/streak-grid';
 import { TagBars } from '@/components/tasks/tag-bars';
+import { TimeSummaryCard } from '@/components/tasks/time-summary-card';
 import { Card, CardTitle } from '@/components/ui/card';
 import { PageSkeleton } from '@/components/ui/page-skeleton';
 import { cn } from '@/lib/cn';
@@ -105,6 +106,8 @@ export function TasksStatsPage() {
                     <TagBars data={stats.byTag} />
                 </Card>
             </div>
+
+            <TimeSummaryCard from={screen.from} to={screen.today} />
 
             <Card className="gap-3 flex flex-col">
                 <CardTitle className="text-sm">{t('tasks.streak')}</CardTitle>

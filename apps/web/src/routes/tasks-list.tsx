@@ -9,6 +9,7 @@ import { ListCalendarView } from '@/components/tasks/list-calendar-view';
 import { ListToolbar } from '@/components/tasks/list-toolbar';
 import { OccurrenceCard } from '@/components/tasks/occurrence-card';
 import { OccurrenceDetailDialog } from '@/components/tasks/occurrence-detail-dialog';
+import { RunningTimerBar } from '@/components/tasks/running-timer-bar';
 import { TaskForm } from '@/components/tasks/task-form';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -85,6 +86,8 @@ export function TasksListPage() {
                 </div>
             </header>
 
+            <RunningTimerBar />
+
             <Card>
                 <ListToolbar screen={screen} />
             </Card>
@@ -124,6 +127,8 @@ export function TasksListPage() {
                                             tags={fields.tags}
                                             completed={fields.status === 'completada'}
                                             priority={fields.priority ?? undefined}
+                                            dueDate={fields.dueDate}
+                                            workflow={fields.workflow}
                                             hasReminder={item.occurrence.reminder?.enabled ?? false}
                                             isPending={
                                                 setTaskStatus.isPending || setHabitStatus.isPending

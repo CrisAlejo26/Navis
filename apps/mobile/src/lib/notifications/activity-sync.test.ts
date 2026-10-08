@@ -1,10 +1,11 @@
 import '@/data/test-support';
 import { createHabit } from '@/data/repos/habits-repo';
-import { createTask, deleteTask, updateTask } from '@/data/repos/tasks-repo';
+import { createTask, deleteTask, setTaskStatus, updateTask } from '@/data/repos/tasks-repo';
 import { habitInput, taskInput, tasksFixture } from '@/data/repos/tasks-test-support';
 import { useLocalSession } from '@/stores/local-session';
 import { useNotificationSettings } from '@/stores/notification-settings';
 import { activityReminderKey } from './plan-activity-reminders';
+import { deadlineAlertKey } from './plan-deadline-alerts';
 import { prepareNotice } from './prepare-notice';
 import { syncNotifications } from './sync';
 import { memoryScheduler } from './test-support/memory-scheduler';
@@ -78,6 +79,39 @@ describe('sincronizar avisos de tareas y hábitos de punta a punta', () => {
     it('con el interruptor general apagado no queda ningún aviso', async () => {
         await createTask(c.north, { ...taskInput, ...withReminder });
         useNotificationSettings.setState({ enabled: false });
+        await syncNotifications();
+        expect(keys()).toEqual([]);
+    });
+
+    it('la alarma de límite existe solo mientras la tarea está en progreso', async () => {
+        const id = await createTask(c.north, {
+            ...taskInput,
+            reminderEnabled: false,
+            inProgressDeadline: '2099-02-01T08:00:00.000Z',
+        });
+        await syncNotifications();
+        expect(keys()).toEqual([]);
+
+        await setTaskStatus(c.north, id, taskInput.date, 'en_progreso');
+        await syncNotifications();
+        expect(keys()).toEqual([deadlineAlertKey(id)]);
+        expect(mockScheduler.scheduled.get(deadlineAlertKey(id))?.fireAt).toBe(
+            new Date('2099-02-01T08:00:00.000Z').getTime(),
+        );
+
+        await setTaskStatus(c.north, id, taskInput.date, 'completada');
+        await syncNotifications();
+        expect(keys()).toEqual([]);
+    });
+
+    it('el interruptor de tareas apaga también la alarma de límite', async () => {
+        const id = await createTask(c.north, {
+            ...taskInput,
+            reminderEnabled: false,
+            inProgressDeadline: '2099-02-01T08:00:00.000Z',
+        });
+        await setTaskStatus(c.north, id, taskInput.date, 'en_progreso');
+        useNotificationSettings.setState({ taskReminders: false });
         await syncNotifications();
         expect(keys()).toEqual([]);
     });
