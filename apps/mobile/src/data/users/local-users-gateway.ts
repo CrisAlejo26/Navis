@@ -4,7 +4,7 @@ import { getDb } from '../db';
 import { findRoleBySlug } from './role-rows';
 import { createRole, listRoles, removeRole, updateRole } from './roles-repo';
 import { removeUser } from './user-removal';
-import { createUser, listUsers, setPassword, updateUser } from './users-repo';
+import { createUser, getUser, listUsers, setPassword, updateUser } from './users-repo';
 import { UsersError, type Asker, type UsersGateway } from './users-gateway';
 
 async function roleOf(asker: Asker): Promise<MyRole> {
@@ -33,6 +33,10 @@ export const localUsersGateway: UsersGateway = {
     async listUsers(asker, query) {
         await requirePermission(asker, 'users.view');
         return listUsers(asker, query);
+    },
+    async getUser(asker, id) {
+        await requirePermission(asker, 'users.view');
+        return getUser(asker, id);
     },
     async createUser(asker, input) {
         await requirePermission(asker, 'users.manage');

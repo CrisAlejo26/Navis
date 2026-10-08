@@ -14,13 +14,17 @@ export function RoleAvatar({
     name,
     color,
     size = 54,
+    onScene = false,
 }: {
     name: string;
     color: string;
     size?: number;
+    /** Sobre un degradado del propio color: anillo y letras blancos, o se perderían. */
+    onScene?: boolean;
 }) {
     const p = useUserPalette();
-    const ink = readableAccent(color, p.card, p.foreground, 0.16);
+    const ink = onScene ? '#ffffff' : readableAccent(color, p.card, p.foreground, 0.16),
+        ring = onScene ? '#ffffff' : color;
     return (
         <View
             aria-hidden
@@ -29,7 +33,7 @@ export function RoleAvatar({
                 height: size,
                 borderRadius: size / 2,
                 borderWidth: 2.5,
-                borderColor: color,
+                borderColor: ring,
                 padding: 3,
             }}
         >
@@ -37,7 +41,7 @@ export function RoleAvatar({
                 style={{
                     flex: 1,
                     borderRadius: size / 2,
-                    backgroundColor: hexAlpha(color, 0.16),
+                    backgroundColor: onScene ? 'rgba(255,255,255,0.18)' : hexAlpha(color, 0.16),
                     alignItems: 'center',
                     justifyContent: 'center',
                 }}

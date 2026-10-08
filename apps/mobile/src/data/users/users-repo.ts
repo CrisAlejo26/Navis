@@ -42,6 +42,14 @@ export async function listUsers(
     return queryUsers(db, ctx, query);
 }
 
+/** La propia cuenta siempre se puede leer; las demás, solo si hay una iglesia en común. */
+export async function getUser(asker: Asker, id: string): Promise<ManagedUser> {
+    const db = await getDb();
+    const ctx = await askerContext(db, asker);
+    if (id !== ctx.userId) await loadTarget(db, ctx, id);
+    return loadUser(db, id);
+}
+
 export async function createUser(
     asker: Asker,
     input: CreateManagedUserInput,

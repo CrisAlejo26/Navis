@@ -21,3 +21,21 @@ Maestro no se ha instalado: el plan exige autorización explícita para esa
 herramienta. Este guion es la alternativa adb prevista en el plan.
 
 En el emulador de QA se desactivó la escritura con lápiz de Gboard para evitar que su tutorial intercepte input text de adb. No afecta al cuaderno.
+
+## Usuarios
+
+```powershell
+python apps/mobile/e2e/users_flow.py --locale es
+python apps/mobile/e2e/users_flow.py --locale en
+```
+
+Mismos requisitos que el cuaderno, y la sesión tiene que ser de un pastor (o
+superadmin): sin `users.manage` no hay botón de alta. Crea una cuenta de
+prueba (`qa<marca de tiempo>@navis.app`), la abre, edita su nombre, cambia su
+contraseña y la elimina, con capturas en docs/qa/usuarios-movil/flujo-{idioma}.
+Si falla a mitad, retirar esa cuenta desde la ficha. El texto va por
+`adb input text`: nombres sin acentos.
+
+Sin compilación nativa conectada a Metro, el flujo de usuarios también corre en
+Expo Go: `NAVIS_EXPO_GO=1 python apps/mobile/e2e/users_flow.py` (Metro normal, no
+`--dev-client`). Avisos de Expo Go como el de Reanimated se cierran antes.

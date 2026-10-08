@@ -1,4 +1,4 @@
-import { Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import type { ManagedUser } from '@navis/shared';
 
@@ -14,17 +14,21 @@ export function UserCard({
     roleLabel,
     color,
     isMe,
+    onPress,
 }: {
     user: ManagedUser;
     roleLabel: string;
     color: string;
     isMe: boolean;
+    onPress: () => void;
 }) {
     const p = useUserPalette(),
         { t } = useTranslation();
     return (
-        <View
-            accessible
+        <Pressable
+            accessibilityRole="button"
+            testID={`user-card-${user.email}`}
+            onPress={onPress}
             accessibilityLabel={`${user.name}, ${roleLabel}, ${user.email}`}
             style={[
                 {
@@ -66,6 +70,6 @@ export function UserCard({
                     </Text>
                 </View>
             </View>
-        </View>
+        </Pressable>
     );
 }

@@ -23,6 +23,7 @@ export function UsersHeader({ state }: { state: UsersDirectoryState }) {
                 }))}
             />
             <SearchField
+                testID="users-search"
                 value={state.search}
                 onChangeText={state.setSearch}
                 placeholder={t('roles.searchUsers')}

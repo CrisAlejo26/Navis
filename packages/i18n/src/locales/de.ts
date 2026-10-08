@@ -340,6 +340,15 @@ export const de = {
         joinedOn: 'Seit {{date}}',
         loadFailed: 'Die Konten konnten nicht geladen werden.',
         accessTo: 'mit Zugang zu {{church}}',
+        fieldName: 'Gib einen Namen ein (mindestens 2 Buchstaben)',
+        fieldEmail: 'Gib eine gültige E-Mail-Adresse ein',
+        fieldRole: 'Wähle eine Rolle',
+        passwordUpdated: 'Passwort geändert',
+        emailChangeNeedsPassword:
+            'Mit einer neuen E-Mail-Adresse gilt das aktuelle Passwort nicht mehr: Lege ein neues fest.',
+        transferUnavailable:
+            'Eine Gemeinde zu übertragen ist auf dem Telefon noch nicht möglich: Sie kann nur gelöscht werden.',
+        deleteWithChurches: 'Konto und seine Gemeinden löschen',
         newUser: 'Benutzer anlegen',
         newRole: 'Rolle anlegen',
         editRole: 'Rolle bearbeiten',

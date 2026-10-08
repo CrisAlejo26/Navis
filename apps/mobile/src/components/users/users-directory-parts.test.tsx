@@ -29,15 +29,26 @@ function role(slug: string, usersCount: number): RoleRow {
 }
 
 describe('directorio de usuarios: piezas', () => {
-    it('la ficha dice quién es, su rol y cuándo entró, y marca la cuenta propia', async () => {
+    it('la ficha dice quién es, su rol y cuándo entró, marca la cuenta propia y se abre al pulsarla', async () => {
+        const open = jest.fn();
         const view = await render(
-            <UserCard user={user} roleLabel="Recepción" color="#0891b2" isMe={false} />,
+            <UserCard
+                user={user}
+                roleLabel="Recepción"
+                color="#0891b2"
+                isMe={false}
+                onPress={open}
+            />,
         );
         expect(screen.getByLabelText('Ana García, Recepción, ana@navis.app')).toBeTruthy();
         expect(screen.getByText('AG', { includeHiddenElements: true })).toBeTruthy();
         expect(screen.getByText('Recepción')).toBeTruthy();
         expect(screen.queryByText('Tú')).toBeNull();
-        await view.rerender(<UserCard user={user} roleLabel="Recepción" color="#0891b2" isMe />);
+        await view.rerender(
+            <UserCard user={user} roleLabel="Recepción" color="#0891b2" isMe onPress={open} />,
+        );
+        await fireEvent.press(screen.getByTestId('user-card-ana@navis.app'));
+        expect(open).toHaveBeenCalledTimes(1);
         expect(screen.getByText('Tú')).toBeTruthy();
     });
 

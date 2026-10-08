@@ -1,5 +1,6 @@
 import { keepPreviousData, useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import {
+    hasPermission,
     managedUsersQuerySchema,
     rolesQuerySchema,
     type ManagedUser,
@@ -93,3 +94,24 @@ export function useMyRole() {
 }
 
 export type { ManagedUser };
+
+/** Una cuenta por id, para su ficha. */
+export function useUser(id: string) {
+    const { asker, enabled } = useUsersAsker();
+    return useQuery({
+        queryKey: [...usersKey(asker), 'one', id],
+        queryFn: () => usersGateway.getUser(asker, id),
+        enabled: enabled && Boolean(id),
+    });
+}
+
+/** Qué puede hacer quien ha entrado: la interfaz oculta lo que el puerto rechazaría. */
+export function useUserPermissions() {
+    const mine = useMyRole();
+    const granted = mine.data?.permissions ?? [];
+    return {
+        slug: mine.data?.slug,
+        canManage: hasPermission(granted, 'users.manage'),
+        canManageRoles: hasPermission(granted, 'roles.manage'),
+    };
+}

@@ -329,6 +329,15 @@ export const pt = {
         joinedOn: 'Desde {{date}}',
         loadFailed: 'Não foi possível carregar as contas.',
         accessTo: 'com acesso a {{church}}',
+        fieldName: 'Escreve o nome (2 letras ou mais)',
+        fieldEmail: 'Escreve um e-mail válido',
+        fieldRole: 'Escolhe uma função',
+        passwordUpdated: 'Palavra-passe alterada',
+        emailChangeNeedsPassword:
+            'Com outro e-mail, a palavra-passe atual deixa de valer: define uma nova.',
+        transferUnavailable:
+            'Transferir uma igreja ainda não é possível no telemóvel: só se pode eliminar.',
+        deleteWithChurches: 'Eliminar a conta e as suas igrejas',
         newUser: 'Criar utilizador',
         newRole: 'Criar função',
         editRole: 'Editar a função',

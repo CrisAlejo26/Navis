@@ -331,6 +331,15 @@ export const it = {
         joinedOn: 'Dal {{date}}',
         loadFailed: 'Impossibile caricare gli account.',
         accessTo: 'con accesso a {{church}}',
+        fieldName: 'Scrivi il nome (almeno 2 lettere)',
+        fieldEmail: 'Scrivi un’email valida',
+        fieldRole: 'Scegli un ruolo',
+        passwordUpdated: 'Password cambiata',
+        emailChangeNeedsPassword:
+            'Con un’altra email la password attuale non vale più: impostane una nuova.',
+        transferUnavailable:
+            'Trasferire una chiesa non è ancora possibile dal telefono: si può solo eliminarla.',
+        deleteWithChurches: 'Elimina l’account e le sue chiese',
         newUser: 'Crea utente',
         newRole: 'Crea ruolo',
         editRole: 'Modifica il ruolo',

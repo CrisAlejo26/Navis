@@ -58,6 +58,11 @@ export class UsersError extends Error {
 
 export interface UsersGateway {
     listUsers(asker: Asker, query: ManagedUsersQuery): Promise<Paginated<ManagedUser>>;
+    /**
+     * Una cuenta por id, para la ficha. La API de hoy no tiene `GET /admin/users/:id`: el
+     * adaptador remoto lo añadirá o la sacará del listado.
+     */
+    getUser(asker: Asker, id: string): Promise<ManagedUser>;
     createUser(asker: Asker, input: CreateManagedUserInput): Promise<ManagedUser>;
     updateUser(asker: Asker, id: string, input: UpdateManagedUserInput): Promise<ManagedUser>;
     setPassword(asker: Asker, id: string, password: string): Promise<void>;

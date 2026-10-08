@@ -329,6 +329,15 @@ export const en = {
         joinedOn: 'Joined {{date}}',
         loadFailed: 'The accounts could not be loaded.',
         accessTo: 'with access to {{church}}',
+        fieldName: 'Enter a name (2 letters or more)',
+        fieldEmail: 'Enter a valid email',
+        fieldRole: 'Choose a role',
+        passwordUpdated: 'Password changed',
+        emailChangeNeedsPassword:
+            'With a new email the current password stops working: set a new one.',
+        transferUnavailable:
+            'Moving a church to another one is not available on the phone yet: it can only be deleted.',
+        deleteWithChurches: 'Delete the account and its churches',
         newUser: 'Create user',
         newRole: 'Create role',
         editRole: 'Edit role',

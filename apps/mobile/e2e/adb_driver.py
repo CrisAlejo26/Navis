@@ -1,4 +1,5 @@
 """UI-only Android driver. Does not seed or alter the application's database."""
+import os
 import re
 import subprocess
 import time
@@ -66,5 +67,7 @@ def screenshot(path):
     adb('pull', '/sdcard/navis-qa.png', str(path))
 
 def open_route(route):
-    adb('shell', 'am', 'start', '-a', 'android.intent.action.VIEW', '-d', 'navis://' + route)
+    # NAVIS_EXPO_GO=1 abre la ruta en Expo Go (Metro en el 8081 del anfitrión) en vez de en la compilación nativa.
+    prefix = 'exp://10.0.2.2:8081/--/' if os.environ.get('NAVIS_EXPO_GO') else 'navis://'
+    adb('shell', 'am', 'start', '-a', 'android.intent.action.VIEW', '-d', prefix + route)
     time.sleep(1)
