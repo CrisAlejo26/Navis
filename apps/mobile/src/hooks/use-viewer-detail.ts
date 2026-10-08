@@ -34,6 +34,7 @@ export function useViewerDetail(viewer: ListViewer, onClose: () => void) {
         confirm,
         setConfirm,
         password,
+        clearPassword: () => setPassword(null),
         label,
         setLabel,
         expires,
@@ -42,7 +43,7 @@ export function useViewerDetail(viewer: ListViewer, onClose: () => void) {
         failed,
         saving: save.isPending,
         removing: remove.isPending,
-        save: () => save.mutate(undefined),
+        save: () => save.mutateAsync(undefined),
         activate: (value: boolean) => active.mutate(value),
         grant: (ids: string[]) => grants.mutate(ids),
         revoke: () =>

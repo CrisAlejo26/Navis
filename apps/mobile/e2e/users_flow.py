@@ -6,14 +6,14 @@ and deletes it. Never touches SQLite directly.
 import argparse
 import time
 from pathlib import Path
-from adb_driver import adb, find, open_route, screenshot, tap, text, wait
+from adb_driver import adb, find, open_route, reveal, screenshot, tap, text, wait
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--locale', choices=['es', 'en'], default='es')
 args = parser.parse_args()
 labels = {
-    'es': {'role_placeholder': 'Elige un rol', 'role': 'Recepción', 'password_done': 'Contraseña cambiada'},
-    'en': {'role_placeholder': 'Choose a role', 'role': 'Reception', 'password_done': 'Password changed'},
+    'es': {'tab': 'Usuarios', 'role_placeholder': 'Elige un rol', 'role': 'Recepción', 'password_done': 'Contraseña cambiada'},
+    'en': {'tab': 'Users', 'role_placeholder': 'Choose a role', 'role': 'Reception', 'password_done': 'Password changed'},
 }[args.locale]
 out = Path('docs/qa/usuarios-movil') / ('flujo-' + args.locale)
 stamp = str(int(time.time()))
@@ -43,6 +43,8 @@ def reset_state():
 
 reset_state()
 open_route('users')
+wait(labels['tab'])
+tap(labels['tab'])  # puede haberse quedado en otra pestaña
 wait('users-add')
 capture('directorio')
 
@@ -61,7 +63,8 @@ hide_keyboard()
 tap('user-save', scroll=True)
 wait('users-add')
 # La lista va por nombre y hay más cuentas: se filtra por la marca de tiempo para localizarla.
-text('users-search', stamp)
+reveal('users-search')
+text('users-search', stamp, replace=True)
 hide_keyboard()
 wait(card)
 capture('directorio-con-cuenta')

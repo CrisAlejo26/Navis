@@ -52,3 +52,14 @@ pastor no ve acciones. `roles_manage_flow.py` necesita una sesión de
 **superadministrador** (solo él tiene `roles.manage`): crea `QA Rol <marca>`,
 lo abre, lo renombra y lo borra. Capturas en `docs/qa/usuarios-movil/`. Si falla
 a mitad, borrar ese rol desde su ficha.
+
+## Accesos de lectura
+
+```powershell
+python apps/mobile/e2e/access_flow.py --locale en
+```
+
+Crea un acceso de grupo (`QA Acceso <marca>`), lo abre, lo renombra, regenera su
+contraseña y lo revoca. Necesita un pastor **dueño** de la iglesia con `lists.share`:
+es quien ve la pestaña Accesos. Capturas en `docs/qa/usuarios-movil/accesos-{idioma}`.
+Si falla a mitad, revocar ese acceso desde su ficha.

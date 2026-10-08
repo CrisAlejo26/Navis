@@ -60,6 +60,7 @@ export function ViewerFormFields({
                 />
             ) : null}
             <TextField
+                testID="viewer-label"
                 label={t('lists.viewerLabel')}
                 value={draft.label}
                 maxLength={80}
@@ -73,6 +74,7 @@ export function ViewerFormFields({
                 }
             />
             <TextField
+                testID="viewer-username"
                 label={t('lists.username')}
                 value={draft.username}
                 autoCapitalize="none"

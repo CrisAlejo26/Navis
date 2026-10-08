@@ -21,5 +21,6 @@ export function useUserPermissions() {
         slug: mine.data?.slug,
         canManage: hasPermission(granted, 'users.manage'),
         canManageRoles: hasPermission(granted, 'roles.manage'),
+        canShareLists: hasPermission(granted, 'lists.share'),
     };
 }

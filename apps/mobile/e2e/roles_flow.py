@@ -6,14 +6,14 @@ gets no edit/delete actions. Never touches SQLite directly.
 import argparse
 import time
 from pathlib import Path
-from adb_driver import adb, find, open_route, screenshot, tap, text, wait
+from adb_driver import adb, find, open_route, reveal, screenshot, tap, text, wait
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--locale', choices=['es', 'en'], default='es')
 args = parser.parse_args()
 labels = {
-    'es': {'tab': 'Roles', 'search': 'Sonido', 'permissions': 'Permisos'},
-    'en': {'tab': 'Roles', 'search': 'Sound', 'permissions': 'Permissions'},
+    'es': {'tab': 'Roles', 'search': 'Sonido', 'permissions': 'Permisos', 'clear': 'Borrar la búsqueda'},
+    'en': {'tab': 'Roles', 'search': 'Sound', 'permissions': 'Permissions', 'clear': 'Clear the search'},
 }[args.locale]
 out = Path('docs/qa/usuarios-movil') / ('roles-' + args.locale)
 
@@ -29,24 +29,27 @@ def hide_keyboard():
 
 
 open_route('users')
-wait('users-add')
+wait(labels['tab'])
 tap(labels['tab'])
-wait('role-card-pastor')
-capture('lista')
+reveal('roles-search')
 assert find('roles-add') is None, 'A pastor must not see the create-role button'
 
-text('roles-search', labels['search'])
+# La búsqueda se conserva entre visitas: se fija una y se borra después, sin suponer la inicial
+text('roles-search', labels['search'], replace=True)
 hide_keyboard()
 wait('role-card-sonido')
 time.sleep(1)
 assert find('role-card-pastor') is None, 'The search did not filter the roles'
 capture('busqueda')
+tap(labels['clear'])
+wait('role-card-pastor')
+capture('lista')
 
-tap('role-card-sonido')
+tap('role-card-sonido', scroll=True)
 wait(labels['permissions'])
 capture('ficha')
 assert find('role-edit') is None, 'A pastor must not see the edit action'
 assert find('role-delete') is None, 'A pastor must not see the delete action'
 adb('shell', 'input', 'keyevent', 4)
-wait('roles-search')
+reveal('roles-search')
 print('Native roles read-only flow passed: ' + args.locale)

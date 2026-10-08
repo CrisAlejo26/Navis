@@ -7,7 +7,7 @@ touches SQLite directly.
 import argparse
 import time
 from pathlib import Path
-from adb_driver import adb, find, open_route, screenshot, tap, text, wait
+from adb_driver import adb, find, open_route, reveal, screenshot, tap, text, wait
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--locale', choices=['es', 'en'], default='es')
@@ -40,7 +40,7 @@ def reset_state():
 
 reset_state()
 open_route('users')
-wait('users-add')
+wait(labels['tab'])
 tap(labels['tab'])
 wait('roles-add')
 
@@ -54,7 +54,8 @@ capture('alta')
 tap('role-save', scroll=True)
 wait('roles-add')
 # Se ordena por alcance y hay más roles: se filtra por la marca de tiempo para localizarlo.
-text('roles-search', stamp)
+reveal('roles-search')
+text('roles-search', stamp, replace=True)
 hide_keyboard()
 wait(card)
 capture('lista-con-rol')

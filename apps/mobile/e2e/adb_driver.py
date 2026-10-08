@@ -54,6 +54,15 @@ def swipe(up=True):
         width//2, top if up else bottom, 350)
     time.sleep(0.5)
 
+def reveal(label, attempts=10):
+    """Sube la lista hasta que el control esté a la vista: las listas conservan su posición entre visitas."""
+    for _ in range(attempts):
+        if find(label):
+            return
+        swipe(up=False)
+    raise AssertionError('Cannot reveal: ' + label)
+
+
 def text(label, value, replace=False):
     tap(label, scroll=True)
     if replace:

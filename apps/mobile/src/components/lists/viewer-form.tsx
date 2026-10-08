@@ -12,7 +12,8 @@ import { ViewerFormFields, type ViewerDraft } from './viewer-form-fields';
 import { ViewerGrants } from './viewer-grants';
 import { ViewerCredentials } from './viewer-credentials';
 
-export function ViewerForm({ listId, onClose }: { listId: string; onClose: () => void }) {
+/** `listId` es la lista desde la que se crea; sin ella (el directorio de accesos), nace sin listas y se eligen después. */
+export function ViewerForm({ listId, onClose }: { listId?: string; onClose: () => void }) {
     const { t } = useTranslation();
     const lists = useLists();
     const [draft, setDraft] = useState<ViewerDraft>(() => ({
@@ -22,7 +23,7 @@ export function ViewerForm({ listId, onClose }: { listId: string; onClose: () =>
         username: '',
         password: newViewerPassword(),
     }));
-    const [ids, setIds] = useState([listId]);
+    const [ids, setIds] = useState<string[]>(listId ? [listId] : []);
     const [created, setCreated] = useState(false);
     const [error, setError] = useState(false);
     const lock = useRef(false);
@@ -58,7 +59,7 @@ export function ViewerForm({ listId, onClose }: { listId: string; onClose: () =>
                             username={draft.username.trim().toLowerCase()}
                             password={draft.password}
                         />
-                        <Button title={t('common.close')} onPress={onClose} />
+                        <Button testID="viewer-done" title={t('common.close')} onPress={onClose} />
                     </>
                 ) : (
                     <>
@@ -75,6 +76,7 @@ export function ViewerForm({ listId, onClose }: { listId: string; onClose: () =>
                         />
                         {error ? <FieldError message={t('lists.viewerSaveFailed')} /> : null}
                         <Button
+                            testID="viewer-create"
                             title={t('lists.newViewer')}
                             loading={save.isPending}
                             disabled={lists.isPending || lists.isError}
