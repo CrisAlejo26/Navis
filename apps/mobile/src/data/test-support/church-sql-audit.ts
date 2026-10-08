@@ -56,6 +56,8 @@ const exceptions: Record<string, string> = {
         'tableDb exige propietario y padre; columna y fila validadas por table_id.',
     'note-reminders-repo.ts:listPendingNoteReminders':
         'Avisos multiiglesia: usuario y membresía vigente por EXISTS; creyente y nota de la misma iglesia.',
+    'activity-reminders-repo.ts:listPendingActivityReminders':
+        'Avisos multiiglesia: owner_id del usuario y membresía vigente por EXISTS; el recordatorio se une por su actividad.',
     'church-access.ts:listMyChurches':
         'Lista de acceso: se acota por usuario y membresía explícita, antes de elegir iglesia.',
     'calendar-slot-people.ts:peopleBySlot':

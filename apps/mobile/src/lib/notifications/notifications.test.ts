@@ -128,6 +128,28 @@ describe('reconcile: deja el sistema como dice el plan', () => {
         expect(scheduled.size).toBe(0);
     });
 
+    // Regresión: Android entrega la alarma dentro de una ventana (~2 min) tras
+    // la hora. Abrir la app en ese margen sincronizaba, el plan ya no incluía
+    // el instante pasado y se cancelaba un aviso que estaba a punto de sonar.
+    it('no cancela un aviso cuya hora acaba de pasar y aún puede entregarse', async () => {
+        const { scheduler, scheduled, calls } = memoryScheduler();
+        await reconcile(scheduler, [plan()]);
+        const justAfter = new Date(plan().fireAt.getTime() + 90_000);
+        await reconcile(scheduler, [], justAfter);
+        expect(calls.cancel).toEqual([]);
+        expect(scheduled.size).toBe(1);
+    });
+
+    it('sí cancela los pasados hace rato y los futuros que ya no están en el plan', async () => {
+        const { scheduler, scheduled } = memoryScheduler();
+        await reconcile(scheduler, [plan()]);
+        await reconcile(scheduler, [], new Date(plan().fireAt.getTime() + 10 * 60_000));
+        expect(scheduled.size).toBe(0);
+        await reconcile(scheduler, [plan()]);
+        await reconcile(scheduler, [], new Date(plan().fireAt.getTime() - 60_000));
+        expect(scheduled.size).toBe(0);
+    });
+
     it('actualiza avisos antiguos sin churchId aunque fecha y texto sean iguales', async () => {
         const notice = plan();
         const { scheduler, calls } = memoryScheduler([

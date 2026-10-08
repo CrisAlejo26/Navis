@@ -10,8 +10,10 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 interface NotificationSettingsState {
     enabled: boolean;
     noteReminders: boolean;
+    taskReminders: boolean;
     setEnabled: (enabled: boolean) => void;
     setNoteReminders: (enabled: boolean) => void;
+    setTaskReminders: (enabled: boolean) => void;
 }
 
 export const useNotificationSettings = create<NotificationSettingsState>()(
@@ -19,8 +21,10 @@ export const useNotificationSettings = create<NotificationSettingsState>()(
         (set) => ({
             enabled: true,
             noteReminders: true,
+            taskReminders: true,
             setEnabled: (enabled) => set({ enabled }),
             setNoteReminders: (noteReminders) => set({ noteReminders }),
+            setTaskReminders: (taskReminders) => set({ taskReminders }),
         }),
         {
             name: 'navis:notification-settings',

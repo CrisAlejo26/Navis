@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { router } from 'expo-router';
 import { todayIn, type Task, type Habit, type TaskStatus } from '@navis/shared';
 import { useListContext } from '@/hooks/use-lists';
+import { useAfterReminderSaved } from '@/hooks/use-reminder-prompt';
 import { useTaskMutation } from '@/hooks/use-tasks';
 import { createTask, updateTask } from '@/data/repos/tasks-repo';
 import { createHabit, updateHabit } from '@/data/repos/habits-repo';
@@ -26,7 +27,8 @@ export function useActivityEditor(
     const [draft, setDraft] = useState(initial),
         [error, setError] = useState<string | null>(null);
     const [saved, setSaved] = useState<{ id: string; kind: ItemKind; date: string } | null>(null);
-    const saving = useRef(false);
+    const saving = useRef(false),
+        afterReminderSaved = useAfterReminderSaved('task');
     const mutation = useTaskMutation(async (context, parsed: ReturnType<typeof draftInput>) => {
         const recurring =
             parsed.kind === 'task'
@@ -72,6 +74,7 @@ export function useActivityEditor(
         saving.current = true;
         try {
             const id = await mutation.mutateAsync(parsed);
+            if (parsed.input.reminderEnabled) await afterReminderSaved();
             setSaved({
                 id,
                 kind: parsed.kind,

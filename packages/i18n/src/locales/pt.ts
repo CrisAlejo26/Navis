@@ -177,6 +177,8 @@ export const pt = {
         masterHint: 'O Navis avisa-te à hora que escolheres, mesmo com a app fechada.',
         noteReminders: 'Lembretes de notas',
         noteRemindersHint: 'Tocam à hora que definiste na nota de um irmão.',
+        taskReminders: 'Lembretes de tarefas e hábitos',
+        taskRemindersHint: 'Tocam à hora que definiste numa tarefa ou num hábito.',
         test: 'Enviar um aviso de teste',
         testTitle: 'Aviso de teste',
         testBody: 'Se estás a ler isto, os avisos funcionam.',
@@ -184,12 +186,18 @@ export const pt = {
         testFailed: 'Não foi possível enviar o aviso de teste',
         unsupported: 'Os avisos não funcionam no Expo Go: usa a app instalada.',
         channel: {
-            name: 'Lembretes de notas',
-            description: 'Avisos das notas dos teus irmãos que têm lembrete.',
+            name: 'Lembretes',
+            description: 'Avisos de notas, tarefas e hábitos com lembrete.',
         },
         noteReminder: {
             title: 'Lembrete: {{name}}',
             body: 'Tens uma nota com lembrete para agora.',
+        },
+        taskReminder: {
+            body: 'Uma tarefa tem lembrete para agora.',
+        },
+        habitReminder: {
+            body: 'É hora do teu hábito.',
         },
         denied: {
             title: 'Os avisos estão desativados',

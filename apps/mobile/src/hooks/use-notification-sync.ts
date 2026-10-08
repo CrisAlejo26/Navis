@@ -19,6 +19,7 @@ export function useNotificationSync(): void {
     const churchId = useLocalSession((state) => state.session?.churchId);
     const enabled = useNotificationSettings((state) => state.enabled);
     const noteReminders = useNotificationSettings((state) => state.noteReminders);
+    const taskReminders = useNotificationSettings((state) => state.taskReminders);
     const language = i18n.language;
 
     useEffect(() => {
@@ -30,7 +31,7 @@ export function useNotificationSync(): void {
             name: t('notifications.channel.name'),
             description: t('notifications.channel.description'),
         }).then(() => syncNotifications());
-    }, [t, language, userId, churchId, enabled, noteReminders]);
+    }, [t, language, userId, churchId, enabled, noteReminders, taskReminders]);
 
     useEffect(() => {
         const subscription = AppState.addEventListener('change', (state) => {

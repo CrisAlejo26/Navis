@@ -1,9 +1,11 @@
+import { listPendingActivityReminders } from '@/data/repos/activity-reminders-repo';
 import { listPendingNoteReminders } from '@/data/repos/note-reminders-repo';
 import { listMyChurches } from '@/data/repos/church-access';
 import { i18n } from '@/lib/i18n';
 import { createExpoScheduler } from '@/lib/notifications/expo-scheduler';
 import { getPermissionStatus } from '@/lib/notifications/permission';
 import { planNoteReminders } from '@/lib/notifications/plan-note-reminders';
+import { planActivityReminders } from '@/lib/notifications/plan-activity-reminders';
 import { planJournalReminders } from './plan-journal-reminders';
 import { reconcile } from '@/lib/notifications/reconcile';
 import type { PlannedNotice } from '@/lib/notifications/types';
@@ -28,6 +30,18 @@ async function planEverything(): Promise<PlannedNotice[]> {
             ...planNoteReminders(
                 reminders,
                 (key, vars) => i18n.t(key, vars),
+                new Date(),
+                MAX_PENDING,
+                churches.length > 1,
+            ),
+        );
+    }
+    if (settings.taskReminders) {
+        const churches = await listMyChurches(session.userId);
+        planned.push(
+            ...planActivityReminders(
+                await listPendingActivityReminders(session.userId),
+                (key) => i18n.t(key),
                 new Date(),
                 MAX_PENDING,
                 churches.length > 1,

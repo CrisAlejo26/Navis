@@ -187,6 +187,8 @@ export const es = {
         masterHint: 'Navis te avisa a la hora que elijas, aunque la app esté cerrada.',
         noteReminders: 'Recordatorios de notas',
         noteRemindersHint: 'Suenan a la hora que fijaste en la nota de un hermano.',
+        taskReminders: 'Recordatorios de tareas y hábitos',
+        taskRemindersHint: 'Suenan a la hora que fijaste en una tarea o un hábito.',
         test: 'Enviar un aviso de prueba',
         testTitle: 'Prueba de aviso',
         testBody: 'Si lees esto, los avisos funcionan.',
@@ -194,12 +196,18 @@ export const es = {
         testFailed: 'No se pudo enviar el aviso de prueba',
         unsupported: 'Los avisos no funcionan en Expo Go: usa la app instalada.',
         channel: {
-            name: 'Recordatorios de notas',
-            description: 'Avisos de las notas de tus hermanos con recordatorio.',
+            name: 'Recordatorios',
+            description: 'Avisos de notas, tareas y hábitos con recordatorio.',
         },
         noteReminder: {
             title: 'Recordatorio: {{name}}',
             body: 'Tienes una nota con recordatorio para ahora.',
+        },
+        taskReminder: {
+            body: 'Tienes una tarea con recordatorio para ahora.',
+        },
+        habitReminder: {
+            body: 'Es hora de tu hábito.',
         },
         denied: {
             title: 'Los avisos están desactivados',

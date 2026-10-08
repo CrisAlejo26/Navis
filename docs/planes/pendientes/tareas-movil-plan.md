@@ -1,6 +1,6 @@
 # Plan — Tareas y hábitos en Navis móvil, con la gestión de Tomtask
 
-Estado: **fases 0–5 cerradas; la 6 (avisos) espera permiso**. Fecha: 2026-10-08.
+Estado: **fases 0–6 cerradas; la 7 (opcional) espera tu confirmación**. Fecha: 2026-10-08.
 Referencias: RFC 0018 (modelo y web), `D:/Proyectos_personales/taskia` (web) y `taskia/mobile` (Habit Land, la referencia de estilos y botones).
 
 Investigación y dirección visual: [tareas-movil-diseno.md](./tareas-movil-diseno.md). Las fases 2–6 conservan el alcance del plan, incluyendo notificaciones reales.
@@ -87,6 +87,16 @@ Cada fase termina verde en `pnpm check` y con verificación en emulador (Regla 1
 | **7** Opcional                    | Estados personalizados y flujos, fecha límite y alarma de «en progreso»                                                                                                                                               | solo si lo confirmas                                                      |
 
 ## 6. Riesgos y trampas conocidas
+
+### Registro de fase 6 (2026-10-08)
+
+- Avisos reales de tareas y hábitos con `expo-notifications`, sobre lo ya montado para notas y cuaderno: `activity-reminders-repo` (recordatorios activados de las membresías vigentes, solo del dueño; una tarea hecha deja de avisar salvo que sea una serie), `plan-activity-reminders` (pura, con tope de 50 y nombre de iglesia si hay varias) y un tipo de aviso nuevo `activity-reminder` con su destino `/tasks/detail`. Clave estable `navis:activity-reminder:<tipo>:<id>`: editar sustituye, borrar cancela.
+- Ajustes: interruptor propio «Recordatorios de tareas y hábitos» (`taskReminders`), cuyo cambio resincroniza. Canal de Android genérico («Recordatorios», seis idiomas). Guardar una tarea o un hábito con recordatorio pide el permiso en ese momento y sincroniza; cualquier mutación de tareas resincroniza.
+- Al tocar el aviso se valida (`prepareNotice`) que la actividad exista, sea del usuario y de esa iglesia, y se cambia de iglesia si hace falta antes de abrir el detalle.
+- **Fallo encontrado en la prueba nativa y corregido** (afectaba también a notas): Android entrega las alarmas con una ventana de hasta ~2 min. Abrir la app dentro de ese margen sincronizaba, el plan ya no incluía el instante pasado y `reconcile` cancelaba un aviso a punto de sonar. Ahora no cancela lo vencido hace menos de 3 min (`DELIVERY_GRACE_MS`), con prueba de regresión que fallaba antes del arreglo.
+- Verificado en Android real, compilación de desarrollo `org.navis.app` (no Expo Go), emulador `navis_tables_qa`: permiso pedido al guardar; alarma programada en `dumpsys alarm` a la hora elegida y movida al editar; aviso entregado con título de la tarea, cuerpo en español y canal `note-reminders-v1`; toque con la app en segundo plano y **con el proceso muerto** (arranque en frío) abre el detalle correcto. [Bandeja](../../qa/tareas-movil/aviso-bandeja.png), [arranque en frío](../../qa/tareas-movil/aviso-arranque-frio.png).
+- Pruebas nuevas: planificador (13), repositorio con SQLite real (aislamiento por usuario/iglesia, hechas, series, borradas), sincronización de punta a punta con planificador en memoria (programar, mover, cancelar, interruptores, validar el toque, cambio de iglesia), `reconcile` y, de la fase 5, tarjeta de serie (5) y pantalla de orden (5).
+- Limitación conocida: el recordatorio es 1:1 (RFC 0018 D10), un único instante. En una serie o un hábito diario suena **una vez**, a la hora guardada; repetirlo cada día exigiría proyectar ocurrencias y es decisión de modelo (Fase 7 o aparte). No verificado: iOS, ni la entrega con sonido (el emulador no suena).
 
 ### Registro de fase 5 (2026-10-08)
 

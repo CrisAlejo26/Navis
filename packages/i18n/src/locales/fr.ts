@@ -180,6 +180,8 @@ export const fr = {
         masterHint: "Navis te prévient à l'heure que tu choisis, même quand l'appli est fermée.",
         noteReminders: 'Rappels de notes',
         noteRemindersHint: "Ils sonnent à l'heure fixée dans la note d'un frère.",
+        taskReminders: "Rappels de tâches et d'habitudes",
+        taskRemindersHint: "Ils sonnent à l'heure fixée dans une tâche ou une habitude.",
         test: 'Envoyer une alerte de test',
         testTitle: 'Alerte de test',
         testBody: 'Si tu lis ceci, les alertes fonctionnent.',
@@ -187,12 +189,18 @@ export const fr = {
         testFailed: "L'alerte de test n'a pas pu être envoyée",
         unsupported: "Les alertes ne fonctionnent pas dans Expo Go : utilise l'appli installée.",
         channel: {
-            name: 'Rappels de notes',
-            description: 'Alertes des notes de tes frères qui ont un rappel.',
+            name: 'Rappels',
+            description: 'Alertes des notes, tâches et habitudes avec rappel.',
         },
         noteReminder: {
             title: 'Rappel : {{name}}',
             body: 'Tu as une note avec un rappel pour maintenant.',
+        },
+        taskReminder: {
+            body: 'Un rappel de tâche arrive maintenant.',
+        },
+        habitReminder: {
+            body: "C'est l'heure de votre habitude.",
         },
         denied: {
             title: 'Les alertes sont désactivées',

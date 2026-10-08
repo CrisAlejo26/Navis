@@ -182,6 +182,9 @@ export const de = {
         noteReminders: 'Notiz-Erinnerungen',
         noteRemindersHint:
             'Sie erklingen zur Zeit, die du in der Notiz eines Bruders festgelegt hast.',
+        taskReminders: 'Erinnerungen für Aufgaben und Gewohnheiten',
+        taskRemindersHint:
+            'Sie ertönen zu der Zeit, die du bei einer Aufgabe oder Gewohnheit festgelegt hast.',
         test: 'Testbenachrichtigung senden',
         testTitle: 'Testbenachrichtigung',
         testBody: 'Wenn du das liest, funktionieren die Benachrichtigungen.',
@@ -190,12 +193,18 @@ export const de = {
         unsupported:
             'Benachrichtigungen funktionieren nicht in Expo Go: Nutze die installierte App.',
         channel: {
-            name: 'Notiz-Erinnerungen',
-            description: 'Hinweise zu Notizen deiner Brüder mit Erinnerung.',
+            name: 'Erinnerungen',
+            description: 'Hinweise zu Notizen, Aufgaben und Gewohnheiten mit Erinnerung.',
         },
         noteReminder: {
             title: 'Erinnerung: {{name}}',
             body: 'Du hast eine Notiz mit einer Erinnerung für jetzt.',
+        },
+        taskReminder: {
+            body: 'Eine Aufgabe hat jetzt eine Erinnerung.',
+        },
+        habitReminder: {
+            body: 'Zeit für deine Gewohnheit.',
         },
         denied: {
             title: 'Benachrichtigungen sind ausgeschaltet',

@@ -7,6 +7,7 @@ import {
     type TasksContext,
 } from '@/data/repos/tasks-repo';
 import type { ActivityQuery } from '@/data/repos/activity-query';
+import { syncNotifications } from '@/lib/notifications/sync';
 import { useListContext } from './use-lists';
 
 export const tasksKey = (scope: TasksContext) =>
@@ -54,6 +55,8 @@ export function useTaskMutation<T, R>(operation: (context: TasksContext, input: 
             return operation(context, input);
         },
         onSuccess: async () => {
+            // Un recordatorio nuevo, movido o borrado cambia lo que debe sonar.
+            void syncNotifications();
             await client.invalidateQueries({
                 queryKey: ['local-activities', context.churchId, context.userId],
             });

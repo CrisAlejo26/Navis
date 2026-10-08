@@ -177,6 +177,8 @@ export const it = {
         masterHint: "Navis ti avvisa all'ora che scegli, anche con l'app chiusa.",
         noteReminders: 'Promemoria delle note',
         noteRemindersHint: "Suonano all'ora fissata nella nota di un fratello.",
+        taskReminders: 'Promemoria di attività e abitudini',
+        taskRemindersHint: "Suonano all'ora fissata in un'attività o in un'abitudine.",
         test: 'Invia un avviso di prova',
         testTitle: 'Avviso di prova',
         testBody: 'Se leggi questo, gli avvisi funzionano.',
@@ -184,12 +186,18 @@ export const it = {
         testFailed: "Non è stato possibile inviare l'avviso di prova",
         unsupported: "Gli avvisi non funzionano in Expo Go: usa l'app installata.",
         channel: {
-            name: 'Promemoria delle note',
-            description: 'Avvisi delle note dei tuoi fratelli con promemoria.',
+            name: 'Promemoria',
+            description: 'Avvisi di note, attività e abitudini con promemoria.',
         },
         noteReminder: {
             title: 'Promemoria: {{name}}',
             body: 'Hai una nota con un promemoria per adesso.',
+        },
+        taskReminder: {
+            body: "Un'attività ha un promemoria per adesso.",
+        },
+        habitReminder: {
+            body: 'È ora della tua abitudine.',
         },
         denied: {
             title: 'Gli avvisi sono disattivati',

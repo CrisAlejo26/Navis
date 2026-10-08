@@ -2,6 +2,7 @@ import { assertAccessible } from '@/data/repos/church-access';
 import { findBeliever } from '@/data/repos/believers-repo';
 import { findNote } from '@/data/repos/notes-repo';
 import { findJournalEntry } from '@/data/repos/journal-repo';
+import { isOwnActivity } from '@/data/repos/activity-reminders-repo';
 import { useLocalSession } from '@/stores/local-session';
 import { noticeDataSchema, type NoticeData } from './routes';
 
@@ -22,6 +23,9 @@ export async function prepareNotice(
             data.entryId,
         );
         if (!entry || (entry.authorId && entry.authorId !== session.userId)) return null;
+    } else if (data.type === 'activity-reminder') {
+        if (!(await isOwnActivity(session.userId, data.churchId, data.kind, data.activityId)))
+            return null;
     } else {
         const note = await findNote(data.noteId, data.churchId);
         if (!note || note.believerId !== data.believerId) return null;

@@ -23,6 +23,8 @@ export function NotificationsCard() {
     const noteReminders = useNotificationSettings((state) => state.noteReminders);
     const setEnabled = useNotificationSettings((state) => state.setEnabled);
     const setNoteReminders = useNotificationSettings((state) => state.setNoteReminders);
+    const taskReminders = useNotificationSettings((state) => state.taskReminders);
+    const setTaskReminders = useNotificationSettings((state) => state.setTaskReminders);
     const [feedback, setFeedback] = useState<string | null>(null);
 
     if (!notificationsSupported()) {
@@ -64,6 +66,13 @@ export function NotificationsCard() {
                     description={t('notifications.noteRemindersHint')}
                     checked={noteReminders}
                     onChange={setNoteReminders}
+                    disabled={!enabled}
+                />
+                <Switch
+                    label={t('notifications.taskReminders')}
+                    description={t('notifications.taskRemindersHint')}
+                    checked={taskReminders}
+                    onChange={setTaskReminders}
                     disabled={!enabled}
                 />
             </View>

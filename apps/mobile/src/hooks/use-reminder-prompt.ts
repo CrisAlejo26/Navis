@@ -13,12 +13,13 @@ import { useNotificationSettings } from '@/stores/notification-settings';
  * aquí —y no al abrir la app— sale el diálogo del sistema. Concedido, se
  * programa el aviso; denegado, se dice cómo arreglarlo en vez de callar.
  */
-export function useAfterReminderSaved(): () => Promise<void> {
+export function useAfterReminderSaved(kind: 'note' | 'task' = 'note'): () => Promise<void> {
     const { t } = useTranslation();
 
     return useCallback(async () => {
         const settings = useNotificationSettings.getState();
-        if (!notificationsSupported() || !settings.enabled || !settings.noteReminders) return;
+        const wanted = kind === 'task' ? settings.taskReminders : settings.noteReminders;
+        if (!notificationsSupported() || !settings.enabled || !wanted) return;
 
         let status = await getPermissionStatus();
         if (status === 'undetermined') status = await requestPermission();
@@ -34,5 +35,5 @@ export function useAfterReminderSaved(): () => Promise<void> {
                 onPress: () => void Linking.openSettings(),
             },
         ]);
-    }, [t]);
+    }, [t, kind]);
 }

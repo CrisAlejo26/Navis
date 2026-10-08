@@ -20,6 +20,12 @@ export const noticeDataSchema = z.discriminatedUnion('type', [
         believerId: z.string().min(1),
         noteId: z.string().min(1),
     }),
+    z.object({
+        type: z.literal('activity-reminder'),
+        churchId: z.string().min(1),
+        kind: z.enum(['task', 'habit']),
+        activityId: z.string().min(1),
+    }),
 ]);
 
 export type NoticeData = z.infer<typeof noticeDataSchema>;
@@ -30,6 +36,11 @@ export function hrefForNotice(data: unknown): Href | null {
     if (!parsed.success) return null;
     if (parsed.data.type === 'journal-reminder')
         return { pathname: '/journal/[id]', params: { id: parsed.data.entryId } };
+    if (parsed.data.type === 'activity-reminder')
+        return {
+            pathname: '/tasks/detail',
+            params: { kind: parsed.data.kind, id: parsed.data.activityId },
+        };
     // La página de la nota: se llega a **leerla**, no al formulario de edición.
     return { pathname: '/believers/notes/[id]', params: { id: parsed.data.noteId } };
 }

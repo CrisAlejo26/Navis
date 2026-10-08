@@ -178,6 +178,8 @@ export const en = {
         masterHint: 'Navis alerts you at the time you choose, even when the app is closed.',
         noteReminders: 'Note reminders',
         noteRemindersHint: "They go off at the time you set on a believer's note.",
+        taskReminders: 'Task and habit reminders',
+        taskRemindersHint: 'They go off at the time you set on a task or habit.',
         test: 'Send a test alert',
         testTitle: 'Test alert',
         testBody: 'If you read this, alerts are working.',
@@ -185,12 +187,18 @@ export const en = {
         testFailed: 'The test alert could not be sent',
         unsupported: 'Alerts do not work in Expo Go: use the installed app.',
         channel: {
-            name: 'Note reminders',
-            description: "Alerts for your believers' notes that have a reminder.",
+            name: 'Reminders',
+            description: 'Alerts for notes, tasks and habits with a reminder.',
         },
         noteReminder: {
             title: 'Reminder: {{name}}',
             body: 'You have a note with a reminder for right now.',
+        },
+        taskReminder: {
+            body: 'A task reminder is due now.',
+        },
+        habitReminder: {
+            body: 'Time for your habit.',
         },
         denied: {
             title: 'Alerts are turned off',
