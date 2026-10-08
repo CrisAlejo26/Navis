@@ -80,6 +80,7 @@ function RootNavigator() {
                                 'tables',
                                 'journal',
                                 'tasks',
+                                'users',
                             ].includes(name),
                             title: t(titleKey),
                             animation: PUSHED_SCREEN_ANIMATION,

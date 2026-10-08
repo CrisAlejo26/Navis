@@ -86,3 +86,8 @@ export function formatAgo(days: number): string {
     if (days < 365) return i18n.t('common.monthsAgo', { count: Math.round(days / 30) });
     return i18n.t('common.yearsAgo', { count: Math.round(days / 365) });
 }
+
+/** Un instante como día en el idioma activo y en hora local: «8 oct 2026». */
+export function formatMediumDate(value: Date): string {
+    return new Intl.DateTimeFormat(getLocale(), { dateStyle: 'medium' }).format(value);
+}

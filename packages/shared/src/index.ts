@@ -14,6 +14,7 @@ export * from './permissions';
 export * from './prophecy-stats';
 export * from './prophecy-state';
 export * from './prophecy-window';
+export * from './role-display';
 export * from './role-permissions';
 export * from './teaching-body';
 export * from './teaching-body-text';

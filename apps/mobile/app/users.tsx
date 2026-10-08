@@ -1,10 +1,8 @@
-import { PlaceholderScreen } from '@/components/placeholder-screen';
+import { UsersDirectory } from '@/components/users/users-directory';
+import { useListContext } from '@/hooks/use-lists';
 
 export default function UsersScreen() {
-    return (
-        <PlaceholderScreen
-            titleKey="nav.users"
-            rfc="0008-iglesias-como-espacios-de-trabajo-implementado.md"
-        />
-    );
+    const { context } = useListContext();
+    // Con `key`, cambiar de iglesia o de cuenta vacía filtros y páginas en vez de arrastrarlos.
+    return <UsersDirectory key={`${context.churchId}:${context.userId}`} />;
 }

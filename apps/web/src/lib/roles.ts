@@ -1,10 +1,11 @@
 import { useRoles } from '@navis/api-client';
 import {
-    ACCENT_PALETTE,
     DEFAULT_ROLE,
     isSystemRole,
+    ROLE_HINT_KEY,
+    ROLE_LABEL_KEY,
+    roleAccent,
     SUPERADMIN_ROLE,
-    type Role,
     type RoleRow,
     type RoleSlug,
 } from '@navis/shared';
@@ -14,35 +15,8 @@ import { useTranslation } from 'react-i18next';
 import { api } from './api';
 import { useSession } from './auth-client';
 
-/**
- * Nombre y descripción de los roles **de serie**, como claves de traducción.
- *
- * Es un mapa explícito y no una plantilla del tipo `t(\`roles.${slug}\`)`
- * porque las claves construidas al vuelo se saltan el tipado de i18next y
- * dejan de avisar cuando falta una traducción (Regla 2). Los roles propios de
- * cada instalación no están aquí: guardan su nombre en la base de datos.
- */
-export const ROLE_LABEL_KEY = {
-    creyente: 'roles.creyente',
-    recepcion: 'roles.recepcion',
-    biblias: 'roles.biblias',
-    sonido: 'roles.sonido',
-    pulpito: 'roles.pulpito',
-    'predicador-apoyo': 'roles.predicadorApoyo',
-    pastor: 'roles.pastor',
-    superadmin: 'roles.superadmin',
-} as const satisfies Record<Role, string>;
-
-export const ROLE_HINT_KEY = {
-    creyente: 'roles.creyenteHint',
-    recepcion: 'roles.recepcionHint',
-    biblias: 'roles.bibliasHint',
-    sonido: 'roles.sonidoHint',
-    pulpito: 'roles.pulpitoHint',
-    'predicador-apoyo': 'roles.predicadorApoyoHint',
-    pastor: 'roles.pastorHint',
-    superadmin: 'roles.superadminHint',
-} as const satisfies Record<Role, string>;
+// Las claves de traducción y el color de cada rol viven en `shared`: el móvil usa los mismos.
+export { ROLE_HINT_KEY, ROLE_LABEL_KEY, roleAccent };
 
 /**
  * El nombre visible de un rol: traducido si es de serie, y el que le pusieron
@@ -81,21 +55,6 @@ export function useRoleCatalog(enabled = true): Map<RoleSlug, RoleRow> {
         () => new Map((data?.items ?? []).map((role) => [role.slug, role])),
         [data?.items],
     );
-}
-
-/**
- * El color de un rol, por su nivel en la jerarquía.
- *
- * No es un campo nuevo en la base de datos: se deriva del `level` que ya
- * tiene cada rol, con la misma paleta ampliada que ya distingue sedes, dones
- * y tipos de anotación (`ACCENT_PALETTE`). Dos roles del mismo nivel
- * comparten color a propósito —los cuatro ministerios, por ejemplo—: el color
- * dice **el escalón**, no el rol exacto, que ya lo dice el nombre al lado
- * (Regla 9 §3: el color nunca informa solo).
- */
-export function roleAccent(level: number): string {
-    const index = ((level % ACCENT_PALETTE.length) + ACCENT_PALETTE.length) % ACCENT_PALETTE.length;
-    return ACCENT_PALETTE[index];
 }
 
 /**

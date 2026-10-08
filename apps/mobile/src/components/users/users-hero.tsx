@@ -1,0 +1,81 @@
+import { LinearGradient } from 'expo-linear-gradient';
+import { Text, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
+
+import { hexShade } from '@/lib/color';
+import { formatNumber } from '@/lib/format';
+import { useUserPalette } from './user-theme';
+
+export interface RoleSegment {
+    slug: string;
+    color: string;
+    count: number;
+}
+
+/**
+ * La cifra de la pantalla: cuántas cuentas hay y cómo se reparten por rol. El
+ * degradado toma el color del rol que se está filtrando (el azul de la marca si
+ * no hay ninguno) — es el elemento firma de la pantalla (Regla 9 §4). Las
+ * proporciones salen del catálogo; los nombres, de los chips de debajo.
+ */
+export function UsersHero({
+    total,
+    church,
+    accent,
+    segments,
+}: {
+    total: number;
+    church: string;
+    accent: string | null;
+    segments: RoleSegment[];
+}) {
+    const p = useUserPalette(),
+        { t } = useTranslation(),
+        base = accent ?? p.primary,
+        shown = segments.filter((one) => one.count > 0);
+    return (
+        <LinearGradient
+            colors={[hexShade(base, 0.82), hexShade(base, 0.5)]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={{ borderRadius: 26, padding: 20, marginBottom: 16, gap: 14 }}
+        >
+            <View style={{ gap: 2 }}>
+                <Text
+                    className="font-sans-semibold text-xs uppercase"
+                    style={{ color: 'rgba(255,255,255,0.78)', letterSpacing: 1.2 }}
+                >
+                    {t('roles.accountsTotal')}
+                </Text>
+                <Text
+                    className="font-sans-bold"
+                    style={{ color: '#ffffff', fontSize: 52, lineHeight: 60 }}
+                    accessibilityRole="header"
+                >
+                    {formatNumber(total)}
+                </Text>
+                <Text
+                    className="text-sm"
+                    style={{ color: 'rgba(255,255,255,0.86)' }}
+                    numberOfLines={1}
+                >
+                    {t('roles.accessTo', { church })}
+                </Text>
+            </View>
+            {shown.length > 1 && (
+                <View
+                    aria-hidden
+                    className="flex-row overflow-hidden"
+                    style={{ height: 10, borderRadius: 5, gap: 2 }}
+                >
+                    {shown.map((one) => (
+                        <View
+                            key={one.slug}
+                            style={{ flex: one.count, backgroundColor: one.color }}
+                        />
+                    ))}
+                </View>
+            )}
+        </LinearGradient>
+    );
+}
