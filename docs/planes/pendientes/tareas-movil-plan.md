@@ -1,6 +1,6 @@
 # Plan — Tareas y hábitos en Navis móvil, con la gestión de Tomtask
 
-Estado: **fases 0–4 cerradas; fase 5 en implementación, autorizada al continuar**. Fecha: 2026-10-06.
+Estado: **fases 0–5 cerradas; la 6 (avisos) espera permiso**. Fecha: 2026-10-08.
 Referencias: RFC 0018 (modelo y web), `D:/Proyectos_personales/taskia` (web) y `taskia/mobile` (Habit Land, la referencia de estilos y botones).
 
 Investigación y dirección visual: [tareas-movil-diseno.md](./tareas-movil-diseno.md). Las fases 2–6 conservan el alcance del plan, incluyendo notificaciones reales.
@@ -87,6 +87,15 @@ Cada fase termina verde en `pnpm check` y con verificación en emulador (Regla 1
 | **7** Opcional                    | Estados personalizados y flujos, fecha límite y alarma de «en progreso»                                                                                                                                               | solo si lo confirmas                                                      |
 
 ## 6. Riesgos y trampas conocidas
+
+### Registro de fase 5 (2026-10-08)
+
+- Repetición avanzada compartida por API, web y móvil: semanal con días, mensual por día o por n-ésimo día de la semana (incluido «último») y fechas concretas, con fin nunca/fecha/cantidad. Esquema en `packages/shared` (`task-series`), migración `TaskSeriesAndOrder` y paridad en SQLite local (v16+). Series: pausar, reanudar y terminar conservan el histórico.
+- Pantalla de series (`/tasks/series`) y de orden manual (`/tasks/order`). Revisión visual en Android real (`navis_tables_qa`), claro, 375 dp: [orden](../../qa/tareas-movil/orden.png), [arrastre](../../qa/tareas-movil/orden-arrastre.png), [repetición semanal](../../qa/tareas-movil/repeticion-semanal.png), [serie](../../qa/tareas-movil/serie.png), [serie pausada](../../qa/tareas-movil/serie-pausada.png).
+- Corregido en la revisión: las filas de orden ocupaban dos líneas de más (ahora etiquetas y flechas comparten línea; caben 4,5 filas) y el número desalineaba los títulos (ancho fijo). La fila arrastrada se «levanta» con borde, sombra y escala, y Guardar se desactiva mientras se arrastra. La descripción de la serie decía «1 weeks»: con intervalo 1 se omite y con más se lee «Cada N semanas». El estado de la serie es un `Badge` compacto (antes un `Chip` seleccionable que parecía un botón). Vacío de series con texto propio (`tasks.seriesEmpty`) en los seis idiomas.
+- Recorrido nativo: crear tarea semanal (lunes y jueves), verla en series, pausar (efecto inmediato), reanudar, cancelar el diálogo de terminar, arrastrar con pulsación larga y soltar en otra posición. `use-task-order.ts` y `task-order-header.tsx` salen de la pantalla (Regla 6); lint sin errores en `components/tasks`.
+- Trampa de verificación: con enlaces profundos repetidos (`am start exp://…`) y Fast Refresh, la pantalla de series dejó de refrescarse tras pausar (el caché de la mutación no veía la consulta). No ocurre tras `force-stop` de Expo Go y un arranque limpio: reiniciar antes de dar por roto algo así.
+- Pendiente de ver: alemán y oscuro de las pantallas de series y orden, y texto al 130 %.
 
 ### Registro de fase 4 (2026-10-06)
 

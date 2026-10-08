@@ -55,13 +55,24 @@ export function ActivityScheduleFields({
                 value={d.repeatFreq}
                 placeholder={t('tasks.repeatNone')}
                 disabled={busy}
-                options={(d.kind === 'habit' ? HABIT_REPEAT_FREQS : ['ninguna', ...TASK_REPEAT_FREQS] as const).map((value) => ({
+                options={(d.kind === 'habit'
+                    ? HABIT_REPEAT_FREQS
+                    : (['ninguna', ...TASK_REPEAT_FREQS] as const)
+                ).map((value) => ({
                     value,
                     label: t(repeatKeys[value]),
                 }))}
-                onChange={(repeatFreq) => change({ repeatFreq, repeatOptions: repeatFreq === 'fechas' ? { kind: 'dates', dates: [d.date] } : null })}
+                onChange={(repeatFreq) =>
+                    change({
+                        repeatFreq,
+                        repeatOptions:
+                            repeatFreq === 'fechas' ? { kind: 'dates', dates: [d.date] } : null,
+                    })
+                }
             />
-            {d.kind === 'task' && d.repeatFreq !== 'ninguna' && <TaskRepeatFields draft={d} change={change} timezone={timezone} busy={busy} />}
+            {d.kind === 'task' && d.repeatFreq !== 'ninguna' && (
+                <TaskRepeatFields draft={d} change={change} timezone={timezone} busy={busy} />
+            )}
         </View>
     );
 }

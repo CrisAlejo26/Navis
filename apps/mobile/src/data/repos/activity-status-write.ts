@@ -36,7 +36,8 @@ export async function writeActivityStatus(
     const previous = recurring
         ? (await activityOccurrences(tx, context, kind, date, date)).get(`${id}:${date}`)
         : (task ?? habit);
-    if (!previous && !(task ? taskAppliesOn(task, date) : habit && habitAppliesOn(habit, date))) throw new Error('invalid-occurrence');
+    if (!previous && !(task ? taskAppliesOn(task, date) : habit && habitAppliesOn(habit, date)))
+        throw new Error('invalid-occurrence');
     if (!recurring && date !== (task ?? habit)?.date) throw new Error('invalid-occurrence');
     const completedAt =
         status === 'completada'

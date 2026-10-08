@@ -35,7 +35,8 @@ export function taskAppliesOn(task: TaskRepeat, date: IsoDate): boolean {
     if (date < task.date) return false;
     if (!task.isRecurring) return date === task.date;
     if (task.repeatStoppedAt && date >= task.repeatStoppedAt) return false;
-    if (task.repeatPauses?.some((pause) => date >= pause.from && (!pause.to || date <= pause.to))) return false;
+    if (task.repeatPauses?.some((pause) => date >= pause.from && (!pause.to || date <= pause.to)))
+        return false;
 
     const interval = Math.max(1, task.repeatInterval);
     let index: number;

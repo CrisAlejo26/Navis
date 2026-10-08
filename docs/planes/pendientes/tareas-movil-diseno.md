@@ -74,6 +74,7 @@ Correcciones del render: fechas de gráficas compactas día/mes, margen para el 
 Las cifras se contrastaron con respuestas reales de la API, en ambos motores, sobre la misma fixture local. El histórico incluye actividades borradas conforme a la API; por ello, el cumplimiento de la agenda activa de un día puede diferir del histórico de El Faro. El registro de QA conserva las capturas y la prueba reproducible.
 
 Verificación renderizada en Android: claro/español y oscuro/alemán a 375 dp con texto al 130 %, títulos multilínea, chips de estado que pasan a otra línea y selector de iconos. La revisión detectó el pie Guardar detrás del teclado; se incorporó dentro del área que evita el teclado y se verificó guardar con el teclado abierto. Las capturas y los recorridos funcionales están en el registro de QA. Los recordatorios se guardan en la zona de la iglesia; la entrega de avisos continúa reservada para la fase 6.
+
 # Fase 5 — referencia y decisiones (2026-10-06)
 
 Corrección solicitada durante la implementación: el buscador sigue reutilizando `SearchField`/`TextField`, con centrado vertical nativo y altura estable al limpiar. El usuario rechazó los tintes del 12 % con bordes y sombras coloreados por resultar demasiado intensos, y después consideró insuficiente la separación con tintes del 5,5 %. Tras revisar las referencias públicas de Refero, las superficies quedan limitadas a azul suave (tareas), melocotón (prioridad alta) y menta (hábitos/completadas), derivadas de los tokens existentes al 9 % en claro y 14 % en oscuro. El borde neutro refuerza la separación con el fondo y no hay sombra. El acento de etiqueta/estado se conserva en el icono y los chips. El fondo sigue siendo sólido para impedir que las acciones de swipe se transparenten.
@@ -84,15 +85,15 @@ Referencias de color y elevación: [Tines en Refero](https://styles.refero.desig
 
 Petición del usuario: organizar los skeletons de todos los componentes de la página de tareas. La referencia de estructura es cada componente real de Navis/Tomtask, conservando sus márgenes, iconos, anillos y distribución de información. Se reutiliza el componente `Skeleton`; no se sustituyen controles cuyo contenido ya se conoce.
 
-| Región | Esqueleto vinculado a su contenido |
-| --- | --- |
-| Listado y paginación | Cabecera de sección, icono 42, título, descripción, chips y hora; dos tarjetas adicionales al cargar otra página |
-| Hoy | Variante de hábito con anillo 48, objetivo/hora y etiquetas debajo; El Faro con icono, texto y 14 círculos |
-| Calendario | Número de semanas calculado con `buildDateGrid`, siete columnas, separación y altura de celdas iguales al calendario real, incluida la escala de texto |
-| Estadísticas | Hero con anillo 92, porcentaje, gráfico de barras, cuatro métricas adaptables, El Faro, desgloses, tendencia e histórico de 90 días |
-| Series y orden | Regla, estado, próxima fecha y acciones de serie; ordinal, asa y botones de movimiento de orden |
-| Detalle y editores | Cabecera y bloques del detalle; campos del editor y pie reservado para guardar; editor de etiquetas con muestras de color y selector de icono |
-| Etiquetas y filtros | Filas de etiquetas y chips pendientes en filtros, etiquetas seleccionadas y selectores del editor |
+| Región               | Esqueleto vinculado a su contenido                                                                                                                     |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Listado y paginación | Cabecera de sección, icono 42, título, descripción, chips y hora; dos tarjetas adicionales al cargar otra página                                       |
+| Hoy                  | Variante de hábito con anillo 48, objetivo/hora y etiquetas debajo; El Faro con icono, texto y 14 círculos                                             |
+| Calendario           | Número de semanas calculado con `buildDateGrid`, siete columnas, separación y altura de celdas iguales al calendario real, incluida la escala de texto |
+| Estadísticas         | Hero con anillo 92, porcentaje, gráfico de barras, cuatro métricas adaptables, El Faro, desgloses, tendencia e histórico de 90 días                    |
+| Series y orden       | Regla, estado, próxima fecha y acciones de serie; ordinal, asa y botones de movimiento de orden                                                        |
+| Detalle y editores   | Cabecera y bloques del detalle; campos del editor y pie reservado para guardar; editor de etiquetas con muestras de color y selector de icono          |
+| Etiquetas y filtros  | Filas de etiquetas y chips pendientes en filtros, etiquetas seleccionadas y selectores del editor                                                      |
 
 Los skeletons se muestran en la región cuya consulta está pendiente. Los contadores no presentan ceros provisionales; las recargas con datos conservan el contenido. Una animación compartida sincroniza cada grupo, se cancela al desmontarlo y respeta movimiento reducido. Los bloques anuncian `common.loading`, señalan ocupación accesible y no reciben pulsaciones.
 
@@ -100,10 +101,10 @@ QA de esta corrección: 16 pruebas de componentes en 8 suites, TypeScript y ESLi
 
 La referencia principal continúa siendo Tomtask móvil: `components/tasks/recurrence-sheet.tsx`, `recurrence-weekdays.tsx`, `order-list.tsx` y `components/recurrences/recurrence-card.tsx`; sus reglas están en `types/recurrence.ts` y `lib/recurrence.ts`. La referencia secundaria es el editor y navegación de Navis aprobados en las fases 2–4. Implementación directa dentro de ese sistema, conforme a Refero Design.
 
-| Decisión | Fuente | Adaptación |
-| --- | --- | --- |
-| Cinco formas de repetición, selección semanal de lunes a domingo, fin separado | Tomtask recurrence-sheet/types/recurrence | Frecuencias existentes y opciones estructuradas compartidas; no un texto RRULE editable |
-| Tarjetas de series con estado, regla y acciones explícitas | Tomtask recurrence-card | Poppins, radio 26, icono 42, márgenes 22, azul semántico Navis; terminar exige confirmación |
-| Orden manual de tareas mediante asa y ordinal | Tomtask order-list | Entrada por pulsación larga, arrastre y alternativa accesible para mover; guardar/cancelar borrador |
-| Conservación del histórico al pausar/terminar | Navis D3/D18 y estadísticas verificadas | Periodos de pausa y fecha de terminación, sin borrar ocurrencias materializadas |
-| Modelo equivalente en API, web y móvil | Plan §4b | Columnas iguales, migraciones SQLite/Postgres, contratos y expansión en shared; hábitos mantienen repetición simple |
+| Decisión                                                                       | Fuente                                    | Adaptación                                                                                                          |
+| ------------------------------------------------------------------------------ | ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| Cinco formas de repetición, selección semanal de lunes a domingo, fin separado | Tomtask recurrence-sheet/types/recurrence | Frecuencias existentes y opciones estructuradas compartidas; no un texto RRULE editable                             |
+| Tarjetas de series con estado, regla y acciones explícitas                     | Tomtask recurrence-card                   | Poppins, radio 26, icono 42, márgenes 22, azul semántico Navis; terminar exige confirmación                         |
+| Orden manual de tareas mediante asa y ordinal                                  | Tomtask order-list                        | Entrada por pulsación larga, arrastre y alternativa accesible para mover; guardar/cancelar borrador                 |
+| Conservación del histórico al pausar/terminar                                  | Navis D3/D18 y estadísticas verificadas   | Periodos de pausa y fecha de terminación, sin borrar ocurrencias materializadas                                     |
+| Modelo equivalente en API, web y móvil                                         | Plan §4b                                  | Columnas iguales, migraciones SQLite/Postgres, contratos y expansión en shared; hábitos mantienen repetición simple |

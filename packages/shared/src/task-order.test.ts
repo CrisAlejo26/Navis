@@ -11,6 +11,11 @@ describe('borrador de orden manual', () => {
         const up = moveSelectedTasks(items, ['b', 'c'], -1);
         expect(up.map((row) => row.id)).toEqual(['b', 'c', 'a', 'd']);
         expect(moveSelectedTasks(up, ['b', 'c'], -1)).toEqual(up);
-        expect(moveSelectedTasks(items, ['b', 'c'], 1).map((row) => row.id)).toEqual(['a', 'd', 'b', 'c']);
+        expect(moveSelectedTasks(items, ['b', 'c'], 1).map((row) => row.id)).toEqual([
+            'a',
+            'd',
+            'b',
+            'c',
+        ]);
     });
 });

@@ -17,7 +17,14 @@ export const STREAK_STATS_DAYS = 90;
 import type { TaskPriority } from './tasks';
 
 /** Por qué campo ordena el listado de tareas (§9.5). */
-export const TASK_SORTS = ['nearest', 'farthest', 'priority', 'recent', 'alphabetical', 'manual'] as const;
+export const TASK_SORTS = [
+    'nearest',
+    'farthest',
+    'priority',
+    'recent',
+    'alphabetical',
+    'manual',
+] as const;
 
 export type TaskSort = (typeof TASK_SORTS)[number];
 

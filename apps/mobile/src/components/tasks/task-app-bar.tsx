@@ -7,7 +7,11 @@ export function TaskAppBar({ title, date }: { title: string; date?: string }) {
         <AppBar
             title={title}
             actions={[
-                { icon: 'repeat-outline', label: t('tasks.series'), onPress: () => router.push('/tasks/series') },
+                {
+                    icon: 'repeat-outline',
+                    label: t('tasks.series'),
+                    onPress: () => router.push('/tasks/series'),
+                },
                 {
                     icon: 'pricetags-outline',
                     label: t('tasks.manageTags'),

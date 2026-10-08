@@ -81,7 +81,12 @@ function applySort(items: TaskOccurrence[], sort: TasksQuery['sort']): TaskOccur
     const sorted = [...items];
     switch (sort) {
         case 'manual':
-            return sorted.sort((a, b) => (a.manualOrder ?? Infinity) - (b.manualOrder ?? Infinity) || a.date.localeCompare(b.date) || a.title.localeCompare(b.title));
+            return sorted.sort(
+                (a, b) =>
+                    (a.manualOrder ?? Infinity) - (b.manualOrder ?? Infinity) ||
+                    a.date.localeCompare(b.date) ||
+                    a.title.localeCompare(b.title),
+            );
         case 'farthest':
             return sorted.reverse();
         case 'priority':

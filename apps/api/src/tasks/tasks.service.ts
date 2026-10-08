@@ -33,8 +33,10 @@ export class TasksService {
     }
 
     async create(churchId: string, ownerId: string, dto: CreateTaskDto): Promise<Task> {
-        if (dto.repeatOptions && !taskRepeatOptionsSchema.safeParse(dto.repeatOptions).success) throw new UnprocessableEntityException('Revisa los días de repetición');
-        if (!validTaskRepeat(dto)) throw new UnprocessableEntityException('Revisa los días de repetición');
+        if (dto.repeatOptions && !taskRepeatOptionsSchema.safeParse(dto.repeatOptions).success)
+            throw new UnprocessableEntityException('Revisa los días de repetición');
+        if (!validTaskRepeat(dto))
+            throw new UnprocessableEntityException('Revisa los días de repetición');
         checkRepeat(
             dto.isRecurring,
             dto.repeatFreq,
@@ -80,8 +82,10 @@ export class TasksService {
     async update(churchId: string, ownerId: string, id: string, dto: UpdateTaskDto): Promise<Task> {
         const task = await this.require(churchId, ownerId, id);
         const isRecurring = dto.isRecurring ?? task.isRecurring;
-        if (dto.repeatOptions && !taskRepeatOptionsSchema.safeParse(dto.repeatOptions).success) throw new UnprocessableEntityException('Revisa los días de repetición');
-        if (!validTaskRepeat({ ...task, ...dto, isRecurring })) throw new UnprocessableEntityException('Revisa los días de repetición');
+        if (dto.repeatOptions && !taskRepeatOptionsSchema.safeParse(dto.repeatOptions).success)
+            throw new UnprocessableEntityException('Revisa los días de repetición');
+        if (!validTaskRepeat({ ...task, ...dto, isRecurring }))
+            throw new UnprocessableEntityException('Revisa los días de repetición');
         checkRepeat(
             isRecurring,
             dto.repeatFreq ?? task.repeatFreq ?? undefined,

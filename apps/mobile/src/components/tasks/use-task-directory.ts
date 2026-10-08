@@ -21,7 +21,12 @@ export function useTaskDirectory() {
         timezone = scope.church?.timezone ?? 'UTC',
         today = todayIn(timezone);
     const params = useLocalSearchParams<{ sort?: string }>();
-    const [filters, setFilters] = useState<TaskFilters>(() => ({ ...defaultFilters(), ...(params.sort === 'manual' ? { sort: 'manual' as const, group: 'none' as const } : {}) })),
+    const [filters, setFilters] = useState<TaskFilters>(() => ({
+            ...defaultFilters(),
+            ...(params.sort === 'manual'
+                ? { sort: 'manual' as const, group: 'none' as const }
+                : {}),
+        })),
         [view, setView] = useState<'list' | 'calendar'>('list');
     const [month, setMonth] = useState(today),
         [day, setDay] = useState(today),

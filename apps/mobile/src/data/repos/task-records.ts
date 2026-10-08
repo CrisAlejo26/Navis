@@ -34,10 +34,18 @@ export async function taskRecords(
         manual?: boolean;
     } = {},
 ): Promise<TaskRecord[]> {
-    const rows = await records<TaskRecord & { repeatOptionsJson: string | null; repeatPausesJson: string | null }>(db, context, 'task', options);
-    return rows.map(({ repeatOptionsJson, repeatPausesJson, ...row }) => ({ ...row, isRecurring: Boolean(row.isRecurring),
-        repeatOptions: repeatOptionsJson ? taskRepeatOptionsSchema.parse(JSON.parse(repeatOptionsJson)) : null,
-        repeatPauses: repeatPausesJson ? taskRepeatPauseSchema.array().parse(JSON.parse(repeatPausesJson)) : null,
+    const rows = await records<
+        TaskRecord & { repeatOptionsJson: string | null; repeatPausesJson: string | null }
+    >(db, context, 'task', options);
+    return rows.map(({ repeatOptionsJson, repeatPausesJson, ...row }) => ({
+        ...row,
+        isRecurring: Boolean(row.isRecurring),
+        repeatOptions: repeatOptionsJson
+            ? taskRepeatOptionsSchema.parse(JSON.parse(repeatOptionsJson))
+            : null,
+        repeatPauses: repeatPausesJson
+            ? taskRepeatPauseSchema.array().parse(JSON.parse(repeatPausesJson))
+            : null,
     }));
 }
 export async function habitRecords(

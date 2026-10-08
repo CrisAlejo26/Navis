@@ -57,7 +57,11 @@ export function RepeatFields({
                     label={t('tasks.repeat')}
                     value={value.freq}
                     onChange={(event) => {
-                        onChange({ ...value, freq: event.target.value as TaskRepeatFreq, options: null });
+                        onChange({
+                            ...value,
+                            freq: event.target.value as TaskRepeatFreq,
+                            options: null,
+                        });
                     }}
                 >
                     {TASK_REPEAT_FREQS.map((freq) => (

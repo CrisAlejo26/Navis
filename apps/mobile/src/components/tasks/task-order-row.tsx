@@ -3,6 +3,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import type { Task } from '@navis/shared';
 import { IconButton } from '@/components/ui/icon-button';
+import { elevation } from '@/lib/ui/elevation';
 import { TaskTagBadges } from './task-tag-badges';
 import { useTaskPalette } from './task-theme';
 import { activityCardSurface } from './task-card-surface';
@@ -47,12 +48,13 @@ export function TaskOrderRow({
                 marginBottom: 12,
                 padding: 14,
                 borderRadius: 26,
-                borderWidth: selected ? 2 : 1,
-                borderColor: selected ? p.primary : surface.border,
+                borderWidth: selected || drag.lifted ? 2 : 1,
+                borderColor: selected || drag.lifted ? p.primary : surface.border,
                 backgroundColor: surface.background,
-                gap: 8,
-                transform: [{ translateY: drag.offset }],
-                zIndex: drag.offset ? 10 : 0,
+                gap: 4,
+                transform: [{ translateY: drag.offset }, { scale: drag.lifted ? 1.02 : 1 }],
+                zIndex: drag.lifted ? 10 : 0,
+                ...(drag.lifted ? elevation('floating', p.primary, p.dark) : {}),
             }}
         >
             <View className="gap-3 flex-row items-center">
@@ -70,15 +72,15 @@ export function TaskOrderRow({
                         minHeight: 44,
                     }}
                 >
-                    <Text className="font-sans-bold text-lg text-primary">{index + 1}</Text>
-                    <View style={{ flex: 1, gap: 4 }}>
-                        <Text className="font-sans-semibold text-[15px] text-foreground">
-                            {task.title}
-                        </Text>
-                        <View className="gap-1 flex-row flex-wrap">
-                            <TaskTagBadges tags={task.tags} />
-                        </View>
-                    </View>
+                    <Text
+                        className="font-sans-bold text-lg text-center text-primary"
+                        style={{ width: 28 }}
+                    >
+                        {index + 1}
+                    </Text>
+                    <Text className="font-sans-semibold flex-1 text-[15px] text-foreground">
+                        {task.title}
+                    </Text>
                 </Pressable>
                 <View
                     {...drag.handlers}
@@ -99,19 +101,24 @@ export function TaskOrderRow({
                     />
                 </View>
             </View>
-            <View className="flex-row justify-end">
-                <IconButton
-                    icon="chevron-up"
-                    accessibilityLabel={`${t('tasks.orderUp')}: ${task.title}`}
-                    disabled={busy || index === 0}
-                    onPress={() => move(index - 1)}
-                />
-                <IconButton
-                    icon="chevron-down"
-                    accessibilityLabel={`${t('tasks.orderDown')}: ${task.title}`}
-                    disabled={busy || index === total - 1}
-                    onPress={() => move(index + 1)}
-                />
+            <View className="flex-row items-center justify-between" style={{ paddingLeft: 40 }}>
+                <View className="gap-1 flex-1 flex-row flex-wrap">
+                    <TaskTagBadges tags={task.tags} />
+                </View>
+                <View className="flex-row">
+                    <IconButton
+                        icon="chevron-up"
+                        accessibilityLabel={`${t('tasks.orderUp')}: ${task.title}`}
+                        disabled={busy || index === 0}
+                        onPress={() => move(index - 1)}
+                    />
+                    <IconButton
+                        icon="chevron-down"
+                        accessibilityLabel={`${t('tasks.orderDown')}: ${task.title}`}
+                        disabled={busy || index === total - 1}
+                        onPress={() => move(index + 1)}
+                    />
+                </View>
             </View>
         </View>
     );

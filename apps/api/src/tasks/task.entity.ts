@@ -1,5 +1,12 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import type { TaskPriority, TaskRepeatEndType, TaskRepeatFreq, TaskStatus, TaskRepeatOptions, TaskRepeatPause } from '@navis/shared';
+import type {
+    TaskPriority,
+    TaskRepeatEndType,
+    TaskRepeatFreq,
+    TaskStatus,
+    TaskRepeatOptions,
+    TaskRepeatPause,
+} from '@navis/shared';
 import { Column, Entity, Index, OneToMany } from 'typeorm';
 
 import { BaseEntity } from '../common/entities/base.entity';

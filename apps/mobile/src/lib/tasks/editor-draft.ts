@@ -100,7 +100,8 @@ export function draftInput(draft: ActivityDraft, timezone: string, _previous?: T
                   repeatOptions: draft.repeatOptions,
                   repeatEndType: draft.repeatEndType,
                   repeatEndDate: draft.repeatEndType === 'fecha' ? draft.repeatEndDate : undefined,
-                  repeatEndCount: draft.repeatEndType === 'cantidad' ? draft.repeatEndCount : undefined,
+                  repeatEndCount:
+                      draft.repeatEndType === 'cantidad' ? draft.repeatEndCount : undefined,
               }),
           };
 }

@@ -76,7 +76,8 @@ export function TaskSeriesScreen() {
                 ListEmptyComponent={
                     <EmptyState
                         icon="repeat-outline"
-                        title={t('tasks.noTasks')}
+                        title={t('tasks.seriesEmpty')}
+                        description={t('tasks.seriesEmptyHint')}
                         action={{
                             label: t('tasks.add'),
                             onPress: () => router.push('/tasks/edit'),

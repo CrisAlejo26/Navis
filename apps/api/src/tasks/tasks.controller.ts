@@ -100,17 +100,31 @@ export class TasksController {
     }
 
     @Get('templates')
-    templates(@CurrentChurch() churchId: string, @CurrentUser('id') ownerId: string, @Query() query: TasksQueryDto, @Query('recurring') recurring?: string): Promise<Paginated<TaskView>> {
+    templates(
+        @CurrentChurch() churchId: string,
+        @CurrentUser('id') ownerId: string,
+        @Query() query: TasksQueryDto,
+        @Query('recurring') recurring?: string,
+    ): Promise<Paginated<TaskView>> {
         return this.series.list(churchId, ownerId, recurring === 'true', query.page, query.limit);
     }
 
     @Put('order')
-    async order(@CurrentChurch() churchId: string, @CurrentUser('id') ownerId: string, @Body() dto: TaskOrderDto): Promise<void> {
+    async order(
+        @CurrentChurch() churchId: string,
+        @CurrentUser('id') ownerId: string,
+        @Body() dto: TaskOrderDto,
+    ): Promise<void> {
         await this.series.order(churchId, ownerId, dto.ids);
     }
 
     @Put(':id/series')
-    async seriesAction(@CurrentChurch() churchId: string, @CurrentUser('id') ownerId: string, @Param('id') id: string, @Body() dto: TaskSeriesActionDto): Promise<void> {
+    async seriesAction(
+        @CurrentChurch() churchId: string,
+        @CurrentUser('id') ownerId: string,
+        @Param('id') id: string,
+        @Body() dto: TaskSeriesActionDto,
+    ): Promise<void> {
         await this.series.action(churchId, ownerId, id, dto);
     }
 

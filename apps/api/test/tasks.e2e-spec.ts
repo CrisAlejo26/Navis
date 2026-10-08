@@ -265,48 +265,154 @@ describe('Tareas y hábitos (e2e)', () => {
 
     describe('repetición avanzada, series y orden', () => {
         it('persiste las cinco formas, expande días seleccionados y rechaza opciones incompatibles', async () => {
-            const created = body<Task>(await post('/api/v1/tasks', { title: 'Visitas semanales', date: '2026-10-06', isRecurring: true, repeatFreq: 'semanal', repeatInterval: 2, repeatOptions: { kind: 'weekdays', weekdays: [1, 3, 5] }, repeatEndType: 'cantidad', repeatEndCount: 3 }).expect(201));
-            const page = body<Paginated<TaskOccurrence>>(await get('/api/v1/tasks?from=2026-10-06&to=2026-10-23&hideCompleted=false&limit=100').expect(200));
-            expect(page.items.filter((row) => row.taskId === created.id).map((row) => row.date)).toEqual(['2026-10-07', '2026-10-09', '2026-10-19']);
-            for (const repeatOptions of [{ kind: 'monthDay', day: 31 }, { kind: 'monthWeekday', week: -1, weekday: 0 }]) {
-                const task = body<Task>(await post('/api/v1/tasks', { title: 'Mensual', date: '2026-10-06', isRecurring: true, repeatFreq: 'mensual', repeatOptions }).expect(201));
-                expect(body<Task>(await get(`/api/v1/tasks/${task.id}`).expect(200)).repeatOptions).toEqual(repeatOptions);
+            const created = body<Task>(
+                await post('/api/v1/tasks', {
+                    title: 'Visitas semanales',
+                    date: '2026-10-06',
+                    isRecurring: true,
+                    repeatFreq: 'semanal',
+                    repeatInterval: 2,
+                    repeatOptions: { kind: 'weekdays', weekdays: [1, 3, 5] },
+                    repeatEndType: 'cantidad',
+                    repeatEndCount: 3,
+                }).expect(201),
+            );
+            const page = body<Paginated<TaskOccurrence>>(
+                await get(
+                    '/api/v1/tasks?from=2026-10-06&to=2026-10-23&hideCompleted=false&limit=100',
+                ).expect(200),
+            );
+            expect(
+                page.items.filter((row) => row.taskId === created.id).map((row) => row.date),
+            ).toEqual(['2026-10-07', '2026-10-09', '2026-10-19']);
+            for (const repeatOptions of [
+                { kind: 'monthDay', day: 31 },
+                { kind: 'monthWeekday', week: -1, weekday: 0 },
+            ]) {
+                const task = body<Task>(
+                    await post('/api/v1/tasks', {
+                        title: 'Mensual',
+                        date: '2026-10-06',
+                        isRecurring: true,
+                        repeatFreq: 'mensual',
+                        repeatOptions,
+                    }).expect(201),
+                );
+                expect(
+                    body<Task>(await get(`/api/v1/tasks/${task.id}`).expect(200)).repeatOptions,
+                ).toEqual(repeatOptions);
             }
             await patch(`/api/v1/tasks/${created.id}`, { repeatFreq: 'diaria' }).expect(422);
-            await post('/api/v1/tasks', { title: 'Regla inválida', date: today, isRecurring: true, repeatFreq: 'semanal', repeatOptions: { kind: 'weekdays', weekdays: [7] } }).expect(422);
-            await post('/api/v1/tasks', { title: 'Sin fechas', date: today, isRecurring: true, repeatFreq: 'fechas' }).expect(422);
+            await post('/api/v1/tasks', {
+                title: 'Regla inválida',
+                date: today,
+                isRecurring: true,
+                repeatFreq: 'semanal',
+                repeatOptions: { kind: 'weekdays', weekdays: [7] },
+            }).expect(422);
+            await post('/api/v1/tasks', {
+                title: 'Sin fechas',
+                date: today,
+                isRecurring: true,
+                repeatFreq: 'fechas',
+            }).expect(422);
         });
         it('pausa y termina conservando histórico y permitiendo reabrirlo', async () => {
-            const task = body<Task>(await post('/api/v1/tasks', { title: 'Serie con histórico', date: '2026-10-05', isRecurring: true, repeatFreq: 'diaria' }).expect(201));
-            await put(`/api/v1/tasks/${task.id}/occurrences/2026-10-06`, { status: 'completada' }).expect(200);
-            await put(`/api/v1/tasks/${task.id}/series`, { action: 'pause', date: '2026-10-06' }).expect(200);
-            await put(`/api/v1/tasks/${task.id}/occurrences/2026-10-07`, { status: 'completada' }).expect(422);
-            await put(`/api/v1/tasks/${task.id}/occurrences/2026-10-06`, { status: 'pendiente' }).expect(200);
-            await put(`/api/v1/tasks/${task.id}/series`, { action: 'resume', date: '2026-10-08' }).expect(200);
-            await put(`/api/v1/tasks/${task.id}/series`, { action: 'finish', date: '2026-10-09' }).expect(200);
-            const range = body<Paginated<TaskOccurrence>>(await get('/api/v1/tasks?from=2026-10-05&to=2026-10-10&hideCompleted=false&limit=100').expect(200));
-            expect(range.items.filter((row) => row.taskId === task.id).map((row) => row.date)).toEqual(['2026-10-05', '2026-10-06', '2026-10-08']);
-            const templates = body<Paginated<Task>>(await get('/api/v1/tasks/templates?recurring=true&limit=100').expect(200));
-            expect(templates.items.find((row) => row.id === task.id)?.repeatStoppedAt).toBe('2026-10-09');
-            await put(`/api/v1/tasks/${task.id}/series`, { action: 'resume', date: '2026-10-10' }).expect(422);
+            const task = body<Task>(
+                await post('/api/v1/tasks', {
+                    title: 'Serie con histórico',
+                    date: '2026-10-05',
+                    isRecurring: true,
+                    repeatFreq: 'diaria',
+                }).expect(201),
+            );
+            await put(`/api/v1/tasks/${task.id}/occurrences/2026-10-06`, {
+                status: 'completada',
+            }).expect(200);
+            await put(`/api/v1/tasks/${task.id}/series`, {
+                action: 'pause',
+                date: '2026-10-06',
+            }).expect(200);
+            await put(`/api/v1/tasks/${task.id}/occurrences/2026-10-07`, {
+                status: 'completada',
+            }).expect(422);
+            await put(`/api/v1/tasks/${task.id}/occurrences/2026-10-06`, {
+                status: 'pendiente',
+            }).expect(200);
+            await put(`/api/v1/tasks/${task.id}/series`, {
+                action: 'resume',
+                date: '2026-10-08',
+            }).expect(200);
+            await put(`/api/v1/tasks/${task.id}/series`, {
+                action: 'finish',
+                date: '2026-10-09',
+            }).expect(200);
+            const range = body<Paginated<TaskOccurrence>>(
+                await get(
+                    '/api/v1/tasks?from=2026-10-05&to=2026-10-10&hideCompleted=false&limit=100',
+                ).expect(200),
+            );
+            expect(
+                range.items.filter((row) => row.taskId === task.id).map((row) => row.date),
+            ).toEqual(['2026-10-05', '2026-10-06', '2026-10-08']);
+            const templates = body<Paginated<Task>>(
+                await get('/api/v1/tasks/templates?recurring=true&limit=100').expect(200),
+            );
+            expect(templates.items.find((row) => row.id === task.id)?.repeatStoppedAt).toBe(
+                '2026-10-09',
+            );
+            await put(`/api/v1/tasks/${task.id}/series`, {
+                action: 'resume',
+                date: '2026-10-10',
+            }).expect(422);
         });
         it('fechas concretas y reglas editadas conservan las ocurrencias materializadas', async () => {
-            const task = body<Task>(await post('/api/v1/tasks', { title: 'Fechas', date: '2026-10-05', isRecurring: true, repeatFreq: 'fechas', repeatOptions: { kind: 'dates', dates: ['2026-10-07', '2026-10-09'] } }).expect(201));
-            await put(`/api/v1/tasks/${task.id}/occurrences/2026-10-07`, { status: 'completada' }).expect(200);
-            await patch(`/api/v1/tasks/${task.id}`, { repeatOptions: { kind: 'dates', dates: ['2026-10-10'] } }).expect(200);
-            const range = body<Paginated<TaskOccurrence>>(await get('/api/v1/tasks?from=2026-10-05&to=2026-10-10&hideCompleted=false&limit=100').expect(200));
-            expect(range.items.filter((row) => row.taskId === task.id).map((row) => row.date)).toEqual(['2026-10-07', '2026-10-10']);
+            const task = body<Task>(
+                await post('/api/v1/tasks', {
+                    title: 'Fechas',
+                    date: '2026-10-05',
+                    isRecurring: true,
+                    repeatFreq: 'fechas',
+                    repeatOptions: { kind: 'dates', dates: ['2026-10-07', '2026-10-09'] },
+                }).expect(201),
+            );
+            await put(`/api/v1/tasks/${task.id}/occurrences/2026-10-07`, {
+                status: 'completada',
+            }).expect(200);
+            await patch(`/api/v1/tasks/${task.id}`, {
+                repeatOptions: { kind: 'dates', dates: ['2026-10-10'] },
+            }).expect(200);
+            const range = body<Paginated<TaskOccurrence>>(
+                await get(
+                    '/api/v1/tasks?from=2026-10-05&to=2026-10-10&hideCompleted=false&limit=100',
+                ).expect(200),
+            );
+            expect(
+                range.items.filter((row) => row.taskId === task.id).map((row) => row.date),
+            ).toEqual(['2026-10-07', '2026-10-10']);
         });
         it('guarda el orden de forma atómica y rechaza referencias ajenas o duplicadas', async () => {
-            const first = body<Task>(await post('/api/v1/tasks', { title: 'Orden A', date: today }).expect(201));
-            const second = body<Task>(await post('/api/v1/tasks', { title: 'Orden B', date: today }).expect(201));
+            const first = body<Task>(
+                await post('/api/v1/tasks', { title: 'Orden A', date: today }).expect(201),
+            );
+            const second = body<Task>(
+                await post('/api/v1/tasks', { title: 'Orden B', date: today }).expect(201),
+            );
             await put('/api/v1/tasks/order', { ids: [second.id, first.id] }).expect(200);
             await patch(`/api/v1/tasks/${second.id}`, { title: 'Orden B editado' }).expect(200);
-            const range = body<Paginated<TaskOccurrence>>(await get(`/api/v1/tasks?from=${today}&to=${today}&sort=manual&hideCompleted=false&limit=100`).expect(200));
+            const range = body<Paginated<TaskOccurrence>>(
+                await get(
+                    `/api/v1/tasks?from=${today}&to=${today}&sort=manual&hideCompleted=false&limit=100`,
+                ).expect(200),
+            );
             expect(range.items.slice(0, 2).map((row) => row.taskId)).toEqual([second.id, first.id]);
-            await put('/api/v1/tasks/order', { ids: [first.id, '00000000-0000-4000-8000-000000000000'] }).expect(422);
+            await put('/api/v1/tasks/order', {
+                ids: [first.id, '00000000-0000-4000-8000-000000000000'],
+            }).expect(422);
             await put('/api/v1/tasks/order', { ids: [first.id, first.id] }).expect(400);
-            expect(body<Task>(await get(`/api/v1/tasks/${second.id}`).expect(200)).manualOrder).toBe(0);
+            expect(
+                body<Task>(await get(`/api/v1/tasks/${second.id}`).expect(200)).manualOrder,
+            ).toBe(0);
         });
     });
 

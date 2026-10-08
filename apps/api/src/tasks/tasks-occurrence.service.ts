@@ -28,7 +28,8 @@ export class TasksOccurrenceService {
         status: TaskStatus,
     ): Promise<void> {
         const task = await this.tasksService.require(churchId, ownerId, taskId);
-        if (!isoDateSchema.safeParse(date).success) throw new UnprocessableEntityException('invalid-date');
+        if (!isoDateSchema.safeParse(date).success)
+            throw new UnprocessableEntityException('invalid-date');
         const completedAt = status === 'completada' ? new Date() : null;
 
         if (!task.isRecurring) {
@@ -40,7 +41,8 @@ export class TasksOccurrenceService {
         }
 
         let occurrence = await this.occurrences.findOne({ where: { taskId, date } });
-        if (!occurrence && !taskAppliesOn(task, date)) throw new UnprocessableEntityException('invalid-occurrence');
+        if (!occurrence && !taskAppliesOn(task, date))
+            throw new UnprocessableEntityException('invalid-occurrence');
         occurrence ??= this.occurrences.create({ taskId, date });
         occurrence.status = status;
         occurrence.completedAt = completedAt;

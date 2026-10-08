@@ -47,7 +47,11 @@ export function matchingActivities<T extends TaskOccurrence | HabitOccurrence>(
     });
     const weight = { alta: 0, media: 1, baja: 2 };
     filtered.sort((a, b) => {
-        if (query.sort === 'manual') return ('manualOrder' in a ? (a.manualOrder ?? Infinity) : Infinity) - ('manualOrder' in b ? (b.manualOrder ?? Infinity) : Infinity) || compare(a, b);
+        if (query.sort === 'manual')
+            return (
+                ('manualOrder' in a ? (a.manualOrder ?? Infinity) : Infinity) -
+                    ('manualOrder' in b ? (b.manualOrder ?? Infinity) : Infinity) || compare(a, b)
+            );
         if (query.sort === 'alphabetical') return a.title.localeCompare(b.title) || compare(a, b);
         if (query.sort === 'recent') return b.createdAt.localeCompare(a.createdAt) || compare(a, b);
         if (query.sort === 'priority' && 'priority' in a && 'priority' in b)

@@ -1,61 +1,22 @@
-import { useEffect, useRef, useState } from 'react';
-import { Alert, FlatList, Text, View } from 'react-native';
+import { FlatList, View } from 'react-native';
 import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { moveInTaskOrder, moveSelectedTasks, type Task } from '@navis/shared';
+import { moveInTaskOrder, moveSelectedTasks } from '@navis/shared';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AppBar } from '@/components/ui/app-bar';
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
-import { useTaskTemplates, useTaskOrder } from '@/hooks/use-task-series';
 import { ActivityQueryState } from './activity-query-state';
+import { TaskOrderHeader } from './task-order-header';
 import { TaskOrderRow } from './task-order-row';
 import { TaskListSkeleton } from './task-loading';
+import { useTaskOrderScreen } from './use-task-order';
+
 export function TaskOrderScreen() {
     const { t } = useTranslation(),
         insets = useSafeAreaInsets(),
-        query = useTaskTemplates(false),
-        mutation = useTaskOrder();
-    const [items, setItems] = useState<Task[]>([]),
-        [selected, setSelected] = useState<string[]>([]),
-        [dragging, setDragging] = useState(false);
-    const refs = useRef(new Map<string, View>()),
-        bounds = useRef(new Map<string, number>());
-    useEffect(() => {
-        const loaded = query.data?.pages.flatMap((page) => page.items) ?? [];
-        setItems((previous) => [
-            ...previous,
-            ...loaded.filter((task) => !previous.some((row) => row.id === task.id)),
-        ]);
-    }, [query.data]);
-    function start() {
-        setDragging(true);
-        bounds.current.clear();
-        for (const [id, node] of refs.current)
-            node.measureInWindow((_x, y, _width, height) => bounds.current.set(id, y + height / 2));
-    }
-    function drop(from: number, pageY: number) {
-        const target = [...bounds.current].sort(
-            (a, b) => Math.abs(a[1] - pageY) - Math.abs(b[1] - pageY),
-        )[0]?.[0];
-        if (target)
-            setItems((previous) =>
-                moveInTaskOrder(
-                    previous,
-                    from,
-                    previous.findIndex((row) => row.id === target),
-                ),
-            );
-        setDragging(false);
-    }
-    async function save() {
-        try {
-            await mutation.mutateAsync({ ids: items.map((task) => task.id) });
-            router.replace({ pathname: '/tasks/list', params: { sort: 'manual' } });
-        } catch {
-            Alert.alert(t('tasks.saveFailed'), t('errors.generic'));
-        }
-    }
+        o = useTaskOrderScreen(),
+        { query, mutation, items, setItems } = o;
     if (query.isPending || query.isError)
         return (
             <ActivityQueryState
@@ -70,7 +31,7 @@ export function TaskOrderScreen() {
         <View className="flex-1 bg-background">
             <AppBar title={t('tasks.orderTasks')} />
             <FlatList
-                scrollEnabled={!dragging}
+                scrollEnabled={!o.dragging}
                 data={items}
                 keyExtractor={(task) => task.id}
                 contentContainerStyle={{
@@ -80,54 +41,29 @@ export function TaskOrderScreen() {
                     alignSelf: 'center',
                 }}
                 ListHeaderComponent={
-                    <View className="gap-3 pb-4">
-                        <Text className="font-sans text-sm text-muted-foreground">
-                            {t('tasks.orderHint')}
-                        </Text>
-                        {selected.length > 0 && (
-                            <View className="gap-2 flex-row flex-wrap">
-                                {([-1, 1] as const).map((direction) => (
-                                    <Button
-                                        key={direction}
-                                        title={t(
-                                            direction === -1 ? 'tasks.orderUp' : 'tasks.orderDown',
-                                        )}
-                                        size="sm"
-                                        variant="outline"
-                                        disabled={mutation.isPending}
-                                        onPress={() =>
-                                            setItems((previous) =>
-                                                moveSelectedTasks(previous, selected, direction),
-                                            )
-                                        }
-                                    />
-                                ))}
-                            </View>
-                        )}
-                    </View>
+                    <TaskOrderHeader
+                        selectedCount={o.selected.length}
+                        busy={mutation.isPending}
+                        onMove={(direction) =>
+                            setItems((previous) =>
+                                moveSelectedTasks(previous, o.selected, direction),
+                            )
+                        }
+                    />
                 }
                 renderItem={({ item, index }) => (
                     <TaskOrderRow
                         task={item}
                         index={index}
                         total={items.length}
-                        selected={selected.includes(item.id)}
+                        selected={o.selected.includes(item.id)}
                         busy={mutation.isPending}
-                        select={() =>
-                            setSelected((ids) =>
-                                ids.includes(item.id)
-                                    ? ids.filter((id) => id !== item.id)
-                                    : [...ids, item.id],
-                            )
-                        }
+                        select={() => o.toggle(item.id)}
                         move={(to) => setItems((previous) => moveInTaskOrder(previous, index, to))}
-                        start={start}
-                        drop={(y) => drop(index, y)}
-                        cancel={() => setDragging(false)}
-                        rowRef={(node) => {
-                            if (node) refs.current.set(item.id, node);
-                            else refs.current.delete(item.id);
-                        }}
+                        start={o.start}
+                        drop={(y) => o.drop(index, y)}
+                        cancel={() => o.setDragging(false)}
+                        rowRef={o.registerRow(item.id)}
                     />
                 )}
                 ListEmptyComponent={
@@ -140,7 +76,6 @@ export function TaskOrderScreen() {
                         <Button
                             title={t('notes.loadMore')}
                             variant="outline"
-                            loading={query.isFetchingNextPage}
                             onPress={() => void query.fetchNextPage()}
                         />
                     ) : null
@@ -150,8 +85,8 @@ export function TaskOrderScreen() {
                 <Button
                     title={t('common.save')}
                     loading={mutation.isPending}
-                    disabled={!items.length || dragging}
-                    onPress={() => void save()}
+                    disabled={!items.length || o.dragging}
+                    onPress={() => void o.save()}
                 />
                 <Button
                     title={t('common.cancel')}

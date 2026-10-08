@@ -85,6 +85,7 @@ function fields(data: CreateTaskInput): ActivityFields {
         repeat_end_type: data.isRecurring ? (data.repeatEndType ?? 'nunca') : null,
         repeat_end_date: data.repeatEndDate ?? null,
         repeat_end_count: data.repeatEndCount ?? null,
-        repeat_options: data.isRecurring && data.repeatOptions ? JSON.stringify(data.repeatOptions) : null,
+        repeat_options:
+            data.isRecurring && data.repeatOptions ? JSON.stringify(data.repeatOptions) : null,
     };
 }

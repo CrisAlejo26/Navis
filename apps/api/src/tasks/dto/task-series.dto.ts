@@ -1,5 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ArrayMaxSize, ArrayMinSize, ArrayUnique, IsArray, IsIn, IsISO8601, IsUUID, Length } from 'class-validator';
+import {
+    ArrayMaxSize,
+    ArrayMinSize,
+    ArrayUnique,
+    IsArray,
+    IsIn,
+    IsISO8601,
+    IsUUID,
+    Length,
+} from 'class-validator';
 export class TaskSeriesActionDto {
     @ApiProperty({ enum: ['pause', 'resume', 'finish'] })
     @IsIn(['pause', 'resume', 'finish'])
