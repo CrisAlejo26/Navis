@@ -18,6 +18,8 @@ interface BottomSheetProps {
     children: ReactNode;
     scrollable?: boolean;
     showCloseButton?: boolean;
+    fullScreen?: boolean;
+    footer?: ReactNode;
 }
 
 /**
@@ -52,6 +54,8 @@ export function BottomSheet({
     children,
     scrollable = true,
     showCloseButton = true,
+    fullScreen = false,
+    footer,
 }: BottomSheetProps) {
     const { t } = useTranslation();
     const insets = useSafeAreaInsets();
@@ -67,28 +71,46 @@ export function BottomSheet({
     return (
         <Modal
             visible={visible}
-            transparent
+            transparent={!fullScreen}
             animationType={reducedMotion ? 'none' : 'fade'}
             onRequestClose={onClose}
             statusBarTranslucent
             navigationBarTranslucent
         >
-            <View className="flex-1">
-                <Pressable
-                    accessibilityLabel={t('common.close')}
-                    onPress={onClose}
-                    className="inset-0 bg-black absolute opacity-35"
-                />
+            <View
+                className={theme === 'dark' ? 'dark flex-1' : 'flex-1'}
+                style={
+                    fullScreen ? { backgroundColor: themeColorsHex[theme].background } : undefined
+                }
+            >
+                {!fullScreen && (
+                    <Pressable
+                        accessibilityLabel={t('common.close')}
+                        onPress={onClose}
+                        className="inset-0 bg-black absolute opacity-35"
+                    />
+                )}
                 <Animated.View
                     entering={
                         reducedMotion ? undefined : FadeInDown.duration(120).springify().damping(30)
                     }
-                    className="inset-x-0 bottom-0 gap-3 px-4 pt-4 rounded-t-3xl absolute bg-card"
+                    className={
+                        fullScreen
+                            ? 'inset-x-0 gap-3 px-4 pt-4 absolute bg-background'
+                            : 'inset-x-0 bottom-0 gap-3 px-4 pt-4 rounded-t-3xl absolute bg-card'
+                    }
                     // Con el teclado abierto la hoja se apoya en él, no en el borde de la
                     // pantalla, y ya no hay barra de gestos debajo.
                     style={{
-                        ...elevation('sheet', themeColorsHex[theme].foreground, theme === 'dark'),
-                        bottom: keyboard,
+                        ...(fullScreen
+                            ? {}
+                            : elevation(
+                                  'sheet',
+                                  themeColorsHex[theme].foreground,
+                                  theme === 'dark',
+                              )),
+                        top: fullScreen ? insets.top : undefined,
+                        bottom: keyboard + (fullScreen && keyboard > 0 ? insets.bottom : 0),
                         paddingBottom: keyboard > 0 ? 16 : insets.bottom + 16,
                     }}
                 >
@@ -106,7 +128,7 @@ export function BottomSheet({
                     ) : null}
                     {scrollable ? (
                         <ScrollView
-                            style={{ maxHeight: bodyMaxHeight }}
+                            style={fullScreen ? { flex: 1 } : { maxHeight: bodyMaxHeight }}
                             keyboardShouldPersistTaps="handled"
                             showsVerticalScrollIndicator={false}
                         >
@@ -115,6 +137,7 @@ export function BottomSheet({
                     ) : (
                         <View style={{ maxHeight: bodyMaxHeight }}>{children}</View>
                     )}
+                    {footer}
                 </Animated.View>
             </View>
         </Modal>

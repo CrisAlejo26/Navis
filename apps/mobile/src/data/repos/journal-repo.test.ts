@@ -1,3 +1,4 @@
+import { toExcerpt } from '@navis/shared';
 import { setupLocalDb } from '@/data/test-support';
 import { getDb, setDbForTests } from '@/data/db';
 import { openDatabaseAsync } from 'expo-sqlite';
@@ -53,7 +54,7 @@ describe('cuaderno local: datos completos, permisos y avisos', () => {
     });
     it('crea y edita todos los campos sin sustituir el cuerpo por el extracto', async () => {
         const id = await createJournalEntry(north, input);
-        expect((await listJournal(north, {})).items[0]?.excerpt.length).toBe(240);
+        expect((await listJournal(north, {})).items[0]?.excerpt).toBe(toExcerpt(input.annotation));
         await updateJournalEntry(north, id, { title: 'Título cambiado' });
         const entry = await findJournalEntry(north, id);
         expect(entry?.annotation).toBe(input.annotation.trim());

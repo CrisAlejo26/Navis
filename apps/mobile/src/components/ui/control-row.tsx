@@ -4,6 +4,7 @@ import { Pressable, Text, View } from 'react-native';
 import { cn } from '@/lib/cn';
 
 interface ControlRowProps {
+    testID?: string;
     label: string;
     description?: string;
     onPress: () => void;
@@ -23,6 +24,7 @@ interface ControlRowProps {
  * (Regla 5 punto 4) — por eso el control que se pasa siempre va decorativo.
  */
 export function ControlRow({
+    testID,
     label,
     description,
     onPress,
@@ -35,6 +37,7 @@ export function ControlRow({
 }: ControlRowProps) {
     return (
         <Pressable
+            testID={testID}
             accessibilityRole={accessibilityRole}
             accessibilityLabel={label}
             accessibilityState={{ disabled, checked, selected }}

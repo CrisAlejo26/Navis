@@ -1249,6 +1249,9 @@ export const de = {
     },
     journal: {
         mobile: {
+            applyCount: 'Anwenden ({{count}})',
+            deleteMany: 'Einträge löschen ({{count}})',
+            noResultsBody: 'Versuche andere Filter oder setze das Notizbuch zurück.',
             olderMonths: 'Vorherige sechs Monate',
             newerMonths: 'Nächste sechs Monate',
             recent: 'Neueste Einträge',

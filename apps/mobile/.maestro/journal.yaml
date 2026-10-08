@@ -1,0 +1,99 @@
+appId: org.navis.app
+name: Cuaderno - crear editar buscar atender y borrar
+env:
+    REMINDER: ${REMINDER || 'Recordatorio'}
+    WHEN: ${WHEN || 'Cuándo'}
+    ATTENDED: ${ATTENDED || 'Atendido'}
+    SHARE_IMAGE: ${SHARE_IMAGE || 'Compartir imagen'}
+---
+- evalScript: ${output.title = 'QA Maestro ' + Date.now()}
+- launchApp:
+      clearState: false
+- openLink: navis://journal/list
+- extendedWaitUntil:
+      visible:
+          id: journal-add
+      timeout: 60000
+- tapOn:
+      id: journal-add
+- tapOn:
+      id: journal-title
+- inputText: ${output.title}
+- tapOn:
+      id: journal-annotation
+- inputText: Conversacion de prueba completa
+- takeScreenshot: editor-teclado
+- hideKeyboard
+- scrollUntilVisible:
+      element:
+          text: ${REMINDER}
+      direction: DOWN
+- tapOn: ${REMINDER}
+- scrollUntilVisible:
+      element:
+          id: journal-reminder-enabled
+      direction: DOWN
+- tapOn:
+      id: journal-reminder-enabled
+- scrollUntilVisible:
+      element:
+          text: ${WHEN}
+      direction: DOWN
+- tapOn: ${WHEN}
+- tapOn: ${REMINDER_DAY}
+- tapOn:
+      id: journal-save
+- extendedWaitUntil:
+      visible: ${output.title}
+      timeout: 15000
+- tapOn: ${output.title}
+- assertVisible:
+      id: journal-edit
+- takeScreenshot: detalle
+- tapOn:
+      id: journal-edit
+- tapOn:
+      id: journal-title
+- eraseText
+- inputText: ${output.title + ' editada'}
+- tapOn:
+      id: journal-save
+- assertVisible:
+      id: journal-edit
+- scrollUntilVisible:
+      element:
+          id: journal-attend
+      direction: DOWN
+- tapOn:
+      id: journal-attend
+- assertVisible: ${ATTENDED}
+- takeScreenshot: atendido
+- scrollUntilVisible:
+      element:
+          text: ${SHARE_IMAGE}
+      direction: DOWN
+- tapOn: ${SHARE_IMAGE}
+- assertVisible: Sharing image
+- takeScreenshot: compartir-imagen
+- back
+- scrollUntilVisible:
+      element:
+          id: journal-delete
+      direction: DOWN
+- tapOn:
+      id: journal-delete
+- assertVisible:
+      id: confirmation-confirm
+- takeScreenshot: confirmacion-reutilizada
+- tapOn:
+      id: confirmation-confirm
+- extendedWaitUntil:
+      visible:
+          id: journal-search
+      timeout: 15000
+- tapOn:
+      id: journal-search
+- inputText: ${output.title}
+- hideKeyboard
+- assertNotVisible: ${output.title + ' editada'}
+- takeScreenshot: borrado

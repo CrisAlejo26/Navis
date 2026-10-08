@@ -1,5 +1,9 @@
 import {
-    ENTRY_KINDS,
+    journalSearchText,
+    journalWindowStart,
+    summarizeJournal,
+    toExcerpt,
+    toSearchName,
     createEntrySchema,
     updateEntrySchema,
     type CreateEntryInput,
@@ -36,37 +40,27 @@ interface Row {
 }
 const columns = 'e.*, u.name AS author_name';
 const source = 'journal_entries e LEFT JOIN local_user u ON u.id = e.author_id';
-const normalize = (text: string) =>
-    text
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .toLowerCase();
-const searchText = (title: string, annotation: string, learned: string | null | undefined) =>
-    normalize([title, annotation, learned ?? ''].join(' '));
 
 function filters(context: JournalContext, query: JournalQuery) {
     const clauses = ['e.church_id = ?', 'e.deleted_at IS NULL'];
     const params: (string | number)[] = [context.churchId];
     if (query.search?.trim()) {
         clauses.push("e.search_text LIKE ? ESCAPE '\\'");
-        params.push(`%${normalize(query.search.trim()).replace(/[\\%_]/g, '\\$&')}%`);
+        params.push(`%${toSearchName(query.search.trim()).replace(/[\\%_]/g, '\\$&')}%`);
     }
     if (query.kind?.length) {
         clauses.push(`e.kind IN (${query.kind.map(() => '?').join(',')})`);
         params.push(...query.kind);
     }
     const today = todayIso();
-    if (query.window && query.window !== 'all') {
-        const start = new Date(`${today}T12:00:00`);
-        if (query.window === 'year') start.setMonth(0, 1);
-        else start.setDate(start.getDate() - (query.window === '7d' ? 6 : 29));
-        const day = `${start.getFullYear()}-${String(start.getMonth() + 1).padStart(2, '0')}-${String(start.getDate()).padStart(2, '0')}`;
-        clauses.push('e.occurred_at >= ? AND e.occurred_at <= ?');
-        params.push(day, today);
-    }
-    if (query.from) {
+    const from = query.from ?? journalWindowStart(query.window ?? 'all', today);
+    if (from) {
         clauses.push('e.occurred_at >= ?');
-        params.push(query.from);
+        params.push(from);
+    }
+    if (!query.to && query.window && query.window !== 'all') {
+        clauses.push('e.occurred_at <= ?');
+        params.push(today);
     }
     if (query.to) {
         clauses.push('e.occurred_at <= ?');
@@ -78,7 +72,7 @@ function filters(context: JournalContext, query: JournalQuery) {
 export async function listJournal(context: JournalContext, query: JournalQuery) {
     const db = await journalDb(context);
     const { where, params } = filters(context, query);
-    const sort = { date: 'e.occurred_at', title: 'e.title COLLATE NOCASE', kind: 'e.kind' }[
+    const sort = { date: 'e.occurred_at', title: 'LOWER(e.title)', kind: 'e.kind' }[
         query.sort ?? 'date'
     ];
     const order = query.order === 'asc' ? 'ASC' : 'DESC';
@@ -92,7 +86,7 @@ export async function listJournal(context: JournalContext, query: JournalQuery) 
             )
         )?.total ?? 0;
     const rows = await db.getAllAsync<Row & { audio_count: number }>(
-        `SELECT ${columns}, (SELECT COUNT(*) FROM journal_entry_audios a WHERE a.entry_id = e.id AND a.church_id = e.church_id AND a.deleted_at IS NULL) AS audio_count FROM ${source} WHERE ${where} ORDER BY ${sort} ${order}, e.id ASC LIMIT ? OFFSET ?`,
+        `SELECT ${columns}, (SELECT COUNT(*) FROM journal_entry_audios a WHERE a.entry_id = e.id AND a.church_id = e.church_id AND a.deleted_at IS NULL) AS audio_count FROM ${source} WHERE ${where} ORDER BY ${sort} ${order}, e.id ${order} LIMIT ? OFFSET ?`,
         ...params,
         limit,
         (page - 1) * limit,
@@ -102,7 +96,7 @@ export async function listJournal(context: JournalContext, query: JournalQuery) 
         title: row.title,
         kind: row.kind,
         occurredAt: row.occurred_at,
-        excerpt: row.annotation.slice(0, 240),
+        excerpt: toExcerpt(row.annotation),
         hasLearned: Boolean(row.learned),
         hasAudio: row.audio_count > 0,
         remindAt: row.remind_at,
@@ -150,23 +144,15 @@ export async function journalStats(context: JournalContext): Promise<JournalStat
         'SELECT kind, occurred_at, remind_at, remind_done_at FROM journal_entries WHERE church_id = ? AND deleted_at IS NULL',
         context.churchId,
     );
-    const today = todayIso(),
-        year = today.slice(0, 4);
-    const byKind = Object.fromEntries(ENTRY_KINDS.map((kind) => [kind, 0])) as Record<
-        EntryKind,
-        number
-    >;
-    for (const row of rows) byKind[row.kind]++;
-    return {
-        total: rows.length,
-        byKind,
-        pendingReminders: rows.filter((row) => row.remind_at && !row.remind_done_at).length,
-        thisMonth: rows.filter((row) => row.occurred_at.startsWith(today.slice(0, 7))).length,
-        monthly: Array.from({ length: 12 }, (_, index) => {
-            const month = `${year}-${String(index + 1).padStart(2, '0')}`;
-            return { month, total: rows.filter((row) => row.occurred_at.startsWith(month)).length };
-        }),
-    };
+    return summarizeJournal(
+        rows.map((row) => ({
+            kind: row.kind,
+            occurredAt: row.occurred_at,
+            remindAt: row.remind_at,
+            remindDoneAt: row.remind_done_at,
+        })),
+        todayIso(),
+    );
 }
 export async function createJournalEntry(
     context: JournalContext,
@@ -187,10 +173,10 @@ export async function createJournalEntry(
         parsed.occurredAt,
         parsed.annotation,
         parsed.learned || null,
-        parsed.remindAt ?? null,
+        parsed.remindAt ? new Date(parsed.remindAt).toISOString() : null,
         parsed.remindText || null,
         context.userId,
-        searchText(parsed.title, parsed.annotation, parsed.learned),
+        journalSearchText(parsed.title, parsed.annotation, parsed.learned ?? null),
     );
     return id;
 }
@@ -206,7 +192,12 @@ export async function updateJournalEntry(
     const title = parsed.title ?? current.title,
         annotation = parsed.annotation ?? current.annotation;
     const learned = parsed.learned === undefined ? current.learned : parsed.learned || null;
-    const remindAt = parsed.remindAt === undefined ? current.remindAt : parsed.remindAt;
+    const remindAt =
+        parsed.remindAt === undefined
+            ? current.remindAt
+            : parsed.remindAt
+              ? new Date(parsed.remindAt).toISOString()
+              : null;
     const remindText = remindAt
         ? parsed.remindText === undefined
             ? current.remindText
@@ -231,7 +222,7 @@ export async function updateJournalEntry(
         remindAt,
         remindText,
         done,
-        searchText(title, annotation, learned),
+        journalSearchText(title, annotation, learned),
         nowIso(),
         id,
         context.churchId,

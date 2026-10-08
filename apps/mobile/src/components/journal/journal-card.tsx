@@ -1,11 +1,13 @@
 import type { JournalEntryListItem } from '@navis/shared';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { Pressable, Text, View } from 'react-native';
-import { formatDay } from '@/lib/format';
-import { hexAlpha } from '@/lib/color';
-import { KIND_ICON, useJournalPalette, kindColor } from './journal-theme';
-import { journalReminderLabel } from './journal-reminder-label';
+import { Pressable, View } from 'react-native';
+import { SwipeableRow } from '@/components/ui/swipeable-row';
+import { hexBlend } from '@/lib/color';
+import { JOURNAL_KINDS } from './journal-kinds';
+import { useJournalTheme, kindColor } from './journal-theme';
+import { JournalCardCopy } from './journal-card-copy';
+import { JournalCardSelection } from './journal-card-selection';
 
 export function JournalCard({
     entry,
@@ -14,6 +16,10 @@ export function JournalCard({
     selectionMode = false,
     onPress,
     onSelect,
+    onAttend,
+    onEdit,
+    onDelete,
+    busy = false,
 }: {
     entry: JournalEntryListItem;
     compact?: boolean;
@@ -21,177 +27,111 @@ export function JournalCard({
     selectionMode?: boolean;
     onPress: () => void;
     onSelect?: () => void;
+    onAttend?: () => void;
+    onEdit?: () => void;
+    onDelete?: () => void;
+    busy?: boolean;
 }) {
     const { t } = useTranslation(),
-        p = useJournalPalette(),
+        p = useJournalTheme(),
         accent = kindColor(entry.kind, p);
-    const pending = entry.remindAt && !entry.remindDoneAt;
+    const pending = Boolean(entry.remindAt && !entry.remindDoneAt);
     return (
-        <View
-            style={{
-                backgroundColor: p.card,
-                borderRadius: compact ? 16 : 22,
-                borderWidth: 1,
-                borderColor: selected ? p.primary : p.line,
-                overflow: 'hidden',
-            }}
+        <SwipeableRow
+            radius={26}
+            shadowColor={p.border}
+            disabled={busy || selectionMode}
+            left={
+                onAttend && pending
+                    ? {
+                          icon: 'checkmark',
+                          label: t('journal.reminderDone'),
+                          color: p.success,
+                          foreground: p.successForeground,
+                          onAction: onAttend,
+                      }
+                    : onEdit
+                      ? {
+                            icon: 'create-outline',
+                            label: t('journal.edit'),
+                            color: p.primary,
+                            foreground: p.primaryForeground,
+                            onAction: onEdit,
+                        }
+                      : undefined
+            }
+            right={
+                onDelete
+                    ? {
+                          icon: 'trash-outline',
+                          label: t('common.delete'),
+                          color: p.destructive,
+                          foreground: p.destructiveForeground,
+                          onAction: onDelete,
+                      }
+                    : undefined
+            }
         >
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <View
+                style={{
+                    borderRadius: 26,
+                    borderWidth: 1,
+                    borderColor: selected ? p.primary : p.border,
+                    backgroundColor: hexBlend(
+                        p.card,
+                        p[JOURNAL_KINDS[entry.kind].token],
+                        p.dark ? 0.14 : 0.09,
+                    ),
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                }}
+            >
                 <Pressable
+                    testID={`journal-entry-${entry.id}`}
                     accessibilityRole="button"
                     accessibilityLabel={entry.title}
+                    accessibilityState={{ disabled: busy, selected: Boolean(selected) }}
+                    accessibilityHint={onSelect ? t('journal.mobile.selectionHint') : undefined}
+                    disabled={busy}
                     onPress={selectionMode && onSelect ? onSelect : onPress}
                     onLongPress={onSelect}
-                    accessibilityHint={onSelect ? t('journal.mobile.selectionHint') : undefined}
+                    delayLongPress={350}
                     style={({ pressed }) => ({
                         flex: 1,
-                        padding: compact ? 16 : 20,
-                        gap: compact ? 8 : 12,
+                        padding: 15,
+                        gap: 13,
+                        flexDirection: 'row',
                         opacity: pressed ? 0.65 : 1,
                     })}
                 >
-                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-                        <View style={{ flex: 1, gap: 8 }}>
-                            <Text
-                                style={{
-                                    color: p.ink,
-                                    fontSize: compact ? 16 : 19,
-                                    fontWeight: '700',
-                                    lineHeight: compact ? 23 : 27,
-                                }}
-                                numberOfLines={2}
-                            >
-                                {entry.title}
-                            </Text>
-                            <View
-                                style={{
-                                    flexDirection: 'row',
-                                    flexWrap: 'wrap',
-                                    alignItems: 'center',
-                                    gap: 6,
-                                }}
-                            >
-                                <Ionicons
-                                    accessible={false}
-                                    name={KIND_ICON[entry.kind]}
-                                    size={14}
-                                    color={accent}
-                                />
-                                <Text style={{ color: accent, fontSize: 12, fontWeight: '600' }}>
-                                    {t(`journal.kind.${entry.kind}`)}
-                                </Text>
-                                <Text style={{ color: p.secondaryInk, fontSize: 12 }}>
-                                    · {formatDay(entry.occurredAt)}
-                                </Text>
-                            </View>
-                        </View>
-                        {!selectionMode && (
-                            <Ionicons
-                                accessible={false}
-                                name={compact ? 'chevron-forward' : KIND_ICON[entry.kind]}
-                                size={compact ? 16 : 28}
-                                color={compact ? p.secondaryInk : accent}
-                            />
-                        )}
-                    </View>
-                    {!compact && (
-                        <Text
-                            style={{ color: p.secondaryInk, fontSize: 15, lineHeight: 23 }}
-                            numberOfLines={2}
-                        >
-                            {entry.excerpt}
-                        </Text>
-                    )}
-                    {(pending ||
-                        entry.hasAudio ||
-                        entry.hasLearned ||
-                        (!compact && entry.authorName)) && (
-                        <View
-                            style={{
-                                flexDirection: 'row',
-                                flexWrap: 'wrap',
-                                alignItems: 'center',
-                                gap: 8,
-                            }}
-                        >
-                            {pending && (
-                                <View
-                                    style={{
-                                        borderRadius: 8,
-                                        paddingHorizontal: 8,
-                                        paddingVertical: 5,
-                                        backgroundColor: hexAlpha(p.primary, 0.1),
-                                        flexDirection: 'row',
-                                        gap: 5,
-                                        alignItems: 'center',
-                                    }}
-                                >
-                                    <Ionicons
-                                        accessible={false}
-                                        name="alarm-outline"
-                                        size={14}
-                                        color={p.link}
-                                    />
-                                    <Text
-                                        style={{
-                                            color: p.link,
-                                            fontSize: 12,
-                                            fontWeight: '600',
-                                        }}
-                                    >
-                                        {journalReminderLabel(entry.remindAt!)}
-                                    </Text>
-                                </View>
-                            )}
-                            {entry.hasAudio && (
-                                <Ionicons
-                                    accessibilityLabel={t('journal.audiosField')}
-                                    name="mic-outline"
-                                    size={16}
-                                    color={p.secondaryInk}
-                                />
-                            )}
-                            {entry.hasLearned && (
-                                <Ionicons
-                                    accessibilityLabel={t('journal.learnedField')}
-                                    name="bulb-outline"
-                                    size={16}
-                                    color={p.secondaryInk}
-                                />
-                            )}
-                            {!compact && entry.authorName && (
-                                <Text
-                                    style={{ color: p.secondaryInk, fontSize: 12 }}
-                                    numberOfLines={1}
-                                >
-                                    {entry.authorName}
-                                </Text>
-                            )}
-                        </View>
-                    )}
-                </Pressable>
-                {selectionMode && onSelect && (
-                    <Pressable
-                        accessibilityRole="checkbox"
-                        accessibilityState={{ checked: Boolean(selected) }}
-                        accessibilityLabel={t('journal.selectOne', { title: entry.title })}
-                        onPress={onSelect}
-                        style={({ pressed }) => ({
-                            width: 48,
-                            height: 48,
+                    <View
+                        style={{
+                            width: 42,
+                            height: 42,
+                            borderRadius: 15,
                             alignItems: 'center',
                             justifyContent: 'center',
-                            opacity: pressed ? 0.6 : 1,
-                        })}
+                            backgroundColor: hexBlend(p.card, accent, 0.12),
+                        }}
                     >
                         <Ionicons
-                            name={selected ? 'checkbox' : 'square-outline'}
+                            accessible={false}
+                            name={JOURNAL_KINDS[entry.kind].icon}
                             size={22}
-                            color={selected ? p.link : p.secondaryInk}
+                            color={accent}
                         />
-                    </Pressable>
+                    </View>
+                    <JournalCardCopy entry={entry} compact={compact} />
+                </Pressable>
+                {selectionMode && onSelect && (
+                    <JournalCardSelection
+                        selected={selected}
+                        busy={busy}
+                        title={entry.title}
+                        onSelect={onSelect}
+                    />
                 )}
             </View>
-        </View>
+        </SwipeableRow>
     );
 }

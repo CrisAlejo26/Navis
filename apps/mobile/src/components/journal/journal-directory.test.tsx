@@ -11,6 +11,7 @@ jest.mock('expo-router', () => ({
 }));
 jest.mock('@/hooks/use-journal', () => ({
     useJournal: jest.fn(),
+    useJournalMutation: () => ({ mutateAsync: jest.fn(() => Promise.resolve()), isPending: false }),
     useJournalStats: () => ({ data: { total: 1, pendingReminders: 0 } }),
 }));
 jest.mock('@/hooks/use-lists', () => ({ useListContext: jest.fn() }));

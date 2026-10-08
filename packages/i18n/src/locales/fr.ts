@@ -1235,6 +1235,9 @@ export const fr = {
     },
     journal: {
         mobile: {
+            applyCount: 'Appliquer ({{count}})',
+            deleteMany: 'Supprimer les entrées ({{count}})',
+            noResultsBody: 'Essayez d’autres filtres ou réinitialisez le carnet.',
             olderMonths: 'Six mois précédents',
             newerMonths: 'Six mois suivants',
             recent: 'Dernières entrées',

@@ -168,7 +168,7 @@ describe('copia de seguridad', () => {
         const entry = await findJournalEntry(context, id);
         expect(entry?.annotation).toBe('Texto completo');
         expect(entry?.learned).toBe('Reflexión');
-        expect(entry?.remindAt).toBe('2099-10-04T19:00:00');
+        expect(entry?.remindAt).toBe(new Date('2099-10-04T19:00:00').toISOString());
         expect(entry?.audios[0]?.uri).toBe(files.audioUri('journal-audio'));
     });
 

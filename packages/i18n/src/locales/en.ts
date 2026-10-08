@@ -1223,6 +1223,9 @@ export const en = {
     },
     journal: {
         mobile: {
+            applyCount: 'Apply ({{count}})',
+            deleteMany: 'Delete entries ({{count}})',
+            noResultsBody: 'Try other filters or reset the notebook.',
             olderMonths: 'Previous six months',
             newerMonths: 'Next six months',
             recent: 'Latest entries',

@@ -26,6 +26,7 @@ import { MeetingPattern } from '../calendar/meeting-pattern.entity';
 import { PatternPhase } from '../calendar/pattern-phase.entity';
 import { ChurchMember } from '../churches/church-member.entity';
 import { Church } from '../churches/church.entity';
+import { Role } from '../roles/role.entity';
 import { MeetingSlot } from '../calendar/meeting-slot.entity';
 import { MeetingSlotBeliever } from '../calendar/meeting-slot-believer.entity';
 import { NoteAudio } from '../believers/note-audio.entity';
@@ -95,6 +96,7 @@ const ENTITIES = [
     ListAccessLog,
     Church,
     ChurchMember,
+    Role,
     Congregation,
     Calendar,
     MeetingPattern,
@@ -227,6 +229,7 @@ describe('la cuenta local', () => {
             'email',
             'password_hash',
             'active_church_id',
+            'role',
             'phone',
             'city',
             'bio',

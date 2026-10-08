@@ -7,6 +7,7 @@ import { useThemeStore } from '@/lib/theme';
 type SwitchTone = 'primary' | 'success' | 'warning' | 'destructive';
 
 interface SwitchProps {
+    testID?: string;
     label: string;
     description?: string;
     checked: boolean;
@@ -41,6 +42,7 @@ function SwitchGlyph({ checked, tone }: { checked: boolean; tone: SwitchTone }) 
 /** Ajuste on/off — Fase 6. El control va a la derecha, como en cualquier
  * lista de ajustes nativa. */
 export function Switch({
+    testID,
     label,
     description,
     checked,
@@ -50,6 +52,7 @@ export function Switch({
 }: SwitchProps) {
     return (
         <ControlRow
+            testID={testID}
             label={label}
             description={description}
             accessibilityRole="switch"

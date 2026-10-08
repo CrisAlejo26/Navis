@@ -1,9 +1,10 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { toSearchName, type CreateEntryInput, type UpdateEntryInput } from '@navis/shared';
+import { journalSearchText, type CreateEntryInput, type UpdateEntryInput } from '@navis/shared';
 import { Repository } from 'typeorm';
 
 import { JournalEntry } from './journal-entry.entity';
+import { JournalEntryAudio } from './journal-entry-audio.entity';
 
 /** Alta, edición y borrado de una entrada del cuaderno (RFC 0017 §6). */
 @Injectable()
@@ -28,7 +29,7 @@ export class JournalEntriesService {
                 kind: input.kind,
                 occurredAt: input.occurredAt,
                 annotation: input.annotation,
-                learned: input.learned ?? null,
+                learned: input.learned || null,
                 searchText: toSearchText(input.title, input.annotation, input.learned ?? null),
                 remindAt: input.remindAt ? new Date(input.remindAt) : null,
                 remindText: input.remindText ?? null,
@@ -44,7 +45,7 @@ export class JournalEntriesService {
         if (input.kind !== undefined) entry.kind = input.kind;
         if (input.occurredAt !== undefined) entry.occurredAt = input.occurredAt;
         if (input.annotation !== undefined) entry.annotation = input.annotation;
-        if (input.learned !== undefined) entry.learned = input.learned;
+        if (input.learned !== undefined) entry.learned = input.learned || null;
         if (
             input.title !== undefined ||
             input.annotation !== undefined ||
@@ -52,6 +53,7 @@ export class JournalEntriesService {
         ) {
             entry.searchText = toSearchText(entry.title, entry.annotation, entry.learned);
         }
+        const previousReminder = entry.remindAt?.toISOString() ?? null;
         if (input.remindAt !== undefined) {
             entry.remindAt = input.remindAt ? new Date(input.remindAt) : null;
         }
@@ -59,7 +61,10 @@ export class JournalEntriesService {
 
         // Quitar el recordatorio lo deja también sin marca de atendido: si mañana
         // se pone otro, empieza pendiente y no heredando el de antes.
-        if (entry.remindAt === null) entry.remindDoneAt = null;
+        if (entry.remindAt === null) {
+            entry.remindDoneAt = null;
+            entry.remindText = null;
+        } else if (previousReminder !== entry.remindAt.toISOString()) entry.remindDoneAt = null;
         else if (input.remindDone !== undefined) {
             entry.remindDoneAt = input.remindDone ? new Date() : null;
         }
@@ -70,7 +75,12 @@ export class JournalEntriesService {
     }
 
     async remove(churchId: string, id: string): Promise<void> {
-        await this.entries.softRemove(await this.require(churchId, id));
+        const entry = await this.require(churchId, id);
+        // TypeORM only cascades soft deletion to loaded relations.
+        entry.audios = await this.entries.manager.getRepository(JournalEntryAudio).find({
+            where: { entryId: id, churchId },
+        });
+        await this.entries.softRemove(entry);
     }
 
     async require(churchId: string, id: string): Promise<JournalEntry> {
@@ -85,7 +95,7 @@ export function toSearchText(title: string, annotation: string, learned: string 
     // La misma normalización que `search_name` de creyentes y `search_text` de
     // profecías, y a propósito: si divergieran, una de las búsquedas dejaría de
     // encontrar acentos.
-    return toSearchName([title, annotation, learned ?? ''].join(' '));
+    return journalSearchText(title, annotation, learned);
 }
 
 /** Un recordatorio con mensaje pero sin fecha no recuerda nada (§6.3). */

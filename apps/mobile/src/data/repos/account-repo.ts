@@ -65,7 +65,8 @@ async function pepper(): Promise<string> {
     return fresh;
 }
 
-async function hashPassword(email: string, password: string): Promise<string> {
+/** También la usa la administración de usuarios: una cuenta dada de alta ahí tiene que poder entrar. */
+export async function hashPassword(email: string, password: string): Promise<string> {
     const salt = await pepper();
     const material = `${HASH_DOMAIN}:${salt}:${email.toLowerCase()}:${password}`;
     return digestStringAsync(CryptoDigestAlgorithm.SHA256, material);
@@ -101,7 +102,8 @@ export async function createAccount(input: {
     };
 
     await db.runAsync(
-        'INSERT INTO local_user (id, name, email, password_hash, timezone, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)',
+        // Quien se registra en el teléfono monta sus iglesias: es pastor, no creyente.
+        "INSERT INTO local_user (id, name, email, password_hash, role, timezone, created_at, updated_at) VALUES (?, ?, ?, ?, 'pastor', ?, ?, ?)",
         user.id,
         user.name,
         user.email,

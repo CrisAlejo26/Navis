@@ -1,5 +1,5 @@
 import {
-    addDays,
+    journalWindowStart,
     toSearchName,
     type EntryKind,
     type JournalQuery,
@@ -20,10 +20,7 @@ const SORT_SQL: Record<JournalSortField, string> = {
 
 /** El primer día de la ventana, o `null` si es «todo» (D9). */
 export function windowStart(window: JournalWindow, today: string): string | null {
-    if (window === '7d') return addDays(today, -7);
-    if (window === '30d') return addDays(today, -30);
-    if (window === 'year') return `${today.slice(0, 4)}-01-01`;
-    return null;
+    return journalWindowStart(window, today);
 }
 
 /**
@@ -35,10 +32,10 @@ export function applyFilters(
     query: JournalQuery,
     today: string,
 ): void {
-    if (query.search) {
-        builder.andWhere('entry.searchText LIKE :search', {
+    if (query.search?.trim()) {
+        builder.andWhere("entry.searchText LIKE :search ESCAPE '\\'", {
             // La misma normalización con la que se guardó, o dejaría de encontrar.
-            search: `%${toSearchName(query.search)}%`,
+            search: `%${toSearchName(query.search.trim()).replace(/[\\%_]/g, '\\$&')}%`,
         });
     }
 
@@ -48,6 +45,8 @@ export function applyFilters(
     const from = query.from ?? windowStart(query.window ?? 'all', today);
     if (from) builder.andWhere('entry.occurredAt >= :from', { from });
     if (query.to) builder.andWhere('entry.occurredAt <= :to', { to: query.to });
+    else if (query.window && query.window !== 'all')
+        builder.andWhere('entry.occurredAt <= :today', { today });
 
     // «Sin atender», no «vencido»: un recordatorio puesto para mañana sigue
     // pendiente aunque todavía no toque. Que ya haya vencido es un cálculo de
@@ -70,6 +69,10 @@ export function applyOrder(
 ): void {
     const direction = order === 'asc' ? 'ASC' : 'DESC';
     // `NULLS FIRST` no existe en SQLite: la cláusula se pone solo en Postgres.
-    builder.orderBy(SORT_SQL[sort], direction, nullsFor(direction));
+    builder.orderBy(
+        sort === 'title' ? 'LOWER(entry.title)' : SORT_SQL[sort],
+        direction,
+        nullsFor(direction),
+    );
     builder.addOrderBy('entry.id', direction);
 }

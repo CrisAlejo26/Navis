@@ -1,6 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react-native';
 import { ENTRY_KINDS, type JournalStats } from '@navis/shared';
 import { JournalOverview } from './journal-overview';
+jest.mock('react-native-gifted-charts', () => ({ BarChart: () => null }));
 
 it('permite consultar los doce meses en grupos legibles y el valor de cada barra', async () => {
     const stats: JournalStats = {

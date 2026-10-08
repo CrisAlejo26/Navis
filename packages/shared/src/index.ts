@@ -52,6 +52,8 @@ export * from './schemas/habit-queries';
 export * from './schemas/habits';
 export * from './schemas/holidays';
 export * from './schemas/journal';
+export * from './journal-behavior';
+export { summarizeJournal, journalMonthlyGrid, type JournalStatsRow } from './journal-stats';
 export * from './schemas/journal-audio';
 export * from './schemas/journal-queries';
 export * from './schemas/list-members';
@@ -105,3 +107,5 @@ export {
 } from './task-stats';
 export { byWeek as habitByWeek, byTag as habitByTag, trend as habitTrend } from './habit-stats';
 export * from './local-task-schema';
+
+export * from './journal-contract';

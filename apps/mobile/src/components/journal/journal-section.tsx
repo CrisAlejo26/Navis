@@ -1,8 +1,9 @@
+import { FONT_FAMILIES } from '@navis/theme';
 import type { ReactNode } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import type { IoniconName } from '@/lib/nav-mobile';
-import { useJournalPalette } from './journal-theme';
+import { useJournalTheme } from './journal-theme';
 
 export function JournalSection({
     title,
@@ -19,7 +20,7 @@ export function JournalSection({
     children: ReactNode;
     summary?: string;
 }) {
-    const p = useJournalPalette();
+    const p = useJournalTheme();
     return (
         <View style={{ borderRadius: 20, backgroundColor: p.surface, overflow: 'hidden' }}>
             <Pressable
@@ -38,7 +39,15 @@ export function JournalSection({
             >
                 <Ionicons accessible={false} name={icon} size={22} color={p.link} />
                 <View style={{ flex: 1, gap: 4 }}>
-                    <Text style={{ color: p.ink, fontSize: 15, fontWeight: '600' }}>{title}</Text>
+                    <Text
+                        style={{
+                            color: p.ink,
+                            fontSize: 15,
+                            fontFamily: FONT_FAMILIES.sansSemiBold.native,
+                        }}
+                    >
+                        {title}
+                    </Text>
                     {summary && (
                         <Text style={{ color: p.secondaryInk, fontSize: 12 }}>{summary}</Text>
                     )}

@@ -1,87 +1,57 @@
 import type { ReactNode } from 'react';
-import { useReducedMotion } from 'react-native-reanimated';
-import { Modal, ScrollView, Text, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { IconButton } from '@/components/ui/icon-button';
+import { BottomSheet } from '@/components/ui/bottom-sheet';
 import { Button } from '@/components/ui/button';
-import { useKeyboardHeight } from '@/lib/ui/keyboard';
-import { useJournalPalette } from './journal-theme';
 
-/** Full-screen writing surface; the save action stays outside the scroll body. */
 export function JournalEditor({
     title,
     saving,
     onClose,
     onSave,
+    saveTitle,
+    disabled,
     children,
 }: {
     title: string;
     saving: boolean;
     onClose: () => void;
-    onSave: () => void;
+    onSave?: () => void;
+    saveTitle?: string;
+    disabled?: boolean;
     children: ReactNode;
 }) {
-    const p = useJournalPalette(),
-        insets = useSafeAreaInsets(),
-        keyboard = useKeyboardHeight(),
-        { t } = useTranslation(),
-        reducedMotion = useReducedMotion();
+    const { t } = useTranslation();
     return (
-        <Modal
+        <BottomSheet
             visible
-            animationType={reducedMotion ? 'none' : 'slide'}
-            onRequestClose={onClose}
-            statusBarTranslucent
-            navigationBarTranslucent
+            fullScreen
+            title={title}
+            onClose={() => {
+                if (!saving) onClose();
+            }}
+            footer={
+                onSave ? (
+                    <View className="pt-3 border-t border-border">
+                        <View style={{ maxWidth: 480, width: '100%', alignSelf: 'center' }}>
+                            <Button
+                                testID="journal-save"
+                                title={saveTitle ?? t('common.save')}
+                                size="lg"
+                                loading={saving}
+                                disabled={disabled}
+                                onPress={onSave}
+                            />
+                        </View>
+                    </View>
+                ) : undefined
+            }
         >
             <View
-                style={{
-                    flex: 1,
-                    backgroundColor: p.background,
-                    paddingTop: insets.top,
-                    paddingBottom: Math.max(keyboard, insets.bottom),
-                }}
+                style={{ padding: 6, gap: 24, maxWidth: 480, width: '100%', alignSelf: 'center' }}
             >
-                <View
-                    style={{
-                        paddingHorizontal: 16,
-                        paddingVertical: 8,
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        gap: 12,
-                        borderBottomWidth: 1,
-                        borderColor: p.line,
-                    }}
-                >
-                    <IconButton
-                        icon="close"
-                        accessibilityLabel={t('common.close')}
-                        onPress={onClose}
-                        disabled={saving}
-                    />
-                    <Text
-                        accessibilityRole="header"
-                        style={{ flex: 1, color: p.ink, fontSize: 18, fontWeight: '700' }}
-                    >
-                        {title}
-                    </Text>
-                    <Button title={t('common.save')} size="sm" loading={saving} onPress={onSave} />
-                </View>
-                <ScrollView
-                    keyboardShouldPersistTaps="handled"
-                    keyboardDismissMode="on-drag"
-                    contentContainerStyle={{
-                        padding: 20,
-                        gap: 24,
-                        maxWidth: 720,
-                        width: '100%',
-                        alignSelf: 'center',
-                    }}
-                >
-                    {children}
-                </ScrollView>
+                {children}
             </View>
-        </Modal>
+        </BottomSheet>
     );
 }

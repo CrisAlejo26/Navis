@@ -66,6 +66,17 @@ export const LOCAL_TABLES: LocalTable[] = [
         { name: 'church_id', type: 'text' },
         { name: 'user_id', type: 'text' },
     ]),
+    // Catálogo de roles (RFC 0008). Espeja `Role` de la API para que el día que el
+    // móvil hable con el servidor las filas tengan la misma forma. `permissions`
+    // es JSON en texto, como el `simple-json` de TypeORM.
+    table('roles', 'Role', [
+        { name: 'slug', type: 'text' },
+        { name: 'name', type: 'text', nullable: true },
+        { name: 'description', type: 'text', nullable: true },
+        { name: 'level', type: 'int' },
+        { name: 'permissions', type: 'text', default: '[]' },
+        { name: 'is_system', type: 'bool', default: true },
+    ]),
     table('congregations', 'Congregation', [
         { name: 'church_id', type: 'text' },
         { name: 'name', type: 'text' },
@@ -330,6 +341,8 @@ export const LOCAL_USER_TABLE: LocalTable = {
         { name: 'email', type: 'text' },
         { name: 'password_hash', type: 'text' },
         { name: 'active_church_id', type: 'text', nullable: true },
+        // Mismo papel que `user.role` en la API: el slug del catálogo `roles`.
+        { name: 'role', type: 'text', default: 'creyente' },
         // El perfil (mismos nombres que `profiles` en la API): en local vive aquí.
         { name: 'phone', type: 'text', nullable: true },
         { name: 'city', type: 'text', nullable: true },
@@ -405,6 +418,14 @@ export const LOCAL_INDEXES: {
         unique: true,
     },
     { name: 'IDX_church_members_user', table: 'church_members', columns: ['user_id'] },
+    // Parcial: un rol borrado (borrado lógico) libera su identificador para recrearlo.
+    {
+        name: 'UQ_roles_slug',
+        table: 'roles',
+        columns: ['slug'],
+        unique: true,
+        where: '"deleted_at" IS NULL',
+    },
     { name: 'UQ_local_user_email', table: 'local_user', columns: ['email'], unique: true },
     {
         name: 'IDX_believers_church_search',

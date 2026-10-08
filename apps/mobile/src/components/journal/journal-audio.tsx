@@ -2,7 +2,7 @@ import { useAudioPlayer, useAudioPlayerStatus } from 'expo-audio';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
-import { useJournalPalette } from './journal-theme';
+import { useJournalTheme } from './journal-theme';
 
 export function JournalAudio({
     audio,
@@ -13,7 +13,7 @@ export function JournalAudio({
 }) {
     const player = useAudioPlayer(audio.uri),
         status = useAudioPlayerStatus(player),
-        p = useJournalPalette(),
+        p = useJournalTheme(),
         { t } = useTranslation();
     const duration = audio.durationSeconds ?? Math.round(status.duration || 0);
     return (

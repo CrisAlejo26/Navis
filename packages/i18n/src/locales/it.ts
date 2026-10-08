@@ -1227,6 +1227,9 @@ export const it = {
     },
     journal: {
         mobile: {
+            applyCount: 'Applica ({{count}})',
+            deleteMany: 'Elimina voci ({{count}})',
+            noResultsBody: 'Prova altri filtri o reimposta il quaderno.',
             olderMonths: 'Sei mesi precedenti',
             newerMonths: 'Sei mesi successivi',
             recent: 'Ultime voci',

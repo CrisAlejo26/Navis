@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { themeColorsHex } from '@navis/theme';
-import { View } from 'react-native';
+import { Pressable, View } from 'react-native';
 
 import { ControlRow } from '@/components/ui/control-row';
 import { cn } from '@/lib/cn';
@@ -12,6 +12,7 @@ interface CheckboxProps {
     checked: boolean;
     onChange: (checked: boolean) => void;
     disabled?: boolean;
+    compact?: boolean;
 }
 
 function CheckboxGlyph({ checked }: { checked: boolean }) {
@@ -38,7 +39,21 @@ export function Checkbox({
     checked,
     onChange,
     disabled = false,
+    compact = false,
 }: CheckboxProps) {
+    if (compact)
+        return (
+            <Pressable
+                accessibilityRole="checkbox"
+                accessibilityLabel={label}
+                accessibilityState={{ checked, disabled }}
+                disabled={disabled}
+                onPress={() => onChange(!checked)}
+                className="h-12 w-12 items-center justify-center"
+            >
+                <CheckboxGlyph checked={checked} />
+            </Pressable>
+        );
     return (
         <ControlRow
             label={label}

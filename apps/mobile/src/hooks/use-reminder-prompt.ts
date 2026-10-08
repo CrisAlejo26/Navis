@@ -13,20 +13,27 @@ import { useNotificationSettings } from '@/stores/notification-settings';
  * aquí —y no al abrir la app— sale el diálogo del sistema. Concedido, se
  * programa el aviso; denegado, se dice cómo arreglarlo en vez de callar.
  */
-export function useAfterReminderSaved(kind: 'note' | 'task' = 'note'): () => Promise<void> {
+export function useAfterReminderSaved(
+    kind: 'note' | 'task' = 'note',
+    onDenied?: () => void,
+): () => Promise<boolean> {
     const { t } = useTranslation();
 
     return useCallback(async () => {
         const settings = useNotificationSettings.getState();
         const wanted = kind === 'task' ? settings.taskReminders : settings.noteReminders;
-        if (!notificationsSupported() || !settings.enabled || !wanted) return;
+        if (!notificationsSupported() || !settings.enabled || !wanted) return true;
 
         let status = await getPermissionStatus();
         if (status === 'undetermined') status = await requestPermission();
 
         if (status === 'granted') {
             await syncNotifications();
-            return;
+            return true;
+        }
+        if (onDenied) {
+            onDenied();
+            return false;
         }
         Alert.alert(t('notifications.denied.title'), t('notifications.denied.body'), [
             { text: t('common.cancel'), style: 'cancel' },
@@ -35,5 +42,6 @@ export function useAfterReminderSaved(kind: 'note' | 'task' = 'note'): () => Pro
                 onPress: () => void Linking.openSettings(),
             },
         ]);
-    }, [t, kind]);
+        return false;
+    }, [t, kind, onDenied]);
 }

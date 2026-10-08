@@ -1,9 +1,31 @@
 import { act, fireEvent, render, screen } from '@testing-library/react-native';
 import { Keyboard, Text } from 'react-native';
+import { Button } from './button';
 
 import { BottomSheet } from '@/components/ui/bottom-sheet';
 
 describe('BottomSheet', () => {
+    it('la variante de pantalla completa conserva pie fijo y un único cierre', async () => {
+        const onClose = jest.fn(),
+            onSave = jest.fn();
+        await render(
+            <BottomSheet
+                visible
+                fullScreen
+                title="Editor"
+                onClose={onClose}
+                footer={<Button title="Guardar" onPress={onSave} />}
+            >
+                <Text>Borrador</Text>
+            </BottomSheet>,
+        );
+        expect(screen.getAllByLabelText('Cerrar')).toHaveLength(1);
+        await fireEvent.press(screen.getByRole('button', { name: 'Guardar' }));
+        expect(onSave).toHaveBeenCalledTimes(1);
+        expect(onClose).not.toHaveBeenCalled();
+        await fireEvent.press(screen.getByRole('button', { name: 'Cerrar' }));
+        expect(onClose).toHaveBeenCalledTimes(1);
+    });
     it('cierra al pulsar el fondo', async () => {
         const onClose = jest.fn();
         await render(

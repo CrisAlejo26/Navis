@@ -1244,6 +1244,9 @@ export const es = {
      con `notes.*`, que ya es la bitácora de un creyente. */
     journal: {
         mobile: {
+            applyCount: 'Aplicar ({{count}})',
+            deleteMany: 'Eliminar entradas ({{count}})',
+            noResultsBody: 'Prueba otros filtros o restablece el cuaderno.',
             olderMonths: 'Seis meses anteriores',
             newerMonths: 'Seis meses siguientes',
             recent: 'Últimas entradas',

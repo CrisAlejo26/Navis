@@ -8,7 +8,6 @@ import {
 import { addJournalAudio, deleteJournalAudio } from '@/data/repos/journal-audios';
 import type * as ReactModule from 'react';
 import type * as NativeModule from 'react-native';
-import { Alert } from 'react-native';
 
 jest.mock('@/data/repos/journal-repo', () => ({
     createJournalEntry: jest.fn(() => Promise.resolve('saved-id')),
@@ -164,14 +163,17 @@ it('despliega las opciones adicionales sin perder lo aprendido al cerrarlas', as
 });
 
 it('pide confirmación antes de descartar un texto sin guardar', async () => {
-    const alert = jest.spyOn(Alert, 'alert').mockImplementation(() => {});
     const close = jest.fn();
     await render(<JournalForm onClose={close} />);
     await fireEvent.changeText(screen.getByLabelText('Anotación'), 'Borrador importante');
     await fireEvent.press(screen.getByRole('button', { name: 'Cerrar' }));
     expect(close).not.toHaveBeenCalled();
-    expect(alert).toHaveBeenCalledWith('Descartar cambios', expect.any(String), expect.any(Array));
-    alert.mockRestore();
+    expect(screen.getByRole('button', { name: 'Descartar cambios' })).toBeTruthy();
+    await fireEvent.press(screen.getByRole('button', { name: 'Cancelar' }));
+    expect(screen.getByLabelText('Anotación').props.value).toBe('Borrador importante');
+    await fireEvent.press(screen.getByRole('button', { name: 'Cerrar' }));
+    await fireEvent.press(screen.getByRole('button', { name: 'Descartar cambios' }));
+    expect(close).toHaveBeenCalled();
 });
 
 it('no elimina los audios existentes hasta que se guarda la edición', async () => {

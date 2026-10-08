@@ -1224,6 +1224,9 @@ export const pt = {
     },
     journal: {
         mobile: {
+            applyCount: 'Aplicar ({{count}})',
+            deleteMany: 'Eliminar entradas ({{count}})',
+            noResultsBody: 'Experimente outros filtros ou reponha o caderno.',
             olderMonths: 'Seis meses anteriores',
             newerMonths: 'Seis meses seguintes',
             recent: 'Entradas recentes',
