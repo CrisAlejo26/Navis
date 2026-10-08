@@ -340,6 +340,8 @@ export const it = {
         transferUnavailable:
             'Trasferire una chiesa non è ancora possibile dal telefono: si può solo eliminarla.',
         deleteWithChurches: 'Elimina l’account e le sue chiese',
+        fieldRoleName: 'Scrivi il nome del ruolo (almeno 2 lettere)',
+        noPermissions: 'Nessun permesso: l’account esiste ma non apre nessuna sezione.',
         newUser: 'Crea utente',
         newRole: 'Crea ruolo',
         editRole: 'Modifica il ruolo',

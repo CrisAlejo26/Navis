@@ -1,5 +1,11 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import type { ChurchDecision, CreateManagedUserInput, UpdateManagedUserInput } from '@navis/shared';
+import type {
+    ChurchDecision,
+    CreateManagedUserInput,
+    CreateRoleInput,
+    UpdateManagedUserInput,
+    UpdateRoleInput,
+} from '@navis/shared';
 
 import { usersGateway } from '@/data/users/gateway';
 import { UsersError, type Asker } from '@/data/users/users-gateway';
@@ -48,3 +54,14 @@ export const useRemoveUser = () =>
             usersGateway.removeUser(asker, input.id, input.decisions),
         'all',
     );
+
+export const useCreateRole = () =>
+    useUsersMutation((asker, input: CreateRoleInput) => usersGateway.createRole(asker, input));
+
+export const useUpdateRole = () =>
+    useUsersMutation((asker, input: { id: string; update: UpdateRoleInput }) =>
+        usersGateway.updateRole(asker, input.id, input.update),
+    );
+
+export const useRemoveRole = () =>
+    useUsersMutation((asker, input: { id: string }) => usersGateway.removeRole(asker, input.id));

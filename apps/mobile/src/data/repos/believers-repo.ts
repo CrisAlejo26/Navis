@@ -20,6 +20,7 @@ import { assertInChurch, assertAllInChurch } from '../church-scope';
 import { listGifts } from './catalog-repo';
 import {
     believerColumns,
+    CREATED_DAY,
     DAYS_SINCE,
     NEEDS_ATTENTION,
     deviceToday,
@@ -285,7 +286,7 @@ export async function believersSummary(churchId: string): Promise<BelieversSumma
        SUM(CASE WHEN status = 'inactivo' THEN 1 ELSE 0 END) AS inactivo,
        SUM(CASE WHEN status = 'trasladado' THEN 1 ELSE 0 END) AS trasladado,
        SUM(CASE WHEN ${NEEDS_ATTENTION} THEN 1 ELSE 0 END) AS attention,
-       SUM(CASE WHEN substr(created_at, 1, 10) >= ? THEN 1 ELSE 0 END) AS fresh
+       SUM(CASE WHEN ${CREATED_DAY} >= ? THEN 1 ELSE 0 END) AS fresh
      FROM believers WHERE church_id = ? AND deleted_at IS NULL`,
         today,
         monthStart,

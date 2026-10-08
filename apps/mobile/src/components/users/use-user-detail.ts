@@ -1,7 +1,8 @@
 import { useState } from 'react';
 
 import { useRoleDisplay } from '@/hooks/use-role-display';
-import { useUser, useUserPermissions, useUsersAsker } from '@/hooks/use-users';
+import { useUserPermissions } from '@/hooks/use-user-permissions';
+import { useUser, useUsersAsker } from '@/hooks/use-users';
 
 export type UserDialog = 'edit' | 'password' | 'delete';
 

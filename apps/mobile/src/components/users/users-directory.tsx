@@ -3,7 +3,6 @@ import { ActivityIndicator, FlatList, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 
-import { AppBar } from '@/components/ui/app-bar';
 import { Button } from '@/components/ui/button';
 import { elevation } from '@/lib/ui/elevation';
 import { useLocalSession } from '@/stores/local-session';
@@ -28,7 +27,6 @@ export function UsersDirectory() {
     const { pages } = s;
     return (
         <View style={{ flex: 1, backgroundColor: p.background }}>
-            <AppBar title={t('nav.users')} />
             <FlatList
                 data={s.items}
                 keyExtractor={(user) => user.id}

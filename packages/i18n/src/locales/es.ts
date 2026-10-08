@@ -349,6 +349,8 @@ export const es = {
         transferUnavailable:
             'Trasladar una iglesia aún no se puede hacer desde el teléfono: solo eliminarla.',
         deleteWithChurches: 'Eliminar la cuenta y sus iglesias',
+        fieldRoleName: 'Escribe el nombre del rol (2 letras o más)',
+        noPermissions: 'Sin permisos: puede tener cuenta, pero no entra a ninguna sección.',
         newUser: 'Crear usuario',
         newRole: 'Crear rol',
         editRole: 'Editar el rol',

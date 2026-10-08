@@ -15,6 +15,7 @@ import {
 } from '@navis/shared';
 
 import { getDb } from '../db';
+import { CREATED_DAY, DAYS_SINCE, NEEDS_ATTENTION } from './believers-sql';
 import { calendarRange } from './calendar-schedule';
 import { dashboardTasks } from './dashboard-tasks';
 
@@ -50,13 +51,6 @@ export function todayIso(): IsoDate {
     return `${now.getFullYear()}-${month}-${day}`;
 }
 
-/** Días de calendario hasta hoy, con `julianday(date(...))` — entero, sin horas.
- * Es la traducción literal de `daysSince` de la API: hoy menos el día desde
- * el que se cuenta (última nota o alta). */
-const DAYS_SINCE = `CAST(julianday(date(?)) - julianday(date(COALESCE(substr(last_note_at, 1, 10), substr(created_at, 1, 10)))) AS INTEGER)`;
-
-const NEEDS_ATTENTION = `alert_after_days IS NOT NULL AND ${DAYS_SINCE} > alert_after_days`;
-
 function toBucket(
     counts: Map<string, number>,
     describe: (value: string) => { label: string; accent: string | null },
@@ -79,7 +73,7 @@ async function believersSummary(churchId: string, today: IsoDate) {
     }>(
         `SELECT
        COUNT(*) AS total,
-       SUM(CASE WHEN substr(created_at, 1, 10) >= ? THEN 1 ELSE 0 END) AS fresh,
+       SUM(CASE WHEN ${CREATED_DAY} >= ? THEN 1 ELSE 0 END) AS fresh,
        SUM(CASE WHEN ${NEEDS_ATTENTION} THEN 1 ELSE 0 END) AS attention
      FROM believers
      WHERE church_id = ? AND deleted_at IS NULL`,

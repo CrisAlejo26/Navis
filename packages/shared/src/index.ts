@@ -10,6 +10,7 @@ export * from './excerpt';
 export * from './greeting';
 export * from './local-schema';
 export * from './note-kind-accents';
+export * from './permission-display';
 export * from './permissions';
 export * from './prophecy-stats';
 export * from './prophecy-state';

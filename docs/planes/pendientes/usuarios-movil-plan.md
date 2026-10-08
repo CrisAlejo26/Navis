@@ -28,7 +28,12 @@ adaptador remoto lo añadirá o lo sacará del listado.
 3. **Alta, edición, contraseña, baja y ficha** — hecha. Hojas de formulario,
    ficha `/users/[id]` con cabecera del color del rol, baja en dos pasos con el
    impacto de las iglesias propias, y acciones ocultas sin `users.manage`.
-4. Roles y selector de permisos.
+4. **Roles y selector de permisos** — hecha. Pestañas Usuarios · Roles en una sola
+   pantalla; lista de roles de más a menos alcance, ficha `/users/roles/[id]` con
+   el resumen de permisos por módulo, alta/edición con selector de permisos
+   (píldoras Ver · Gestionar · Publicar) y baja. Los mapas de módulo y acción de
+   los permisos (`permission-display.ts`) viven ahora en `@navis/shared`, y la
+   web los reexporta.
 5. Pestaña Accesos (reutiliza `components/lists/viewer-*`).
 6. Pulido, seis idiomas con el texto más largo, dos temas, verificación en
    emulador con alemán.
@@ -46,6 +51,9 @@ adaptador remoto lo añadirá o lo sacará del listado.
 - **La lista va ordenada por nombre**, no agrupada por escalón de rol.
 - Las cuentas que ya existían pasan a `pastor` en la migración; las que se
   registren en el teléfono, también.
+- **Los permisos de un rol solo los toca `roles.manage`** (el superadministrador).
+  El pastor ve el catálogo y las fichas, sin acciones. De un rol de serie se
+  editan descripción y permisos; del superadministrador, ni los permisos.
 - Activar/desactivar, invitaciones y sesiones no existen en web ni API: no se
   inventan en móvil.
 
@@ -56,13 +64,25 @@ adaptador remoto lo añadirá o lo sacará del listado.
 - Interfaz con SQLite real: `src/components/users/users-directory.test.tsx` y
   `users-flows.test.tsx` (alta con validación, correo repetido, edición con
   cambio de correo, contraseña, baja en dos pasos y permisos).
-- e2e en emulador: `apps/mobile/e2e/users_flow.py` (ver su `README.md`);
-  capturas en `docs/qa/usuarios-movil/`. Hecho en inglés; falta pasarlo en
-  español y en alemán.
+- e2e en emulador: `users_flow.py`, `roles_flow.py` (solo lectura, vale un pastor) y
+  `roles_manage_flow.py` (superadministrador); ver `apps/mobile/e2e/README.md`.
+  Capturas en `docs/qa/usuarios-movil/`. Hechos en inglés; falta español y alemán.
+- Roles: `roles-flows.test.tsx` (lista y búsqueda, alta, nombre repetido, edición,
+  borrado, rol con cuentas, rol de serie, superadministrador, permisos y pestañas),
+  `role-form.test.ts` y `permission-display.test.ts`.
 
-## Pendiente conocido
+## Arreglado por el camino
 
-- `believers-repo.test.ts` («el que agota su margen…») falla pasada la medianoche
-  local porque calcula «hoy» en una zona y el repositorio en otra. No es de
-  este trabajo.
-- `tables/date-value.test.ts` ejecuta `rtk`, que hay que tener en el PATH.
+- `believers-repo`: el alta (`created_at`, un instante UTC) se recortaba con `substr` y se
+  comparaba con el día **local**: «días sin nota» y las altas del mes salían un día
+  desviados según la hora. Ahora `CREATED_DAY` (`believers-sql.ts`) convierte a hora
+  local, y el panel (`dashboard-repo`) reutiliza esa misma consulta en vez de duplicarla.
+- `believers-repo.test.ts` calculaba «hoy» en UTC; usa `deviceToday()` como el repositorio.
+- `tables/date-value.test.ts` ya no depende de `rtk`: lanza el propio `node`.
+
+## Pendiente
+
+- Fase 5 (Accesos) y Fase 6 (pulido, alemán, español).
+- El e2e de roles de gestión (`roles_manage_flow.py`) exige superadministrador.
+- `calendar-repo.test.ts` calcula el mes con `toISOString()` (UTC): mismo defecto de
+  fondo, solo salta en el cambio de mes.

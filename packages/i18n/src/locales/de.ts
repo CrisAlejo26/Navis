@@ -349,6 +349,9 @@ export const de = {
         transferUnavailable:
             'Eine Gemeinde zu übertragen ist auf dem Telefon noch nicht möglich: Sie kann nur gelöscht werden.',
         deleteWithChurches: 'Konto und seine Gemeinden löschen',
+        fieldRoleName: 'Gib den Namen der Rolle ein (mindestens 2 Buchstaben)',
+        noPermissions:
+            'Keine Berechtigungen: Das Konto kann existieren, öffnet aber keinen Bereich.',
         newUser: 'Benutzer anlegen',
         newRole: 'Rolle anlegen',
         editRole: 'Rolle bearbeiten',

@@ -13,8 +13,9 @@ export function UsersHeader({ state }: { state: UsersDirectoryState }) {
     return (
         <View>
             <UsersHero
+                label={t('roles.accountsTotal')}
                 total={state.total}
-                church={state.scope.church?.name ?? ''}
+                caption={t('roles.accessTo', { church: state.scope.church?.name ?? '' })}
                 accent={state.role ? roles.color(state.role) : null}
                 segments={roles.roles.map((role) => ({
                     slug: role.slug,

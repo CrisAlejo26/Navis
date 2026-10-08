@@ -1,6 +1,5 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { Text, View } from 'react-native';
-import { useTranslation } from 'react-i18next';
 
 import { hexShade } from '@/lib/color';
 import { formatNumber } from '@/lib/format';
@@ -13,24 +12,25 @@ export interface RoleSegment {
 }
 
 /**
- * La cifra de la pantalla: cuántas cuentas hay y cómo se reparten por rol. El
+ * La cifra de la pantalla —cuentas o roles— y cómo se reparte por rol. El
  * degradado toma el color del rol que se está filtrando (el azul de la marca si
  * no hay ninguno) — es el elemento firma de la pantalla (Regla 9 §4). Las
  * proporciones salen del catálogo; los nombres, de los chips de debajo.
  */
 export function UsersHero({
+    label,
     total,
-    church,
+    caption,
     accent,
     segments,
 }: {
+    label: string;
     total: number;
-    church: string;
+    caption: string;
     accent: string | null;
     segments: RoleSegment[];
 }) {
     const p = useUserPalette(),
-        { t } = useTranslation(),
         base = accent ?? p.primary,
         shown = segments.filter((one) => one.count > 0);
     return (
@@ -45,7 +45,7 @@ export function UsersHero({
                     className="font-sans-semibold text-xs uppercase"
                     style={{ color: 'rgba(255,255,255,0.78)', letterSpacing: 1.2 }}
                 >
-                    {t('roles.accountsTotal')}
+                    {label}
                 </Text>
                 <Text
                     className="font-sans-bold"
@@ -57,9 +57,9 @@ export function UsersHero({
                 <Text
                     className="text-sm"
                     style={{ color: 'rgba(255,255,255,0.86)' }}
-                    numberOfLines={1}
+                    numberOfLines={2}
                 >
-                    {t('roles.accessTo', { church })}
+                    {caption}
                 </Text>
             </View>
             {shown.length > 1 && (

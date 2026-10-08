@@ -3,7 +3,8 @@ import { useState } from 'react';
 import { useDebouncedValue } from '@/hooks/use-debounced-value';
 import { useListContext } from '@/hooks/use-lists';
 import { useRoleDisplay } from '@/hooks/use-role-display';
-import { useAccountsTotal, useUserPermissions, useUsersPages } from '@/hooks/use-users';
+import { useUserPermissions } from '@/hooks/use-user-permissions';
+import { useAccountsTotal, useUsersPages } from '@/hooks/use-users';
 
 /** El estado de la pantalla de usuarios: filtros, páginas cargadas y lo que hace falta para pintarlas. */
 export function useUsersDirectory() {

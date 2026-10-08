@@ -11,7 +11,8 @@ it('conserva el día local en medianoche, febrero bisiesto y los dos cambios de 
         process.stdout.write(JSON.stringify(input.map(([day,time]) => { const iso=api.combineLocalDate(day,time); return {iso,...api.localDateParts(iso)}; })));
     `;
     const result: unknown = JSON.parse(
-        execFileSync('rtk', ['proxy', 'node', '-e', script], {
+        // El propio `node` que corre Jest: así no depende de ningún envoltorio del PATH, y `TZ` se fija solo en el hijo.
+        execFileSync(process.execPath, ['-e', script], {
             env: { ...process.env, TZ: 'Europe/Madrid' },
             encoding: 'utf8',
         }),

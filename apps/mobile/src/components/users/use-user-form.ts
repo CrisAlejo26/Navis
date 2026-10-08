@@ -2,7 +2,7 @@ import { useState } from 'react';
 import type { ManagedUser } from '@navis/shared';
 
 import { useRoleDisplay } from '@/hooks/use-role-display';
-import { useUserPermissions } from '@/hooks/use-users';
+import { useUserPermissions } from '@/hooks/use-user-permissions';
 import { useCreateUser, useSetUserPassword, useUpdateUser } from '@/hooks/use-users-mutations';
 import { assignableRoles } from '@/lib/users/assignable-roles';
 import { userErrorKey, type UserErrorKey } from '@/lib/users/user-errors';

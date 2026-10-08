@@ -104,6 +104,10 @@ function RootNavigator() {
                     options={{ headerShown: false, animation: PUSHED_SCREEN_ANIMATION }}
                 />
                 <Stack.Screen
+                    name="users/roles/[id]"
+                    options={{ headerShown: false, animation: PUSHED_SCREEN_ANIMATION }}
+                />
+                <Stack.Screen
                     name="journal/[id]"
                     options={{ headerShown: false, animation: PUSHED_SCREEN_ANIMATION }}
                 />

@@ -71,8 +71,9 @@ describe('directorio de usuarios: piezas', () => {
     it('la cabecera enseña el total y la iglesia, y no dibuja el reparto si no hay cuentas', async () => {
         const view = await render(
             <UsersHero
+                label="Cuentas"
                 total={12}
-                church="Iglesia Norte"
+                caption="con acceso a Iglesia Norte"
                 accent={null}
                 segments={[{ slug: 'pastor', color: '#2140cf', count: 3 }]}
             />,
@@ -80,7 +81,13 @@ describe('directorio de usuarios: piezas', () => {
         expect(screen.getByText('12')).toBeTruthy();
         expect(screen.getByText('con acceso a Iglesia Norte')).toBeTruthy();
         await view.rerender(
-            <UsersHero total={0} church="Iglesia Norte" accent="#16a34a" segments={[]} />,
+            <UsersHero
+                label="Cuentas"
+                total={0}
+                caption="con acceso a Iglesia Norte"
+                accent="#16a34a"
+                segments={[]}
+            />,
         );
         expect(screen.getByText('0')).toBeTruthy();
     });

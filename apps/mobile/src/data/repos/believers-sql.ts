@@ -7,8 +7,16 @@ import type { BelieverStatus } from '@navis/shared';
  * deja de ser un número entero de días (CLAUDE.md).
  */
 
+/**
+ * El día del alta, en la zona del dispositivo. `created_at` es un **instante** UTC:
+ * recortarlo con `substr` daba el día UTC, y contra el «hoy» local salía un día de
+ * más al este de Greenwich en las primeras horas del día (y de menos al oeste por
+ * la tarde). `last_note_at`, en cambio, ya es un día de calendario y no se convierte.
+ */
+export const CREATED_DAY = `date(created_at, 'localtime')`;
+
 /** Días de calendario hasta hoy, desde la última nota o, sin ninguna, del alta. */
-export const DAYS_SINCE = `CAST(julianday(date(?)) - julianday(date(COALESCE(substr(last_note_at, 1, 10), substr(created_at, 1, 10)))) AS INTEGER)`;
+export const DAYS_SINCE = `CAST(julianday(date(?)) - julianday(date(COALESCE(substr(last_note_at, 1, 10), ${CREATED_DAY}))) AS INTEGER)`;
 
 /** Si esa persona ha agotado su margen (D3): aviso encendido y días pasado. */
 export const NEEDS_ATTENTION = `alert_after_days IS NOT NULL AND ${DAYS_SINCE} > alert_after_days`;

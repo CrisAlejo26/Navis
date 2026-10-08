@@ -6,6 +6,9 @@ export type UserErrorKey =
     | 'roles.lastAdmin'
     | 'roles.ownRole'
     | 'roles.transferUnavailable'
+    | 'roles.nameTaken'
+    | 'roles.systemRoleLocked'
+    | 'roles.roleInUse'
     | 'errors.generic';
 
 /** El mensaje que le toca a cada fallo del puerto; lo que no se reconoce cae en el genérico. */
@@ -22,6 +25,12 @@ export function userErrorKey(error: unknown): UserErrorKey {
             return 'roles.ownRole';
         case 'transfer-unsupported':
             return 'roles.transferUnavailable';
+        case 'name-taken':
+            return 'roles.nameTaken';
+        case 'role-locked':
+            return 'roles.systemRoleLocked';
+        case 'role-in-use':
+            return 'roles.roleInUse';
         default:
             return 'errors.generic';
     }

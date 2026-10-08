@@ -1,10 +1,8 @@
 import { keepPreviousData, useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import {
-    hasPermission,
     managedUsersQuerySchema,
     rolesQuerySchema,
     type ManagedUser,
-    type MyRole,
     type RoleRow,
 } from '@navis/shared';
 
@@ -84,15 +82,6 @@ export function useRoleCatalog() {
     });
 }
 
-export function useMyRole() {
-    const { asker, enabled } = useUsersAsker();
-    return useQuery({
-        queryKey: [...usersKey(asker), 'mine'],
-        queryFn: (): Promise<MyRole> => usersGateway.myRole(asker),
-        enabled,
-    });
-}
-
 export type { ManagedUser };
 
 /** Una cuenta por id, para su ficha. */
@@ -103,15 +92,4 @@ export function useUser(id: string) {
         queryFn: () => usersGateway.getUser(asker, id),
         enabled: enabled && Boolean(id),
     });
-}
-
-/** Qué puede hacer quien ha entrado: la interfaz oculta lo que el puerto rechazaría. */
-export function useUserPermissions() {
-    const mine = useMyRole();
-    const granted = mine.data?.permissions ?? [];
-    return {
-        slug: mine.data?.slug,
-        canManage: hasPermission(granted, 'users.manage'),
-        canManageRoles: hasPermission(granted, 'roles.manage'),
-    };
 }

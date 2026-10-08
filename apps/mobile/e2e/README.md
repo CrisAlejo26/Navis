@@ -39,3 +39,16 @@ Si falla a mitad, retirar esa cuenta desde la ficha. El texto va por
 Sin compilación nativa conectada a Metro, el flujo de usuarios también corre en
 Expo Go: `NAVIS_EXPO_GO=1 python apps/mobile/e2e/users_flow.py` (Metro normal, no
 `--dev-client`). Avisos de Expo Go como el de Reanimated se cierran antes.
+
+## Roles
+
+```powershell
+python apps/mobile/e2e/roles_flow.py --locale en          # solo lectura: vale un pastor
+python apps/mobile/e2e/roles_manage_flow.py --locale en   # crea, edita y borra un rol
+```
+
+`roles_flow.py` abre la pestaña Roles, busca, abre un rol y comprueba que un
+pastor no ve acciones. `roles_manage_flow.py` necesita una sesión de
+**superadministrador** (solo él tiene `roles.manage`): crea `QA Rol <marca>`,
+lo abre, lo renombra y lo borra. Capturas en `docs/qa/usuarios-movil/`. Si falla
+a mitad, borrar ese rol desde su ficha.

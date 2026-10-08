@@ -338,6 +338,8 @@ export const en = {
         transferUnavailable:
             'Moving a church to another one is not available on the phone yet: it can only be deleted.',
         deleteWithChurches: 'Delete the account and its churches',
+        fieldRoleName: 'Enter the role name (2 letters or more)',
+        noPermissions: 'No permissions: it can have an account but cannot open any section.',
         newUser: 'Create user',
         newRole: 'Create role',
         editRole: 'Edit role',

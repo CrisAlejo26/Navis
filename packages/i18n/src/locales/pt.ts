@@ -338,6 +338,8 @@ export const pt = {
         transferUnavailable:
             'Transferir uma igreja ainda não é possível no telemóvel: só se pode eliminar.',
         deleteWithChurches: 'Eliminar a conta e as suas igrejas',
+        fieldRoleName: 'Escreve o nome da função (2 letras ou mais)',
+        noPermissions: 'Sem permissões: a conta existe, mas não abre nenhuma secção.',
         newUser: 'Criar utilizador',
         newRole: 'Criar função',
         editRole: 'Editar a função',

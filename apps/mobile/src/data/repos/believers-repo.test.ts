@@ -3,6 +3,7 @@
 import { setupLocalDb } from '@/data/test-support';
 import { addDays, toSearchName } from '@navis/shared';
 import { setDbForTests } from '@/data/db';
+import { deviceToday } from '@/data/repos/believers-sql';
 import { createChurch } from '@/data/repos/church-repo';
 import {
     believersSummary,
@@ -33,7 +34,8 @@ describe('los creyentes en local (RFC 0003)', () => {
     let db: Awaited<ReturnType<typeof setupLocalDb>>;
     let churchId: string;
     const ownerId = 'usuario-local';
-    const today = new Date().toISOString().slice(0, 10);
+    // El día **local**, como lo cuenta el repositorio: con UTC, entre la medianoche local y la UTC el test iba un día por detrás.
+    const today = deviceToday();
 
     beforeAll(async () => {
         db = await setupLocalDb({ setDbForTests, openDatabaseMock: openDatabaseAsync });
