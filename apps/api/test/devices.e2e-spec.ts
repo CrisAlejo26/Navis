@@ -51,7 +51,10 @@ describe('Dispositivos (e2e)', () => {
 
     it('declara el servidor y el protocolo sin pedir sesión', async () => {
         const response = await http().get('/api/v1/sync/capabilities').expect(200);
-        expect(response.body).toMatchObject({ installationName: 'Navis', dataSyncEnabled: false });
+        expect(response.body).toMatchObject({
+            installationName: 'Navis',
+            dataSyncEnabled: process.env.SYNC_ENABLED === 'true',
+        });
     });
 
     it('no genera tokens sin sesión', async () => {

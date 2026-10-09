@@ -2,6 +2,7 @@ import {
     ALL_LOCAL_TABLES,
     columnKind,
     encodeRow,
+    splitEntityId,
     type LocalColumn,
     type LocalRow,
     type WireObject,
@@ -9,6 +10,7 @@ import {
 import type { DataSource } from 'typeorm';
 
 import { toIsoDay } from '../database/iso-day';
+import { revealRowData } from './sync-password-cells';
 
 /**
  * Lee una fila en crudo y la deja con la forma que espera `encodeRow` (la misma
@@ -36,9 +38,16 @@ export async function readWireRow(
     const definition = ALL_LOCAL_TABLES.find((one) => one.name === table);
     if (!definition) throw new Error(`Tabla sin esquema local: ${table}`);
 
+    // El identificador puede ser un par (list_members, list_grants): una condición por columna.
+    const key = splitEntityId(table, id);
+    const marker = (index: number): string =>
+        dataSource.options.type === 'postgres' ? `$${String(index + 1)}` : '?';
+    const where = Object.keys(key)
+        .map((column, index) => `"${column}" = ${marker(index)}`)
+        .join(' AND ');
     const found: unknown = await dataSource.query(
-        `SELECT * FROM "${table}" WHERE id = ${dataSource.options.type === 'postgres' ? '$1' : '?'}`,
-        [id],
+        `SELECT * FROM "${table}" WHERE ${where}`,
+        Object.values(key),
     );
     const raw = Array.isArray(found)
         ? (found[0] as Record<string, unknown> | undefined)
@@ -48,6 +57,14 @@ export async function readWireRow(
     const row: LocalRow = {};
     for (const column of definition.columns) {
         row[column.name] = toLocalValue(table, column, raw[column.name]);
+    }
+    // Las contraseñas de las tablas viajan en claro por el canal autorizado (ver sync-password-cells).
+    if (
+        table === 'custom_table_rows' &&
+        typeof row.data === 'string' &&
+        typeof row.table_id === 'string'
+    ) {
+        row.data = await revealRowData(dataSource, row.table_id, row.data);
     }
     return encodeRow(definition, row);
 }

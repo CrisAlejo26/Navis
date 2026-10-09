@@ -11,7 +11,7 @@ export class SyncRevision {
     @PrimaryColumn({ name: 'table_name', type: 'varchar', length: 64 })
     tableName: string;
 
-    @PrimaryColumn({ name: 'entity_id', type: 'varchar', length: 64 })
+    @PrimaryColumn({ name: 'entity_id', type: 'varchar', length: 128 })
     entityId: string;
 
     @Column({ type: 'integer' })

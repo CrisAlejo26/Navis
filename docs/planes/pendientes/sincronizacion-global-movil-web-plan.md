@@ -1,6 +1,6 @@
 # Sincronización global entre móvil y web — plan por fases
 
-- **Estado:** Fases 0, 1, 2 y 4 (servidor, tras `SYNC_ENABLED`) implementadas el 2026-10-09; la 3 se salta de momento. Ver §11.
+- **Estado:** Fases 0, 1, 2, 3 y 4 implementadas el 2026-10-09 (la 4, solo servidor y tras `SYNC_ENABLED`), sin transferir datos. La 5 es la siguiente. Ver §11.
 - **Fecha:** 2026-10-09.
 - **Alcance:** toda Navis: todas las iglesias accesibles, todos los módulos, datos personales, relaciones, configuraciones compartidas y archivos. No se limita a la iglesia activa ni a un módulo.
 - **Aplicaciones:** `apps/api`, `apps/web`, `apps/mobile`, `packages/shared`, `packages/api-client`; revisar escritorio si utiliza las mismas escrituras de la API.
@@ -559,3 +559,24 @@ Servidor, tras `SYNC_ENABLED` (apagado por defecto; la API no registra ni acepta
 - **Pruebas:** 9 unitarias de triggers/publicación y 6 e2e de punta a punta (`sync.e2e-spec.ts`). Toda la suite e2e (18 ficheros, 262 tests) pasa **también contra Postgres 18**, con el contenedor desechable de esta sesión.
 
 **Pendiente de la Fase 4:** revisión base en las operaciones (hace falta el adaptador de cada tabla), retención y poda de `sync_changes` y recibos, y que los permisos por módulo filtren el flujo (hoy solo pertenencia y dueño, por eso sigue apagado).
+
+### Fase 4, cierre (2026-10-09)
+
+- **Permisos por módulo en el flujo:** `sync-permissions.ts` fija el permiso de lectura de cada tabla (el mismo que la pantalla de la web) y `GET /sync/changes` no entrega lo que el rol no puede leer; quien tiene `believers.view` no gana las llaves de las listas (`lists.share`).
+- **Revisión base:** una operación cuya `baseRevision` no coincide con la de la entidad es un `conflict` (`stale-base`, con la revisión actual) y el adaptador no se ejecuta; el recibo guarda el conflicto.
+- **Retención y poda:** `SYNC_RETENTION_DAYS` (180 por defecto). `SyncRetentionService` borra lo publicado hasta la última posición vieja y anota `pruned_through`; un cursor anterior recibe 409 y rehace la descarga. Los recibos viejos también se podan.
+- **Triggers a prueba de migraciones:** en SQLite, TypeORM recrea una tabla al quitar o cambiar una columna y se lleva sus triggers. `SyncInstallationService` los comprueba al arrancar y reinstala los que falten; las migraciones que tocan tablas con triggers usan `ALTER TABLE` directo.
+- **Tres fallos que solo salieron al ejecutar todo con la captura encendida**, y ya corregidos: `list_members` y `list_grants` no tienen `id` (clave compuesta, `sync-keys.ts`); seis tablas no tienen `deleted_at`; el identificador compuesto (73 caracteres) no cabía en `varchar(64)` de Postgres; y el ámbito de una hija de dato personal salía como `text` donde la columna es `uuid`.
+- **Verificación en los dos motores desde cero:** Postgres 18 y un SQLite vacío, solo con las migraciones, 265/265 tests e2e con `SYNC_ENABLED` apagado y encendido. `sync-triggers.test.ts` ejecuta insert, update y delete sobre las 52 tablas sincronizadas.
+
+### Fase 3 (2026-10-09)
+
+- **Copia v2 (`lib/backup`):** manifiesto (filas por tabla, cada fichero con tamaño y SHA-256, ficheros ausentes), origen, huella de todo el contenido, lectura de todas las tablas en una sola transacción y verificación antes de restaurar (`corrupt` sin tocar nada). Las copias v1 se siguen restaurando.
+- **Paquete cifrado:** AES-256-GCM con clave PBKDF2 (`package-crypto.ts`); contraseña de 12 caracteres como mínimo, y una equivocada o un fichero alterado fallan igual.
+- **Copia previa:** `safety-backup.ts` deja una copia verificada (se vuelve a leer y pasa la comprobación de restauración) antes de restaurar, conectar y desconectar; si no puede, la operación no sigue. Guarda las 5 últimas, sin claves portables, en el almacenamiento privado de la app. Para llevarla fuera se usa la exportación con contraseña.
+- **Nunca credenciales remotas:** una copia no lleva la credencial del dispositivo ni la conexión (test).
+- **Identidades y roles (`sync-identity.ts`):** el correo coincidente es solo un candidato; quien vincula queda verificado con su cuenta (`identities` en el vínculo); los demás usuarios locales son autores históricos sin acceso; importar un rol no da poder y uno propio con otro conjunto de permisos se revisa.
+- **Celdas protegidas:** el protocolo lleva la contraseña en claro (solo HTTPS y solo con `tables.view`, como `reveal`) y cada extremo la cifra con su clave: `sync-password-cells.ts` en el servidor y `sync-cells.ts` en el móvil. Nunca viaja un sobre que solo entiende un teléfono.
+- **Visibilidad por registro (`sync-privacy.ts`):** la misma regla que los triggers (dos personas de una iglesia ven cada una solo sus tareas).
+
+**Pendiente de la Fase 3:** persistir `sync_id_map` y aplicar la decisión de roles y autores al importar (Fase 7); restaurar en otro teléfono ya está probado con la contraseña del paquete (`backup-keys.test.ts` y `backup-v2.test.ts`), pero no en un teléfono físico.

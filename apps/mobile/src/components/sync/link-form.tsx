@@ -13,6 +13,7 @@ const ERROR_KEYS = {
     unreachable: 'sync.error.unreachable',
     incompatible: 'sync.error.incompatible',
     invalidToken: 'sync.error.invalidToken',
+    safetyFailed: 'sync.error.safetyFailed',
     generic: 'sync.error.generic',
 } as const satisfies Record<LinkErrorCode, string>;
 

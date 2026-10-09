@@ -182,7 +182,7 @@ describe('Sincronización: cambios y operaciones (e2e)', () => {
             table: 'tags',
             id: crypto.randomUUID(),
             op: 'upsert',
-            baseRevision: 3,
+            baseRevision: 0,
             fields: { name: 'Etiqueta' },
         };
         const send = (operations: object[]) =>
@@ -212,6 +212,129 @@ describe('Sincronización: cambios y operaciones (e2e)', () => {
             status: 'rejected',
             reason: 'unsupported-table',
         });
+        expect(executions).toBe(1);
+    });
+    it('un rol sin permisos no recibe lo que la web le niega, pero sí su iglesia', async () => {
+        // Un tercero sin rol de gestión entra como miembro de la iglesia de A.
+        const email = `sync-c-${stamp}@navis.test`;
+        await http()
+            .post('/api/auth/sign-up/email')
+            .send({ email, password, name: 'Sync c' })
+            .expect(200);
+        const login = await http()
+            .post('/api/auth/sign-in/email')
+            .send({ email, password })
+            .expect(200);
+        const setCookie = login.headers['set-cookie'];
+        const cookieC = (Array.isArray(setCookie) ? setCookie : [setCookie]).join('; ');
+
+        const mine = body<{ activeId: string | null }>(
+            await http().get('/api/v1/churches').set('Cookie', cookieA).expect(200),
+        );
+        const churchId = mine.activeId ?? '';
+        const dataSource = app.get(DataSource);
+        const marca = dataSource.options.type === 'postgres' ? ['$1', '$2', '$3'] : ['?', '?', '?'];
+        const found: unknown = await dataSource.query(
+            `SELECT id FROM "user" WHERE email = ${marca[0] ?? '?'}`,
+            [email],
+        );
+        const userId = Array.isArray(found) ? String((found[0] as { id: string }).id) : '';
+        await dataSource.query(
+            `INSERT INTO church_members (id, church_id, user_id) VALUES (${marca[0] ?? '?'}, ${marca[1] ?? '?'}, ${marca[2] ?? '?'})`,
+            [crypto.randomUUID(), churchId, userId],
+        );
+
+        await http()
+            .post('/api/v1/believers')
+            .set('Cookie', cookieA)
+            .send({ firstName: 'Reservado', lastName: 'Fuera', status: 'nuevo' })
+            .expect(201);
+
+        const page = body<SyncChangesPage>(await feed({ cookie: cookieC }, 'cursor=0').expect(200));
+        const tables = new Set(page.changes.map((one) => one.table));
+        expect(tables.has('churches')).toBe(true);
+        expect(tables.has('believers')).toBe(false);
+        expect(tables.has('believer_tags')).toBe(false);
+    });
+
+    it('las contraseñas de las tablas llegan en claro al dispositivo autorizado, aunque en la base estén cifradas', async () => {
+        const table = body<{ id: string }>(
+            await http()
+                .post('/api/v1/tables')
+                .set('Cookie', cookieA)
+                .send({ name: `Claves ${stamp}`, icon: 'book-open', accent: '#2140cf' })
+                .expect(201),
+        );
+        const column = body<{ key: string }>(
+            await http()
+                .post(`/api/v1/tables/${table.id}/columns`)
+                .set('Cookie', cookieA)
+                .send({ label: 'Clave del salón', type: 'password' })
+                .expect(201),
+        );
+        const row = body<{ id: string }>(
+            await http()
+                .post(`/api/v1/tables/${table.id}/rows`)
+                .set('Cookie', cookieA)
+                .send({ data: { [column.key]: 'portal-2026' } })
+                .expect(201),
+        );
+
+        const stored: unknown = await app
+            .get(DataSource)
+            .query(`SELECT data FROM custom_table_rows WHERE id = '${row.id}'`);
+        expect(JSON.stringify(stored)).not.toContain('portal-2026');
+
+        const page = body<SyncChangesPage>(await feed({ bearer: bearerA }, 'cursor=0').expect(200));
+        const change = page.changes.find(
+            (one) => one.table === 'custom_table_rows' && one.id === row.id,
+        );
+        expect(String(change?.row?.data)).toContain('portal-2026');
+    });
+
+    it('si la entidad avanzó desde que el cliente la leyó, la operación es un conflicto y no se ejecuta', async () => {
+        const created = await http()
+            .post('/api/v1/believers')
+            .set('Cookie', cookieA)
+            .send({ firstName: 'Concurrente', lastName: 'Base', status: 'nuevo' })
+            .expect(201);
+        const id = body<BelieverListItem>(created).id;
+
+        let executions = 0;
+        app.get(SyncAdapterRegistry).register({
+            table: 'believers',
+            apply: () => {
+                executions += 1;
+                return Promise.resolve({ status: 'applied', revision: 2 });
+            },
+        });
+        const send = (baseRevision: number) =>
+            http()
+                .post('/api/v1/sync/operations')
+                .set('Authorization', bearerA)
+                .send({
+                    operations: [
+                        {
+                            operationId: crypto.randomUUID(),
+                            table: 'believers',
+                            id,
+                            op: 'upsert',
+                            baseRevision,
+                        },
+                    ],
+                })
+                .expect(201);
+
+        const stale = body<{ results: SyncOperationResult[] }>(await send(0));
+        expect(stale.results[0]).toMatchObject({
+            status: 'conflict',
+            reason: 'stale-base',
+            revision: 1,
+        });
+        expect(executions).toBe(0);
+
+        const fresh = body<{ results: SyncOperationResult[] }>(await send(1));
+        expect(fresh.results[0]).toMatchObject({ status: 'applied' });
         expect(executions).toBe(1);
     });
 });

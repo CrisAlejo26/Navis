@@ -11,6 +11,7 @@ import { createTableRow } from '@/data/repos/table-rows';
 import { revealPassword } from '@/data/repos/table-rows-read';
 import { buildBackup } from '@/lib/backup/create-backup';
 import { restoreBackup } from '@/lib/backup/restore-backup';
+import { asV1Copy, reseal } from '@/lib/backup/test-copies';
 import type { BackupFiles } from '@/lib/backup/backup-format';
 import { rowDataSchema } from '@navis/shared';
 import { cellEnvelope } from './crypto';
@@ -80,11 +81,11 @@ it('recupera una contraseña en otra instalación con secreto y rechaza secreto 
         },
     };
     await expect(
-        restoreBackup(JSON.stringify(plaintext), files, 'recovery-secret-2026'),
+        restoreBackup(JSON.stringify(reseal(plaintext)), files, 'recovery-secret-2026'),
     ).rejects.toThrow('unencrypted-password-backup');
     expect(await revealPassword(context, id, row, column.key)).toBe('Secreto original');
     const withoutKeys = { ...backup, tableKeys: undefined };
-    await expect(restoreBackup(JSON.stringify(withoutKeys), files)).rejects.toThrow(
+    await expect(restoreBackup(JSON.stringify(reseal(withoutKeys)), files)).rejects.toThrow(
         'missing-backup-keys',
     );
     expect(await revealPassword(context, id, row, column.key)).toBe('Secreto original');
@@ -99,10 +100,10 @@ it('acepta backups anteriores sin tablas y rechaza relaciones de otra iglesia', 
             Object.entries(backup.tables).filter(([name]) => !name.startsWith('custom_table')),
         ),
     };
-    await restoreBackup(JSON.stringify(old), files);
+    await restoreBackup(JSON.stringify(asV1Copy(old)), files);
     expect(await db.adapter.getAllAsync('SELECT * FROM custom_tables')).toEqual([]);
     backup.tables.custom_tables[0].church_id = 'foreign';
     await expect(
-        restoreBackup(JSON.stringify(backup), files, 'recovery-secret-2026'),
+        restoreBackup(JSON.stringify(reseal(backup)), files, 'recovery-secret-2026'),
     ).rejects.toThrow('invalid-table-parent');
 });

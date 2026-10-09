@@ -9,7 +9,13 @@ import {
 } from '@navis/shared';
 
 export type LinkErrorCode =
-    'invalidUrl' | 'insecureUrl' | 'unreachable' | 'incompatible' | 'invalidToken' | 'generic';
+    | 'invalidUrl'
+    | 'insecureUrl'
+    | 'unreachable'
+    | 'incompatible'
+    | 'invalidToken'
+    | 'safetyFailed'
+    | 'generic';
 
 export type LinkResult<T> = { ok: true; value: T } | { ok: false; error: LinkErrorCode };
 

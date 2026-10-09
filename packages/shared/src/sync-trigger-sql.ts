@@ -1,4 +1,5 @@
 import { ALL_LOCAL_TABLES, type LocalTable } from './local-schema';
+import { entityKeyColumns } from './sync-keys';
 import { SYNC_COVERAGE } from './sync-coverage';
 import { SYNC_PARENTS } from './sync-parents';
 
@@ -57,23 +58,40 @@ export function syncedTables(): string[] {
         .map(([name]) => name);
 }
 
+const hasDeletedAt = (table: string): boolean =>
+    tableByName(table).columns.some((c) => c.name === 'deleted_at');
+
+/** El identificador de la fila: su `id`, o el par de columnas de una clave compuesta unido con `:`. */
+function entityIdSql(table: string, ref: string, driver: 'sqlite' | 'postgres'): string {
+    const columns = entityKeyColumns(table).map((column) =>
+        driver === 'postgres' ? `${ref}.${column}::text` : `${ref}.${column}`,
+    );
+    return columns.join(` || ':' || `);
+}
+
+/** `delete` solo si la tabla tiene borrado lógico y la fila acaba de borrarse; el resto, `upsert`. */
+const updateOperation = (table: string, ref: string): string =>
+    hasDeletedAt(table)
+        ? `CASE WHEN ${ref}.deleted_at IS NOT NULL THEN 'delete' ELSE 'upsert' END`
+        : `'upsert'`;
+
 const sqliteTriggerBody = (table: string, ref: 'NEW' | 'OLD', op: string): string => {
     const scope = scopeSql(table, ref);
+    const id = entityIdSql(table, ref, 'sqlite');
     return `WHEN (SELECT capturing FROM sync_installation LIMIT 1) = 1 BEGIN
-INSERT INTO sync_revisions (table_name, entity_id, revision) VALUES ('${table}', ${ref}.id, 1)
+INSERT INTO sync_revisions (table_name, entity_id, revision) VALUES ('${table}', ${id}, 1)
   ON CONFLICT (table_name, entity_id) DO UPDATE SET revision = revision + 1;
 INSERT INTO sync_changes (id, table_name, entity_id, op, revision, church_id, owner_id, created_at)
-VALUES (lower(hex(randomblob(16))), '${table}', ${ref}.id, ${op},
-  (SELECT revision FROM sync_revisions WHERE table_name = '${table}' AND entity_id = ${ref}.id),
+VALUES (lower(hex(randomblob(16))), '${table}', ${id}, ${op},
+  (SELECT revision FROM sync_revisions WHERE table_name = '${table}' AND entity_id = ${id}),
   ${scope.church}, ${scope.owner}, strftime('%Y-%m-%d %H:%M:%f', 'now'));
 END`;
 };
 
 function sqliteStatements(table: string): string[] {
-    const updateOp = `CASE WHEN NEW.deleted_at IS NOT NULL THEN 'delete' ELSE 'upsert' END`;
     const events: [string, string, 'NEW' | 'OLD', string][] = [
         ['ai', 'INSERT', 'NEW', `'upsert'`],
-        ['au', 'UPDATE', 'NEW', updateOp],
+        ['au', 'UPDATE', 'NEW', updateOperation(table, 'NEW')],
         ['ad', 'DELETE', 'OLD', `'delete'`],
     ];
     return events.flatMap(([suffix, event, ref, op]) => [
@@ -84,19 +102,20 @@ function sqliteStatements(table: string): string[] {
 
 function postgresStatements(table: string): string[] {
     const scope = scopeSql(table, 'r');
+    const id = entityIdSql(table, 'r', 'postgres');
     return [
         `CREATE OR REPLACE FUNCTION sync_capture_${table}() RETURNS trigger AS $fn$
 DECLARE r record; rev integer; kind text;
 BEGIN
   IF NOT EXISTS (SELECT 1 FROM sync_installation WHERE capturing) THEN RETURN NULL; END IF;
   IF TG_OP = 'DELETE' THEN r := OLD; kind := 'delete';
-  ELSE r := NEW; kind := CASE WHEN TG_OP = 'UPDATE' AND NEW.deleted_at IS NOT NULL THEN 'delete' ELSE 'upsert' END;
+  ELSE r := NEW; kind := CASE WHEN TG_OP = 'UPDATE' THEN ${updateOperation(table, 'NEW')} ELSE 'upsert' END;
   END IF;
-  INSERT INTO sync_revisions (table_name, entity_id, revision) VALUES ('${table}', r.id::text, 1)
+  INSERT INTO sync_revisions (table_name, entity_id, revision) VALUES ('${table}', ${id}, 1)
     ON CONFLICT (table_name, entity_id) DO UPDATE SET revision = sync_revisions.revision + 1
     RETURNING revision INTO rev;
   INSERT INTO sync_changes (id, table_name, entity_id, op, revision, church_id, owner_id, created_at)
-  VALUES (gen_random_uuid(), '${table}', r.id::text, kind, rev, ${scope.church}, ${scope.owner}, now());
+  VALUES (gen_random_uuid(), '${table}', ${id}, kind, rev, (${scope.church})::uuid, (${scope.owner})::text, now());
   RETURN NULL;
 END $fn$ LANGUAGE plpgsql`,
         `DROP TRIGGER IF EXISTS sync_${table} ON "${table}"`,

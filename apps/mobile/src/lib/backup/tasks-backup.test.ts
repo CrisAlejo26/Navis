@@ -1,4 +1,5 @@
 import '@/data/test-support';
+import { asV1Copy } from '@/lib/backup/test-copies';
 import { buildBackup } from './create-backup';
 import { restoreBackup } from './restore-backup';
 import type { BackupFiles } from './backup-format';
@@ -75,7 +76,7 @@ describe('backup completo de tareas y hábitos', () => {
             'task_streak_cache',
         ])
             delete backup.tables[name];
-        await restoreBackup(JSON.stringify({ ...backup, schemaVersion: 15 }), files);
+        await restoreBackup(JSON.stringify(asV1Copy({ ...backup, schemaVersion: 15 })), files);
         expect(await listTaskTags(c.north)).toEqual([]);
     });
 });

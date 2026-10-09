@@ -37,10 +37,10 @@ export class SyncController {
         summary: 'Cambios publicados desde un cursor, filtrados por lo que ve la cuenta',
     })
     getChanges(
-        @CurrentUser('id') userId: string,
+        @CurrentUser() user: AuthUser,
         @Query() query: Record<string, unknown>,
     ): Promise<SyncChangesPage> {
-        return this.changes.page(userId, parse(syncChangesQuerySchema, query));
+        return this.changes.page(user, parse(syncChangesQuerySchema, query));
     }
 
     @Post('operations')

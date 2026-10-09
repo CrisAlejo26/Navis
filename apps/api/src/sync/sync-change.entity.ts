@@ -24,7 +24,7 @@ export class SyncChange {
     @Column({ name: 'table_name', type: 'varchar', length: 64 })
     tableName: string;
 
-    @Column({ name: 'entity_id', type: 'varchar', length: 64 })
+    @Column({ name: 'entity_id', type: 'varchar', length: 128 })
     entityId: string;
 
     @Column({ type: 'varchar', length: 10 })

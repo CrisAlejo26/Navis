@@ -17,4 +17,8 @@ export class SyncInstallation {
 
     @Column({ type: 'boolean', default: false })
     capturing: boolean;
+
+    /** Última posición borrada por la poda: un cursor anterior ya no se puede servir. */
+    @Column({ name: 'pruned_through', type: 'integer', default: 0 })
+    prunedThrough: number;
 }

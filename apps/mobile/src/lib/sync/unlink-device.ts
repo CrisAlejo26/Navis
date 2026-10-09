@@ -4,12 +4,33 @@ import { useSyncConnection } from '@/stores/sync-connection';
 import { deleteCredential, readCredential } from './credential';
 import { NO_REDIRECT } from './link-device';
 
+interface UnlinkOptions {
+    fetchImpl?: typeof fetch;
+    /** La copia previa; por defecto, la del teléfono. Si lanza, no se desvincula nada. */
+    safetyBackup?: () => Promise<unknown>;
+}
+
+async function deviceSafetyBackup(): Promise<unknown> {
+    // Import perezoso: arrastra el sistema de ficheros nativo, que solo hace falta al ejecutarlo.
+    const { ensureSafetyBackup } = await import('@/lib/backup/safety-backup-device');
+    return ensureSafetyBackup('disconnect');
+}
+
 /**
  * Vuelve al modo local. Primero intenta revocar la credencial en el servidor
  * (si no hay red, queda pendiente y se revoca desde la web); en cualquier caso
- * la credencial local se borra y los datos del teléfono no se tocan.
+ * la credencial local se borra y los datos del teléfono no se tocan. Antes deja una copia verificada: si no puede,
+ * no desvincula nada.
  */
-export async function unlinkDevice(fetchImpl?: typeof fetch): Promise<{ revoked: boolean }> {
+export async function unlinkDevice(
+    options: UnlinkOptions = {},
+): Promise<{ revoked: boolean; aborted: boolean }> {
+    const { fetchImpl, safetyBackup = deviceSafetyBackup } = options;
+    try {
+        await safetyBackup();
+    } catch {
+        return { revoked: false, aborted: true };
+    }
     const { link, clear } = useSyncConnection.getState();
     const credential = await readCredential();
     let revoked = false;
@@ -30,5 +51,5 @@ export async function unlinkDevice(fetchImpl?: typeof fetch): Promise<{ revoked:
 
     await deleteCredential();
     clear();
-    return { revoked };
+    return { revoked, aborted: false };
 }

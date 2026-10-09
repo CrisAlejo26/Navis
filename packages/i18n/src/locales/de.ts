@@ -222,12 +222,12 @@ export const de = {
         rowHint: 'Deine Daten in einer sicheren Datei',
         exportTitle: 'Sicherung speichern',
         exportBody:
-            'Enthält Gläubige, Notizen, Kalender, Träume, Prophetien, Lehren sowie die Audios und Fotos.',
+            'Enthält Personen, Notizen, Kalender, Träume, Prophezeiungen, Lehren sowie Audios und Fotos. Die ganze Datei wird mit deinem Passwort verschlüsselt.',
         exportButton: 'Sicherung exportieren',
         exportFailed: 'Die Sicherung konnte nicht erstellt werden. Versuche es erneut.',
         restoreTitle: 'Sicherung wiederherstellen',
         restoreBody:
-            'Ersetzt alles in der App durch den Inhalt der Datei. Das funktioniert auf demselben Telefon: Das Passwort wandert nicht auf ein anderes Gerät.',
+            'Ersetzt alles Bestehende durch den Inhalt der Datei. Vorher wird eine Kopie des Bestehenden gesichert, falls du zurückwillst. Gefragt wird das Passwort, mit dem sie erstellt wurde.',
         restoreButton: 'Sicherung auswählen',
         restoreConfirmTitle: 'Diese Sicherung wiederherstellen?',
         restoreConfirmBody:
@@ -238,6 +238,14 @@ export const de = {
         errorNewer:
             'Die Sicherung stammt aus einer neueren Navis-Version. Aktualisiere die App und versuche es erneut.',
         errorGeneric: 'Wiederherstellung fehlgeschlagen. Es wurde nichts geändert.',
+        passwordHint:
+            'Mindestens 12 Zeichen. Ohne es kann niemand die Kopie öffnen, auch wir nicht.',
+        errorPassword: 'Dieses Passwort öffnet die Kopie nicht, oder die Datei wurde verändert.',
+        errorCorrupt: 'Die Kopie ist unvollständig oder beschädigt. Es wurde nichts geändert.',
+        errorSafety:
+            'Eine Kopie des Bestehenden konnte nicht gesichert werden, daher wurde nichts wiederhergestellt.',
+        restoredMissing:
+            'Kopie wiederhergestellt. Beim Erstellen fehlten {{count}} Dateien (Audios oder Fotos).',
     },
     settings: {
         saved: 'Einstellungen gespeichert',
@@ -2462,6 +2470,8 @@ export const de = {
                 'Dieser Server spricht ein Protokoll, das diese App-Version nicht versteht.',
             invalidToken: 'Der Code ist ungültig oder abgelaufen. Erzeuge im Web einen neuen.',
             generic: 'Beim Verknüpfen ist etwas schiefgelaufen. Versuche es erneut.',
+            safetyFailed:
+                'Eine Sicherungskopie deiner Daten konnte nicht gespeichert werden, daher wurde nichts getan. Schaffe Speicherplatz und versuche es erneut.',
         },
     },
     errors: {

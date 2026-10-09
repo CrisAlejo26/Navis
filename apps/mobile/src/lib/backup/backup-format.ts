@@ -3,9 +3,27 @@ import { z } from 'zod';
 import { backupKeysSchema } from '../tables/backup-keys';
 
 export const BACKUP_FORMAT = 'navis-backup';
-export const BACKUP_VERSION = 1;
+/** La 1 era el JSON en claro sin manifiesto; la 2 añade origen, manifiesto e integridad. */
+export const BACKUP_VERSION = 2;
 
 const cell = z.union([z.string(), z.number(), z.null()]);
+
+const fileEntry = z.object({ id: z.string(), bytes: z.number().int(), sha256: z.string() });
+
+/** Qué se hizo, desde dónde y qué faltaba: una copia incompleta lo dice en vez de callarlo. */
+export const manifestSchema = z.object({
+    tables: z.record(z.string(), z.number().int()),
+    audios: z.array(fileEntry),
+    photos: z.array(fileEntry),
+    missing: z.object({ audios: z.array(z.string()), photos: z.array(z.string()) }),
+});
+
+export const originSchema = z.object({
+    appVersion: z.string(),
+    platform: z.string(),
+});
+
+export type BackupOrigin = z.infer<typeof originSchema>;
 
 /**
  * Una copia de seguridad: todas las filas de la base local más los audios y las
@@ -15,7 +33,7 @@ const cell = z.union([z.string(), z.number(), z.null()]);
  */
 export const backupSchema = z.object({
     format: z.literal(BACKUP_FORMAT),
-    version: z.literal(BACKUP_VERSION),
+    version: z.union([z.literal(1), z.literal(2)]),
     /** Versión del esquema local con que se hizo; una app más vieja no la restaura. */
     schemaVersion: z.number().int().positive(),
     createdAt: z.string(),
@@ -23,6 +41,10 @@ export const backupSchema = z.object({
     audios: z.record(z.string(), z.string()),
     photos: z.record(z.string(), z.string()),
     tableKeys: backupKeysSchema.optional(),
+    /** Solo en la v2. */
+    origin: originSchema.optional(),
+    manifest: manifestSchema.optional(),
+    integrity: z.string().optional(),
 });
 
 export type Backup = z.infer<typeof backupSchema>;

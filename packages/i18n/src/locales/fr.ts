@@ -218,12 +218,12 @@ export const fr = {
         rowHint: 'Tes données dans un fichier à l’abri',
         exportTitle: 'Enregistrer une sauvegarde',
         exportBody:
-            'Elle contient les fidèles, les notes, le calendrier, les rêves, les prophéties, les enseignements, ainsi que les audios et les photos.',
+            'Comprend les personnes, notes, calendrier, rêves, prophéties, enseignements, ainsi que les audios et les photos. Tout le fichier est chiffré avec votre mot de passe.',
         exportButton: 'Exporter la sauvegarde',
         exportFailed: 'La sauvegarde n’a pas pu être créée. Réessaie.',
         restoreTitle: 'Restaurer une sauvegarde',
         restoreBody:
-            'Remplace tout ce qui est dans l’app par le contenu du fichier. Ça marche sur ce même téléphone : le mot de passe ne voyage pas vers un autre appareil.',
+            'Remplace tout ce qui existe par le contenu du fichier. Une copie de l’existant est d’abord enregistrée, au cas où il faudrait revenir en arrière. Le mot de passe utilisé à la création est demandé.',
         restoreButton: 'Choisir une sauvegarde',
         restoreConfirmTitle: 'Restaurer cette sauvegarde ?',
         restoreConfirmBody:
@@ -234,6 +234,14 @@ export const fr = {
         errorNewer:
             'Cette sauvegarde vient d’une version plus récente de Navis. Mets l’app à jour et réessaie.',
         errorGeneric: 'Restauration impossible. Rien n’a été modifié.',
+        passwordHint:
+            '12 caractères minimum. Sans lui, personne ne peut ouvrir la copie, pas même nous.',
+        errorPassword: 'Ce mot de passe n’ouvre pas cette copie, ou le fichier a été modifié.',
+        errorCorrupt: 'La copie est incomplète ou endommagée. Rien n’a été modifié.',
+        errorSafety:
+            'Impossible d’enregistrer une copie de l’existant : rien n’a donc été restauré.',
+        restoredMissing:
+            'Copie restaurée. {{count}} fichiers (audios ou photos) manquaient lors de sa création.',
     },
     settings: {
         saved: 'Réglages enregistrés',
@@ -2448,6 +2456,8 @@ export const fr = {
                 'Ce serveur utilise un protocole que cette version de l’application ne comprend pas.',
             invalidToken: 'Le code n’est pas valide ou a expiré. Générez-en un nouveau sur le web.',
             generic: 'Un problème est survenu lors de l’association. Réessayez.',
+            safetyFailed:
+                'Impossible d’enregistrer une copie préalable de vos données : rien n’a été fait. Libérez de l’espace et réessayez.',
         },
     },
     errors: {

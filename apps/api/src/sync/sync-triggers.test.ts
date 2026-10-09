@@ -46,7 +46,12 @@ async function insertSample(table: string, values: Record<string, string>): Prom
     if (!definition) throw new Error(table);
     const row: Record<string, string | number> = {};
     for (const column of definition.columns) {
-        if (column.nullable || column.default !== undefined) continue;
+        if (column.nullable) continue;
+        if (column.default !== undefined) {
+            row[column.name] =
+                typeof column.default === 'boolean' ? Number(column.default) : column.default;
+            continue;
+        }
         row[column.name] =
             column.type === 'int' || column.type === 'real' || column.type === 'bool'
                 ? 1
@@ -54,7 +59,8 @@ async function insertSample(table: string, values: Record<string, string>): Prom
                   ? '2026-03-14'
                   : `${column.name}-x`;
     }
-    row.id = uuid();
+    // Las tablas con clave compuesta no tienen `id`.
+    if (definition.columns.some((column) => column.name === 'id')) row.id = uuid();
     Object.assign(row, values);
     const names = Object.keys(row);
     await dataSource.query(
@@ -111,6 +117,29 @@ describe('cobertura de los triggers', () => {
 });
 
 describe('captura de cambios', () => {
+    it.each(syncedTables())(
+        '%s: insertar, actualizar y borrar no rompe la escritura y deja su rastro',
+        async (table) => {
+            await insertSample(table, {});
+            const definition = ALL_LOCAL_TABLES.find((one) => one.name === table);
+            const column = definition?.columns.find((one) => one.name !== 'id')?.name ?? 'id';
+            await dataSource.query(
+                'UPDATE "' + table + '" SET "' + column + '" = "' + column + '"',
+            );
+            await dataSource.query('DELETE FROM "' + table + '"');
+
+            const rows = (await changes()).filter((row) => row.table_name === table);
+            expect(rows.map((row) => row.op)).toEqual(['upsert', 'upsert', 'delete']);
+            expect(rows.every((row) => row.entity_id.length > 0)).toBe(true);
+        },
+    );
+
+    it('una clave compuesta se registra como el par unido con dos puntos', async () => {
+        await insertSample('list_members', { list_id: 'lista-1', believer_id: 'creyente-2' });
+        const [change] = (await changes()).filter((row) => row.table_name === 'list_members');
+        expect(change?.entity_id).toBe('lista-1:creyente-2');
+    });
+
     it('registra un alta con su iglesia y revisión 1', async () => {
         const church = uuid();
         const id = uuid();

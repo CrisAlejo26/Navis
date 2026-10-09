@@ -5,6 +5,7 @@ import { createChurch } from '@/data/repos/church-repo';
 import { buildBackup } from '@/lib/backup/create-backup';
 import { restoreBackup, RestoreError } from '@/lib/backup/restore-backup';
 import type { BackupFiles } from '@/lib/backup/backup-format';
+import { asV1Copy, reseal } from '@/lib/backup/test-copies';
 import { openDatabaseAsync } from 'expo-sqlite';
 import { createList } from '@/data/repos/lists-repo';
 import { listCoverFileId } from '@/data/list-cover-storage';
@@ -65,7 +66,7 @@ describe('copia de seguridad', () => {
         const backup = await buildBackup(files);
         delete backup.tables.church_members;
         for (const user of backup.tables.local_user) user.active_church_id = 'inexistente';
-        await restoreBackup(JSON.stringify({ ...backup, schemaVersion: 10 }), files);
+        await restoreBackup(JSON.stringify(asV1Copy({ ...backup, schemaVersion: 10 })), files);
         const dbConn = await getDb();
         expect(await dbConn.getAllAsync('SELECT church_id FROM church_members')).toEqual([
             { church_id: churchId },
@@ -74,7 +75,7 @@ describe('copia de seguridad', () => {
             active_church_id: null,
         });
         delete backup.tables.local_user[0].active_church_id;
-        await restoreBackup(JSON.stringify({ ...backup, schemaVersion: 10 }), files);
+        await restoreBackup(JSON.stringify(asV1Copy({ ...backup, schemaVersion: 10 })), files);
         expect(await dbConn.getAllAsync('SELECT church_id FROM church_members')).toEqual([
             { church_id: churchId },
         ]);
@@ -89,7 +90,10 @@ describe('copia de seguridad', () => {
         await db.clear();
         expect((await dbConn.getAllAsync('SELECT id FROM churches')).length).toBe(0);
 
-        await restoreBackup(JSON.stringify({ ...backup, audios: { a1: 'QVVESU8=' } }), files);
+        await restoreBackup(
+            JSON.stringify(reseal({ ...backup, audios: { a1: 'QVVESU8=' } })),
+            files,
+        );
         expect(files.audios.get('a1')).toBe('QVVESU8=');
 
         expect((await dbConn.getAllAsync('SELECT id FROM churches')).length).toBe(beforeChurches);
@@ -203,14 +207,17 @@ describe('copia de seguridad', () => {
     it('rechaza tablas o columnas que la app no conoce (no se fía de los nombres)', async () => {
         await seed();
         const backup = await buildBackup(memoryFiles());
-        const evil = { ...backup, tables: { ...backup.tables, 'churches; DROP TABLE x': [] } };
+        const evil = reseal({
+            ...backup,
+            tables: { ...backup.tables, 'churches; DROP TABLE x': [] },
+        });
         await expect(restoreBackup(JSON.stringify(evil), memoryFiles())).rejects.toMatchObject({
             code: 'invalid',
         });
-        const badColumn = {
+        const badColumn = reseal({
             ...backup,
             tables: { ...backup.tables, churches: [{ 'id") --': 'x' }] },
-        };
+        });
         await expect(restoreBackup(JSON.stringify(badColumn), memoryFiles())).rejects.toMatchObject(
             { code: 'invalid' },
         );

@@ -6,8 +6,9 @@ import { DataSource, type EntityManager } from 'typeorm';
 
 import type { AuthUser } from '../auth/auth';
 import { isUniqueViolation } from '../database/unique-violation';
-import { SyncAdapterRegistry } from './sync-adapter-registry';
+import { SyncAdapterRegistry, type AdapterOutcome } from './sync-adapter-registry';
 import { SyncReceipt } from './sync-receipt.entity';
+import { SyncRevision } from './sync-revision.entity';
 
 const hashOperation = (operation: SyncOperation): string =>
     createHash('sha256').update(JSON.stringify(operation)).digest('hex');
@@ -61,7 +62,21 @@ export class SyncOperationsService {
 
         try {
             return await this.dataSource.transaction(async (manager) => {
-                const outcome = await adapter.apply(operation, user, manager);
+                // La revisión base manda: si la entidad avanzó desde que el cliente la leyó,
+                // no se aplica a ciegas (la fusión es la Fase 6) y se devuelve la actual.
+                const current = await manager.getRepository(SyncRevision).findOneBy({
+                    tableName: operation.table,
+                    entityId: operation.id,
+                });
+                const revision = current?.revision ?? 0;
+                const outcome: AdapterOutcome =
+                    operation.baseRevision === revision
+                        ? await adapter.apply(operation, user, manager)
+                        : {
+                              status: 'conflict',
+                              reason: 'stale-base',
+                              ...(revision > 0 ? { revision } : {}),
+                          };
                 const result: SyncOperationResult = {
                     operationId: operation.operationId,
                     ...outcome,

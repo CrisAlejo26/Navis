@@ -7,11 +7,27 @@ import { AppBar } from '@/components/ui/app-bar';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { PasswordField } from '@/components/ui/password-field';
-import { useBackup, type BackupOutcome } from '@/hooks/use-backup';
+import {
+    isValidBackupPassword,
+    useBackup,
+    type BackupErrorCode,
+    type BackupOutcome,
+} from '@/hooks/use-backup';
+
+const ERROR_KEYS = {
+    invalid: 'backup.errorInvalid',
+    newer: 'backup.errorNewer',
+    password: 'backup.errorPassword',
+    corrupt: 'backup.errorCorrupt',
+    safetyFailed: 'backup.errorSafety',
+    generic: 'backup.errorGeneric',
+    exportFailed: 'backup.exportFailed',
+} as const satisfies Record<BackupErrorCode, string>;
 
 /**
  * Sacar los datos del teléfono y volver a meterlos. En local el teléfono es la
- * única copia: esta pantalla es la única red de seguridad que hay.
+ * única copia: esta pantalla es la única red de seguridad que hay. La copia sale
+ * cifrada con la contraseña y restaurar deja antes una copia de lo que hay.
  */
 export default function BackupScreen() {
     const bottomPadding = usePageBottomPadding();
@@ -19,6 +35,7 @@ export default function BackupScreen() {
     const { busy, exportBackup, pickBackup, restore } = useBackup();
     const [outcome, setOutcome] = useState<BackupOutcome | null>(null);
     const [secret, setSecret] = useState('');
+    const validSecret = isValidBackupPassword(secret);
 
     async function onExport(): Promise<void> {
         setOutcome(null);
@@ -41,7 +58,9 @@ export default function BackupScreen() {
 
     const message = outcome
         ? outcome.kind === 'restored'
-            ? t('backup.restored')
+            ? outcome.missingFiles > 0
+                ? t('backup.restoredMissing', { count: outcome.missingFiles })
+                : t('backup.restored')
             : t(ERROR_KEYS[outcome.code])
         : null;
 
@@ -57,16 +76,14 @@ export default function BackupScreen() {
                     value={secret}
                     onChangeText={setSecret}
                 />
-                <Text className="font-sans text-muted-foreground">
-                    {t('tables.mobile.recoveryHint')}
-                </Text>
+                <Text className="font-sans text-muted-foreground">{t('backup.passwordHint')}</Text>
                 <Card title={t('backup.exportTitle')} description={t('backup.exportBody')}>
                     <Button
                         title={t('backup.exportButton')}
                         size="lg"
                         className="mt-2"
                         loading={busy === 'export'}
-                        disabled={busy !== null}
+                        disabled={busy !== null || !validSecret}
                         onPress={() => void onExport()}
                     />
                 </Card>
@@ -97,10 +114,3 @@ export default function BackupScreen() {
         </View>
     );
 }
-
-const ERROR_KEYS = {
-    invalid: 'backup.errorInvalid',
-    newer: 'backup.errorNewer',
-    generic: 'backup.errorGeneric',
-    exportFailed: 'backup.exportFailed',
-} as const;

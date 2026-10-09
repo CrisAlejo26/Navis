@@ -1,10 +1,18 @@
 import { ConflictException, ForbiddenException, Injectable } from '@nestjs/common';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
-import type { SyncChange as WireChange, SyncChangesPage, SyncChangesQuery } from '@navis/shared';
+import {
+    DEFAULT_ROLE,
+    deniedSyncTables,
+    type SyncChange as WireChange,
+    type SyncChangesPage,
+    type SyncChangesQuery,
+} from '@navis/shared';
 import { Brackets, DataSource, Repository } from 'typeorm';
 
+import type { AuthUser } from '../auth/auth';
 import { ChurchMember } from '../churches/church-member.entity';
 import { env } from '../config/env';
+import { RolesService } from '../roles/roles.service';
 import { SyncChange } from './sync-change.entity';
 import { SyncInstallationService } from './sync-installation.service';
 import { SyncPublisher } from './sync-publisher.service';
@@ -27,17 +35,26 @@ export class SyncChangesService {
         @InjectDataSource() private readonly dataSource: DataSource,
         private readonly publisher: SyncPublisher,
         private readonly installation: SyncInstallationService,
+        private readonly roles: RolesService,
     ) {}
 
     assertEnabled(): void {
         if (!env.SYNC_ENABLED) throw new ForbiddenException('La sincronización no está activada');
     }
 
-    async page(userId: string, query: SyncChangesQuery): Promise<SyncChangesPage> {
+    async page(user: AuthUser, query: SyncChangesQuery): Promise<SyncChangesPage> {
         this.assertEnabled();
-        const generation = await this.installation.generation();
+        const userId = user.id;
+        const { generation, prunedThrough } = await this.installation.state();
         if (query.generation && query.generation !== generation) {
             throw new ConflictException('La instalación cambió: hay que volver a descargar');
+        }
+
+        // Un cursor anterior a lo podado ya no tiene todos sus cambios: rehacer la descarga.
+        if (query.cursor < prunedThrough) {
+            throw new ConflictException(
+                'El cursor es más antiguo que el registro: hay que volver a descargar',
+            );
         }
 
         await this.publisher.publish();
@@ -54,6 +71,10 @@ export class SyncChangesService {
         const churches = (
             await this.members.find({ where: { userId }, select: { churchId: true } })
         ).map((member) => member.churchId);
+
+        // Lo que el rol no puede leer en la web tampoco sale por aquí.
+        const granted = (await this.roles.permissionsOf(user.role ?? DEFAULT_ROLE)) ?? [];
+        const denied = deniedSyncTables(granted);
 
         const builder = this.changes
             .createQueryBuilder('change')
@@ -75,6 +96,9 @@ export class SyncChangesService {
             )
             .orderBy('change.position', 'ASC')
             .limit(query.limit + 1);
+        if (denied.length > 0) {
+            builder.andWhere('change.tableName NOT IN (:...denied)', { denied });
+        }
 
         const found = await builder.getMany();
         const hasMore = found.length > query.limit;

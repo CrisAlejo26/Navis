@@ -92,6 +92,12 @@ export const apiEnvSchema = z
          * Los móviles no se vinculan para sincronizar hasta que esté completa.
          */
         SYNC_ENABLED: booleanish.default(false),
+        /**
+         * Cuánto se conserva el registro de cambios y los recibos. Debe cubrir el
+         * tiempo que un móvil puede pasar sin conectar: pasado ese plazo su cursor
+         * ya no vale y rehace la descarga (sin perder lo que tenga en cola).
+         */
+        SYNC_RETENTION_DAYS: z.coerce.number().int().min(7).default(180),
 
         LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace']).default('info'),
 

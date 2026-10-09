@@ -9,6 +9,7 @@ import { resolveActiveChurch, setActiveChurch, listMyChurches } from './church-a
 import { localDashboardRepository } from './dashboard-repo';
 import { buildBackup } from '@/lib/backup/create-backup';
 import { restoreBackup } from '@/lib/backup/restore-backup';
+import { reseal } from '@/lib/backup/test-copies';
 import type { BackupFiles } from '@/lib/backup/backup-format';
 const suite = isolationSuite();
 
@@ -89,7 +90,7 @@ it.each([2, 3])(
         backup.tables.churches = backup.tables.churches.filter(
             (row) => row.id !== churches[count - 1]?.churchId,
         );
-        await restoreBackup(JSON.stringify(backup), files);
+        await restoreBackup(JSON.stringify(reseal(backup)), files);
         const accessible = await listMyChurches(ISOLATION_OWNER);
         expect(accessible).toHaveLength(count - 1);
         expect((await resolveActiveChurch(ISOLATION_OWNER))?.id).toBe(accessible[0]?.id);

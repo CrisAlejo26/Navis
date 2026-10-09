@@ -215,12 +215,12 @@ export const it = {
         rowHint: 'I tuoi dati in un file al sicuro',
         exportTitle: 'Salva una copia',
         exportBody:
-            'Include fedeli, note, calendario, sogni, profezie, insegnamenti, e anche gli audio e le foto.',
+            'Comprende persone, note, calendario, sogni, profezie, insegnamenti, oltre ad audio e foto. L’intero file è cifrato con la tua password.',
         exportButton: 'Esporta la copia',
         exportFailed: 'Impossibile creare la copia. Riprova.',
         restoreTitle: 'Ripristina una copia',
         restoreBody:
-            'Sostituisce tutto ciò che c’è nell’app con il contenuto del file. Funziona su questo stesso telefono: la password non viaggia su un altro dispositivo.',
+            'Sostituisce tutto ciò che c’è con il contenuto del file. Prima si salva una copia di ciò che hai, nel caso serva tornare indietro. Chiede la password con cui è stata creata.',
         restoreButton: 'Scegli una copia',
         restoreConfirmTitle: 'Ripristinare questa copia?',
         restoreConfirmBody:
@@ -231,6 +231,13 @@ export const it = {
         errorNewer:
             'La copia viene da una versione più recente di Navis. Aggiorna l’app e riprova.',
         errorGeneric: 'Impossibile ripristinare. Non è cambiato nulla.',
+        passwordHint: 'Almeno 12 caratteri. Senza, nessuno può aprire la copia, nemmeno noi.',
+        errorPassword: 'Questa password non apre la copia, oppure il file è stato alterato.',
+        errorCorrupt: 'La copia è incompleta o danneggiata. Non è stato cambiato nulla.',
+        errorSafety:
+            'Non è stato possibile salvare una copia di ciò che hai ora, quindi non è stato ripristinato nulla.',
+        restoredMissing:
+            'Copia ripristinata. Quando è stata creata mancavano {{count}} file (audio o foto).',
     },
     settings: {
         saved: 'Impostazioni salvate',
@@ -2431,6 +2438,8 @@ export const it = {
                 'Questo server usa un protocollo che questa versione dell’app non comprende.',
             invalidToken: 'Il codice non è valido o è scaduto. Generane uno nuovo sul web.',
             generic: 'Qualcosa è andato storto durante il collegamento. Riprova.',
+            safetyFailed:
+                'Non è stato possibile salvare una copia preventiva dei tuoi dati, quindi non è stato fatto nulla. Libera spazio e riprova.',
         },
     },
     errors: {

@@ -1,3 +1,4 @@
+import type { IdentityLink } from '@navis/shared';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
@@ -15,6 +16,12 @@ export interface SyncLink {
     deviceName: string;
     account: { id: string; name: string; email: string };
     linkedAt: string;
+    /**
+     * Qué usuario local es qué cuenta remota. Solo entra quien vincula, y verificado:
+     * el código salió de una sesión de esa cuenta. Los demás usuarios locales siguen
+     * siendo autores históricos sin acceso (`sync-identity`).
+     */
+    identities: IdentityLink[];
 }
 
 interface SyncConnectionState {
@@ -34,6 +41,14 @@ export const useSyncConnection = create<SyncConnectionState>()(
             name: 'navis:sync-connection',
             storage: createJSONStorage(() => AsyncStorage),
             partialize: (state) => ({ link: state.link }),
+            // Un vínculo guardado antes de existir `identities` no la trae: se le da vacía.
+            merge: (persisted, current) => {
+                const stored = (persisted as { link?: Partial<SyncLink> | null } | undefined)?.link;
+                return {
+                    ...current,
+                    link: stored ? ({ identities: [], ...stored } as SyncLink) : null,
+                };
+            },
         },
     ),
 );

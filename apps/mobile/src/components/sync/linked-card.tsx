@@ -16,13 +16,16 @@ export function LinkedCard({ link }: { link: SyncLink }) {
     const { t } = useTranslation();
     const [confirming, setConfirming] = useState(false);
     const [busy, setBusy] = useState(false);
+    const [failed, setFailed] = useState(false);
     const host = new URL(link.apiUrl).host;
 
     async function disconnect(): Promise<void> {
         setBusy(true);
-        await unlinkDevice();
+        const result = await unlinkDevice();
         setBusy(false);
-        setConfirming(false);
+        // Sin copia previa verificada no se desvincula: se avisa y se queda como estaba.
+        setFailed(result.aborted);
+        if (!result.aborted) setConfirming(false);
     }
 
     return (
@@ -68,6 +71,7 @@ export function LinkedCard({ link }: { link: SyncLink }) {
                     description={`${t('sync.disconnectBody')} ${t('sync.disconnectedHint')}`}
                     confirmLabel={t('sync.disconnectConfirm')}
                     busy={busy}
+                    failed={failed}
                     onConfirm={() => void disconnect()}
                     onCancel={() => {
                         setConfirming(false);

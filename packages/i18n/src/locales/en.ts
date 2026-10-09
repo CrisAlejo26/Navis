@@ -216,12 +216,12 @@ export const en = {
         rowHint: 'Your data in a safe file',
         exportTitle: 'Save a backup',
         exportBody:
-            'Includes believers, notes, calendar, dreams, prophecies, teachings, plus the audio and photos.',
+            'Includes believers, notes, calendar, dreams, prophecies, teachings, plus audio and photos. The whole file is encrypted with your password.',
         exportButton: 'Export backup',
         exportFailed: 'The backup could not be created. Try again.',
         restoreTitle: 'Restore a backup',
         restoreBody:
-            'Replaces everything now in the app with what is in the file. It works on this same phone: the password does not travel to another device.',
+            'Replaces everything now with what the file holds. A copy of what you have is saved first, in case you need to go back. It asks for the password it was made with.',
         restoreButton: 'Choose a backup',
         restoreConfirmTitle: 'Restore this backup?',
         restoreConfirmBody:
@@ -232,6 +232,12 @@ export const en = {
         errorNewer:
             'This backup comes from a newer version of Navis. Update the app and try again.',
         errorGeneric: 'Could not restore. Nothing was changed.',
+        passwordHint: 'At least 12 characters. Without it nobody can open the copy, not even us.',
+        errorPassword: 'That password does not open this copy, or the file has been altered.',
+        errorCorrupt: 'The copy is incomplete or damaged. Nothing was changed.',
+        errorSafety: 'A copy of what you have now could not be saved, so nothing was restored.',
+        restoredMissing:
+            'Copy restored. {{count}} files (audio or photos) were missing when it was made.',
     },
     settings: {
         title: 'Settings',
@@ -2423,6 +2429,8 @@ export const en = {
                 'This server speaks a protocol this version of the app doesn’t understand.',
             invalidToken: 'The code is not valid or has expired. Generate a new one on the web.',
             generic: 'Something went wrong while linking. Try again.',
+            safetyFailed:
+                'A safety copy of your data could not be saved, so nothing was done. Free up some space and try again.',
         },
     },
     errors: {

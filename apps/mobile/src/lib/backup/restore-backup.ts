@@ -3,7 +3,9 @@ import { getDb, SCHEMA_VERSION } from '@/data/db';
 import { listCoverFileId } from '@/data/list-cover-storage';
 import { unwrapBackupKeys } from '../tables/backup-keys';
 import { validateTableBackup } from '../tables/restore-validation';
+import { verifyIntegrity } from './backup-integrity';
 import { upgradeLegacyTables } from './legacy-tables';
+import { openPackage, PackagePasswordError, parseEncryptedPackage } from './package-crypto';
 import { restoreRows } from './restore-rows';
 import { restoreTransaction } from './restore-transaction';
 
@@ -12,16 +14,30 @@ import {
     backupColumns,
     backupSchema,
     type Backup,
+    type BackupOrigin,
     type BackupFiles,
     type BackupRow,
 } from './backup-format';
 
-export type RestoreErrorCode = 'invalid' | 'newer';
+export type RestoreErrorCode = 'invalid' | 'newer' | 'password' | 'corrupt';
 
 /** Por qué no se restauró; la pantalla lo traduce. Nada se ha tocado cuando sale esto. */
 export class RestoreError extends Error {
     constructor(readonly code: RestoreErrorCode) {
         super(code);
+    }
+}
+
+/** El texto de la copia en claro: si está cifrada, se abre con la contraseña (cifrado autenticado). */
+async function plainText(text: string, secret?: string): Promise<string> {
+    const encrypted = parseEncryptedPackage(text);
+    if (!encrypted) return text;
+    if (!secret) throw new RestoreError('password');
+    try {
+        return await openPackage(encrypted, secret);
+    } catch (error) {
+        if (error instanceof PackagePasswordError) throw new RestoreError('password');
+        throw error;
     }
 }
 
@@ -35,7 +51,36 @@ function parse(text: string): Backup {
     const parsed = backupSchema.safeParse(raw);
     if (!parsed.success) throw new RestoreError('invalid');
     if (parsed.data.schemaVersion > SCHEMA_VERSION) throw new RestoreError('newer');
+    // Truncada, editada o sin alguno de sus ficheros: se sabe antes de tocar nada.
+    if (!verifyIntegrity(parsed.data).ok) throw new RestoreError('corrupt');
     return parsed.data;
+}
+
+/** Lo que se sabe de una copia sin restaurarla ni tocar nada. */
+export interface BackupInspection {
+    backup: Backup;
+    createdAt: string;
+    origin?: BackupOrigin;
+    /** Ficheros que la copia ya traía anotados como ausentes al hacerse. */
+    missingFiles: number;
+}
+
+/**
+ * Comprueba que una copia se puede restaurar: la abre, valida su forma, su
+ * versión y su integridad. No escribe nada. Es lo que verifica una copia previa
+ * a una operación antes de fiarse de ella.
+ */
+export async function inspectBackup(text: string, secret?: string): Promise<BackupInspection> {
+    const backup = parse(await plainText(text, secret));
+    upgradeLegacyTables(backup);
+    validateShape(backup);
+    const missing = backup.manifest?.missing;
+    return {
+        backup,
+        createdAt: backup.createdAt,
+        origin: backup.origin,
+        missingFiles: (missing?.audios.length ?? 0) + (missing?.photos.length ?? 0),
+    };
 }
 
 /**
@@ -69,6 +114,13 @@ function localize(table: string, row: BackupRow, files: BackupFiles): BackupRow 
     return row;
 }
 
+/** Qué se restauró y qué advertir: una copia con ficheros ausentes restaura, pero lo dice. */
+export interface RestoreReport {
+    createdAt: string;
+    origin?: BackupOrigin;
+    missingFiles: number;
+}
+
 /**
  * Reemplaza **todo** lo que hay por el contenido de la copia, dentro de una
  * transacción: o entra entera o no cambia nada. Los ficheros se escriben antes,
@@ -78,10 +130,8 @@ export async function restoreBackup(
     text: string,
     files: BackupFiles,
     secret?: string,
-): Promise<void> {
-    const backup = parse(text);
-    upgradeLegacyTables(backup);
-    validateShape(backup);
+): Promise<RestoreReport> {
+    const { backup, createdAt, origin, missingFiles } = await inspectBackup(text, secret);
     const accountPepper = await unwrapBackupKeys(backup.tableKeys, secret);
     await validateTableBackup(backup);
 
@@ -102,4 +152,5 @@ export async function restoreBackup(
         }
         await repairChurchAccess(db);
     });
+    return { createdAt, origin, missingFiles };
 }

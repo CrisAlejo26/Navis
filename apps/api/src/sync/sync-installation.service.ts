@@ -1,9 +1,10 @@
 import { Injectable, type OnModuleInit } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
+import { DataSource, Repository } from 'typeorm';
 
 import { env } from '../config/env';
 import { SyncInstallation } from './sync-installation.entity';
+import { repairTriggers } from './sync-triggers-health';
 
 const MAIN = 'main';
 
@@ -19,11 +20,14 @@ export class SyncInstallationService implements OnModuleInit {
     constructor(
         @InjectRepository(SyncInstallation)
         private readonly installation: Repository<SyncInstallation>,
+        @InjectDataSource() private readonly dataSource: DataSource,
     ) {}
 
     async onModuleInit(): Promise<void> {
         const row = await this.installation.findOneBy({ id: MAIN });
         if (!row) return; // la migración todavía no se ha ejecutado
+        // Una migración que recree una tabla se lleva sus triggers por delante: se reponen.
+        if (env.SYNC_ENABLED) await repairTriggers(this.dataSource);
         if (row.capturing === env.SYNC_ENABLED) return;
 
         // Cualquier cambio de estado abre una laguna en el registro: nueva generación.
@@ -33,8 +37,8 @@ export class SyncInstallationService implements OnModuleInit {
         );
     }
 
-    async generation(): Promise<string> {
+    async state(): Promise<{ generation: string; prunedThrough: number }> {
         const row = await this.installation.findOneByOrFail({ id: MAIN });
-        return row.generation;
+        return { generation: row.generation, prunedThrough: row.prunedThrough };
     }
 }

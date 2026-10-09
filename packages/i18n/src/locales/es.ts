@@ -225,12 +225,12 @@ export const es = {
         rowHint: 'Tus datos en un fichero a salvo',
         exportTitle: 'Guardar una copia',
         exportBody:
-            'Incluye creyentes, notas, calendario, sueños, profecías, enseñanzas, y también los audios y las fotos.',
+            'Incluye creyentes, notas, calendario, sueños, profecías, enseñanzas, y también los audios y las fotos. Todo el fichero va cifrado con tu contraseña.',
         exportButton: 'Exportar copia',
         exportFailed: 'No se pudo crear la copia. Inténtalo de nuevo.',
         restoreTitle: 'Restaurar una copia',
         restoreBody:
-            'Sustituye todo lo que hay ahora por lo que trae el fichero. Sirve en este mismo teléfono: la contraseña no viaja a otro aparato.',
+            'Sustituye todo lo que hay ahora por lo que trae el fichero. Antes se guarda una copia de lo que hay, por si hace falta volver atrás. Pide la contraseña con la que se hizo.',
         restoreButton: 'Elegir una copia',
         restoreConfirmTitle: '¿Restaurar esta copia?',
         restoreConfirmBody:
@@ -241,6 +241,13 @@ export const es = {
         errorNewer:
             'La copia es de una versión más nueva de Navis. Actualiza la app y vuelve a probar.',
         errorGeneric: 'No se pudo restaurar. No se ha cambiado nada.',
+        passwordHint: 'Mínimo 12 caracteres. Sin ella nadie puede abrir la copia, ni nosotros.',
+        errorPassword: 'La contraseña no abre esa copia, o el fichero está alterado.',
+        errorCorrupt: 'La copia está incompleta o dañada. No se ha cambiado nada.',
+        errorSafety:
+            'No se pudo guardar una copia de lo que hay ahora, así que no se ha restaurado nada.',
+        restoredMissing:
+            'Copia restaurada. Faltaban {{count}} ficheros (audios o fotos) cuando se hizo.',
     },
     settings: {
         title: 'Ajustes',
@@ -2454,6 +2461,8 @@ export const es = {
                 'Este servidor habla un protocolo que esta versión de la app no entiende.',
             invalidToken: 'El código no es válido o ha caducado. Genera uno nuevo en la web.',
             generic: 'Algo ha fallado al vincular. Inténtalo de nuevo.',
+            safetyFailed:
+                'No se pudo guardar una copia previa de tus datos, así que no se ha hecho nada. Libera espacio e inténtalo de nuevo.',
         },
     },
     errors: {
