@@ -64,6 +64,7 @@ services:
             TRUST_PROXY: ${TRUST_PROXY:-false}
             LOG_LEVEL: ${LOG_LEVEL:-info}
             AI_ENABLED: ${AI_ENABLED:-false}
+            SYNC_ENABLED: ${SYNC_ENABLED:-false}
             AI_PROVIDER: ${AI_PROVIDER:-anthropic}
             ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
 

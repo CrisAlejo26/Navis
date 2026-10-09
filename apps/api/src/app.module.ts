@@ -27,6 +27,7 @@ import { ProfilesModule } from './profiles/profiles.module';
 import { PropheciesModule } from './prophecies/prophecies.module';
 import { RolesModule } from './roles/roles.module';
 import { SetupModule } from './setup/setup.module';
+import { SyncModule } from './sync/sync.module';
 import { TablesModule } from './tables/tables.module';
 import { TasksModule } from './tasks/tasks.module';
 import { TeachingsModule } from './teachings/teachings.module';
@@ -55,6 +56,7 @@ import { WeatherModule } from './weather/weather.module';
 
         AuthModule,
         DevicesModule,
+        SyncModule,
         ProfilesModule,
         ChurchesModule,
         BelieversModule,

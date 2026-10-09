@@ -43,7 +43,7 @@ export class DevicesController {
         return {
             installationName: INSTALLATION_NAME,
             protocolVersion: SYNC_PROTOCOL_VERSION,
-            dataSyncEnabled: false,
+            dataSyncEnabled: env.SYNC_ENABLED,
             linkTtlMinutes: DEVICE_LINK_TTL_MINUTES,
         };
     }

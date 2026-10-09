@@ -52,6 +52,7 @@ services:
             TRUST_PROXY: ${TRUST_PROXY:-false}
             LOG_LEVEL: ${LOG_LEVEL:-debug}
             AI_ENABLED: ${AI_ENABLED:-false}
+            SYNC_ENABLED: ${SYNC_ENABLED:-false}
             AI_PROVIDER: ${AI_PROVIDER:-anthropic}
             AI_SERVICE_URL: ${AI_SERVICE_URL:-http://ai:8000}
         ports:

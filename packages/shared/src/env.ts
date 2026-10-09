@@ -86,6 +86,13 @@ export const apiEnvSchema = z
          */
         TRUST_PROXY: booleanish.default(false),
 
+        /**
+         * Interruptor de la sincronización móvil ↔ web (plan de sincronización,
+         * Fase 4). Apagado, la API no registra cambios ni acepta operaciones.
+         * Los móviles no se vinculan para sincronizar hasta que esté completa.
+         */
+        SYNC_ENABLED: booleanish.default(false),
+
         LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace']).default('info'),
 
         AI_ENABLED: booleanish.default(false),

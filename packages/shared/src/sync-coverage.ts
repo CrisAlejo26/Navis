@@ -94,4 +94,8 @@ export const SYNC_COVERAGE: Record<string, SyncCoverageEntry> = {
     // Infraestructura del servidor
     devices: { policy: 'server-only', scope: 'account' },
     device_links: { policy: 'server-only', scope: 'account' },
+    sync_installation: { policy: 'server-only', scope: 'system' },
+    sync_revisions: { policy: 'server-only', scope: 'system' },
+    sync_changes: { policy: 'server-only', scope: 'system' },
+    sync_receipts: { policy: 'server-only', scope: 'account' },
 };

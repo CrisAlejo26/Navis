@@ -63,6 +63,10 @@ import { TaskReminder } from '../tasks/task-reminder.entity';
 import { TaskStreakCache } from '../tasks/task-streak-cache.entity';
 import { TaskTag } from '../tasks/task-tag.entity';
 import { Task } from '../tasks/task.entity';
+import { SyncChange } from '../sync/sync-change.entity';
+import { SyncInstallation } from '../sync/sync-installation.entity';
+import { SyncReceipt } from '../sync/sync-receipt.entity';
+import { SyncRevision } from '../sync/sync-revision.entity';
 import { Teaching } from '../teachings/teaching.entity';
 
 const logging: DataSourceOptions['logging'] = isProduction
@@ -139,6 +143,10 @@ const entities = [
     Teaching,
     DeviceLink,
     Device,
+    SyncInstallation,
+    SyncRevision,
+    SyncChange,
+    SyncReceipt,
 ];
 
 /**

@@ -1,6 +1,6 @@
 # Sincronización global entre móvil y web — plan por fases
 
-- **Estado:** Fases 0, 1 y 2 implementadas el 2026-10-09 (la 2 con dos salvedades, ver §11), sin transferir datos. Resto pendiente.
+- **Estado:** Fases 0, 1, 2 y 4 (servidor, tras `SYNC_ENABLED`) implementadas el 2026-10-09; la 3 se salta de momento. Ver §11.
 - **Fecha:** 2026-10-09.
 - **Alcance:** toda Navis: todas las iglesias accesibles, todos los módulos, datos personales, relaciones, configuraciones compartidas y archivos. No se limita a la iglesia activa ni a un módulo.
 - **Aplicaciones:** `apps/api`, `apps/web`, `apps/mobile`, `packages/shared`, `packages/api-client`; revisar escritorio si utiliza las mismas escrituras de la API.
@@ -547,3 +547,15 @@ Durante cada fase se debe consultar la documentación de las versiones efectivam
 - **Catálogos con ids distintos:** `sync-catalogs.ts` declara roles, emociones de serie, ministerios, dones y etiquetas de creyente de serie por su clave natural, con `mapCatalogIds` y las referencias que hay que reescribir (`CATALOG_REFERENCES`). Reescribir de verdad esas referencias al importar queda para la Fase 7.
 - **Esquema real del móvil:** `local-schema-actual.test.ts` pasa una base por **todas** las migraciones reales y compara el resultado con lo declarado. Encontró que `believers.featured_tag_id` sigue vivo (el móvil lo lee y escribe; `believer_tag_links.featured` no se escribe nunca): se deja como columna heredada declarada y `sync-legacy.ts` traduce en los dos sentidos. Eliminarla exige reescribir los repositorios de creyentes y el formato de copias; queda pendiente y debe hacerse con el móvil a la vista.
 - **Fase 2 cerrada salvo:** el esquema móvil de comunicaciones y de `profiles` (Fase 8) y retirar la columna heredada anterior.
+
+### Fase 4 (2026-10-09)
+
+Servidor, tras `SYNC_ENABLED` (apagado por defecto; la API no registra ni acepta nada).
+
+- **Registro de cambios por triggers**, no por eventos de TypeORM: unas 78 llamadas de la API (`repo.update`, `repo.delete`) no disparan eventos y se habrían escapado. `packages/shared/src/sync-trigger-sql.ts` genera, para SQLite y Postgres, un trigger por tabla `synced` que sube la revisión (`sync_revisions`) y apunta el cambio (`sync_changes`) en la **misma transacción** de la escritura, con la iglesia y el dueño resueltos subiendo por `SYNC_PARENTS`. Vive en `shared` porque las migraciones no pueden importar ficheros locales (TypeORM las carga con `require`). Migración `CreateSyncLog1790985600000` (no congelada: una tabla nueva exige reinstalar triggers y `sync-triggers.test.ts` falla si se olvida).
+- **Cursor sin pérdidas:** `position` nace nulo y `SyncPublisher` (serializado y con índice único) lo reparte solo para filas ya confirmadas, así que una transacción lenta nunca queda por detrás del cursor.
+- **`GET /sync/changes`:** páginas por cursor, filtradas (catálogos: todos; datos personales: su dueño; datos de iglesia: sus miembros, y solo el dueño si la fila tiene dueño), con la fila actual en forma de protocolo. `409` si cambia la `generation` de la instalación o el cursor es posterior al servidor. Sin más páginas, el cursor salta lo publicado que esa cuenta no ve.
+- **`POST /sync/operations`:** recibos idempotentes (`sync_receipts`) guardados en la misma transacción que el adaptador; repetir un `operationId` devuelve `duplicate`, reutilizarlo con otro contenido se rechaza, y lo que no tiene adaptador (`SyncAdapterRegistry`) se rechaza. Los adaptadores por módulo son la Fase 8.
+- **Pruebas:** 9 unitarias de triggers/publicación y 6 e2e de punta a punta (`sync.e2e-spec.ts`). Toda la suite e2e (18 ficheros, 262 tests) pasa **también contra Postgres 18**, con el contenedor desechable de esta sesión.
+
+**Pendiente de la Fase 4:** revisión base en las operaciones (hace falta el adaptador de cada tabla), retención y poda de `sync_changes` y recibos, y que los permisos por módulo filtren el flujo (hoy solo pertenencia y dueño, por eso sigue apagado).
