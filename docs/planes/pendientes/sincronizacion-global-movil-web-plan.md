@@ -1,6 +1,6 @@
 # Sincronización global entre móvil y web — plan por fases
 
-- **Estado:** Fase 0 (invariantes y estados) y Fase 1 (vinculación por URL y token) implementadas el 2026-10-09, sin transferir datos. Fases 2-12 pendientes. Ver §11.
+- **Estado:** Fases 0, 1 y 2 implementadas el 2026-10-09 (la 2 con dos salvedades, ver §11), sin transferir datos. Resto pendiente.
 - **Fecha:** 2026-10-09.
 - **Alcance:** toda Navis: todas las iglesias accesibles, todos los módulos, datos personales, relaciones, configuraciones compartidas y archivos. No se limita a la iglesia activa ni a un módulo.
 - **Aplicaciones:** `apps/api`, `apps/web`, `apps/mobile`, `packages/shared`, `packages/api-client`; revisar escritorio si utiliza las mismas escrituras de la API.
@@ -532,3 +532,18 @@ Durante cada fase se debe consultar la documentación de las versiones efectivam
 **Limitaciones.** Sin QR (ni generarlo en la web ni leerlo en el móvil: haría falta `expo-camera`, dependencia nativa nueva). El token se liga a la cuenta que lo genera, no a un dispositivo concreto. Migración probada solo en SQLite.
 
 - **Sin tope de dispositivos:** una cuenta puede vincular tantos teléfonos como quiera, cada uno con su credencial revocable por separado (cubierto en `devices.e2e-spec.ts`).
+
+### Fase 2, primer tramo (2026-10-09)
+
+- **Matriz de cobertura:** `packages/shared/src/sync-coverage.ts` clasifica las 58 tablas de la API (`synced`, `pending-mobile`, `cache`, `server-only`) con su ámbito de lectura. `apps/api/src/database/sync-coverage.test.ts` falla si una entidad nueva no declara política, si una tabla `synced` no tiene espejo local o si queda una política huérfana.
+- **Huecos que la matriz deja a la vista:** `profiles` y las cinco tablas de comunicaciones (`channels`, `channel_members`, `messages`, `message_attachments`, `message_reactions`) no tienen espejo móvil; son trabajo pendiente de la Fase 8, no excepciones.
+- **Paridad de valores por defecto:** `local-schema.parity.test.ts` ahora compara los literales por defecto. Encontró una divergencia real: `custom_table_views.sort_order` valía `desc` en la API y `asc` en el móvil; alineado a `desc` (`local-table-schema.ts` y `table-views.ts`).
+- **Pendiente de la Fase 2:** adaptadores explícitos de tipos (booleanos, JSON, fechas), catálogos sembrados con IDs distintos, comprobar bases antiguas migradas y el viaje móvil → API → móvil sin pérdida.
+
+### Fase 2, segundo tramo (2026-10-09)
+
+- **Adaptadores de tipos:** `packages/shared/src/sync-codec.ts` (`encodeRow`/`decodeRow`) y `sync-column-kinds.ts` fijan qué es un día (`YYYY-MM-DD`, sin zona), una hora, un instante (ISO UTC con milisegundos; acepta el `YYYY-MM-DD HH:MM:SS` que TypeORM guarda en SQLite) y un JSON; los booleanos viajan como `true/false`. `sync-column-kinds.test.ts` de la API compara esa tabla con los tipos de las entidades.
+- **Ida y vuelta:** `sync-roundtrip.test.ts` (API) guarda una fila de cada una de las 52 tablas espejo con TypeORM y comprueba que vuelve idéntica; `sync-codec.test.ts` hace lo mismo en `shared`. Rompiendo la normalización de instantes a propósito, los 52 fallan.
+- **Catálogos con ids distintos:** `sync-catalogs.ts` declara roles, emociones de serie, ministerios, dones y etiquetas de creyente de serie por su clave natural, con `mapCatalogIds` y las referencias que hay que reescribir (`CATALOG_REFERENCES`). Reescribir de verdad esas referencias al importar queda para la Fase 7.
+- **Esquema real del móvil:** `local-schema-actual.test.ts` pasa una base por **todas** las migraciones reales y compara el resultado con lo declarado. Encontró que `believers.featured_tag_id` sigue vivo (el móvil lo lee y escribe; `believer_tag_links.featured` no se escribe nunca): se deja como columna heredada declarada y `sync-legacy.ts` traduce en los dos sentidos. Eliminarla exige reescribir los repositorios de creyentes y el formato de copias; queda pendiente y debe hacerse con el móvil a la vista.
+- **Fase 2 cerrada salvo:** el esquema móvil de comunicaciones y de `profiles` (Fase 8) y retirar la columna heredada anterior.

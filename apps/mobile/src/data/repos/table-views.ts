@@ -37,7 +37,7 @@ export async function createView(
         value.dateColumn ?? null,
         JSON.stringify(value.filters ?? []),
         value.sortBy ?? null,
-        value.sortOrder ?? 'asc',
+        value.sortOrder ?? 'desc',
         tableId,
     );
     return id;

@@ -220,6 +220,41 @@ describe.each([
     });
 });
 
+/** Un valor por defecto de TypeORM como literal comparable; `undefined` si es una función (now(), uuid…). */
+function literalDefault(value: unknown): string | undefined {
+    if (typeof value === 'boolean') return value ? '1' : '0';
+    if (typeof value === 'number') return String(value);
+    if (typeof value !== 'string') return undefined;
+    const quoted = /^'(.*)'$/.exec(value);
+    return quoted ? quoted[1] : value.includes('(') ? undefined : value;
+}
+
+describe.each([
+    ...LOCAL_TABLES,
+    ...LOCAL_LIST_TABLES,
+    ...LOCAL_CUSTOM_TABLES,
+    ...LOCAL_JOURNAL_TABLES,
+    ...LOCAL_TASK_TABLES,
+])('valores por defecto local ↔ TypeORM: $name', (localTable: LocalTable) => {
+    it('coinciden donde ambos lados declaran un literal', () => {
+        const metadata = dataSource.entityMetadatas.find(
+            (one) => one.tableName === localTable.name,
+        );
+        if (!metadata) return;
+        const mismatches: string[] = [];
+        for (const column of localTable.columns) {
+            const entity = literalDefault(
+                metadata.columns.find((one) => one.databaseName === column.name)?.default,
+            );
+            const local = literalDefault(column.default);
+            if (entity !== undefined && local !== undefined && entity !== local) {
+                mismatches.push(`${column.name}: api=${entity} local=${local}`);
+            }
+        }
+        expect(mismatches).toEqual([]);
+    });
+});
+
 describe('la cuenta local', () => {
     it('no espeja ninguna entidad: es propia del móvil', () => {
         expect(LOCAL_USER_TABLE.mirror).toBeUndefined();

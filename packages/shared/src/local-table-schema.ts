@@ -65,7 +65,7 @@ export const LOCAL_CUSTOM_TABLES: LocalTable[] = [
             { name: 'date_column', type: 'text', nullable: true },
             { name: 'filters', type: 'text', default: '[]' },
             { name: 'sort_by', type: 'text', nullable: true },
-            { name: 'sort_order', type: 'text', default: 'asc' },
+            { name: 'sort_order', type: 'text', default: 'desc' },
             { name: 'position', type: 'int', default: 0 },
         ],
     },
