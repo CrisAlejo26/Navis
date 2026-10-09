@@ -48,6 +48,12 @@ jest.mock('expo-secure-store', () => {
 });
 
 const ALL_TABLES = [
+    'sync_outbox',
+    'sync_entity_state',
+    'sync_checkpoint',
+    'sync_conflicts',
+    'sync_remote_pending',
+    'sync_aliases',
     'task_reminder_tags',
     'habit_reminder_tags',
     'task_reminders',
@@ -144,6 +150,8 @@ async function setupLocalDb({ setDbForTests, openDatabaseMock }) {
         adapter,
         memory,
         async clear() {
+            // La captura se apaga antes de vaciar, para que borrar no llene la cola.
+            memory.exec('UPDATE sync_state SET capturing = 0, applying = 0, destination = NULL');
             memory.exec(ALL_TABLES.map((name) => `DELETE FROM "${name}"`).join('; '));
         },
         close() {

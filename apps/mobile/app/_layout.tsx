@@ -25,6 +25,7 @@ import { SafeAreaProvider, initialWindowMetrics } from 'react-native-safe-area-c
 
 import { i18n } from '@/lib/i18n';
 import { initializeTestUser } from '@/data/demo-data';
+import { useSyncScheduler } from '@/hooks/use-sync-scheduler';
 import { useNotificationSync } from '@/hooks/use-notification-sync';
 import { useNotificationTap } from '@/hooks/use-notification-tap';
 import { useNavigationTheme } from '@/lib/navigation-theme';
@@ -50,6 +51,7 @@ function RootNavigator() {
     const reclamado = useStatusBarStore((state) => state.style);
     useNotificationSync();
     useNotificationTap();
+    useSyncScheduler();
 
     return (
         <ThemeProvider value={navigationTheme}>
@@ -157,6 +159,14 @@ function RootNavigator() {
                 />
                 <Stack.Screen
                     name="settings/backup"
+                    options={{ headerShown: false, animation: PUSHED_SCREEN_ANIMATION }}
+                />
+                <Stack.Screen
+                    name="settings/conflicts"
+                    options={{ headerShown: false, animation: PUSHED_SCREEN_ANIMATION }}
+                />
+                <Stack.Screen
+                    name="settings/duplicates"
                     options={{ headerShown: false, animation: PUSHED_SCREEN_ANIMATION }}
                 />
                 <Stack.Screen

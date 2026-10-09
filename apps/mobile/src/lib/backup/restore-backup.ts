@@ -3,6 +3,7 @@ import { getDb, SCHEMA_VERSION } from '@/data/db';
 import { listCoverFileId } from '@/data/list-cover-storage';
 import { unwrapBackupKeys } from '../tables/backup-keys';
 import { validateTableBackup } from '../tables/restore-validation';
+import { currentDestination } from '@/lib/sync/capture';
 import { verifyIntegrity } from './backup-integrity';
 import { upgradeLegacyTables } from './legacy-tables';
 import { openPackage, PackagePasswordError, parseEncryptedPackage } from './package-crypto';
@@ -19,7 +20,7 @@ import {
     type BackupRow,
 } from './backup-format';
 
-export type RestoreErrorCode = 'invalid' | 'newer' | 'password' | 'corrupt';
+export type RestoreErrorCode = 'invalid' | 'newer' | 'password' | 'corrupt' | 'linked';
 
 /** Por qué no se restauró; la pantalla lo traduce. Nada se ha tocado cuando sale esto. */
 export class RestoreError extends Error {
@@ -132,6 +133,9 @@ export async function restoreBackup(
     secret?: string,
 ): Promise<RestoreReport> {
     const { backup, createdAt, origin, missingFiles } = await inspectBackup(text, secret);
+    // Restaurar reemplaza todo: con la cola de un destino viva, esos reemplazos se propagarían
+    // como borrados. Primero se desvincula (la restauración conectada es la Fase 11).
+    if ((await currentDestination(await getDb())) !== null) throw new RestoreError('linked');
     const accountPepper = await unwrapBackupKeys(backup.tableKeys, secret);
     await validateTableBackup(backup);
 

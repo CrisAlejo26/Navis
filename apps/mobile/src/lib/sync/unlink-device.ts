@@ -8,6 +8,17 @@ interface UnlinkOptions {
     fetchImpl?: typeof fetch;
     /** La copia previa; por defecto, la del teléfono. Si lanza, no se desvincula nada. */
     safetyBackup?: () => Promise<unknown>;
+    /** Apaga el registro de cambios locales; por defecto, en la base del teléfono. */
+    releaseCapture?: () => Promise<void>;
+}
+
+async function deviceReleaseCapture(): Promise<void> {
+    // Import perezoso por lo mismo que la copia previa: solo hace falta al ejecutarlo.
+    const [{ getDb }, { setCaptureDestination }] = await Promise.all([
+        import('@/data/db'),
+        import('./capture'),
+    ]);
+    await setCaptureDestination(await getDb(), null);
 }
 
 async function deviceSafetyBackup(): Promise<unknown> {
@@ -25,7 +36,11 @@ async function deviceSafetyBackup(): Promise<unknown> {
 export async function unlinkDevice(
     options: UnlinkOptions = {},
 ): Promise<{ revoked: boolean; aborted: boolean }> {
-    const { fetchImpl, safetyBackup = deviceSafetyBackup } = options;
+    const {
+        fetchImpl,
+        safetyBackup = deviceSafetyBackup,
+        releaseCapture = deviceReleaseCapture,
+    } = options;
     try {
         await safetyBackup();
     } catch {
@@ -50,6 +65,8 @@ export async function unlinkDevice(
     }
 
     await deleteCredential();
+    // La cola ya escrita se conserva (es de su destino y no se envía a otro), pero deja de crecer.
+    await releaseCapture();
     clear();
     return { revoked, aborted: false };
 }

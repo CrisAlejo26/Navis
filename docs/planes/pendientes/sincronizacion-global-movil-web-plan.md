@@ -1,6 +1,6 @@
 # Sincronización global entre móvil y web — plan por fases
 
-- **Estado:** Fases 0, 1, 2, 3 y 4 implementadas el 2026-10-09 (la 4, solo servidor y tras `SYNC_ENABLED`), sin transferir datos. La 5 es la siguiente. Ver §11.
+- **Estado:** Fases 0 a 6 implementadas el 2026-10-09 (la 4 solo servidor, la 5 y la 6 solo cliente y reglas, inertes tras `SYNC_ENABLED`), sin transferir datos. La 7 es la siguiente. Ver §11.
 - **Fecha:** 2026-10-09.
 - **Alcance:** toda Navis: todas las iglesias accesibles, todos los módulos, datos personales, relaciones, configuraciones compartidas y archivos. No se limita a la iglesia activa ni a un módulo.
 - **Aplicaciones:** `apps/api`, `apps/web`, `apps/mobile`, `packages/shared`, `packages/api-client`; revisar escritorio si utiliza las mismas escrituras de la API.
@@ -580,3 +580,40 @@ Servidor, tras `SYNC_ENABLED` (apagado por defecto; la API no registra ni acepta
 - **Visibilidad por registro (`sync-privacy.ts`):** la misma regla que los triggers (dos personas de una iglesia ven cada una solo sus tareas).
 
 **Pendiente de la Fase 3:** persistir `sync_id_map` y aplicar la decisión de roles y autores al importar (Fase 7); restaurar en otro teléfono ya está probado con la contraseña del paquete (`backup-keys.test.ts` y `backup-v2.test.ts`), pero no en un teléfono físico.
+
+### Fase 5 (2026-10-09)
+
+Motor móvil, **inerte mientras el servidor no tenga `SYNC_ENABLED`** (el motor consulta `GET /sync/capabilities` en cada vuelta y no envía ni descarga nada si `dataSyncEnabled` es falso). Migración local 22.
+
+- **Cola en la misma transacción que la escritura:** triggers SQLite (`packages/shared/src/sync-local-triggers.ts`) apuntan cada escritura en `sync_outbox` desde cualquier repositorio; una entrada pendiente por entidad y destino (las ediciones seguidas se funden con `ON CONFLICT` sobre un índice parcial). Solo escriben con un destino vinculado (`capturing`) y fuera de una descarga (`applying`): lo que baja del servidor no vuelve a subir. Tablas de metadatos en `data/sync-migration.ts`: `sync_state`, `sync_outbox`, `sync_entity_state`, `sync_checkpoint`, `sync_conflicts` (del aparato: ni paridad con TypeORM ni copias).
+- **Destinos aislados:** cola, revisiones y cursor llevan `destination` (`apiUrl|cuenta`); la cola de una instalación no se envía a otra aunque cambie la URL o la sesión.
+- **Motor (`lib/sync/engine.ts`):** descarga primero y sube después. Primero porque ahí se descubre un servidor restaurado (`409`) y las revisiones base de la cola dejan de valer; esto lo encontró un test, la primera versión subía antes. Cada página se aplica y guarda su cursor en la misma transacción; cada resultado de una subida se guarda al recibirlo.
+- **Idempotencia y encadenado:** el `operation_id` se guarda **antes** de la petición, así que tras un corte se reenvía el mismo; una entidad aparece una vez por tanda y su segunda edición espera a que la primera deje su revisión.
+- **Conflictos sin pérdida:** una descarga no pisa una entidad con edición sin enviar y no adelanta su revisión base, de modo que al subirla el servidor responde `stale-base`, se anota en `sync_conflicts` y la edición local se conserva. La resolución es la Fase 6.
+- **Errores clasificados** (`classify-error.ts`): sin red o 5xx (reintento con espera exponencial y variación, `backoff.ts`), 401 (se detiene y pide vincular de nuevo), 403 (pausa), 409 (rehacer descarga), contrato roto. Una tabla que el servidor aún no aplica se queda en cola sin reintentarse en bucle.
+- **Un solo coordinador** (`sync-runner.ts`): las llamadas simultáneas comparten la misma vuelta. `device-runner.ts` sincroniza al abrir, al volver a primer plano, al recuperar la red (`expo-network`), cada minuto con la app a la vista y a mano; `useSyncScheduler` lo enciende solo mientras hay vínculo.
+- **Contraseñas de tablas:** suben en claro (`cellsToWire`) y bajan selladas con la clave del aparato (`cellsFromWire`).
+- **Restaurar una copia se niega mientras el teléfono está vinculado** (`linked`): reemplazaría todo y la cola lo propagaría como borrados. La restauración conectada es la Fase 11.
+- **Interfaz:** la pantalla de conexión muestra el estado de la última vuelta, lo que falta por enviar, lo que espera revisión, la última vez y «Sincronizar ahora»; textos en los seis idiomas.
+- **Pruebas:** 148 en `lib/sync` (cola y triggers de las 52 tablas, aplicación de las 52 tablas, motor contra un servidor falso con las mismas reglas —sin red, respuesta perdida, encadenado, conflicto, 401, 409, apagado, tabla sin adaptador, destinos aislados, contraseñas—, coordinador, reintentos, clasificación).
+
+**Pendiente de la Fase 5:** tarea en segundo plano del sistema (`expo-background-task`, solo ayuda), tratamiento explícito de batería baja y de falta de espacio, y verlo en un teléfono (la app solo está probada en Jest). Ningún adaptador de servidor existe todavía (Fase 8), así que hoy toda operación real se rechaza con `unsupported-table` y espera en la cola.
+
+### Fase 5, pendientes cerrados (2026-10-09)
+
+- **Tarea en segundo plano** (`lib/sync/background-task.ts`, `expo-background-task` + `expo-task-manager`, plugin en `app.config.ts`): ayuda, no garantía; el sistema decide cuándo la ejecuta. `defineTask` va al cargar el módulo y la tarea rehidrata el almacén del vínculo antes de sincronizar. Se registra al vincular y se retira al desvincular. Para que una ejecución sin interfaz no apague el registro, el coordinador **ya no toca la captura cuando no ve vínculo** (desvincular la apaga).
+- **Batería baja** (`resources.ts`, `expo-battery`): una vuelta automática con menos del 15 % y sin cargador espera; la del botón no. Una lectura que falla no frena.
+- **Falta de espacio** (`Paths.availableDiskSpace`): por debajo de 50 MB se sube lo pendiente pero no se aplican descargas (`lowStorage`), y al liberar espacio llega todo.
+
+### Fase 6 (2026-10-09)
+
+- **Fusión a tres bandas** (`packages/shared/src/sync-merge.ts` + `sync-merge-policy.ts`): base, local y remota. Un campo que cambió solo en un lado se toma de ese lado; si cambió en los dos y distinto, es conflicto y decide una persona; nunca gana «el último» ni interviene la hora del teléfono. Políticas por tabla: `updated_at` no es edición, `position` lo manda el servidor, las celdas de una fila de tabla se fusionan celda a celda, `last_note_at` gana la mayor y los campos derivados (`search_name`, `search_text`) siguen a su fuente.
+- **Versión base** (`sync_entity_state.base_json`): lo último que confirmó el servidor por entidad. **Sin contraseñas en claro**: los metadatos guardan una huella SHA-256 con una clave secreta del aparato (`secret-cells.ts`); para fusionar se tienen en claro un momento en memoria. Así una contraseña editada aquí y otra celda editada en el servidor no chocan.
+- **Conciliación** (`reconcile.ts`), entre descargar y subir: lo del servidor sobre una entidad con edición local sin enviar se guarda aparte (`sync_remote_pending`) y se concilia. Campos independientes: fusión automática y la fusión sube sobre la revisión del servidor. Mismo campo, o **borrado contra edición** en cualquiera de los dos sentidos: se conserva todo y queda un conflicto abierto; la entrada de la cola se aparta para que no se envíe a ciegas. Si los dos lados borraron, no hay conflicto.
+- **Resolución** (`resolve-conflict.ts`): por campo (lo local, lo del servidor o un valor combinado escrito a mano; el texto largo no se concatena solo), y para borrados aceptar/conservar. Parte de lo que hay **ahora**, no de la instantánea que se enseñó, y sube con la revisión del servidor como base: si otro editó mientras se decidía, se vuelve a comparar. Restaurar algo borrado por otro lo autoriza el servidor (adaptadores, Fase 8).
+- **Duplicados** (`sync-duplicates.ts`): solo sugerencias, dentro de la misma iglesia: mismo nombre sin acentos, mismo teléfono o correo; nombre más un dato de contacto es «probable», lo demás «posible» (las familias comparten teléfono). **Fusionar** (`merge-believers.ts`): notas, etiquetas, dones, audios, pertenencias de listas (clave compuesta) y celdas pasan al conservado; si el vínculo ya existía (misma etiqueta, mismo don) no se duplica, aunque el esquema local no tenga el índice único que sí tiene la API; se traen los datos de contacto que faltaban; el retirado se borra y queda un **alias persistente** (`sync_aliases`): lo que llegue del servidor apuntando al retirado se redirige al conservado y el retirado no resucita.
+- **Servidor:** borrar una iglesia, una membresía o un rol no viaja como operación de campo (`protected-entity`), haya adaptador o no.
+- **Interfaz:** «Revisar cambios» (centro de conflictos con la hoja de decisión) y «Posibles duplicados» (con confirmación y elección de cuál se conserva), desde la pantalla de conexión; textos en los seis idiomas.
+- **Pruebas:** 178 en `lib/sync` (fusión pura en `shared`, escenarios de conflicto con el servidor falso: campos independientes, mismo campo con las cuatro decisiones, decisión inválida, edición concurrente durante la decisión, borrados en los dos sentidos, contraseñas, fusión de duplicados y redirección por alias).
+
+**Pendiente de la Fase 6:** que el servidor aplique de verdad las resoluciones y fusiones (adaptadores, Fase 8); fusión con entidades que cuelgan por otras columnas distintas de `believer_id` (si aparecen); y verlo en un teléfono.

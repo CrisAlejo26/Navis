@@ -292,6 +292,36 @@ describe('Sincronización: cambios y operaciones (e2e)', () => {
         expect(String(change?.row?.data)).toContain('portal-2026');
     });
 
+    it('no deja borrar una iglesia por la vía de sincronización, aunque haya adaptador', async () => {
+        let executions = 0;
+        app.get(SyncAdapterRegistry).register({
+            table: 'churches',
+            apply: () => {
+                executions += 1;
+                return Promise.resolve({ status: 'applied', revision: 2 });
+            },
+        });
+        const response = await http()
+            .post('/api/v1/sync/operations')
+            .set('Authorization', bearerA)
+            .send({
+                operations: [
+                    {
+                        operationId: crypto.randomUUID(),
+                        table: 'churches',
+                        id: crypto.randomUUID(),
+                        op: 'delete',
+                        baseRevision: 0,
+                    },
+                ],
+            })
+            .expect(201);
+
+        const { results } = body<{ results: SyncOperationResult[] }>(response);
+        expect(results[0]).toMatchObject({ status: 'rejected', reason: 'protected-entity' });
+        expect(executions).toBe(0);
+    });
+
     it('si la entidad avanzó desde que el cliente la leyó, la operación es un conflicto y no se ejecuta', async () => {
         const created = await http()
             .post('/api/v1/believers')

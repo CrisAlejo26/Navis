@@ -19,6 +19,7 @@ const ERROR_KEYS = {
     newer: 'backup.errorNewer',
     password: 'backup.errorPassword',
     corrupt: 'backup.errorCorrupt',
+    linked: 'backup.errorLinked',
     safetyFailed: 'backup.errorSafety',
     generic: 'backup.errorGeneric',
     exportFailed: 'backup.exportFailed',

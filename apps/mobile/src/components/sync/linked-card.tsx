@@ -5,11 +5,13 @@ import { Text, View } from 'react-native';
 import { SettingsGroup } from '@/components/settings/settings-group';
 import { SettingsRow } from '@/components/settings/settings-row';
 import { Button } from '@/components/ui/button';
+import { router } from 'expo-router';
+import { SyncStatusCard } from '@/components/sync/sync-status-card';
 import { ConfirmationSheet } from '@/components/ui/confirmation-sheet';
-import { Icon } from '@/components/ui/icon';
 import { formatMediumDate } from '@/lib/format';
 import { unlinkDevice } from '@/lib/sync/unlink-device';
 import type { SyncLink } from '@/stores/sync-connection';
+import { useSyncStatus } from '@/stores/sync-status';
 
 /** El teléfono ya está vinculado: a qué, con qué cuenta, y la salida de vuelta al modo local. */
 export function LinkedCard({ link }: { link: SyncLink }) {
@@ -18,6 +20,7 @@ export function LinkedCard({ link }: { link: SyncLink }) {
     const [busy, setBusy] = useState(false);
     const [failed, setFailed] = useState(false);
     const host = new URL(link.apiUrl).host;
+    const conflicts = useSyncStatus((state) => state.conflicts);
 
     async function disconnect(): Promise<void> {
         setBusy(true);
@@ -30,17 +33,21 @@ export function LinkedCard({ link }: { link: SyncLink }) {
 
     return (
         <View className="gap-6">
-            <View className="gap-3 p-4 flex-row items-start rounded-[26px] bg-card">
-                <Icon name="time-outline" tone="warning" background="soft" containerSize={38} />
-                <View className="min-w-0 gap-1 flex-1">
-                    <Text className="font-sans-semibold text-[15px] text-foreground">
-                        {t('sync.linkedPending')}
-                    </Text>
-                    <Text className="text-sm font-sans text-muted-foreground">
-                        {t('sync.linkedBody')}
-                    </Text>
-                </View>
-            </View>
+            <SyncStatusCard />
+
+            <SettingsGroup label={t('sync.reviewConflicts')}>
+                <SettingsRow
+                    icon="git-compare-outline"
+                    title={t('sync.reviewConflicts')}
+                    value={conflicts > 0 ? String(conflicts) : undefined}
+                    onPress={() => router.push('/settings/conflicts')}
+                />
+                <SettingsRow
+                    icon="people-outline"
+                    title={t('sync.reviewDuplicates')}
+                    onPress={() => router.push('/settings/duplicates')}
+                />
+            </SettingsGroup>
 
             <SettingsGroup label={t('sync.linkedTitle')}>
                 <SettingsRow icon="globe-outline" title={link.installationName} subtitle={host} />

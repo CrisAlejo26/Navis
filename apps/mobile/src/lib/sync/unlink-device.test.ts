@@ -14,11 +14,13 @@ const LINK: SyncLink = {
 };
 
 const safetyBackup = jest.fn(() => Promise.resolve({}));
+const releaseCapture = jest.fn(() => Promise.resolve());
 
 describe('unlinkDevice', () => {
     beforeEach(() => {
         jest.mocked(SecureStore.getItemAsync).mockResolvedValue('nvd_secreta');
         jest.mocked(SecureStore.deleteItemAsync).mockClear();
+        releaseCapture.mockClear();
         useSyncConnection.setState({ link: LINK });
     });
 
@@ -26,7 +28,7 @@ describe('unlinkDevice', () => {
         const fetchImpl = jest.fn((_url: RequestInfo | URL, _init?: RequestInit) =>
             Promise.resolve(new Response(null, { status: 204 })),
         );
-        const result = await unlinkDevice({ fetchImpl, safetyBackup });
+        const result = await unlinkDevice({ fetchImpl, safetyBackup, releaseCapture });
 
         expect(result).toEqual({ revoked: true, aborted: false });
         expect(fetchImpl.mock.calls[0]?.[0]).toBe(`${LINK.apiUrl}/devices/${LINK.deviceId}`);
@@ -38,7 +40,7 @@ describe('unlinkDevice', () => {
 
     it('vuelve al modo local aunque no haya red, avisando de que no se pudo revocar', async () => {
         const fetchImpl = jest.fn(() => Promise.reject(new TypeError('Network request failed')));
-        const result = await unlinkDevice({ fetchImpl, safetyBackup });
+        const result = await unlinkDevice({ fetchImpl, safetyBackup, releaseCapture });
 
         expect(result).toEqual({ revoked: false, aborted: false });
         expect(useSyncConnection.getState().link).toBeNull();
@@ -48,11 +50,12 @@ describe('unlinkDevice', () => {
     it('no desvincula nada si no se puede dejar la copia previa', async () => {
         const failing = jest.fn(() => Promise.reject(new Error('sin espacio')));
         const fetchImpl = jest.fn();
-        const result = await unlinkDevice({ fetchImpl, safetyBackup: failing });
+        const result = await unlinkDevice({ fetchImpl, safetyBackup: failing, releaseCapture });
 
         expect(result).toEqual({ revoked: false, aborted: true });
         expect(useSyncConnection.getState().link).toEqual(LINK);
         expect(fetchImpl).not.toHaveBeenCalled();
         expect(SecureStore.deleteItemAsync).not.toHaveBeenCalled();
+        expect(releaseCapture).not.toHaveBeenCalled();
     });
 });

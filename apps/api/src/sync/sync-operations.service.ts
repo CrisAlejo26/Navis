@@ -6,6 +6,7 @@ import { DataSource, type EntityManager } from 'typeorm';
 
 import type { AuthUser } from '../auth/auth';
 import { isUniqueViolation } from '../database/unique-violation';
+import { deletesProtectedEntity, PROTECTED_REASON } from './sync-operation-rules';
 import { SyncAdapterRegistry, type AdapterOutcome } from './sync-adapter-registry';
 import { SyncReceipt } from './sync-receipt.entity';
 import { SyncRevision } from './sync-revision.entity';
@@ -50,6 +51,15 @@ export class SyncOperationsService {
         const requestHash = hashOperation(operation);
         const previous = await this.findReceipt(this.dataSource.manager, deviceKey, operation);
         if (previous) return this.replay(previous, requestHash, operation);
+
+        // Borrar una iglesia, una membresía o un rol tiene su propio flujo: aquí nunca.
+        if (deletesProtectedEntity(operation)) {
+            return {
+                operationId: operation.operationId,
+                status: 'rejected',
+                reason: PROTECTED_REASON,
+            };
+        }
 
         const adapter = this.adapters.get(operation.table);
         if (!adapter) {

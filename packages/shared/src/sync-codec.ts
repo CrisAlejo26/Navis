@@ -46,7 +46,7 @@ export function encodeRow(table: LocalTable, row: LocalRow): WireObject {
 }
 
 /** Objeto del protocolo → fila de SQLite. Inversa de `encodeRow` salvo que los instantes salen normalizados. */
-export function decodeRow(table: LocalTable, wire: WireObject): LocalRow {
+export function decodeRow(table: LocalTable, wire: Readonly<Record<string, unknown>>): LocalRow {
     const row: LocalRow = {};
     for (const column of table.columns) {
         const value = wire[column.name];

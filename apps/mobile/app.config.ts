@@ -52,6 +52,8 @@ const config: ExpoConfig = {
         'expo-router',
         'expo-localization',
         'expo-secure-store',
+        // La sincronización pendiente se retoma sola cuando el sistema lo permite.
+        'expo-background-task',
         // El micrófono pide permiso y declaración en el manifest: lo lleva su
         // plugin de config, no un ajuste a mano.
         'expo-audio',

@@ -17,6 +17,7 @@ import { migrateTaskSeries } from './task-series-migration';
 import { migrateTaskLimits } from './task-limits-migration';
 import { migrateWorkflows } from './workflows-migration';
 import { migrateTaskTime } from './task-time-migration';
+import { migrateSync, migrateSyncConflicts } from './sync-migration';
 import { migrateUsersRoles } from './users-roles-migration';
 import * as SQLite from 'expo-sqlite';
 
@@ -49,7 +50,7 @@ export function setDbForTests(fake: LocalDb | null): void {
 }
 
 /** Versión actual del esquema local. Cada cambio añade un caso a `migrations`. */
-export const SCHEMA_VERSION = 21;
+export const SCHEMA_VERSION = 23;
 
 type Migration = (db: LocalDb) => Promise<void>;
 
@@ -364,6 +365,8 @@ const migrations: Record<number, Migration> = {
     19: migrateWorkflows,
     20: migrateTaskTime,
     21: migrateUsersRoles,
+    22: migrateSync,
+    23: migrateSyncConflicts,
 };
 
 async function columnOf(table: string, column: string, db: LocalDb): Promise<boolean> {

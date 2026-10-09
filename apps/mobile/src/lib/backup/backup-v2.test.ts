@@ -5,6 +5,7 @@ import { getDb } from '@/data/db';
 import { addJournalAudio } from '@/data/repos/journal-audios';
 import { createJournalEntry, listJournal } from '@/data/repos/journal-repo';
 import { tasksFixture } from '@/data/repos/tasks-test-support';
+import { setCaptureDestination } from '@/lib/sync/capture';
 import { saveCredential } from '@/lib/sync/credential';
 import { useSyncConnection } from '@/stores/sync-connection';
 
@@ -143,6 +144,21 @@ describe('copia de seguridad v2', () => {
             await buildBackup(filesWith('AQIDBA=='));
             expect(spy).toHaveBeenCalledTimes(1);
             spy.mockRestore();
+        });
+    });
+
+    describe('restaurar con el teléfono vinculado', () => {
+        it('se niega y no cambia nada: restaurar propagaría borrados a la instalación', async () => {
+            await seedEntry();
+            const files = filesWith('AQIDBA==');
+            const backup = JSON.stringify(await buildBackup(files));
+            const db = await getDb();
+            await setCaptureDestination(db, 'https://navis.test/api/v1|cuenta-1');
+            const before = (await listJournal(c.north, {})).total;
+
+            await expect(restoreBackup(backup, files)).rejects.toMatchObject({ code: 'linked' });
+            expect((await listJournal(c.north, {})).total).toBe(before);
+            await setCaptureDestination(db, null);
         });
     });
 
