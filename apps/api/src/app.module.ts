@@ -17,6 +17,7 @@ import { SessionGuard } from './common/guards/session.guard';
 import { env, isProduction } from './config/env';
 import { dataSourceOptions } from './database/data-source';
 import { DashboardModule } from './dashboard/dashboard.module';
+import { DevicesModule } from './devices/devices.module';
 import { DreamsModule } from './dreams/dreams.module';
 import { GeocodeModule } from './geocode/geocode.module';
 import { HealthModule } from './health/health.module';
@@ -53,6 +54,7 @@ import { WeatherModule } from './weather/weather.module';
         TypeOrmModule.forRoot({ ...dataSourceOptions, autoLoadEntities: true }),
 
         AuthModule,
+        DevicesModule,
         ProfilesModule,
         ChurchesModule,
         BelieversModule,

@@ -2,6 +2,7 @@ import { useProfile, useUpdateProfile } from '@navis/api-client';
 import { SUPERADMIN_ROLE } from '@navis/shared';
 import { useTranslation } from 'react-i18next';
 
+import { DevicesSection } from '@/components/devices/devices-section';
 import { LanguageSelect } from '@/components/language-select';
 import { ProfileForm } from '@/components/profile-form';
 import { ChurchSettings } from '@/components/settings/church-settings';
@@ -98,6 +99,16 @@ export function SettingsPage() {
                         <ProfileForm profile={profile ?? null} update={updateProfile} />
                     )}
                 </Card>
+            </SettingsSection>
+
+            <hr className="border-border/60" />
+
+            <SettingsSection
+                eyebrow={t('sync.webEyebrow')}
+                title={t('sync.webTitle')}
+                description={t('sync.webHint')}
+            >
+                <DevicesSection />
             </SettingsSection>
 
             <hr className="border-border/60" />

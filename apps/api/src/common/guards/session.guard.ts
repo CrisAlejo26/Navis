@@ -8,6 +8,8 @@ import { Reflector } from '@nestjs/core';
 import type { Request } from 'express';
 
 import { AuthService } from '../../auth/auth.service';
+import { deviceCredentialFrom } from '../../devices/device-secrets';
+import { DevicesService } from '../../devices/devices.service';
 import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
 
 /**
@@ -21,6 +23,7 @@ export class SessionGuard implements CanActivate {
     constructor(
         private readonly reflector: Reflector,
         private readonly authService: AuthService,
+        private readonly devices: DevicesService,
     ) {}
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -35,6 +38,15 @@ export class SessionGuard implements CanActivate {
         if (session) {
             request.user = session.user;
             request.session = session.session;
+            return true;
+        }
+
+        // Sin sesión de Better Auth, una credencial de dispositivo vinculado (Bearer nvd_…).
+        const credential = deviceCredentialFrom(request.headers.authorization);
+        const device = credential ? await this.devices.resolveCredential(credential) : null;
+        if (device) {
+            request.user = device.user;
+            request.deviceId = device.deviceId;
             return true;
         }
 

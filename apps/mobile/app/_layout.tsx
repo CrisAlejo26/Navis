@@ -160,6 +160,10 @@ function RootNavigator() {
                     options={{ headerShown: false, animation: PUSHED_SCREEN_ANIMATION }}
                 />
                 <Stack.Screen
+                    name="settings/connection"
+                    options={{ headerShown: false, animation: PUSHED_SCREEN_ANIMATION }}
+                />
+                <Stack.Screen
                     name="settings/church"
                     options={{ headerShown: false, animation: PUSHED_SCREEN_ANIMATION }}
                 />

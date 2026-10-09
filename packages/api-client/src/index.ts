@@ -17,6 +17,8 @@ export * from './chat-socket';
 export * from './church-hooks';
 export * from './client';
 export * from './dashboard-hooks';
+export * from './device-hooks';
+export * from './device-mutations';
 export * from './dream-hooks';
 export * from './dream-mutations';
 export * from './export-hooks';

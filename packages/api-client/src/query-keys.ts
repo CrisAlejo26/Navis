@@ -8,6 +8,10 @@ export const queryKeys = {
         all: ['profile'] as const,
         me: () => [...queryKeys.profile.all, 'me'] as const,
     },
+    devices: {
+        list: ['devices', 'list'] as const,
+        capabilities: ['sync', 'capabilities'] as const,
+    },
     ai: {
         status: ['ai', 'status'] as const,
     },

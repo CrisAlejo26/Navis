@@ -26,6 +26,8 @@ import { MessageReaction } from '../chat/message-reaction.entity';
 import { Message } from '../chat/message.entity';
 import { ChurchMember } from '../churches/church-member.entity';
 import { Church } from '../churches/church.entity';
+import { Device } from '../devices/device.entity';
+import { DeviceLink } from '../devices/device-link.entity';
 import { HolidayCache } from '../holidays/holiday-cache.entity';
 import { DreamAudio } from '../dreams/dream-audio.entity';
 import { DreamEmotion } from '../dreams/dream-emotion.entity';
@@ -135,6 +137,8 @@ const entities = [
     CustomTableRow,
     CustomTableView,
     Teaching,
+    DeviceLink,
+    Device,
 ];
 
 /**

@@ -15,6 +15,7 @@ import { ThemePills } from '@/components/settings/theme-pills';
 import { useLocalUser } from '@/hooks/use-settings';
 import { usePageBottomPadding } from '@/hooks/use-page-bottom-padding';
 import { useLocalSession } from '@/stores/local-session';
+import { useSyncConnection } from '@/stores/sync-connection';
 
 /**
  * El concentrador de ajustes: tarjetas de filas como las de Taskia, de lo más
@@ -29,6 +30,7 @@ export default function SettingsScreen() {
     const session = useLocalSession((state) => state.session);
     const clear = useLocalSession((state) => state.clear);
     const { data: user } = useLocalUser();
+    const syncLink = useSyncConnection((state) => state.link);
 
     return (
         <ScrollView
@@ -79,9 +81,15 @@ export default function SettingsScreen() {
                         onPress={() => router.push('/settings/backup')}
                     />
                     <SettingsRow
-                        icon="phone-portrait-outline"
+                        icon={syncLink ? 'link-outline' : 'phone-portrait-outline'}
                         title={t('settings.connection')}
-                        subtitle={t('settings.localMode')}
+                        subtitle={
+                            syncLink
+                                ? t('sync.rowLinked', { account: syncLink.account.email })
+                                : t('settings.localMode')
+                        }
+                        value={syncLink ? t('sync.state.connected') : t('sync.state.local')}
+                        onPress={() => router.push('/settings/connection')}
                     />
                 </SettingsGroup>
 

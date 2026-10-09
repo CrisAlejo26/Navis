@@ -7,6 +7,15 @@
 - **Depende de**: RFC 0007 (modo local y servidor), RFC 0023 (recuperación por
   correo en web), RFC 0008 (iglesias como espacios de trabajo)
 
+> **Enmienda (2026-10-09).** El alcance de este RFC queda ampliado por
+> [la sincronización global móvil ↔ web](../planes/pendientes/sincronizacion-global-movil-web-plan.md):
+> la conexión deja de ser una migración de una sola vez y pasa a ser sincronización
+> bidireccional continua, y la credencial es una **vinculación de dispositivo** con
+> token de un solo uso (no una API key compartida). Donde este documento diga lo
+> contrario —«una vez en cada sentido», «no es offline-first», «API key a mano»
+> en Fuera de alcance, y las Fases 3-4— manda ese plan. Las Fases 1-2 (cuenta
+> local y desbloqueo) siguen vigentes.
+
 ## Problema
 
 La app móvil de Navis solo funciona conectada a una API: sin servidor no hay
