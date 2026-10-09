@@ -1,7 +1,7 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { Text, View } from 'react-native';
 
-import { hexShade } from '@/lib/color';
+import { readableGradient } from '@/lib/color';
 import { formatNumber } from '@/lib/format';
 import { useUserPalette } from './user-theme';
 
@@ -35,7 +35,7 @@ export function UsersHero({
         shown = segments.filter((one) => one.count > 0);
     return (
         <LinearGradient
-            colors={[hexShade(base, 0.82), hexShade(base, 0.5)]}
+            colors={readableGradient(base)}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={{ borderRadius: 26, padding: 20, marginBottom: 16, gap: 14 }}
@@ -56,8 +56,8 @@ export function UsersHero({
                 </Text>
                 <Text
                     className="text-sm"
-                    style={{ color: 'rgba(255,255,255,0.86)' }}
-                    numberOfLines={2}
+                    style={{ color: 'rgba(255,255,255,0.9)' }}
+                    numberOfLines={3}
                 >
                     {caption}
                 </Text>

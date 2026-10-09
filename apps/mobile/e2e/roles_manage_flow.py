@@ -10,9 +10,9 @@ from pathlib import Path
 from adb_driver import adb, find, open_route, reveal, screenshot, tap, text, wait
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--locale', choices=['es', 'en'], default='es')
+parser.add_argument('--locale', choices=['es', 'en', 'de', 'fr', 'it', 'pt'], default='es')
 args = parser.parse_args()
-labels = {'es': {'tab': 'Roles', 'view': 'Ver'}, 'en': {'tab': 'Roles', 'view': 'View'}}[args.locale]
+labels = {'es': {'tab': 'Roles', 'view': 'Ver'}, 'de': {'tab': 'Rollen', 'view': 'Ansehen'}, 'fr': {'tab': 'Rôles', 'view': 'Voir'}, 'it': {'tab': 'Ruoli', 'view': 'Vedere'}, 'pt': {'tab': 'Funções', 'view': 'Ver'}, 'en': {'tab': 'Roles', 'view': 'View'}}[args.locale]
 out = Path('docs/qa/usuarios-movil') / ('gestion-roles-' + args.locale)
 stamp = str(int(time.time()))
 name = 'QA Rol ' + stamp

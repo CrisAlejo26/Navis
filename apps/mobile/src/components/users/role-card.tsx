@@ -72,7 +72,12 @@ export function RoleCard({
                 size="lg"
             />
             <View className="flex-1" style={{ gap: 4 }}>
-                <Text className="font-sans-semibold text-base text-foreground" numberOfLines={1}>
+                <Text
+                    className="font-sans-semibold text-base text-foreground"
+                    numberOfLines={1}
+                    adjustsFontSizeToFit
+                    minimumFontScale={0.8}
+                >
                     {label}
                 </Text>
                 {hint ? (

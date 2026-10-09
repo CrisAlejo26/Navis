@@ -41,8 +41,10 @@ adaptador remoto lo añadirá o lo sacará del listado.
    las listas, editar nombre y caducidad, regenerar la contraseña (se ve una vez)
    y revocar. Reutiliza `ViewerForm`, `ViewerGrants`, `ViewerCredentials` y
    `useViewerDetail` de las listas; el alta ya no exige una lista de partida.
-6. Pulido, seis idiomas con el texto más largo, dos temas, verificación en
-   emulador con alemán.
+6. **Pulido** — hecha. Contraste fijado por test (`contrast.test.ts`) y degradados que
+   solo se oscurecen lo justo (`readableGradient`); pestañas en el azul de los
+   botones (`primary`) en toda la app; y las tres pantallas recorridas en **los seis
+   idiomas**, a 375 px y en claro y oscuro.
 
 ## Decisiones tomadas en las fases 2 y 3
 
@@ -76,7 +78,7 @@ adaptador remoto lo añadirá o lo sacará del listado.
   cambio de correo, contraseña, baja en dos pasos y permisos).
 - e2e en emulador: `users_flow.py`, `roles_flow.py` (solo lectura, vale un pastor) y
   `roles_manage_flow.py` (superadministrador); ver `apps/mobile/e2e/README.md`.
-  Capturas en `docs/qa/usuarios-movil/`. Hechos en inglés; falta español y alemán.
+  Capturas en `docs/qa/usuarios-movil/`. Hechos en los seis idiomas.
 - Roles: `roles-flows.test.tsx` (lista y búsqueda, alta, nombre repetido, edición,
   borrado, rol con cuentas, rol de serie, superadministrador, permisos y pestañas),
   `role-form.test.ts` y `permission-display.test.ts`.
@@ -86,6 +88,18 @@ adaptador remoto lo añadirá o lo sacará del listado.
   y `access-status.test.ts`. e2e: `access_flow.py`.
 - Los guiones e2e ya no suponen la pestaña, la búsqueda ni el scroll de la visita
   anterior (`reveal()` en `adb_driver.py`): la pantalla conserva su estado entre visitas.
+
+## Pulido de la Fase 6
+
+- **Las pestañas son del azul de los botones.** `SegmentedControl` pinta la activa con
+  `primary` y su texto con `primary-foreground`, y lo heredan todas las pantallas que lo
+  usan (usuarios, tareas, cuaderno, listas, creyentes…).
+- **Etiquetas largas**: una pestaña de más de 10 letras («Utilisateurs», «Utilizadores»)
+  baja a `text-xs`; el título de un rol se encoge hasta un 80 % antes de partirse
+  («Superamministratore»); el marcador del buscador es corto en cada idioma; el subtítulo de
+  la cabecera admite tres líneas.
+- **Los e2e corren en es, en, de, fr, it y pt** (`--locale`), siempre a 375 px; guardan
+  capturas en `docs/qa/usuarios-movil/*-{idioma}`.
 
 ## Arreglado por el camino
 
@@ -98,7 +112,7 @@ adaptador remoto lo añadirá o lo sacará del listado.
 
 ## Pendiente
 
-- Fase 6 (pulido, alemán, español).
+- Nada de las seis fases. Queda fuera del plan: conectar el adaptador remoto a la API (RFC 0024).
 - El e2e de roles de gestión (`roles_manage_flow.py`) exige superadministrador.
 - `calendar-repo.test.ts` calcula el mes con `toISOString()` (UTC): mismo defecto de
   fondo, solo salta en el cambio de mes.

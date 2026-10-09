@@ -9,10 +9,14 @@ from pathlib import Path
 from adb_driver import adb, find, open_route, reveal, screenshot, tap, text, wait
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--locale', choices=['es', 'en'], default='es')
+parser.add_argument('--locale', choices=['es', 'en', 'de', 'fr', 'it', 'pt'], default='es')
 args = parser.parse_args()
 labels = {
     'es': {'tab': 'Roles', 'search': 'Sonido', 'permissions': 'Permisos', 'clear': 'Borrar la búsqueda'},
+    'de': {'tab': 'Rollen', 'search': 'Ton', 'permissions': 'Berechtigungen', 'clear': 'Suche löschen'},
+    'fr': {'tab': 'Rôles', 'search': 'Son', 'permissions': 'Permissions', 'clear': 'Effacer la recherche'},
+    'it': {'tab': 'Ruoli', 'search': 'Audio', 'permissions': 'Permessi', 'clear': 'Cancella la ricerca'},
+    'pt': {'tab': 'Funções', 'search': 'Som', 'permissions': 'Permissões', 'clear': 'Limpar a pesquisa'},
     'en': {'tab': 'Roles', 'search': 'Sound', 'permissions': 'Permissions', 'clear': 'Clear the search'},
 }[args.locale]
 out = Path('docs/qa/usuarios-movil') / ('roles-' + args.locale)

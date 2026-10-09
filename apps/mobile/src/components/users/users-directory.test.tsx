@@ -85,10 +85,7 @@ describe('directorio de usuarios con datos reales', () => {
 
         await fireEvent.press(screen.getByText('Todos los roles'));
         await screen.findByText('Ana García');
-        await fireEvent.changeText(
-            screen.getByPlaceholderText('Buscar por nombre o correo'),
-            'zzz',
-        );
+        await fireEvent.changeText(screen.getByPlaceholderText('Nombre o correo'), 'zzz');
         expect(await screen.findByText('Ninguna cuenta coincide con la búsqueda.')).toBeTruthy();
         await fireEvent.press(screen.getByRole('button', { name: 'Quitar filtros' }));
         expect(await screen.findByText('Ana García')).toBeTruthy();

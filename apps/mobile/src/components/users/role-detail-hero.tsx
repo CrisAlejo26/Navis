@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import type { RoleRow } from '@navis/shared';
 
 import { Icon } from '@/components/ui/icon';
-import { hexShade } from '@/lib/color';
+import { readableGradient } from '@/lib/color';
 
 /** Una píldora blanca translúcida sobre el degradado: el dato va escrito, el color solo acompaña. */
 function HeroTag({ text }: { text: string }) {
@@ -39,7 +39,7 @@ export function RoleDetailHero({
     const { t } = useTranslation();
     return (
         <LinearGradient
-            colors={[hexShade(color, 0.85), hexShade(color, 0.5)]}
+            colors={readableGradient(color)}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={{ borderRadius: 26, padding: 22, alignItems: 'center', gap: 8 }}

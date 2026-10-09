@@ -2,7 +2,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Text, View } from 'react-native';
 import type { ListViewer } from '@navis/shared';
 
-import { hexShade } from '@/lib/color';
+import { readableGradient } from '@/lib/color';
 import { RoleAvatar } from './role-avatar';
 
 /** La cabecera de la ficha de un acceso: su color es el de su estado, y el estado va escrito. */
@@ -17,7 +17,7 @@ export function AccessDetailHero({
 }) {
     return (
         <LinearGradient
-            colors={[hexShade(color, 0.85), hexShade(color, 0.5)]}
+            colors={readableGradient(color)}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={{ borderRadius: 26, padding: 22, alignItems: 'center', gap: 6 }}

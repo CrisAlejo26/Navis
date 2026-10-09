@@ -306,7 +306,7 @@ export const es = {
         description: 'Quién entra, con qué rol y qué puede hacer cada uno.',
         usersTab: 'Usuarios',
         rolesTab: 'Roles',
-        searchUsers: 'Buscar por nombre o correo',
+        searchUsers: 'Nombre o correo',
         searchRoles: 'Buscar rol',
         filterByRole: 'Filtrar por rol',
         allRoles: 'Todos los roles',

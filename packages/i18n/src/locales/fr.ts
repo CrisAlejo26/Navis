@@ -299,7 +299,7 @@ export const fr = {
         description: 'Qui entre, avec quel rôle et ce que chacun peut faire.',
         usersTab: 'Utilisateurs',
         rolesTab: 'Rôles',
-        searchUsers: 'Rechercher par nom ou e-mail',
+        searchUsers: 'Nom ou e-mail',
         searchRoles: 'Rechercher un rôle',
         filterByRole: 'Filtrer par rôle',
         allRoles: 'Tous les rôles',

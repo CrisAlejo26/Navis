@@ -9,10 +9,14 @@ from pathlib import Path
 from adb_driver import adb, find, open_route, reveal, screenshot, tap, text, wait
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--locale', choices=['es', 'en'], default='es')
+parser.add_argument('--locale', choices=['es', 'en', 'de', 'fr', 'it', 'pt'], default='es')
 args = parser.parse_args()
 labels = {
     'es': {'tab': 'Accesos', 'group': 'De un grupo', 'once': 'Cópiala ahora: no vas a volver a verla.', 'close': 'Cerrar'},
+    'de': {'tab': 'Zugänge', 'group': 'Für eine Gruppe', 'once': 'Kopiere es jetzt: du wirst es nicht wiedersehen.', 'close': 'Schließen'},
+    'fr': {'tab': 'Accès', 'group': 'D’un groupe', 'once': 'Copiez-le maintenant : vous ne le reverrez plus.', 'close': 'Fermer'},
+    'it': {'tab': 'Accessi', 'group': 'Di un gruppo', 'once': 'Copiala ora: non la rivedrai.', 'close': 'Chiudi'},
+    'pt': {'tab': 'Acessos', 'group': 'De um grupo', 'once': 'Copia-a agora: não a vais voltar a ver.', 'close': 'Fechar'},
     'en': {'tab': 'Access', 'group': 'For a group', 'once': 'Copy it now: you will not see it again.', 'close': 'Close'},
 }[args.locale]
 out = Path('docs/qa/usuarios-movil') / ('accesos-' + args.locale)
@@ -70,9 +74,9 @@ capture('directorio-con-acceso')
 
 # Ficha y edición
 tap(card)
-wait('access-edit')
+time.sleep(1.5)  # la ficha es más alta con textos largos: el botón puede quedar fuera de pantalla
 capture('ficha')
-tap('access-edit')
+tap('access-edit', scroll=True)
 wait('access-label')
 text('access-label', name + ' B', replace=True)
 hide_keyboard()

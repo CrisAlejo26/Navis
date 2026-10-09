@@ -295,7 +295,7 @@ export const pt = {
         description: 'Quem entra, com que função e o que cada um pode fazer.',
         usersTab: 'Utilizadores',
         rolesTab: 'Funções',
-        searchUsers: 'Procurar por nome ou email',
+        searchUsers: 'Nome ou email',
         searchRoles: 'Procurar função',
         filterByRole: 'Filtrar por função',
         allRoles: 'Todas as funções',

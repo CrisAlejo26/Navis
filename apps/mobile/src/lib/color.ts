@@ -59,3 +59,32 @@ export function readableAccent(accent: string, surface: string, ink: string, alp
         );
     return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05) >= 4.5 ? accent : ink;
 }
+
+function luminance(hex: string): number {
+    const [r, g, b] = [1, 3, 5].map((start) => {
+        const channel = parseInt(hex.slice(start, start + 2), 16) / 255;
+        return channel <= 0.04045 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4;
+    });
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}
+
+/** La razón de contraste WCAG entre dos hex de seis dígitos: 4,5 es el mínimo de un texto normal. */
+export function contrastRatio(a: string, b: string): number {
+    const [x, y] = [luminance(a), luminance(b)];
+    return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05);
+}
+
+/**
+ * El degradado de una cabecera de color, con texto blanco encima. Parte del color
+ * vivo y solo lo oscurece lo justo para que el texto —incluido el secundario, que
+ * va con transparencia (`textAlpha`)— llegue a 4,5:1 en el extremo más claro:
+ * un ámbar o un verde con blanco encima no llegan sin oscurecer, un azul sí.
+ */
+export function readableGradient(color: string, textAlpha = 0.78): [string, string] {
+    for (let factor = 0.85; factor > 0.3; factor -= 0.03) {
+        const start = hexShade(color, factor);
+        if (contrastRatio(hexBlend(start, '#ffffff', textAlpha), start) >= 4.5)
+            return [start, hexShade(color, factor * 0.62)];
+    }
+    return [hexShade(color, 0.3), hexShade(color, 0.2)];
+}

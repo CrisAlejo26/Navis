@@ -9,10 +9,14 @@ from pathlib import Path
 from adb_driver import adb, find, open_route, reveal, screenshot, tap, text, wait
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--locale', choices=['es', 'en'], default='es')
+parser.add_argument('--locale', choices=['es', 'en', 'de', 'fr', 'it', 'pt'], default='es')
 args = parser.parse_args()
 labels = {
     'es': {'tab': 'Usuarios', 'role_placeholder': 'Elige un rol', 'role': 'Recepción', 'password_done': 'Contraseña cambiada'},
+    'de': {'tab': 'Benutzer', 'role_placeholder': 'Wähle eine Rolle', 'role': 'Empfang', 'password_done': 'Passwort geändert'},
+    'fr': {'tab': 'Utilisateurs', 'role_placeholder': 'Choisissez un rôle', 'role': 'Accueil', 'password_done': 'Mot de passe modifié'},
+    'it': {'tab': 'Utenti', 'role_placeholder': 'Scegli un ruolo', 'role': 'Accoglienza', 'password_done': 'Password cambiata'},
+    'pt': {'tab': 'Utilizadores', 'role_placeholder': 'Escolhe uma função', 'role': 'Receção', 'password_done': 'Palavra-passe alterada'},
     'en': {'tab': 'Users', 'role_placeholder': 'Choose a role', 'role': 'Reception', 'password_done': 'Password changed'},
 }[args.locale]
 out = Path('docs/qa/usuarios-movil') / ('flujo-' + args.locale)

@@ -64,14 +64,16 @@ export function SegmentedControl<T extends string>({
                     style={[
                         pillStyle,
                         {
-                            ...elevation('selection', palette.foreground),
+                            ...elevation('selection', palette.primary),
                             position: 'absolute',
                             top: 4,
                             left: 4,
                             width: segmentWidth - 8,
                             height: HEIGHT - 8,
                             borderRadius: 8,
-                            backgroundColor: palette.card,
+                            // El azul de los botones (`primary`): la pestaña activa se lee igual en
+                            // todas las pantallas, con su texto en `primary-foreground`.
+                            backgroundColor: palette.primary,
                         },
                     ]}
                 />
@@ -87,10 +89,14 @@ export function SegmentedControl<T extends string>({
                         className="flex-1 items-center justify-center"
                     >
                         <Text
+                            numberOfLines={1}
                             className={cn(
-                                'text-sm font-sans',
+                                // Una etiqueta larga («Utilisateurs», «Utilizadores») llenaba la pastilla
+                                // entera con tres pestañas a 375 px: baja un punto en vez de salirse.
+                                option.label.length > 10 ? 'text-xs' : 'text-sm',
+                                'font-sans',
                                 selected
-                                    ? 'font-sans-semibold text-foreground'
+                                    ? 'font-sans-semibold text-primary-foreground'
                                     : 'text-muted-foreground',
                             )}
                         >
